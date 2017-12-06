@@ -1,0 +1,5 @@
+filter:
+    paths: [src/*]
+    excluded_paths: [vendor/*, tests/*,  docs/*, src/Resources/*, src/Tests/*, demo/*]
+tools:
+    external_code_coverage: true
