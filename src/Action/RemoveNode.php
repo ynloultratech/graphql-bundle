@@ -32,9 +32,27 @@ class RemoveNode extends AbstractNodeAction
             throw new NodeNotFoundException();
         }
 
+        $this->preRemove($node);
         $this->getManager()->remove($node);
         $this->getManager()->flush();
+        $this->postRemove($node);
 
         return ['id' => $id, 'clientMutationId' => $clientMutationId];
+    }
+
+    /**
+     * @param NodeInterface $node
+     */
+    protected function preRemove(NodeInterface $node)
+    {
+        //override
+    }
+
+    /**
+     * @param NodeInterface $node
+     */
+    protected function postRemove(NodeInterface $node)
+    {
+        //override
     }
 }
