@@ -10,12 +10,13 @@
 
 namespace Ynlo\GraphQLBundle\Action;
 
+use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Model\UpdateNodePayload;
 
 /**
  * Class AddNode
  */
-class AddNode extends UpdateNode
+class AddNode extends AbstractNodeAction
 {
     /**
      * {@inheritdoc}
@@ -27,12 +28,28 @@ class AddNode extends UpdateNode
         if ($violations || $dryRun) {
             $node = null;
         } else {
-            $this->preUpdate($node);
+            $this->prePersist($node);
             $this->getManager()->persist($node);
             $this->getManager()->flush();
-            $this->postUpdate($node);
+            $this->postPersist($node);
         }
 
         return new UpdateNodePayload($node, $violations, $clientMutationId);
+    }
+
+    /**
+     * @param NodeInterface $node
+     */
+    protected function prePersist(NodeInterface $node)
+    {
+        //override
+    }
+
+    /**
+     * @param NodeInterface $node
+     */
+    protected function postPersist(NodeInterface $node)
+    {
+        //override
     }
 }
