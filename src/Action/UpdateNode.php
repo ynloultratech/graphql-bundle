@@ -45,17 +45,17 @@ class UpdateNode extends AbstractNodeAction
     }
 
     /**
-     * @param mixed $input
+     * @param NodeInterface $node
      */
-    protected function preUpdate($input)
+    protected function preUpdate(NodeInterface $node)
     {
         //override
     }
 
     /**
-     * @param mixed $input
+     * @param NodeInterface $node
      */
-    protected function postUpdate($input)
+    protected function postUpdate(NodeInterface $node)
     {
         //override
     }
