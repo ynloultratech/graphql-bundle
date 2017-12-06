@@ -1,0 +1,39 @@
+language: php
+
+php:
+  - 7.1
+
+env:
+  - SYMFONY_DEPRECATIONS_HELPER: weak
+
+cache:
+  directories:
+    - .composer/cache
+
+before_install:
+  - alias composer=composer\ -n && composer self-update
+
+install:
+  - travis_retry composer global require hirak/prestissimo
+  - travis_retry composer install --no-interaction
+
+before_script:
+  - php demo/console cache:clear --env=test --no-warmup
+  - php demo/console cache:warmup --env=test
+  - php demo/console doctrine:database:create --env=test
+  - php demo/console doctrine:schema:update -f --env=test
+  - php demo/console doctrine:fixtures:load -n --env=test
+
+script:
+  - mkdir -p build/logs
+  - php bin/phpunit -c phpunit.xml.dist --coverage-text --coverage-clover=${clover=build/logs/clover.xml}
+
+after_success:
+ - composer require satooshi/php-coveralls
+ - php bin/coveralls
+ - wget https://scrutinizer-ci.com/ocular.phar
+ - php ocular.phar code-coverage:upload --format=php-clover "$clover"
+
+notifications:
+  email:
+    - rsantos@ynloultratech.com
