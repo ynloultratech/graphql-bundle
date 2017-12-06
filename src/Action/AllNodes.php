@@ -10,11 +10,18 @@
 
 namespace Ynlo\GraphQLBundle\Action;
 
+use Doctrine\ORM\QueryBuilder;
+
 /**
  * Class AllNodes
  */
 class AllNodes extends AbstractNodeAction
 {
+    /**
+     * @var string
+     */
+    protected $queryAlias = 'o';
+
     /**
      * @return mixed
      */
@@ -23,6 +30,20 @@ class AllNodes extends AbstractNodeAction
         $objectType = $this->context->getDefinition()->getReturnType();
         $entityClass = $this->context->getDefinitionManager()->getType($objectType)->getClass();
 
-        return $this->getManager()->getRepository($entityClass)->findAll();
+        $qb = $this->createQuery($entityClass);
+
+        return $qb->getQuery()->execute();
+    }
+
+    /**
+     * @param string $class
+     *
+     * @return QueryBuilder
+     */
+    protected function createQuery($class): QueryBuilder
+    {
+        return $this->getManager()
+                    ->getRepository($class)
+                    ->createQueryBuilder($this->queryAlias);
     }
 }

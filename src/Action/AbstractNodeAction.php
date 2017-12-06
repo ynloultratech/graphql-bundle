@@ -10,7 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Action;
 
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Validator\ConstraintViolationListInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
@@ -32,9 +32,9 @@ abstract class AbstractNodeAction implements APIActionInterface
     protected $context;
 
     /**
-     * @return ObjectManager
+     * @return EntityManager
      */
-    public function getManager(): ObjectManager
+    public function getManager(): EntityManager
     {
         return $this->container->get('doctrine')->getManager();
     }
