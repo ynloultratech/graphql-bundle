@@ -17,6 +17,7 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Ynlo\GraphQLBundle\Definition\MutationDefinition;
 use Ynlo\GraphQLBundle\Definition\ResolverContext;
 use Ynlo\GraphQLBundle\Model\ConstraintViolation;
+use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Validator\ValidatorBridge;
 
 /**
@@ -64,22 +65,22 @@ abstract class AbstractNodeAction implements APIActionInterface
     }
 
     /**
-     * @param string $input
+     * @param NodeInterface $node
      *
      * @return ConstraintViolation[]
      */
-    protected function validate($input): array
+    protected function validate(NodeInterface $node): array
     {
         $groups = [];
         $actionDefinition = $this->getContext()->getDefinition();
         if ($actionDefinition instanceof MutationDefinition) {
             $groups = $actionDefinition->getValidationGroups();
         }
-        $this->preValidate($input);
+        $this->preValidate($node);
 
-        $violations = $this->getValidator()->validate($input, null, $groups);
+        $violations = $this->getValidator()->validate($node, null, $groups);
 
-        $this->postValidation($input, $violations);
+        $this->postValidation($node, $violations);
 
         $definition = $this->getContext()->getDefinitionManager()->getType($actionDefinition->getNodeType());
         $validatorBridge = new ValidatorBridge($this->getContext()->getDefinitionManager());
@@ -88,18 +89,18 @@ abstract class AbstractNodeAction implements APIActionInterface
     }
 
     /**
-     * @param mixed                            $input
+     * @param NodeInterface                    $node
      * @param ConstraintViolationListInterface $violations
      */
-    protected function postValidation($input, ConstraintViolationListInterface $violations)
+    protected function postValidation(NodeInterface $node, ConstraintViolationListInterface $violations)
     {
         //override in child
     }
 
     /**
-     * @param mixed $input
+     * @param NodeInterface $node
      */
-    protected function preValidate($input)
+    protected function preValidate(NodeInterface $node)
     {
         //override in child
     }
