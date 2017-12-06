@@ -1,1 +1,1 @@
-# graphql-bundle
+# GraphQL Bundle

@@ -1,0 +1,30 @@
+services:
+    tagged_services:
+        class: Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices
+        arguments: [ '@service_container' ]
+
+    Ynlo\GraphQLBundle\EventListener\CorsListener:
+          class: Ynlo\GraphQLBundle\EventListener\CorsListener
+          tags:
+              - { name: 'kernel.event_subscriber' }
+
+    graphql.schema_compiler:
+        class: Ynlo\GraphQLBundle\Definition\SchemaCompiler
+        arguments: ['@graphql.definition_registry']
+        calls:
+          - [ setContainer, ['@service_container']]
+
+    graphql.definition_registry:
+        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionRegistry
+        arguments: ['@tagged_services', '%kernel.cache_dir%']
+
+    graphql.definition_auto_loader:
+        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionAutoLoader
+        arguments: ['@service_container', '@annotations.reader']
+        tags:
+            - { name: 'graphql.definition_loader' }
+
+    graphql.types_autoloader:
+        class: Ynlo\GraphQLBundle\Type\TypeAutoLoader
+        calls:
+          - [ setContainer, ['@service_container']]

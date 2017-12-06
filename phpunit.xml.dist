@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<!--~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  ~  This file is part of the GraphQL Bundle package.
+  ~
+  ~  (c) YnloUltratech <support@ynloultratech.com>
+  ~
+  ~  For the full copyright and license information, please view the LICENSE
+  ~  file that was distributed with this source code.
+  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~-->
+
+<phpunit backupGlobals="false"
+         colors="true"
+         bootstrap="vendor/autoload.php"
+>
+    <php>
+        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak"/>
+        <server name="KERNEL_DIR" value="demo/app/"/>
+    </php>
+    <testsuites>
+        <testsuite name="Unit Tests">
+            <directory>src/Tests/</directory>
+        </testsuite>
+        <testsuite name="Integration Tests">
+            <directory>demo/src/ApiDemoBundle/Tests/</directory>
+        </testsuite>
+    </testsuites>
+
+    <filter>
+        <whitelist>
+            <directory>src/</directory>
+        </whitelist>
+    </filter>
+
+    <listeners>
+        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener"></listener>
+    </listeners>
+</phpunit>

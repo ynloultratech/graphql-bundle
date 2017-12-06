@@ -1,0 +1,7 @@
+api_root:
+    path:      /
+    defaults:  { _controller: YnloGraphQLBundle:ApiRootEndpoint:root }
+
+api_schema:
+    path:      /schema.graphql
+    defaults:  { _controller: YnloGraphQLBundle:Schema:schema }

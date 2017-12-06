@@ -1,0 +1,62 @@
+{
+  "name": "ynloultratech/graphql-bundle",
+  "description": "Bundle designed to easily create API projects based on GraphQL",
+  "license": "MIT",
+  "type": "symfony-bundle",
+  "authors": [
+    {
+      "name": "YNLO-Ultratech Development Team",
+      "email": "developer@ynloultratech.com",
+      "homepage": "https://github.com/ynloultratech"
+    }
+  ],
+  "keywords": [
+    "api",
+    "graphql"
+  ],
+  "autoload": {
+    "psr-4": {
+      "Ynlo\\GraphQLBundle\\": "src/"
+    }
+  },
+  "autoload-dev": {
+    "psr-4": {
+      "Ynlo\\GraphQLBundle\\Demo\\": "demo/src/"
+    },
+    "classmap": [
+      "demo/app/ApiDemoKernel.php"
+    ]
+  },
+  "require": {
+    "php": ">=7.1",
+    "symfony/symfony": "^3.3",
+    "webonyx/graphql-php": "^0.11.4",
+    "doctrine/annotations": "^1.5",
+    "doctrine/common": "^2.8"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^6.2",
+    "symfony/phpunit-bridge": "^3.1",
+    "lexik/jwt-authentication-bundle": "^2.4",
+    "mtdowling/jmespath.php": "^2.4",
+    "symfony/web-server-bundle": "^3.3",
+    "symfony/monolog-bundle": "^3.1",
+    "mockery/mockery": "dev-master",
+    "doctrine/orm": "^2.5",
+    "doctrine/doctrine-bundle": "^1.6",
+    "monolog/monolog": "^1.23",
+    "doctrine/doctrine-fixtures-bundle": "^2.4",
+    "cocur/slugify": "^3.0",
+    "fzaninotto/faker": "^1.7",
+    "escapestudios/symfony2-coding-standard": "3.x-dev"
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0.x-dev"
+    }
+  },
+  "config": {
+    "bin-dir": "bin",
+    "preferred-install": "dist"
+  }
+}

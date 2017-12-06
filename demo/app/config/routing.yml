@@ -1,0 +1,7 @@
+api:
+      resource: '@YnloGraphQLBundle/Resources/config/routing/root.yml'
+      prefix:   /
+
+api_explore:
+      resource: '@YnloGraphQLBundle/Resources/config/routing/explore.yml'
+      prefix:   /

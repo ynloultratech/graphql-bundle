@@ -1,0 +1,15 @@
+#!/bin/bash
+
+shell_path="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
+cd "${shell_path}"
+path=$(pwd)
+
+echo Preparing...
+
+./console cache:clear --env=dev --no-warmup -q
+./console cache:warmup --env=dev -q
+./console doctrine:schema:drop --force --full-database -q
+./console doctrine:schema:create -q
+./console doctrine:schema:update  --force -q
+./console doctrine:fixtures:load -n -q
+./console server:run --docroot=public
