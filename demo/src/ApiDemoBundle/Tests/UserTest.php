@@ -24,7 +24,7 @@ class UserTest extends ApiTestCase
     public function testUserList()
     {
         self::query(
-            'userList',
+            'allUsers',
             [
                 'id',
                 'login',
@@ -37,16 +37,16 @@ class UserTest extends ApiTestCase
             ]
         );
         self::assertResponseCodeIsOK();
-        self::assertJsonPathEquals('admin', 'data.userList[0].login');
+        self::assertJsonPathEquals('admin', 'data.allUsers[0].login');
 
         /** @var User $user1 */
         $user1 = self::getFixtureReference('user1');
 
-        self::assertJsonArraySubset(['admin', $user1->getUsername()], 'data.userList[*].login');
-        self::assertJsonPathEquals($user1->getProfile()->getPhone(), 'data.userList[1].profile.phone');
+        self::assertJsonArraySubset(['admin', $user1->getUsername()], 'data.allUsers[*].login');
+        self::assertJsonPathEquals($user1->getProfile()->getPhone(), 'data.allUsers[1].profile.phone');
         self::assertJsonPathEquals(
             $user1->getProfile()->getAddress()->getZipCode(),
-            'data.userList[1].profile.address.zipCode'
+            'data.allUsers[1].profile.address.zipCode'
         );
     }
 

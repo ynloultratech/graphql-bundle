@@ -12,9 +12,9 @@ namespace Ynlo\GraphQLBundle\DefinitionLoader\AnnotationDefinitionExtractor;
 
 use Doctrine\Common\Inflector\Inflector;
 use Ynlo\GraphQLBundle\Action\AddNode;
+use Ynlo\GraphQLBundle\Action\AllNodes;
 use Ynlo\GraphQLBundle\Action\GetNode;
 use Ynlo\GraphQLBundle\Action\GetSomeNodes;
-use Ynlo\GraphQLBundle\Action\ListNodes;
 use Ynlo\GraphQLBundle\Action\RemoveNode;
 use Ynlo\GraphQLBundle\Action\UpdateNode;
 use Ynlo\GraphQLBundle\Annotation;
@@ -43,7 +43,7 @@ Must check `constraintViolations` in the payload to get validation messages.',
     {
         return (
             $annotation instanceof Annotation\GetNode
-            || $annotation instanceof Annotation\ListNodes
+            || $annotation instanceof Annotation\AllNodes
             || $annotation instanceof Annotation\DeleteNode
             || $annotation instanceof Annotation\AddNode
             || $annotation instanceof Annotation\UpdateNode
@@ -63,7 +63,7 @@ Must check `constraintViolations` in the payload to get validation messages.',
             }
         }
 
-        if ($annotation instanceof Annotation\ListNodes) {
+        if ($annotation instanceof Annotation\AllNodes) {
             $crudAnnotations[] = $this->createListNodeQuery($annotation, $refClass);
         }
 
@@ -168,21 +168,21 @@ Must check `constraintViolations` in the payload to get validation messages.',
     }
 
     /**
-     * @param Annotation\ListNodes $annotation
-     * @param \ReflectionClass     $refClass
+     * @param Annotation\AllNodes $annotation
+     * @param \ReflectionClass    $refClass
      *
      * @return Annotation\Query
      */
     protected function createListNodeQuery($annotation, \ReflectionClass $refClass): Annotation\Query
     {
         $type = $annotation->node ?? $this->getDefaultClassType($refClass);
-        $name = $annotation->queryName ?? $this->getCanonicalName($type.'List');
+        $name = $annotation->queryName ?? $this->getCanonicalName('all'.ucfirst(Inflector::pluralize($type)));
 
         return new Annotation\Query(
             [
                 'type' => "[$type]",
                 'name' => $name,
-                'resolver' => $refClass->hasMethod('__invoke') ? $refClass->getName() : ListNodes::class,
+                'resolver' => $refClass->hasMethod('__invoke') ? $refClass->getName() : AllNodes::class,
                 'deprecationReason' => $annotation->deprecationReason,
             ]
         );

@@ -8,21 +8,29 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Action;
+namespace Ynlo\GraphQLBundle\Annotation;
+
+use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
- * Class ListNodes
+ * @Annotation()
+ *
+ * @Target({"CLASS"})
  */
-class ListNodes extends AbstractNodeAction
+final class AllNodes extends Annotation
 {
     /**
-     * @return mixed
+     * @var string
      */
-    public function __invoke()
-    {
-        $objectType = $this->context->getDefinition()->getReturnType();
-        $entityClass = $this->context->getDefinitionManager()->getType($objectType)->getClass();
+    public $node;
 
-        return $this->getManager()->getRepository($entityClass)->findAll();
-    }
+    /**
+     * @var string
+     */
+    public $queryName;
+
+    /**
+     * @var string
+     */
+    public $deprecationReason;
 }

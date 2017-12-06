@@ -35,7 +35,7 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  * @API\ObjectType()
  *
  * @API\GetNode()
- * @API\ListNodes()
+ * @API\AllNodes()
  * @API\AddNode()
  * @API\UpdateNode()
  * @API\DeleteNode()

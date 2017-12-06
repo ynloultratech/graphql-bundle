@@ -14,11 +14,11 @@ use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\Finder\Finder;
 use Ynlo\GraphQLBundle\Annotation\AddNode;
+use Ynlo\GraphQLBundle\Annotation\AllNodes;
 use Ynlo\GraphQLBundle\Annotation\DeleteNode;
 use Ynlo\GraphQLBundle\Annotation\GetNode;
 use Ynlo\GraphQLBundle\Annotation\InputObjectType;
 use Ynlo\GraphQLBundle\Annotation\InterfaceType;
-use Ynlo\GraphQLBundle\Annotation\ListNodes;
 use Ynlo\GraphQLBundle\Annotation\Mutation;
 use Ynlo\GraphQLBundle\Annotation\ObjectType;
 use Ynlo\GraphQLBundle\Annotation\Query;
@@ -123,7 +123,7 @@ class DefinitionAutoLoader implements DefinitionLoaderInterface
                                     || $annotation instanceof InterfaceType
                                     || $annotation instanceof Query
                                     || $annotation instanceof GetNode
-                                    || $annotation instanceof ListNodes
+                                    || $annotation instanceof AllNodes
                                     || $annotation instanceof Mutation
                                     || $annotation instanceof UpdateNode
                                     || $annotation instanceof AddNode
