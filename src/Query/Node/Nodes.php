@@ -8,19 +8,19 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Action;
+namespace Ynlo\GraphQLBundle\Query\Node;
 
 use Doctrine\Common\Util\Inflector;
-use Ynlo\GraphQLBundle\Annotation as API;
+use Ynlo\GraphQLBundle\Action\AbstractNodeAction;
+use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Model\ID;
 
 /**
- * @API\Query(name="nodes", type="[Node]!", args={
- *     @API\Arg(name="ids", type="[ID!]!")
- * })
+ * @GraphQL\Query(list=true)
+ * @GraphQL\Argument(name="ids", type="[ID!]!")
  */
-class GetSomeNodes extends AbstractNodeAction
+class Nodes extends AbstractNodeAction
 {
     /**
      * @param ID[]|mixed[] $ids
@@ -44,12 +44,12 @@ class GetSomeNodes extends AbstractNodeAction
             }
         } else {
             //when use a different field to fetch,
-            //@see GetNode::fetchBy
-            $type = $this->getContext()->getDefinition()->getReturnType();
+            //@see QueryGet::fetchBy
+            $type = $this->getContext()->getDefinition()->getType();
             $objectDefinition = $this->getContext()->getDefinitionManager()->getType($type);
 
             /** @var ArgumentDefinition $arg */
-            $arg = array_values($this->getContext()->getDefinition()->getArgs())[0];
+            $arg = array_values($this->getContext()->getDefinition()->getArguments())[0];
 
             $field = null;
             if ($objectDefinition->hasField($arg->getName())) {
@@ -74,7 +74,7 @@ class GetSomeNodes extends AbstractNodeAction
                 foreach ($searchValues as $searchValue) {
                     //TODO: improve this to find all nodes in the same Repo with only one query, NOTE: the order and empty results are very IMPORTANT!
                     //The list of given id should match with the list of results including non-found nodes
-                    $entity = $this->getContext()->getDefinitionManager()->getType($type)->getClass();
+                    $entity = $this->getContext()->getDefinitionManager()->getClassForType($type);
                     $result = $this->getManager()->getRepository($entity)->findOneBy([$searchField => $searchValue]);
                     $expectedResultsOrder[md5($type.$searchValue)] = $result;
                 }

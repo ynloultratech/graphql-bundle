@@ -10,6 +10,8 @@
 
 namespace Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Model;
 
+use Doctrine\ORM\Mapping as ORM;
+
 /**
  * Trait TimestampableTrait
  */
@@ -17,11 +19,15 @@ trait TimestampableTrait
 {
     /**
      * @var \DateTime
+     *
+     * @ORM\Column(type="datetime")
      */
     protected $createdAt;
 
     /**
      * @var \DateTime
+     *
+     * @ORM\Column(type="datetime")
      */
     protected $updatedAt;
 

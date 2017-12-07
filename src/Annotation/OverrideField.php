@@ -10,16 +10,17 @@
 
 namespace Ynlo\GraphQLBundle\Annotation;
 
-use Doctrine\Common\Annotations\Annotation\Target;
+use Doctrine\Common\Annotations\Annotation;
 
 /**
- * @Annotation()
- * @Target({"CLASS"})
+ * @Annotation
+ * @Annotation\Target({"CLASS"})
  */
 final class OverrideField extends Annotation
 {
     /**
      * @var string
+     *
      * @required
      */
     public $name;
@@ -47,14 +48,9 @@ final class OverrideField extends Annotation
     public $deprecationReason;
 
     /**
-     * @var boolean
-     */
-    public $readOnly;
-
-    /**
-     * Ignore this field already published in the parent
+     * Ignore this field
      *
-     * @var boolean
+     * @var bool
      */
     public $hidden;
 }

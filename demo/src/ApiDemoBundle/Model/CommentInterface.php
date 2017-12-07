@@ -10,22 +10,22 @@
 
 namespace Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Model;
 
-use Ynlo\GraphQLBundle\Annotation as API;
+use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity\User;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 
 /**
- * @API\InterfaceType()
- *
- * @API\DeleteNode(node="Comment")
- * @API\UpdateNode(node="Comment")
+ * @GraphQL\InterfaceType()
+ * @GraphQL\MutationAdd()
+ * @GraphQL\MutationDelete()
+ * @GraphQL\MutationUpdate()
  */
 interface CommentInterface extends NodeInterface
 {
     /**
      * @return User
      *
-     * @API\Field(type="User!")
+     * @GraphQL\Field(type="Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity\User!")
      */
     public function getAuthor(): User;
 
@@ -37,7 +37,7 @@ interface CommentInterface extends NodeInterface
     /**
      * @return CommentableInterface
      *
-     * @API\Field(type="Commentable!")
+     * @GraphQL\Field(type="Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Model\CommentableInterface!")
      */
     public function getCommentable(): CommentableInterface;
 
@@ -49,7 +49,7 @@ interface CommentInterface extends NodeInterface
     /**
      * @return string
      *
-     * @API\Field(type="string!")
+     * @GraphQL\Field(type="string!")
      */
     public function getBody(): string;
 

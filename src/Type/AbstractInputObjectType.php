@@ -10,25 +10,30 @@
 
 namespace Ynlo\GraphQLBundle\Type;
 
-use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\ObjectType;
+use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectFieldResolver;
 
 /**
  * Class AbstractInputObjectType
  */
-abstract class AbstractInputObjectType extends InputObjectType
+abstract class AbstractInputObjectType extends ObjectType implements
+    ContainerAwareInterface,
+    DefinitionManagerAwareInterface
 {
+    use ContainerAwareTrait;
+    use DefinitionManagerAwareTrait;
+
     /**
      * @var InputObjectDefinition
      */
     protected $definition;
 
     /**
-     * AbstractInputObjectType constructor.
-     *
      * @param InputObjectDefinition $definition
      */
     public function __construct(InputObjectDefinition $definition)
@@ -42,7 +47,11 @@ abstract class AbstractInputObjectType extends InputObjectType
                 'fields' => function () {
                     return $this->resolveFields();
                 },
-                'resolveField' => new ObjectFieldResolver($definition),
+                'resolveField' => function ($root, array $args, $context, ResolveInfo $resolveInfo) {
+                    $resolver = new ObjectFieldResolver($this->container, $this->manager, $this->definition);
+
+                    return $resolver($root, $args, $context, $resolveInfo);
+                },
             ]
         );
     }

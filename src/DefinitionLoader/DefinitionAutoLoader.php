@@ -12,21 +12,9 @@ namespace Ynlo\GraphQLBundle\DefinitionLoader;
 
 use Doctrine\Common\Annotations\AnnotationReader;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\Finder\Finder;
-use Ynlo\GraphQLBundle\Annotation\AddNode;
-use Ynlo\GraphQLBundle\Annotation\AllNodes;
-use Ynlo\GraphQLBundle\Annotation\DeleteNode;
-use Ynlo\GraphQLBundle\Annotation\GetNode;
-use Ynlo\GraphQLBundle\Annotation\InputObjectType;
-use Ynlo\GraphQLBundle\Annotation\InterfaceType;
-use Ynlo\GraphQLBundle\Annotation\Mutation;
-use Ynlo\GraphQLBundle\Annotation\ObjectType;
-use Ynlo\GraphQLBundle\Annotation\Query;
-use Ynlo\GraphQLBundle\Annotation\UpdateNode;
-use Ynlo\GraphQLBundle\DefinitionLoader\AnnotationDefinitionExtractor\ActionExtractor;
-use Ynlo\GraphQLBundle\DefinitionLoader\AnnotationDefinitionExtractor\AnnotationDefinitionExtractorInterface;
-use Ynlo\GraphQLBundle\DefinitionLoader\AnnotationDefinitionExtractor\CRUDExtractor;
-use Ynlo\GraphQLBundle\DefinitionLoader\AnnotationDefinitionExtractor\ObjectExtractor;
+use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\DefinitionResolverInterface;
 
 /**
  * Class DefinitionAutoLoader
@@ -35,12 +23,13 @@ class DefinitionAutoLoader implements DefinitionLoaderInterface
 {
     /**
      * Folders inside bundles to locate definitions
+     * TODO: allow add additional mapping on bundle config
      */
     private const DEFINITIONS_LOCATIONS = [
-        'Field', //contains custom input types
         'Model', //non persistent models like interfaces, or abstract classes
         'Entity', //doctrine entities
-        'Action', //custom actions
+        'Mutation', //custom actions
+        'Query', //custom actions
     ];
 
     /**
@@ -55,12 +44,12 @@ class DefinitionAutoLoader implements DefinitionLoaderInterface
 
     /**
      * @param ContainerInterface $container
-     * @param AnnotationReader   $reader
      */
-    public function __construct(ContainerInterface $container, AnnotationReader $reader)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->reader = $reader;
+        $this->reader = $container->get('annotations.reader');
+
     }
 
     /**
@@ -68,23 +57,44 @@ class DefinitionAutoLoader implements DefinitionLoaderInterface
      */
     public function loadDefinitions(DefinitionManager $definitionManager): void
     {
-        $extractors = [
-            new ObjectExtractor(),
-            new ActionExtractor(),
-            new CRUDExtractor(),
-        ];
+        /** @var Definition $resolversServiceDefinition */
+        $resolverDefinitions = $this->container
+            ->get('tagged_services')
+            ->findTaggedServices('graphql.definition_resolver');
+
+        $resolvers = [];
+        foreach ($resolverDefinitions as $resolverDefinition) {
+            $attr = $resolverDefinition->getAttributes();
+            $priority = 0;
+            if (isset($attr['priority'])) {
+                $priority = $attr['priority'];
+            }
+
+            $resolvers[] = [$priority, $resolverDefinition->getService()];
+        }
+
+        //sort by priority
+        usort(
+            $resolvers,
+            function ($service1, $service2) {
+                list($priority1) = $service1;
+                list($priority2) = $service2;
+
+                return version_compare($priority2, $priority1);
+            }
+        );
 
         $classesToLoad = $this->resolveClasses();
-
-        /** @var AnnotationDefinitionExtractorInterface[] $extractors */
-        foreach ($extractors as $extractor) {
-            foreach ($classesToLoad as $class) {
-                $refClass = new \ReflectionClass($class);
-                $annotations = $this->reader->getClassAnnotations($refClass);
-                foreach ($annotations as $annotation) {
-                    if ($extractor->supports($annotation)) {
-                        $extractor->setReader($this->reader);
-                        $extractor->extract($annotation, $refClass, $definitionManager);
+        foreach ($resolvers as $resolver) {
+            list(, $resolver) = $resolver;
+            if ($resolver instanceof DefinitionResolverInterface) {
+                foreach ($classesToLoad as $class) {
+                    $refClass = new \ReflectionClass($class);
+                    $annotations = $this->reader->getClassAnnotations($refClass);
+                    foreach ($annotations as $annotation) {
+                        if ($resolver->supports($annotation)) {
+                            $resolver->resolve($annotation, $refClass, $definitionManager);
+                        }
                     }
                 }
             }
@@ -113,25 +123,9 @@ class DefinitionAutoLoader implements DefinitionLoaderInterface
                         } else {
                             $fullyClassName = $namespace.'\\'.$definitionLocation.'\\'.$className;
                         }
-                        if (class_exists($fullyClassName) || interface_exists($fullyClassName)) {
-                            $ref = new \ReflectionClass($fullyClassName);
 
-                            $annotations = $this->reader->getClassAnnotations($ref);
-                            foreach ($annotations as $annotation) {
-                                if ($annotation instanceof InputObjectType
-                                    || $annotation instanceof ObjectType
-                                    || $annotation instanceof InterfaceType
-                                    || $annotation instanceof Query
-                                    || $annotation instanceof GetNode
-                                    || $annotation instanceof AllNodes
-                                    || $annotation instanceof Mutation
-                                    || $annotation instanceof UpdateNode
-                                    || $annotation instanceof AddNode
-                                    || $annotation instanceof DeleteNode
-                                ) {
-                                    $classes[] = $fullyClassName;
-                                }
-                            }
+                        if (class_exists($fullyClassName) || interface_exists($fullyClassName)) {
+                            $classes[] = $fullyClassName;
                         }
                     }
                 }

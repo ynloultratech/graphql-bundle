@@ -10,44 +10,28 @@
 
 namespace Ynlo\GraphQLBundle\Annotation;
 
-use Doctrine\Common\Annotations\Annotation\Target;
+use Doctrine\Common\Annotations\Annotation;
 
 /**
  * @Annotation()
- *
- * @Target({"CLASS"})
+ * @Annotation\Target("CLASS")
  */
-final class AddNode
+final class InputField extends Annotation
 {
     /**
      * @var string
      */
-    public $input;
-
-    /**
-     * @var array
-     */
-    public $validationGroups = [];
+    public $name;
 
     /**
      * @var string
      */
-    public $node;
-
-    /**
-     * @var array
-     */
-    public $args = [];
+    public $type;
 
     /**
      * @var string
      */
     public $description;
-
-    /**
-     * @var string
-     */
-    public $name;
 
     /**
      * @var string

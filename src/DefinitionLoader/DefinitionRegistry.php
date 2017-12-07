@@ -12,6 +12,7 @@ namespace Ynlo\GraphQLBundle\DefinitionLoader;
 
 use Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices;
 use Ynlo\GraphQLBundle\Component\TaggedServices\TagSpecification;
+use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 
 /**
  * Class DefinitionRegistry
@@ -56,17 +57,59 @@ class DefinitionRegistry
             return self::$manager[$name];
         }
 
-        self::$manager[$name] = new DefinitionManager();
+        $manager = new DefinitionManager();
 
         $specifications = $this->getTaggedServices('graphql.definition_loader');
         foreach ($specifications as $specification) {
             $resolver = $specification->getService();
             if ($resolver instanceof DefinitionLoaderInterface) {
-                $resolver->loadDefinitions(self::$manager[$name]);
+                $resolver->loadDefinitions($manager);
             }
         }
 
-        return self::$manager[$name];
+        $this->compile($manager);
+
+        return self::$manager[$name] = $manager;
+    }
+
+    /**
+     * Verify the manager definitions and do some tasks to prepare the manager
+     *
+     * @param DefinitionManager $manager
+     */
+    private function compile(DefinitionManager $manager)
+    {
+        foreach ($manager->allTypes() as $type) {
+            if ($type instanceof FieldsAwareDefinitionInterface) {
+                foreach ($type->getFields() as $field) {
+                    $field->setType($this->normalizeType($manager, $field->getType()));
+                    if (!$field->getType()) {
+                        $msg = sprintf('The field "%s" of "%s" does not have a valid type', $field->getName(), $type->getName());
+                        throw new \RuntimeException($msg);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * @param DefinitionManager $manager
+     * @param string|null       $type
+     *
+     * @return null|string
+     */
+    private function normalizeType(DefinitionManager $manager, $type)
+    {
+        if ($type) {
+            if (class_exists($type) || interface_exists($type)) {
+                $classType = $manager->getTypeForClass($type);
+                if ($classType) {
+                    $type = $classType;
+                }
+            }
+        }
+
+        return $type;
     }
 
     /**

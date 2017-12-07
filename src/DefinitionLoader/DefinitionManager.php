@@ -26,6 +26,11 @@ class DefinitionManager
     protected $types = [];
 
     /**
+     * @var string[]
+     */
+    protected $typeMap = [];
+
+    /**
      * @var InterfaceDefinition[]
      */
     protected $interfaces = [];
@@ -46,6 +51,35 @@ class DefinitionManager
     public function allTypes(): array
     {
         return $this->types;
+    }
+
+    /**
+     * @param string $type
+     *
+     * @return null|string
+     */
+    public function getClassForType(string $type):?string
+    {
+        if (isset($this->typeMap[$type])) {
+            return $this->typeMap[$type];
+        }
+
+        return null;
+    }
+
+    /**
+     * @param string $class
+     *
+     * @return null|string
+     */
+    public function getTypeForClass(string $class):?string
+    {
+        $typeMap = array_flip($this->typeMap);
+        if (isset($typeMap[$class])) {
+            return $typeMap[$class];
+        }
+
+        return null;
     }
 
     /**
@@ -149,6 +183,10 @@ class DefinitionManager
 
         if ($type instanceof InterfaceDefinition) {
             $this->interfaces[$type->getName()] = $type;
+        }
+
+        if ($type->getClass()) {
+            $this->typeMap[$type->getName()] = $type->getClass();
         }
 
         return $this;

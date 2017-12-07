@@ -16,7 +16,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
-use Ynlo\GraphQLBundle\Annotation as API;
+use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Model\CommentableInterface;
 use Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Model\CommentableTrait;
 use Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Model\CommentInterface;
@@ -32,13 +32,12 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  *
  * @ORM\HasLifecycleCallbacks()
  *
- * @API\ObjectType()
- *
- * @API\GetNode()
- * @API\AllNodes()
- * @API\AddNode()
- * @API\UpdateNode()
- * @API\DeleteNode()
+ * @GraphQL\ObjectType()
+ * @GraphQL\QueryGet()
+ * @GraphQL\QueryGetAll()
+ * @GraphQL\MutationAdd()
+ * @GraphQL\MutationUpdate()
+ * @GraphQL\MutationDelete()
  */
 class Post implements NodeInterface, CommentableInterface, TimestampableInterface
 {
@@ -58,8 +57,6 @@ class Post implements NodeInterface, CommentableInterface, TimestampableInterfac
      * @var string
      *
      * @ORM\Column(name="slug", type="string")
-     *
-     * @API\Field(type="string!", readOnly=true)
      */
     protected $slug;
 
@@ -70,9 +67,6 @@ class Post implements NodeInterface, CommentableInterface, TimestampableInterfac
      *
      * @ORM\ManyToOne(targetEntity="Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity\User", inversedBy="posts")
      * @ORM\JoinColumn(onDelete="CASCADE")
-     *
-     * @API\Field("User!")
-     * @API\InputById()
      */
     protected $author;
 
@@ -80,8 +74,6 @@ class Post implements NodeInterface, CommentableInterface, TimestampableInterfac
      * @var string
      *
      * @ORM\Column(name="title", type="string")
-     *
-     * @API\Field("string!")
      */
     protected $title;
 
@@ -89,8 +81,6 @@ class Post implements NodeInterface, CommentableInterface, TimestampableInterfac
      * @var string
      *
      * @ORM\Column(name="body", type="string", nullable=true)
-     *
-     * @API\Field("string")
      */
     protected $body;
 
@@ -98,8 +88,6 @@ class Post implements NodeInterface, CommentableInterface, TimestampableInterfac
      * @var Collection|PostComment[]
      *
      * @ORM\OneToMany(targetEntity="Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity\PostComment", mappedBy="post", fetch="EXTRA_LAZY")
-     *
-     * @API\Field("[PostComment]")
      */
     protected $comments;
 

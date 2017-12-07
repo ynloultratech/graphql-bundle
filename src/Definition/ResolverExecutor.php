@@ -10,6 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Definition;
 
+use Doctrine\Common\Util\ClassUtils;
 use GraphQL\Error\UserError;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
@@ -22,9 +23,9 @@ use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionManager;
 use Ynlo\GraphQLBundle\Model\ID;
 
 /**
- * Class QueryResolver
+ * Class ResolverExecutor
  */
-class QueryResolver implements ContainerAwareInterface
+class ResolverExecutor implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
@@ -37,6 +38,26 @@ class QueryResolver implements ContainerAwareInterface
      * @var DefinitionManager
      */
     protected $manager;
+
+    /**
+     * @var mixed
+     */
+    protected $root;
+
+    /**
+     * @var ResolveInfo
+     */
+    protected $resolveInfo;
+
+    /**
+     * @var mixed
+     */
+    protected $context;
+
+    /**
+     * @var array
+     */
+    protected $args = [];
 
     /**
      * @param ContainerInterface $container
@@ -62,7 +83,15 @@ class QueryResolver implements ContainerAwareInterface
      */
     public function __invoke($root, array $args, $context, ResolveInfo $resolveInfo)
     {
+        $this->root = $root;
+        $this->args = $args;
+        $this->context = $context;
+        $this->resolveInfo = $resolveInfo;
+
         $resolverName = $this->query->getResolver();
+
+        $resolver = null;
+        $refMethod = null;
 
         if (class_exists($resolverName)) {
             $refClass = new \ReflectionClass($resolverName);
@@ -72,36 +101,40 @@ class QueryResolver implements ContainerAwareInterface
             if ($resolver instanceof ContainerAwareInterface) {
                 $resolver->setContainer($this->container);
             }
-
             if ($refClass->hasMethod('__invoke')) {
                 $refMethod = $refClass->getMethod('__invoke');
-
-                $resolveContext = new ResolverContext();
-                $resolveContext->setDefinition($this->query);
-                $resolveContext->setArgs($args);
-                $resolveContext->setRoot($root);
-                $resolveContext->setDefinitionManager($this->manager);
-                $resolveContext->setResolveInfo($resolveInfo);
-
-                if ($resolver instanceof APIActionInterface) {
-                    $resolver->setContext($resolveContext);
-                }
-
-                //A very strange issue are causing the fail of some tests without this clear
-                //everything indicates that is a issue with cached entities through test executions
-                //any clear on tests or during load fixtures does not have any effect
-                //I'm not sure if this patch has any other side effect
-                //Reproduce: comment the above line and run all integration tests
-                //FIXME: find the cause of the issue and fix it
-                $this->container->get('doctrine')->getManager()->clear();
-
-                $params = $this->prepareMethodParameters($refMethod, $args);
-
-                return $refMethod->invokeArgs($resolver, $params);
             }
+        } elseif (method_exists($root, $resolverName)) {
+            $resolver = $root;
+            $refMethod = new \ReflectionMethod(ClassUtils::getClass($root), $resolverName);
         }
 
-        return null;
+        if ($resolver && $refMethod) {
+            $resolveContext = new ResolverContext();
+            $resolveContext->setDefinition($this->query);
+            $resolveContext->setArgs($args);
+            $resolveContext->setRoot($root);
+            $resolveContext->setDefinitionManager($this->manager);
+            $resolveContext->setResolveInfo($resolveInfo);
+
+            if ($resolver instanceof APIActionInterface) {
+                $resolver->setContext($resolveContext);
+            }
+
+            //A very strange issue are causing the fail of some tests without this clear
+            //everything indicates that is a issue with cached entities through test executions
+            //any clear on tests or during load fixtures does not have any effect
+            //I'm not sure if this patch has any other side effect
+            //Reproduce: comment the above line and run all integration tests
+            //FIXME: find the cause of the issue and fix it
+            $this->container->get('doctrine')->getManager()->clear();
+            $params = $this->prepareMethodParameters($refMethod, $args);
+
+            return $refMethod->invokeArgs($resolver, $params);
+        }
+
+        $error = sprintf('The resolver "%s" for query "%s" is not a valid resolver. Resolvers should have a method "__invoke(...)"', $resolverName, $this->query->getName());
+        throw new \RuntimeException($error);
     }
 
     /**
@@ -117,13 +150,14 @@ class QueryResolver implements ContainerAwareInterface
         //normalize arguments
         $normalizedArguments = [];
         foreach ($args as $key => $value) {
-            if ($this->query->hasArg($key)) {
-                $argument = $this->query->getArg($key);
+            if ($this->query->hasArgument($key)) {
+                $argument = $this->query->getArgument($key);
                 if ('input' === $key) {
                     $normalizedValue = $value;
                 } else {
                     $normalizedValue = $this->normalizeValue($value, $argument->getType());
                 }
+                $normalizedArguments[$argument->getName()] = $normalizedValue;
                 $normalizedArguments[$argument->getInternalName()] = $normalizedValue;
             }
         }
@@ -132,8 +166,8 @@ class QueryResolver implements ContainerAwareInterface
         //allowing the use of any of this parameters out of input
         //e.g. [input][id] => ($id)
         $inputType = null;
-        if (isset($args['input']) && $this->query->hasArg('input')) {
-            $inputType = $this->query->getArg('input')->getType();
+        if (isset($args['input']) && $this->query->hasArgument('input')) {
+            $inputType = $this->query->getArgument('input')->getType();
             foreach ($args['input'] as $key => $value) {
                 $fieldDefinition = $this->manager->getType($inputType)->getField($key);
                 $normalizedValue = $this->normalizeValue($value, $fieldDefinition->getType());
@@ -196,8 +230,8 @@ class QueryResolver implements ContainerAwareInterface
             }
         }
 
-        if (!isset($arguments['node']) && isset($arguments['input']) && $this->manager->hasType($this->query->getNodeType())) {
-            $objectDefinition = $this->manager->getType($this->query->getNodeType());
+        if (!isset($arguments['node']) && isset($arguments['input']) && $this->manager->hasType($this->query->getType())) {
+            $objectDefinition = $this->manager->getType($this->query->getType());
             $node = $this->arrayToObject($arguments['input'], $objectDefinition);
             if (\is_object($node)) {
                 $arguments['node'] = $node;
@@ -223,6 +257,13 @@ class QueryResolver implements ContainerAwareInterface
                     $orderedArguments[$parameter->getPosition()] = $value;
                     continue 2;
                 }
+            }
+
+            //inject root common argument
+            if ('root' === $parameter->getName()
+                && is_a($parameter->getClass()->getName(), get_class($this->root), true)
+            ) {
+                $orderedArguments[$parameter->getPosition()] = $this->root;
             }
         }
 

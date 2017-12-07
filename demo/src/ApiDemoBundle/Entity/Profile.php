@@ -12,13 +12,13 @@ namespace Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Ynlo\GraphQLBundle\Annotation as API;
+use Ynlo\GraphQLBundle\Annotation as GraphQL;
 
 /**
  * @ORM\Entity()
  * @ORM\Table()
  *
- * @API\ObjectType()
+ * @GraphQL\ObjectType()
  */
 class Profile
 {
@@ -42,8 +42,6 @@ class Profile
      * @var string
      *
      * @ORM\Column(name="first_name", type="string", nullable=true)
-     *
-     * @API\Field("string")
      */
     protected $firstName;
 
@@ -51,8 +49,6 @@ class Profile
      * @var string
      *
      * @ORM\Column(name="last_name", type="string", nullable=true)
-     *
-     * @API\Field("string")
      */
     protected $lastName;
 
@@ -60,8 +56,6 @@ class Profile
      * @var string
      *
      * @ORM\Column(name="phone", type="string", nullable=true)
-     *
-     * @API\Field("string")
      */
     protected $phone;
 
@@ -72,8 +66,6 @@ class Profile
      * @Assert\Email()
      *
      * @ORM\Column(name="email", type="string")
-     *
-     * @API\Field("string")
      */
     protected $email;
 
@@ -83,8 +75,6 @@ class Profile
      * @ORM\Column(name="twitter", type="string", nullable=true)
      *
      * @Assert\Regex(pattern="/^#/", message="Its not a valid twitter user")
-     *
-     * @API\Field("string")
      */
     protected $twitter;
 
@@ -92,8 +82,6 @@ class Profile
      * @var string
      *
      * @ORM\Column(name="facebook", type="string", nullable=true)
-     *
-     * @API\Field("string")
      */
     protected $facebook;
 
@@ -103,9 +91,6 @@ class Profile
      * @ORM\Embedded(class="Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity\Address")
      *
      * @Assert\Valid()
-     *
-     * @API\Field("Address")
-     * @API\InputInline()
      */
     protected $address;
 

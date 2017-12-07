@@ -20,9 +20,60 @@ services:
 
     graphql.definition_auto_loader:
         class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionAutoLoader
-        arguments: ['@service_container', '@annotations.reader']
+        arguments: ['@service_container']
         tags:
             - { name: 'graphql.definition_loader' }
+
+    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\ObjectTypeResolver:
+        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\ObjectTypeResolver
+        arguments: ['@tagged_services']
+        calls:
+            - [ setReader, ['@annotations.reader']]
+        tags:
+            - { name: 'graphql.definition_resolver', priority: 200}
+
+    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryGetNodeResolver:
+        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryGetNodeResolver
+        calls:
+            - [ setReader, ['@annotations.reader']]
+        tags:
+            - { name: 'graphql.definition_resolver', priority: 150 }
+
+    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryGetAllNodes:
+        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryGetAllNodes
+        calls:
+            - [ setReader, ['@annotations.reader']]
+        tags:
+            - { name: 'graphql.definition_resolver', priority: 150 }
+
+    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryResolver:
+        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryResolver
+        calls:
+            - [ setReader, ['@annotations.reader']]
+        tags:
+            - { name: 'graphql.definition_resolver', priority: 100 }
+
+    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryFieldResolver:
+        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryFieldResolver
+        calls:
+            - [ setReader, ['@annotations.reader']]
+        tags:
+            - { name: 'graphql.definition_resolver', priority: 50 }
+
+    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\FieldMeta\GraphQLFieldMetadataFactory:
+        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\FieldMeta\GraphQLFieldMetadataFactory
+        calls:
+            - [ setReader, ['@annotations.reader']]
+        tags:
+            - { name: 'graphql.field_metadata_factory', priority: 100 }
+
+    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\FieldMeta\DoctrineFieldMetadataFactory:
+        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\FieldMeta\DoctrineFieldMetadataFactory
+        arguments: ['@tagged_services']
+        calls:
+            - [ setReader, ['@annotations.reader']]
+        tags:
+            - { name: 'graphql.field_metadata_factory' }
 
     graphql.types_autoloader:
         class: Ynlo\GraphQLBundle\Type\TypeAutoLoader

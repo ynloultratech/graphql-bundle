@@ -13,23 +13,20 @@ namespace Ynlo\GraphQLBundle\Definition;
 /**
  * Class QueryDefinition
  */
-class QueryDefinition implements ActionDefinitionInterface, DeprecateInterface
+class QueryDefinition implements DeprecateInterface, ArgumentAwareInterface
 {
     use DeprecateTrait;
+    use ArgumentAwareTrait;
 
     protected $name;
 
-    protected $nodeType;
+    protected $type;
 
-    protected $returnType;
-
-    protected $returnList = false;
+    protected $list = false;
 
     protected $resolver;
 
     protected $description;
-
-    protected $args = [];
 
     /**
      * {@inheritDoc}
@@ -42,7 +39,7 @@ class QueryDefinition implements ActionDefinitionInterface, DeprecateInterface
     /**
      * {@inheritDoc}
      */
-    public function setName(string $name): ActionDefinitionInterface
+    public function setName(string $name)
     {
         $this->name = $name;
 
@@ -52,17 +49,17 @@ class QueryDefinition implements ActionDefinitionInterface, DeprecateInterface
     /**
      * {@inheritDoc}
      */
-    public function getNodeType(): ?string
+    public function getType(): ?string
     {
-        return $this->nodeType;
+        return $this->type;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function setNodeType($type): ActionDefinitionInterface
+    public function setType($type)
     {
-        $this->nodeType = $type;
+        $this->type = $type;
 
         return $this;
     }
@@ -70,35 +67,17 @@ class QueryDefinition implements ActionDefinitionInterface, DeprecateInterface
     /**
      * {@inheritDoc}
      */
-    public function getReturnType(): ?string
+    public function isList(): bool
     {
-        return $this->returnType;
+        return $this->list;
     }
 
     /**
      * {@inheritDoc}
      */
-    public function setReturnType($type): ActionDefinitionInterface
+    public function setList(bool $list)
     {
-        $this->returnType = $type;
-
-        return $this;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function isReturnList(): bool
-    {
-        return $this->returnList;
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public function setReturnList(bool $list): ActionDefinitionInterface
-    {
-        $this->returnList = $list;
+        $this->list = $list;
 
         return $this;
     }
@@ -114,7 +93,7 @@ class QueryDefinition implements ActionDefinitionInterface, DeprecateInterface
     /**
      * {@inheritDoc}
      */
-    public function setResolver(?string $resolver): ActionDefinitionInterface
+    public function setResolver(?string $resolver)
     {
         $this->resolver = $resolver;
 
@@ -132,49 +111,9 @@ class QueryDefinition implements ActionDefinitionInterface, DeprecateInterface
     /**
      * {@inheritDoc}
      */
-    public function setDescription(?string $description): ActionDefinitionInterface
+    public function setDescription(?string $description)
     {
         $this->description = $description;
-
-        return $this;
-    }
-
-    /**
-     * @return array|ArgumentDefinition[]
-     */
-    public function getArgs(): array
-    {
-        return $this->args;
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return bool
-     */
-    public function hasArg(?string $name): bool
-    {
-        return (bool) ($this->args[$name] ?? false);
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return ArgumentDefinition
-     */
-    public function getArg(?string $name): ArgumentDefinition
-    {
-        return $this->args[$name];
-    }
-
-    /**
-     * @param ArgumentDefinition $arg
-     *
-     * @return ActionDefinitionInterface
-     */
-    public function addArg(ArgumentDefinition $arg): ActionDefinitionInterface
-    {
-        $this->args[$arg->getName()] = $arg;
 
         return $this;
     }

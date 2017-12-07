@@ -10,15 +10,15 @@
 
 namespace Ynlo\GraphQLBundle\Model;
 
-use Ynlo\GraphQLBundle\Annotation as API;
+use Ynlo\GraphQLBundle\Annotation as GraphQL;
 
 /**
- * @API\InterfaceType(description="An object with an ID.")
+ * @GraphQL\InterfaceType(description="An object with an ID.")
  */
 interface NodeInterface
 {
     /**
-     * @API\Field(type="id!")
+     * @GraphQL\Field(type="ID!")
      *
      * @return mixed
      */

@@ -13,7 +13,7 @@ namespace Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
-use Ynlo\GraphQLBundle\Annotation as API;
+use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Model\TimestampableInterface;
 use Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Model\TimestampableTrait;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
@@ -24,13 +24,13 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  *
  * @UniqueEntity(fields={"username"}, message="The username <b>{{ value }}</b> is already taken")
  *
- * @API\ObjectType()
+ * @GraphQL\ObjectType()
  *
- * @API\GetNode(fetchBy="login")
- * @API\AllNodes()
- * @API\AddNode()
- * @API\UpdateNode()
- * @API\DeleteNode()
+ * @GraphQL\QueryGet(fetchBy="username")
+ * @GraphQL\QueryGetAll()
+ * @GraphQL\MutationAdd()
+ * @GraphQL\MutationUpdate()
+ * @GraphQL\MutationDelete()
  */
 class User implements NodeInterface, TimestampableInterface
 {
@@ -52,8 +52,6 @@ class User implements NodeInterface, TimestampableInterface
      *
      * @Assert\NotBlank()
      * @Assert\Length(min="5", groups={"one"})
-     *
-     * @API\Field(type="string!", name="login", description="")
      */
     protected $username;
 
@@ -64,8 +62,7 @@ class User implements NodeInterface, TimestampableInterface
      *
      * @Assert\Valid()
      *
-     * @API\Field("Profile!")
-     * @API\InputInline()
+     * @GraphQL\NonNull()
      */
     protected $profile;
 
@@ -73,8 +70,6 @@ class User implements NodeInterface, TimestampableInterface
      * @var bool
      *
      * @ORM\Column(name="enabled", type="boolean")
-     *
-     * @API\Field("boolean")
      */
     protected $enabled = true;
 

@@ -17,7 +17,7 @@ use Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Model\CommentableInterface;
 use Ynlo\GraphQLBundle\Model\CreateNodePayload;
 
 /**
- * @API\AddNode(node="Comment", args={
+ * @API\MutationAdd(node="Comment", args={
  *     @API\Arg(name="commentableId", type="ID!")
  * })
  */

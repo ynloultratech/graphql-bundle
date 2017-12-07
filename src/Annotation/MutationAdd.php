@@ -17,32 +17,37 @@ use Doctrine\Common\Annotations\Annotation\Target;
  *
  * @Target({"CLASS"})
  */
-final class GetNode extends Annotation
+final class MutationAdd
 {
+    /**
+     * @var string
+     */
+    public $input;
+
+    /**
+     * @var array
+     */
+    public $validationGroups = [];
+
     /**
      * @var string
      */
     public $node;
 
     /**
-     * @var string
+     * @var array
      */
-    public $queryName;
-
-    /**
-     * @var bool
-     */
-    public $pluralQuery = true;
+    public $args = [];
 
     /**
      * @var string
      */
-    public $pluralQueryName;
+    public $description;
 
     /**
      * @var string
      */
-    public $fetchBy = 'id';
+    public $name;
 
     /**
      * @var string

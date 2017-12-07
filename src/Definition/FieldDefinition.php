@@ -13,13 +13,10 @@ namespace Ynlo\GraphQLBundle\Definition;
 /**
  * Class FieldDefinition
  */
-class FieldDefinition implements DefinitionInterface, DeprecateInterface
+class FieldDefinition implements DefinitionInterface, DeprecateInterface, ArgumentAwareInterface
 {
     use DeprecateTrait;
-
-    public const INPUT_BY_ID = 1;
-    public const INPUT_BY_IDS = 2;
-    public const INPUT_INLINE = 3;
+    use ArgumentAwareTrait;
 
     /**
      * @var string
@@ -56,21 +53,11 @@ class FieldDefinition implements DefinitionInterface, DeprecateInterface
      * @var bool
      */
     protected $nonNull = false;
-    /**
-     * Type of relation to use when this field is used for input operations
-     *
-     * @var int|null
-     */
-    protected $inputRelation;
 
     /**
-     * The field is only fore reading purposes,
-     * during the creation of any input based on object using this field
-     * this field will be ignored.
-     *
-     * @var bool
+     * @var string
      */
-    protected $readOnly = false;
+    protected $resolver;
 
     /**
      * @var string
@@ -155,22 +142,6 @@ class FieldDefinition implements DefinitionInterface, DeprecateInterface
     }
 
     /**
-     * @return null|int
-     */
-    public function getInputRelation():?int
-    {
-        return $this->inputRelation;
-    }
-
-    /**
-     * @param null|int $inputRelation
-     */
-    public function setInputRelation(?int $inputRelation)
-    {
-        $this->inputRelation = $inputRelation;
-    }
-
-    /**
      * @param bool $nonNull
      */
     public function setNonNull(bool $nonNull)
@@ -195,19 +166,19 @@ class FieldDefinition implements DefinitionInterface, DeprecateInterface
     }
 
     /**
-     * @return bool
+     * @return string
      */
-    public function isReadOnly(): bool
+    public function getResolver(): ?string
     {
-        return $this->readOnly;
+        return $this->resolver;
     }
 
     /**
-     * @param bool $readOnly
+     * @param string $resolver
      */
-    public function setReadOnly(bool $readOnly)
+    public function setResolver(?string $resolver)
     {
-        $this->readOnly = $readOnly;
+        $this->resolver = $resolver;
     }
 
     /**

@@ -15,7 +15,7 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Model\UpdateNodePayload;
 
 /**
- * Class UpdateNode
+ * Class MutationUpdate
  */
 class UpdateNode extends AbstractNodeAction
 {

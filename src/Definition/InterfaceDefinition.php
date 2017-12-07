@@ -18,6 +18,7 @@ class InterfaceDefinition implements ObjectDefinitionInterface
     use DefinitionTrait;
     use FieldsAwareDefinitionTrait;
     use ClassAwareDefinitionTrait;
+    use ObjectDefinitionTrait;
 
     /**
      * @var string[]
@@ -37,6 +38,6 @@ class InterfaceDefinition implements ObjectDefinitionInterface
      */
     public function addImplementor($type)
     {
-        $this->implementors[] = $type;
+        $this->implementors[$type] = $type;
     }
 }

@@ -12,12 +12,12 @@ namespace Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Ynlo\GraphQLBundle\Annotation as API;
+use Ynlo\GraphQLBundle\Annotation as GraphQL;
 
 /**
  * @ORM\Embeddable()
  *
- * @API\ObjectType()
+ * @GraphQL\ObjectType()
  */
 class Address
 {
@@ -25,8 +25,6 @@ class Address
      * @var string
      *
      * @ORM\Column(name="street", type="string", nullable=true)
-     *
-     * @API\Field("string")
      */
     protected $street;
 
@@ -34,8 +32,6 @@ class Address
      * @var string
      *
      * @ORM\Column(name="city", type="string", nullable=true)
-     *
-     * @API\Field("string")
      */
     protected $city;
 
@@ -43,8 +39,6 @@ class Address
      * @var string
      *
      * @ORM\Column(name="state", type="string", nullable=true)
-     *
-     * @API\Field("string")
      */
     protected $state;
 
@@ -54,8 +48,6 @@ class Address
      * @ORM\Column(name="zip_code", type="string", nullable=true)
      *
      * @Assert\Length(min="5", max="5")
-     *
-     * @API\Field("string")
      */
     protected $zipCode;
 

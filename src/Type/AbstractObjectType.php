@@ -13,34 +13,31 @@ namespace Ynlo\GraphQLBundle\Type;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectFieldResolver;
-use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionManager;
 
 /**
  * Class AbstractObjectType
  */
-abstract class AbstractObjectType extends ObjectType
+abstract class AbstractObjectType extends ObjectType implements
+    ContainerAwareInterface,
+    DefinitionManagerAwareInterface
 {
+    use ContainerAwareTrait;
+    use DefinitionManagerAwareTrait;
+
     /**
      * @var ObjectDefinition
      */
     protected $definition;
 
     /**
-     * @var DefinitionManager
+     * @param ObjectDefinition $definition
      */
-    protected $definitionManager;
-
-    /**
-     * AbstractObjectType constructor.
-     *
-     * @param DefinitionManager $definitionManager
-     * @param ObjectDefinition  $definition
-     */
-    public function __construct(DefinitionManager $definitionManager, ObjectDefinition $definition)
+    public function __construct(ObjectDefinition $definition)
     {
-        $this->definitionManager = $definitionManager;
         $this->definition = $definition;
 
         parent::__construct(
@@ -53,7 +50,11 @@ abstract class AbstractObjectType extends ObjectType
                 'interfaces' => function () {
                     return $this->resolveInterfaces();
                 },
-                'resolveField' => new ObjectFieldResolver($definition),
+                'resolveField' => function ($root, array $args, $context, ResolveInfo $resolveInfo) {
+                    $resolver = new ObjectFieldResolver($this->container, $this->manager, $this->definition);
+
+                    return $resolver($root, $args, $context, $resolveInfo);
+                },
                 'isTypeOf' => function ($value, $context, ResolveInfo $info) {
                     //TODO: implement this
                 },
@@ -81,10 +82,36 @@ abstract class AbstractObjectType extends ObjectType
                 $type = Type::nonNull($type);
             }
 
+            $args = [];
+            foreach ($fieldDefinition->getArguments() as $argument) {
+                $argumentType = Types::get($argument->getType());
+
+                if ($argument->isList()) {
+                    if ($argument->isNonNullList()) {
+                        $argumentType = Type::nonNull($type);
+                    }
+                    $argumentType = Type::listOf($argumentType);
+                }
+
+                if ($argument->isNonNull()) {
+                    $argumentType = Type::nonNull($argumentType);
+                }
+                $arg['name'] = $argument->getName();
+                $arg['type'] = $argumentType;
+                $arg['description'] = $argument->getDescription();
+
+                if ($argument->getDefaultValue() !== null) {
+                    $arg['defaultValue'] = $argument->getDefaultValue();
+                }
+
+                $args[] = $arg;
+            }
+
             $fields[$fieldDefinition->getName()] = [
                 'type' => $type,
                 'description' => $fieldDefinition->getDescription(),
                 'deprecationReason' => $fieldDefinition->getDeprecationReason(),
+                'args' => $args,
             ];
         }
 

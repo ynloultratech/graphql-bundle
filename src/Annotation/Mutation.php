@@ -15,15 +15,24 @@ use Doctrine\Common\Annotations\Annotation\Target;
 
 /**
  * @Annotation()
+ *
  * @Target("CLASS")
  */
 final class Mutation extends Annotation
 {
     /**
      * @var string
+     *
      * @Required()
      */
+    public $payload;
+
+
+    /**
+     * @var string
+     */
     public $name;
+
 
     /**
      * The node type you are attempting to modify
@@ -81,6 +90,7 @@ final class Mutation extends Annotation
      * to automatically create a mutation payload
      *
      * @var mixed
+     *
      * @required
      */
     public $returns;

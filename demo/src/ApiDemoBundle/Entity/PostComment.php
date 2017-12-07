@@ -13,7 +13,7 @@ namespace Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
-use Ynlo\GraphQLBundle\Annotation as API;
+use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Model\CommentableInterface;
 use Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Model\CommentableTrait;
 use Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Model\CommentInterface;
@@ -25,7 +25,7 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  * @ORM\Entity()
  * @ORM\Table()
  *
- * @API\ObjectType()
+ * @GraphQL\ObjectType()
  */
 class PostComment implements NodeInterface, CommentInterface, CommentableInterface, TimestampableInterface
 {
@@ -48,9 +48,6 @@ class PostComment implements NodeInterface, CommentInterface, CommentableInterfa
      *
      * @ORM\ManyToOne(targetEntity="Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity\User", inversedBy="posts")
      * @ORM\JoinColumn(onDelete="CASCADE")
-     *
-     * @API\Field("User!")
-     * @API\InputById()
      */
     protected $author;
 
@@ -59,6 +56,8 @@ class PostComment implements NodeInterface, CommentInterface, CommentableInterfa
      *
      * @ORM\ManyToOne(targetEntity="Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity\Post", inversedBy="comments")
      * @ORM\JoinColumn(onDelete="CASCADE")
+     *
+     * @GraphQL\Exclude()
      */
     protected $post;
 
@@ -68,8 +67,6 @@ class PostComment implements NodeInterface, CommentInterface, CommentableInterfa
      * @Assert\NotBlank()
      *
      * @ORM\Column(name="body", type="string")
-     *
-     * @API\Field("string!")
      */
     protected $body;
 
@@ -79,7 +76,7 @@ class PostComment implements NodeInterface, CommentInterface, CommentableInterfa
      * @ORM\ManyToOne(targetEntity="Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity\PostComment", inversedBy="comments")
      * @ORM\JoinColumn(onDelete="CASCADE")
      *
-     * @API\Field("PostComment")
+     * @GraphQL\Exclude()
      */
     protected $parentComment;
 
@@ -87,8 +84,6 @@ class PostComment implements NodeInterface, CommentInterface, CommentableInterfa
      * @var Collection|PostComment[]
      *
      * @ORM\OneToMany(targetEntity="Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity\PostComment", mappedBy="parentComment", fetch="EXTRA_LAZY")
-     *
-     * @API\Field("[PostComment]")
      */
     protected $comments;
 

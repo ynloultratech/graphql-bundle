@@ -25,24 +25,14 @@ final class Query extends Annotation
     public $name;
 
     /**
-     * @var string
+     * @var bool
      */
-    public $type;
+    public $list = false;
 
     /**
      * @var string
      */
     public $description;
-
-    /**
-     * @var array
-     */
-    public $args = [];
-
-    /**
-     * @var string
-     */
-    public $resolver;
 
     /**
      * @var string

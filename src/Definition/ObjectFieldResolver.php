@@ -13,14 +13,23 @@ namespace Ynlo\GraphQLBundle\Definition;
 use Doctrine\Common\Collections\Collection;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionManager;
 use Ynlo\GraphQLBundle\Model\ID;
+use Ynlo\GraphQLBundle\Type\DefinitionManagerAwareInterface;
+use Ynlo\GraphQLBundle\Type\DefinitionManagerAwareTrait;
 
 /**
  * Class ObjectFieldResolver
  */
-class ObjectFieldResolver
+class ObjectFieldResolver implements ContainerAwareInterface, DefinitionManagerAwareInterface
 {
+    use ContainerAwareTrait;
+    use DefinitionManagerAwareTrait;
+
     /**
      * @var FieldsAwareDefinitionInterface
      */
@@ -29,11 +38,15 @@ class ObjectFieldResolver
     /**
      * ObjectFieldResolver constructor.
      *
+     * @param ContainerInterface             $container
+     * @param DefinitionManager              $definitionManager
      * @param FieldsAwareDefinitionInterface $definition
      */
-    public function __construct(FieldsAwareDefinitionInterface $definition)
+    public function __construct(ContainerInterface $container, DefinitionManager $definitionManager, FieldsAwareDefinitionInterface $definition)
     {
         $this->definition = $definition;
+        $this->container = $container;
+        $this->manager = $definitionManager;
     }
 
     /**
@@ -49,40 +62,27 @@ class ObjectFieldResolver
         $value = null;
         $fieldDefinition = $this->definition->getField($info->fieldName);
 
-        //array
-        if (\is_array($root)) {
-            if (isset($root[$fieldDefinition->getOriginName()])) {
-                $value = $root[$fieldDefinition->getOriginName()];
-            } elseif (isset($root[$info->fieldName])) {
-                $value = $root[$info->fieldName];
-            }
-        }
+        //when use external resolver or use a object method with arguments
+        if ($fieldDefinition->getResolver() || $fieldDefinition->getArguments()) {
+            $queryDefinition = new QueryDefinition();
+            $queryDefinition->setType($fieldDefinition->getType());
+            $queryDefinition->setArguments($fieldDefinition->getArguments());
+            $queryDefinition->setList($fieldDefinition->isList());
 
-        //method
-        if (!$value && $fieldDefinition->getOriginType() === \ReflectionMethod::class) {
-            $method = $fieldDefinition->getOriginName();
-            $value = $root->$method();
-        }
-
-        //property
-        if (!$value && \is_object($root)) {
-            //using getter
-            $accessor = new PropertyAccessor();
-            $propertyName = $fieldDefinition->getOriginName() ?? $info->fieldName;
-            if ($accessor->isReadable($root, $propertyName)) {
-                $value = $accessor->getValue($root, $propertyName);
-            } elseif ($this->definition instanceof ObjectDefinition) {
-                if ($this->definition->getClass() && $fieldDefinition->getOriginName()) {
-                    $class = $this->definition->getClass();
-                } else {
-                    $class = \get_class($root);
+            if (!$fieldDefinition->getResolver()) {
+                if ($fieldDefinition->getOriginType() === \ReflectionMethod::class) {
+                    $queryDefinition->setResolver($fieldDefinition->getOriginName());
                 }
-                //using reflection
-                $ref = new \ReflectionProperty($class, $propertyName);
-                $ref->setAccessible(true);
-
-                $value = $ref->getValue($root);
+            } else {
+                $queryDefinition->setResolver($fieldDefinition->getResolver());
             }
+
+            $resolver = new ResolverExecutor($this->container, $this->manager, $queryDefinition);
+            $value = $resolver($root, $args, $context, $info);
+        } else {
+            $accessor = new PropertyAccessor(true);
+            $originName = $fieldDefinition->getOriginName();
+            $value = $accessor->getValue($root, $originName);
         }
 
         if (null !== $value && Type::ID === $fieldDefinition->getType()) {

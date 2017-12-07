@@ -30,38 +30,26 @@ interface ActionDefinitionInterface
     /**
      * @return string
      */
-    public function getNodeType(): ?string;
+    public function getType(): ?string;
 
     /**
      * @param string $type
      *
      * @return ActionDefinitionInterface
      */
-    public function setNodeType($type): ActionDefinitionInterface;
-
-    /**
-     * @return string
-     */
-    public function getReturnType(): ?string;
-
-    /**
-     * @param string $type
-     *
-     * @return ActionDefinitionInterface
-     */
-    public function setReturnType($type): ActionDefinitionInterface;
+    public function setType($type): ActionDefinitionInterface;
 
     /**
      * @return bool
      */
-    public function isReturnList(): bool;
+    public function isList(): bool;
 
     /**
      * @param bool $list
      *
      * @return ActionDefinitionInterface
      */
-    public function setReturnList(bool $list): ActionDefinitionInterface;
+    public function setList(bool $list): ActionDefinitionInterface;
 
     /**
      * @return string

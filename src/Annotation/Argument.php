@@ -10,19 +10,20 @@
 
 namespace Ynlo\GraphQLBundle\Annotation;
 
-use Doctrine\Common\Annotations\Annotation\Target;
-
 /**
- * @Annotation()
- *
- * @Target({"CLASS"})
+ * @Annotation
  */
-final class DeleteNode extends Annotation
+final class Argument
 {
     /**
      * @var string
      */
-    public $node;
+    public $name;
+
+    /**
+     * @var string
+     */
+    public $type;
 
     /**
      * @var string
@@ -32,11 +33,13 @@ final class DeleteNode extends Annotation
     /**
      * @var string
      */
-    public $mutationName;
+    public $defaultValue;
 
     /**
+     * Use when public argument name does not match with method name
+     * e.g. userId (public) => $id (method), commonly used for reusable resolvers
+     *
      * @var string
      */
-    public $deprecationReason;
+    public $internalName;
 }
-

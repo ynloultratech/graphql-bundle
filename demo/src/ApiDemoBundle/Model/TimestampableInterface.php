@@ -25,7 +25,7 @@ interface TimestampableInterface
      *
      * @return \DateTime
      *
-     * @API\Field(type="datetime!", readOnly=true)
+     * @API\Field(type="datetime!")
      */
     public function getCreatedAt(): \DateTime;
 
@@ -34,7 +34,7 @@ interface TimestampableInterface
      *
      * @return \DateTime
      *
-     * @API\Field(type="datetime!", readOnly=true)
+     * @API\Field(type="datetime!")
      */
     public function getUpdatedAt(): \DateTime;
 

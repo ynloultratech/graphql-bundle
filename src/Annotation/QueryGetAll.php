@@ -17,17 +17,12 @@ use Doctrine\Common\Annotations\Annotation\Target;
  *
  * @Target({"CLASS"})
  */
-final class UpdateNode
+final class QueryGetAll extends Annotation
 {
     /**
      * @var string
      */
-    public $input;
-
-    /**
-     * @var array
-     */
-    public $validationGroups = [];
+    public $name;
 
     /**
      * @var string
@@ -37,15 +32,10 @@ final class UpdateNode
     /**
      * @var string
      */
-    public $node;
-
-    /**
-     * @var string
-     */
-    public $mutationName;
-
-    /**
-     * @var string
-     */
     public $deprecationReason;
+
+    /**
+     * @var bool
+     */
+    public $pagination = true;
 }

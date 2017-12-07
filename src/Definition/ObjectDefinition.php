@@ -18,6 +18,7 @@ class ObjectDefinition implements ObjectDefinitionInterface
     use DefinitionTrait;
     use FieldsAwareDefinitionTrait;
     use ClassAwareDefinitionTrait;
+    use ObjectDefinitionTrait;
 
     /**
      * @var string[]

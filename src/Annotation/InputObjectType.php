@@ -10,14 +10,13 @@
 
 namespace Ynlo\GraphQLBundle\Annotation;
 
-use Doctrine\Common\Annotations\Annotation\Target;
+use Doctrine\Common\Annotations\Annotation;
 
 /**
  * @Annotation()
- *
- * @Target("CLASS")
+ * @Annotation\Target("CLASS")
  */
-final class InputObjectType extends Annotation
+final class InputObjectType
 {
     /**
      * @var string

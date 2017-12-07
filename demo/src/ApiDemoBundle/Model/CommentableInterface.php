@@ -19,7 +19,7 @@ use Ynlo\GraphQLBundle\Annotation as API;
 interface CommentableInterface
 {
     /**
-     * @API\Field(type="[Comment]")
+     * @API\Field(type="[Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Model\CommentInterface]")
      *
      * @return Collection
      */

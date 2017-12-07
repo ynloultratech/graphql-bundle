@@ -18,5 +18,16 @@ interface ObjectDefinitionInterface extends
     ClassAwareDefinitionInterface,
     FieldsAwareDefinitionInterface
 {
+    public const EXCLUDE_ALL = 'ALL';
+    public const EXCLUDE_NONE = 'NONE';
 
+    /**
+     * @return string
+     */
+    public function getExclusionPolicy(): string;
+
+    /**
+     * @param string $exclusionPolicy
+     */
+    public function setExclusionPolicy(string $exclusionPolicy);
 }

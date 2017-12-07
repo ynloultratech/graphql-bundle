@@ -104,12 +104,12 @@ class Types
         if (self::$manager && self::$manager->hasType($name)) {
             $definition = self::$manager->getType($name);
             if ($definition instanceof ObjectDefinition) {
-                $type = new class(self::$manager, $definition) extends AbstractObjectType
+                $type = new class($definition) extends AbstractObjectType
                 {
 
                 };
             } elseif ($definition instanceof InputObjectDefinition) {
-                $type = new class($definition) extends AbstractInputObjectType
+                $type = new class(self::$container, self::$manager, $definition) extends AbstractInputObjectType
                 {
 
                 };
@@ -118,6 +118,14 @@ class Types
                 {
 
                 };
+            }
+
+            if ($type instanceof ContainerAwareInterface) {
+                $type->setContainer(self::$container);
+            }
+
+            if ($type instanceof DefinitionManagerAwareInterface) {
+                $type->setDefinitionManager(self::$manager);
             }
 
             if (null !== $type) {

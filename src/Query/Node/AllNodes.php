@@ -8,12 +8,13 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Action;
+namespace Ynlo\GraphQLBundle\Query\Node;
 
 use Doctrine\ORM\QueryBuilder;
+use Ynlo\GraphQLBundle\Action\AbstractNodeAction;
 
 /**
- * Class AllNodes
+ * Base class to fetch nodes
  */
 class AllNodes extends AbstractNodeAction
 {
@@ -27,7 +28,7 @@ class AllNodes extends AbstractNodeAction
      */
     public function __invoke()
     {
-        $objectType = $this->context->getDefinition()->getReturnType();
+        $objectType = $this->context->getDefinition()->getType();
         $entityClass = $this->context->getDefinitionManager()->getType($objectType)->getClass();
 
         $qb = $this->createQuery($entityClass);

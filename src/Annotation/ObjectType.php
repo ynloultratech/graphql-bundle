@@ -10,12 +10,12 @@
 
 namespace Ynlo\GraphQLBundle\Annotation;
 
-use Doctrine\Common\Annotations\Annotation\Target;
+use Doctrine\Common\Annotations\Annotation;
+use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 
 /**
  * @Annotation()
- *
- * @Target("CLASS")
+ * @Annotation\Target("CLASS")
  */
 final class ObjectType extends Annotation
 {
@@ -30,7 +30,7 @@ final class ObjectType extends Annotation
     public $description;
 
     /**
-     * @var array<string>
+     * @var string
      */
-    public $interfaces = [];
+    public $exclusionPolicy = ObjectDefinitionInterface::EXCLUDE_NONE;
 }

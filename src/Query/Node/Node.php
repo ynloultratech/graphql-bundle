@@ -8,18 +8,18 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Action;
+namespace Ynlo\GraphQLBundle\Query\Node;
 
-use Ynlo\GraphQLBundle\Annotation as API;
+use Ynlo\GraphQLBundle\Action\AbstractNodeAction;
+use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Model\ID;
 
 /**
- * @API\Query(name="node", type="Node", args={
- *     @API\Arg(name="id", type="ID!")
- * })
+ * @GraphQL\Query(name="node")
+ * @GraphQL\Argument(name="id", type="ID!")
  */
-class GetNode extends AbstractNodeAction
+class Node extends AbstractNodeAction
 {
     /**
      * @param mixed $id
@@ -34,19 +34,19 @@ class GetNode extends AbstractNodeAction
             $searchField = 'id';
         } else {
             //when use a different field to fetch,
-            //@see GetNode::fetchBy
+            //@see QueryGet::fetchBy
             $searchValue = $id;
 
-            $type = $this->getContext()->getDefinition()->getReturnType();
+            $type = $this->getContext()->getDefinition()->getType();
 
             /** @var ArgumentDefinition $arg */
-            $arg = array_values($this->getContext()->getDefinition()->getArgs())[0];
+            $arg = array_values($this->getContext()->getDefinition()->getArguments())[0];
 
             $field = $this->getContext()->getDefinitionManager()->getType($type)->getField($arg->getName());
             $searchField = $field->getOriginName();
         }
 
-        $entityClass = $this->getContext()->getDefinitionManager()->getType($type)->getClass();
+        $entityClass = $this->getContext()->getDefinitionManager()->getClassForType($type);
 
         return $this->getManager()
                     ->getRepository($entityClass)

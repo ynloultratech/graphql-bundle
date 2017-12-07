@@ -15,7 +15,7 @@ use GraphQL\Type\Definition\Type;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
-use Ynlo\GraphQLBundle\Definition\QueryResolver;
+use Ynlo\GraphQLBundle\Definition\ResolverExecutor;
 
 /**
  * Class QueryType
@@ -55,14 +55,14 @@ class QueryType extends ObjectType implements
      */
     protected function getQueryConfig(QueryDefinition $query): array
     {
-        $config['type'] = Types::get($query->getReturnType());
-        if ($query->isReturnList()) {
+        $config['type'] = Types::get($query->getType());
+        if ($query->isList()) {
             $config['type'] = Type::listOf($config['type']);
         }
 
         $config['args'] = $this->resolveArguments($query);
 
-        $config['resolve'] = new QueryResolver($this->container, $this->manager, $query);
+        $config['resolve'] = new ResolverExecutor($this->container, $this->manager, $query);
         $config['deprecationReason'] = $query->getDeprecationReason();
 
         return $config;
@@ -76,7 +76,7 @@ class QueryType extends ObjectType implements
     protected function resolveArguments(QueryDefinition $query): array
     {
         $args = [];
-        foreach ($query->getArgs() as $argDefinition) {
+        foreach ($query->getArguments() as $argDefinition) {
             $arg = [];
             $arg['description'] = $argDefinition->getDescription();
             $type = Types::get($argDefinition->getType());

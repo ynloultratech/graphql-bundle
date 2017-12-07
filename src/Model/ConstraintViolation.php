@@ -50,7 +50,7 @@ class ConstraintViolation
     /**
      * @var ConstraintViolationParameter[]
      *
-     * @API\Field(type="[ConstraintViolationParameter]",
+     * @API\Field(type="[Ynlo\GraphQLBundle\Model\ConstraintViolationParameter]",
      *     description="Returns the parameters to be inserted into the raw violation message.")
      */
     protected $parameters;

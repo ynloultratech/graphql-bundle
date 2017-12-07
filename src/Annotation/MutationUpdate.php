@@ -17,8 +17,23 @@ use Doctrine\Common\Annotations\Annotation\Target;
  *
  * @Target({"CLASS"})
  */
-final class AllNodes extends Annotation
+final class MutationUpdate
 {
+    /**
+     * @var string
+     */
+    public $input;
+
+    /**
+     * @var array
+     */
+    public $validationGroups = [];
+
+    /**
+     * @var string
+     */
+    public $description;
+
     /**
      * @var string
      */
@@ -27,7 +42,7 @@ final class AllNodes extends Annotation
     /**
      * @var string
      */
-    public $queryName;
+    public $mutationName;
 
     /**
      * @var string

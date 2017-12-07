@@ -22,7 +22,7 @@ class UpdateNodePayload
     /**
      * @var mixed
      *
-     * @API\Field(type="Node", description="Updated node instance")
+     * @API\Field(type="Ynlo\GraphQLBundle\Model\NodeInterface", description="Updated node instance")
      */
     public $node;
 
@@ -36,7 +36,7 @@ class UpdateNodePayload
     /**
      * @var ConstraintViolation[]
      *
-     * @API\Field(type="[ConstraintViolation]", description="List of `ConstraintViolation` if the validation fails.")
+     * @API\Field(type="[Ynlo\GraphQLBundle\Model\ConstraintViolation]", description="List of `ConstraintViolation` if the validation fails.")
      */
     public $constraintViolations = [];
 

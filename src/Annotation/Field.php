@@ -10,16 +10,17 @@
 
 namespace Ynlo\GraphQLBundle\Annotation;
 
-use Doctrine\Common\Annotations\Annotation\Target;
+use Doctrine\Common\Annotations\Annotation;
 
 /**
  * @Annotation()
- * @Target({"PROPERTY", "METHOD", "ANNOTATION"})
+ * @Annotation\Target()
  */
 final class Field extends Annotation
 {
     /**
      * @var string
+     *
      * @required
      */
     public $type;
@@ -38,9 +39,4 @@ final class Field extends Annotation
      * @var string
      */
     public $deprecationReason;
-
-    /**
-     * @var boolean
-     */
-    public $readOnly;
 }

@@ -58,11 +58,11 @@ class ActionExtractor extends ObjectExtractor
         }
 
         $actionDefinition->setName($annotation->name);
-        $actionDefinition->setNodeType($this->getNormalizedType($annotation->type));
+        $actionDefinition->setType($this->getNormalizedType($annotation->type));
 
         if ($annotation instanceof Annotation\Query) {
             $actionDefinition->setReturnType($this->getNormalizedType($annotation->type));
-            $actionDefinition->setReturnList($this->isTypeList($annotation->type));
+            $actionDefinition->setList($this->isTypeList($annotation->type));
         }
 
         $actionDefinition->setDeprecationReason($annotation->deprecationReason);
@@ -96,8 +96,8 @@ class ActionExtractor extends ObjectExtractor
 
             //add extra arguments or create new input
             if ($annotation->argsToInput && $annotation->args) {
-                if ($actionDefinition->hasArg('input')) {
-                    $inputType = $definitionManager->getType($actionDefinition->getArg('input'));
+                if ($actionDefinition->hasArgument('input')) {
+                    $inputType = $definitionManager->getType($actionDefinition->getArgument('input'));
                 } elseif ($definitionManager->hasType($inputName)) {
                     $inputType = $definitionManager->getType($inputName);
                 } else {
@@ -134,7 +134,7 @@ class ActionExtractor extends ObjectExtractor
                 $arg->setName('input');
                 $arg->setType($inputType->getName());
                 $arg->setNonNull(true);
-                $actionDefinition->addArg($arg);
+                $actionDefinition->addArgument($arg);
             }
         }
 
@@ -149,7 +149,7 @@ class ActionExtractor extends ObjectExtractor
             $arg->setNonNullList($this->isTypeNonNullList($argAnnotation->type));
             $arg->setDefaultValue($argAnnotation->defaultValue);
             $arg->setInternalName($argAnnotation->internalName);
-            $actionDefinition->addArg($arg);
+            $actionDefinition->addArgument($arg);
         }
 
         if ($annotation instanceof Annotation\Mutation && $annotation->returns && !$actionDefinition->getReturnType()) {
@@ -162,7 +162,7 @@ class ActionExtractor extends ObjectExtractor
                 );
             } else {
                 $actionDefinition->setReturnType($this->getNormalizedType($annotation->returns));
-                $actionDefinition->setReturnList($this->isTypeList($annotation->returns));
+                $actionDefinition->setList($this->isTypeList($annotation->returns));
             }
         }
 

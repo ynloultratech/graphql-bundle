@@ -12,9 +12,6 @@ namespace Ynlo\GraphQLBundle\DefinitionLoader\AnnotationDefinitionExtractor;
 
 use Doctrine\Common\Inflector\Inflector;
 use Ynlo\GraphQLBundle\Action\AddNode;
-use Ynlo\GraphQLBundle\Action\AllNodes;
-use Ynlo\GraphQLBundle\Action\GetNode;
-use Ynlo\GraphQLBundle\Action\GetSomeNodes;
 use Ynlo\GraphQLBundle\Action\RemoveNode;
 use Ynlo\GraphQLBundle\Action\UpdateNode;
 use Ynlo\GraphQLBundle\Annotation;
@@ -22,6 +19,9 @@ use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionManager;
 use Ynlo\GraphQLBundle\Model\CreateNodePayload;
 use Ynlo\GraphQLBundle\Model\RemoveNodePayload;
 use Ynlo\GraphQLBundle\Model\UpdateNodePayload;
+use Ynlo\GraphQLBundle\Query\Node\AllNodes;
+use Ynlo\GraphQLBundle\Query\Node\Node;
+use Ynlo\GraphQLBundle\Query\Node\Nodes;
 
 /**
  * Extract predefined mutations for CRUD operations
@@ -42,11 +42,11 @@ Must check `constraintViolations` in the payload to get validation messages.',
     public function supports($annotation): bool
     {
         return (
-            $annotation instanceof Annotation\GetNode
-            || $annotation instanceof Annotation\AllNodes
-            || $annotation instanceof Annotation\DeleteNode
-            || $annotation instanceof Annotation\AddNode
-            || $annotation instanceof Annotation\UpdateNode
+            $annotation instanceof Annotation\QueryGet
+            || $annotation instanceof Annotation\QueryGetAll
+            || $annotation instanceof Annotation\MutationDelete
+            || $annotation instanceof Annotation\MutationAdd
+            || $annotation instanceof Annotation\MutationUpdate
         );
     }
 
@@ -56,26 +56,26 @@ Must check `constraintViolations` in the payload to get validation messages.',
     public function extract($annotation, \ReflectionClass $refClass, DefinitionManager $definitionManager)
     {
         $crudAnnotations[] = [];
-        if ($annotation instanceof Annotation\GetNode) {
+        if ($annotation instanceof Annotation\QueryGet) {
             $crudAnnotations[] = $this->createGetNodeQuery($annotation, $refClass, $definitionManager);
             if ($annotation->pluralQuery) {
                 $crudAnnotations[] = $this->createGetNodesQuery($annotation, $refClass, $definitionManager);
             }
         }
 
-        if ($annotation instanceof Annotation\AllNodes) {
+        if ($annotation instanceof Annotation\QueryGetAll) {
             $crudAnnotations[] = $this->createListNodeQuery($annotation, $refClass);
         }
 
-        if ($annotation instanceof Annotation\DeleteNode) {
+        if ($annotation instanceof Annotation\MutationDelete) {
             $crudAnnotations[] = $this->createRemoveNodeMutation($annotation, $refClass);
         }
 
-        if ($annotation instanceof Annotation\AddNode) {
+        if ($annotation instanceof Annotation\MutationAdd) {
             $crudAnnotations[] = $this->createAddNodeMutation($annotation, $refClass);
         }
 
-        if ($annotation instanceof Annotation\UpdateNode) {
+        if ($annotation instanceof Annotation\MutationUpdate) {
             $crudAnnotations[] = $this->createUpdateNodeMutation($annotation, $refClass);
         }
 
@@ -94,16 +94,16 @@ Must check `constraintViolations` in the payload to get validation messages.',
     }
 
     /**
-     * @param Annotation\GetNode $annotation
-     * @param \ReflectionClass   $refClass
-     * @param DefinitionManager  $definitionManager
+     * @param Annotation\QueryGet $annotation
+     * @param \ReflectionClass    $refClass
+     * @param DefinitionManager   $definitionManager
      *
      * @return Annotation\Query
      */
     protected function createGetNodeQuery($annotation, \ReflectionClass $refClass, DefinitionManager $definitionManager)
     {
         $type = $annotation->node ?? $this->getDefaultClassType($refClass);
-        $name = $annotation->queryName ?? $this->getCanonicalName($type);
+        $name = $annotation->name ?? $this->getCanonicalName($type);
 
         $definition = $definitionManager->getType($type);
         if (!$definition->hasField($annotation->fetchBy)) {
@@ -115,7 +115,7 @@ Must check `constraintViolations` in the payload to get validation messages.',
             [
                 'type' => $type,
                 'name' => $name,
-                'resolver' => $refClass->hasMethod('__invoke') ? $refClass->getName() : GetNode::class,
+                'resolver' => $refClass->hasMethod('__invoke') ? $refClass->getName() : Node::class,
                 'deprecationReason' => $annotation->deprecationReason,
                 'args' => [
                     new Annotation\Arg(
@@ -131,9 +131,9 @@ Must check `constraintViolations` in the payload to get validation messages.',
     }
 
     /**
-     * @param Annotation\GetNode $annotation
-     * @param \ReflectionClass   $refClass
-     * @param DefinitionManager  $definitionManager
+     * @param Annotation\QueryGet $annotation
+     * @param \ReflectionClass    $refClass
+     * @param DefinitionManager   $definitionManager
      *
      * @return Annotation\Query
      */
@@ -152,7 +152,7 @@ Must check `constraintViolations` in the payload to get validation messages.',
             [
                 'type' => "[$type!]!",
                 'name' => $name,
-                'resolver' => $refClass->hasMethod('__invoke') ? $refClass->getName() : GetSomeNodes::class,
+                'resolver' => $refClass->hasMethod('__invoke') ? $refClass->getName() : Nodes::class,
                 'deprecationReason' => $annotation->deprecationReason,
                 'args' => [
                     new Annotation\Arg(
@@ -168,15 +168,15 @@ Must check `constraintViolations` in the payload to get validation messages.',
     }
 
     /**
-     * @param Annotation\AllNodes $annotation
-     * @param \ReflectionClass    $refClass
+     * @param Annotation\QueryGetAll $annotation
+     * @param \ReflectionClass       $refClass
      *
      * @return Annotation\Query
      */
     protected function createListNodeQuery($annotation, \ReflectionClass $refClass): Annotation\Query
     {
         $type = $annotation->node ?? $this->getDefaultClassType($refClass);
-        $name = $annotation->queryName ?? $this->getCanonicalName('all'.ucfirst(Inflector::pluralize($type)));
+        $name = $annotation->name ?? $this->getCanonicalName('all'.ucfirst(Inflector::pluralize($type)));
 
         return new Annotation\Query(
             [
@@ -189,8 +189,8 @@ Must check `constraintViolations` in the payload to get validation messages.',
     }
 
     /**
-     * @param Annotation\DeleteNode $annotation
-     * @param \ReflectionClass      $refClass
+     * @param Annotation\MutationDelete $annotation
+     * @param \ReflectionClass          $refClass
      *
      * @return Annotation\Mutation
      */
@@ -221,8 +221,8 @@ Must check `constraintViolations` in the payload to get validation messages.',
     }
 
     /**
-     * @param Annotation\AddNode $annotation
-     * @param \ReflectionClass   $refClass
+     * @param Annotation\MutationAdd $annotation
+     * @param \ReflectionClass       $refClass
      *
      * @return Annotation\Mutation
      */
@@ -252,8 +252,8 @@ Must check `constraintViolations` in the payload to get validation messages.',
     }
 
     /**
-     * @param Annotation\UpdateNode $annotation
-     * @param \ReflectionClass      $refClass
+     * @param Annotation\MutationUpdate $annotation
+     * @param \ReflectionClass          $refClass
      *
      * @return Annotation\Mutation
      */
