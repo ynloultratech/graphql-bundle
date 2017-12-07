@@ -98,7 +98,7 @@ class GraphQLFieldMetadataFactory implements FieldMetadataFactoryInterface
     {
         /** @var Annotation\Field $annotationField */
         $annotationField = $this->getFieldAnnotation($prop, Annotation\Field::class);
-        if ($annotationField) {
+        if ($annotationField && $annotationField->type) {
             return TypeUtil::isTypeNonNull($annotationField->type);
         }
 
@@ -114,7 +114,7 @@ class GraphQLFieldMetadataFactory implements FieldMetadataFactoryInterface
     {
         /** @var Annotation\Field $annotationField */
         $annotationField = $this->getFieldAnnotation($prop, Annotation\Field::class);
-        if ($annotationField) {
+        if ($annotationField && $annotationField->type) {
             return TypeUtil::isTypeNonNullList($annotationField->type);
         }
 
@@ -130,7 +130,7 @@ class GraphQLFieldMetadataFactory implements FieldMetadataFactoryInterface
     {
         /** @var Annotation\Field $annotationField */
         $annotationField = $this->getFieldAnnotation($prop, Annotation\Field::class);
-        if ($annotationField) {
+        if ($annotationField && $annotationField->type) {
             return TypeUtil::isTypeList($annotationField->type);
         }
 
@@ -148,13 +148,12 @@ class GraphQLFieldMetadataFactory implements FieldMetadataFactoryInterface
 
         /** @var Annotation\Field $annotationField */
         $annotationField = $this->getFieldAnnotation($prop, Annotation\Field::class);
-        if ($annotationField) {
+        if ($annotationField && $annotationField->type) {
             $type = TypeUtil::normalize($annotationField->type);
         }
 
         return $type;
     }
-
 
     /**
      * @param \ReflectionMethod|\ReflectionProperty $prop
