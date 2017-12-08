@@ -28,7 +28,7 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  * @GraphQL\ObjectType()
  *
  * @GraphQL\QueryGet(fetchBy="username")
- * @GraphQL\QueryGetAll(orderBy={{"field":"username", "direction":"ASC"}})
+ * @GraphQL\QueryGetAll()
  * @GraphQL\MutationAdd()
  * @GraphQL\MutationUpdate()
  * @GraphQL\MutationDelete()
