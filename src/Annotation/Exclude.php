@@ -13,7 +13,7 @@ namespace Ynlo\GraphQLBundle\Annotation;
 use Doctrine\Common\Annotations\Annotation;
 
 /**
- * @Annotation
+ * @Annotation()
  * @Annotation\Target({"PROPERTY", "METHOD"})
  */
 final class Exclude extends Annotation

@@ -44,6 +44,8 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
         }
 
         if (!$definition->getType()) {
+            $parentField = null;
+
             /** @var Column $column */
             if ($column = $this->reader->getPropertyAnnotation($field, Column::class)) {
                 $definition->setType($this->getNormalizedType($column->type));
@@ -66,6 +68,7 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
             if ($oneToMany = $this->reader->getPropertyAnnotation($field, OneToMany::class)) {
                 $definition->setType($oneToMany->targetEntity);
                 $definition->setList(true);
+                $parentField = $oneToMany->mappedBy;
             }
 
             /** @var ManyToOne $manyToOne */
@@ -77,11 +80,16 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
             if ($manyToMany = $this->reader->getPropertyAnnotation($field, ManyToMany::class)) {
                 $definition->setType($manyToMany->targetEntity);
                 $definition->setList(true);
+                $parentField = $oneToMany->mappedBy;
             }
 
             /** @var Embedded $embedded */
             if ($embedded = $this->reader->getPropertyAnnotation($field, Embedded::class)) {
                 $definition->setType($embedded->class);
+            }
+
+            if ($definition->isList() && $parentField) {
+                $definition->setMeta('connection_parent_field', $parentField);
             }
         }
     }

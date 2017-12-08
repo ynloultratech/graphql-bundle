@@ -52,6 +52,7 @@ class Fixtures extends Fixture
     {
         $user = new User();
         $user->setUsername(self::USER_ADMIN);
+        $user->setType(User::TYPE_ADMIN);
         $user->getProfile()->setEmail('admin@example.com');
         $this->setReference($user->getUsername(), $user);
         $manager->persist($user);

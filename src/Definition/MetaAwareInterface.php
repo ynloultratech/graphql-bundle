@@ -43,6 +43,13 @@ interface MetaAwareInterface
     public function setMeta(string $key, $value): MetaAwareInterface;
 
     /**
+     * @param array $metas
+     *
+     * @return MetaAwareInterface
+     */
+    public function setMetas(array $metas): MetaAwareInterface;
+
+    /**
      * @param string $key
      *
      * @return MetaAwareInterface

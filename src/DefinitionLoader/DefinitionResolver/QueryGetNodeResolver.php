@@ -79,14 +79,7 @@ class QueryGetNodeResolver implements DefinitionResolverInterface
         /** @var Annotation\ObjectType $objectType */
         if ($objectType = $this->reader->getClassAnnotation($refClass, Annotation\ObjectType::class)) {
             $typeName = $definitionManager->getTypeForClass($refClass->getName());
-            if ($typeName && $definitionManager->hasType($typeName)) {
-                $objectDefinition = $definitionManager->getType($typeName);
-            }
-        }
-
-        if (!$objectDefinition) {
-            $error = sprintf('Does not exist any valid type for class "%s"', $refClass->getName());
-            throw new \RuntimeException($error);
+            $objectDefinition = $definitionManager->getType($typeName);
         }
 
         $fetchBy = $annotation->fetchBy ?? 'id';

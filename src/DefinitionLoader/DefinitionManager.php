@@ -21,6 +21,11 @@ use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 class DefinitionManager
 {
     /**
+     * @var string
+     */
+    protected $endpoint;
+
+    /**
      * @var ObjectDefinitionInterface[]
      */
     protected $types = [];
@@ -44,6 +49,24 @@ class DefinitionManager
      * @var QueryDefinition[]
      */
     protected $queries = [];
+
+    /**
+     * DefinitionManager constructor.
+     *
+     * @param string $endpoint
+     */
+    public function __construct(string $endpoint)
+    {
+        $this->endpoint = $endpoint;
+    }
+
+    /**
+     * @return string
+     */
+    public function getEndpoint(): string
+    {
+        return $this->endpoint;
+    }
 
     /**
      * @return ObjectDefinitionInterface[]
@@ -70,16 +93,29 @@ class DefinitionManager
     /**
      * @param string $class
      *
-     * @return null|string
+     * @return bool
      */
-    public function getTypeForClass(string $class):?string
+    public function hasTypeForClass(string $class): bool
+    {
+        return in_array($class, $this->typeMap);
+    }
+
+    /**
+     * @param string $class
+     *
+     * @return string
+     *
+     * @throws \UnexpectedValueException if the class does not have any valid type
+     */
+    public function getTypeForClass(string $class): string
     {
         $typeMap = array_flip($this->typeMap);
         if (isset($typeMap[$class])) {
             return $typeMap[$class];
         }
 
-        return null;
+        $error = sprintf('Does not exist any valid type for class "%s"', $class);
+        throw new \UnexpectedValueException($error);
     }
 
     /**
@@ -143,9 +179,15 @@ class DefinitionManager
      * @param string $name
      *
      * @return ObjectDefinitionInterface
+     *
+     * @throws \UnexpectedValueException
      */
     public function getType($name)
     {
+        if (!$this->hasType($name)) {
+            throw new \UnexpectedValueException(sprintf('Does not exist a valid definition for "%s" type', $name));
+        }
+
         return $this->types[$name];
     }
 

@@ -8,12 +8,23 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Definition;
+namespace Ynlo\GraphQLBundle\Annotation;
+
+use Doctrine\Common\Annotations\Annotation;
 
 /**
- * Class QueryDefinition
+ * @Annotation
+ * @Annotation\Target({"CLASS", "METHOD"})
  */
-class QueryDefinition implements ExecutableDefinitionInterface
+final class Connection
 {
-    use ExecutableDefinitionTrait;
+    /**
+     * @var string
+     */
+    public $parentField;
+
+    /**
+     * @var string
+     */
+    public $limit;
 }

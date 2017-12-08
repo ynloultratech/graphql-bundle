@@ -21,7 +21,21 @@ interface DefinitionInterface
     public function getName();
 
     /**
+     * @param string $name
+     *
+     * @return DefinitionInterface
+     */
+    public function setName(?string $name): DefinitionInterface;
+
+    /**
      * @return string
      */
     public function getDescription();
+
+    /**
+     * @param string $description
+     *
+     * @return DefinitionInterface
+     */
+    public function setDescription(?string $description): DefinitionInterface;
 }

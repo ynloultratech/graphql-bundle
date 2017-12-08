@@ -26,7 +26,7 @@ services:
 
     Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\ObjectTypeResolver:
         class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\ObjectTypeResolver
-        arguments: ['@tagged_services']
+        arguments: ['@tagged_services','@graphql.connection_builder']
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
@@ -41,6 +41,7 @@ services:
 
     Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryGetAllNodes:
         class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryGetAllNodes
+        arguments: ['@graphql.connection_builder']
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
@@ -48,6 +49,7 @@ services:
 
     Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryResolver:
         class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryResolver
+        arguments: ['@graphql.connection_builder']
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
@@ -55,6 +57,7 @@ services:
 
     Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryFieldResolver:
         class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryFieldResolver
+        arguments: ['@graphql.connection_builder']
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
@@ -74,6 +77,11 @@ services:
             - [ setReader, ['@annotations.reader']]
         tags:
             - { name: 'graphql.field_definition_decorator' }
+
+    graphql.connection_builder:
+        class: Ynlo\GraphQLBundle\Definition\ConnectionDefinitionBuilder
+        arguments: ['@graphql.definition_registry']
+        shared: false
 
     graphql.types_autoloader:
         class: Ynlo\GraphQLBundle\Type\TypeAutoLoader

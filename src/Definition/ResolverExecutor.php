@@ -273,8 +273,11 @@ class ResolverExecutor implements ContainerAwareInterface
             }
 
             //inject root common argument
-            if ('root' === $parameter->getName()
-                && is_a($parameter->getClass()->getName(), get_class($this->root), true)
+            if ($this->root
+                && 'root' === $parameter->getName()
+                && $parameter->getClass()
+                && $parameter->getClass()->isInstance($this->root)
+
             ) {
                 $orderedArguments[$parameter->getPosition()] = $this->root;
             }

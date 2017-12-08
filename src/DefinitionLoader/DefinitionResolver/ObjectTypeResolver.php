@@ -14,6 +14,7 @@ use Symfony\Component\DependencyInjection\Definition;
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
+use Ynlo\GraphQLBundle\Definition\ConnectionDefinitionBuilder;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
@@ -38,16 +39,25 @@ class ObjectTypeResolver implements DefinitionResolverInterface
     protected $taggedServices;
 
     /**
+     * @var ConnectionDefinitionBuilder
+     */
+    protected $connectionBuilder;
+
+    /**
      * @var DefinitionManager
      */
     protected $definitionManager;
 
     /**
-     * @param TaggedServices $taggedServices
+     * ObjectTypeResolver constructor.
+     *
+     * @param TaggedServices              $taggedServices
+     * @param ConnectionDefinitionBuilder $connectionBuilder
      */
-    public function __construct(TaggedServices $taggedServices)
+    public function __construct(TaggedServices $taggedServices, ConnectionDefinitionBuilder $connectionBuilder)
     {
         $this->taggedServices = $taggedServices;
+        $this->connectionBuilder = $connectionBuilder;
     }
 
     /**
@@ -214,6 +224,14 @@ class ObjectTypeResolver implements DefinitionResolverInterface
                             $field->addArgument($arg);
                         }
                     }
+                }
+
+                /** @var Annotation\Connection $connection */
+                if ($connection = $this->getFieldAnnotation($prop, Annotation\Connection::class)) {
+                    $this->connectionBuilder->setEndpoint($this->definitionManager->getEndpoint());
+                    $this->connectionBuilder->setLimit($connection->limit);
+                    $this->connectionBuilder->setParentField($connection->parentField);
+                    $this->connectionBuilder->build($field, $field->getType());
                 }
             }
         }

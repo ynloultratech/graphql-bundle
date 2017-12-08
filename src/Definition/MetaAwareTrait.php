@@ -49,6 +49,18 @@ trait MetaAwareTrait
     }
 
     /**
+     * @param array $metas
+     *
+     * @return MetaAwareInterface
+     */
+    public function setMetas(array $metas): MetaAwareInterface
+    {
+        $this->metas = $metas;
+
+        return $this;
+    }
+
+    /**
      * @param string $key
      * @param mixed  $value
      *

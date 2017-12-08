@@ -13,12 +13,9 @@ namespace Ynlo\GraphQLBundle\Definition;
 /**
  * Class ArgumentDefinition
  */
-class ArgumentDefinition
+class ArgumentDefinition implements DefinitionInterface
 {
-    /**
-     * @var string
-     */
-    protected $name;
+    use DefinitionTrait;
 
     /**
      * @var string
@@ -43,11 +40,6 @@ class ArgumentDefinition
     /**
      * @var string
      */
-    protected $description;
-
-    /**
-     * @var string
-     */
     protected $defaultValue;
 
     /**
@@ -57,26 +49,6 @@ class ArgumentDefinition
      * @var string
      */
     protected $internalName;
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return ArgumentDefinition
-     */
-    public function setName(string $name): ArgumentDefinition
-    {
-        $this->name = $name;
-
-        return $this;
-    }
 
     /**
      * @return string
@@ -152,26 +124,6 @@ class ArgumentDefinition
     public function setNonNullList(bool $nonNullList)
     {
         $this->nonNullList = $nonNullList;
-    }
-
-    /**
-     * @return string
-     */
-    public function getDescription(): ?string
-    {
-        return $this->description;
-    }
-
-    /**
-     * @param string $description
-     *
-     * @return ArgumentDefinition
-     */
-    public function setDescription(?string $description): ArgumentDefinition
-    {
-        $this->description = $description;
-
-        return $this;
     }
 
     /**

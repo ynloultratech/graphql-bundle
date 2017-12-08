@@ -12,6 +12,7 @@ namespace Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver;
 
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
+use Ynlo\GraphQLBundle\Definition\ConnectionDefinitionBuilder;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionManager;
 use Ynlo\GraphQLBundle\Type\TypeUtil;
@@ -22,6 +23,24 @@ use Ynlo\GraphQLBundle\Type\TypeUtil;
 class QueryFieldResolver implements DefinitionResolverInterface
 {
     use AnnotationReaderAwareTrait;
+
+    /**
+     * @var ConnectionDefinitionBuilder
+     */
+    protected $connectionBuilder;
+
+    /**
+     * @var DefinitionManager
+     */
+    protected $definitionManager;
+
+    /**
+     * @param ConnectionDefinitionBuilder $connectionBuilder
+     */
+    public function __construct(ConnectionDefinitionBuilder $connectionBuilder)
+    {
+        $this->connectionBuilder = $connectionBuilder;
+    }
 
     /**
      * {@inheritdoc}
@@ -36,6 +55,8 @@ class QueryFieldResolver implements DefinitionResolverInterface
      */
     public function resolve($annotation, \ReflectionClass $refClass, DefinitionManager $definitionManager)
     {
+        $this->definitionManager = $definitionManager;
+
         /** @var Annotation\Field $annotation */
         $field = new FieldDefinition();
 
@@ -91,5 +112,14 @@ class QueryFieldResolver implements DefinitionResolverInterface
         }
 
         $field->setResolver($refClass->getName());
+
+        /** @var Annotation\Connection $connection */
+        if ($connection = $this->reader->getClassAnnotation($refClass, Annotation\Connection::class)) {
+            $this->connectionBuilder->setEndpoint($this->definitionManager->getEndpoint());
+            $this->connectionBuilder->setLimit($connection->limit);
+            $this->connectionBuilder->setParentField($connection->parentField);
+            $this->connectionBuilder->build($field, $field->getType());
+            $field->setResolver($refClass->getName());
+        }
     }
 }

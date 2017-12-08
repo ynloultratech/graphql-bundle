@@ -37,6 +37,9 @@ class User implements NodeInterface, TimestampableInterface
 {
     use TimestampableTrait;
 
+    public const TYPE_ADMIN = 'ADMIN';
+    public const TYPE_USER = 'USER';
+
     /**
      * @var int
      *
@@ -55,6 +58,13 @@ class User implements NodeInterface, TimestampableInterface
      * @Assert\Length(min="5", groups={"one"})
      */
     protected $username;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="type", type="string")
+     */
+    protected $type = self::TYPE_USER;
 
     /**
      * @var Profile
@@ -78,6 +88,8 @@ class User implements NodeInterface, TimestampableInterface
      * @var Collection
      *
      * @ORM\OneToMany(targetEntity="Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity\Post", mappedBy="author", fetch="EXTRA_LAZY")
+     *
+     * @GraphQL\Connection()
      */
     protected $posts;
 
@@ -111,6 +123,42 @@ class User implements NodeInterface, TimestampableInterface
     public function setUsername(string $username)
     {
         $this->username = $username;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     */
+    public function setType(string $type)
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * @return bool
+     *
+     * @GraphQL\Field(type="bool")
+     */
+    public function isAdmin(): bool
+    {
+        return $this->getType() === self::TYPE_ADMIN;
+    }
+
+    /**
+     * @return bool
+     *
+     * @GraphQL\Field(type="bool")
+     */
+    public function isNormalUser(): bool
+    {
+        return $this->getType() === self::TYPE_USER;
     }
 
     /**

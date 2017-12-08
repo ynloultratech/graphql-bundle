@@ -44,7 +44,7 @@ class GraphQLFieldDefinitionDecorator implements FieldDefinitionDecoratorInterfa
         }
 
         if (($description = $this->resolveFieldDescription($field)) && null !== $description) {
-            $definition->setDescription($definition);
+            $definition->setDescription($description);
         }
 
         if (($deprecationReason = $this->resolveFieldDeprecationReason($field)) && null !== $deprecationReason) {

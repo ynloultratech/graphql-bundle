@@ -58,7 +58,7 @@ class DefinitionRegistry
             return self::$manager[$name];
         }
 
-        $manager = new DefinitionManager();
+        $manager = self::$manager[$name] = new DefinitionManager($name);
 
         $specifications = $this->getTaggedServices('graphql.definition_loader');
         foreach ($specifications as $specification) {
@@ -70,7 +70,7 @@ class DefinitionRegistry
 
         $this->compile($manager);
 
-        return self::$manager[$name] = $manager;
+        return $manager;
     }
 
     /**
@@ -82,26 +82,45 @@ class DefinitionRegistry
     {
         foreach ($manager->allTypes() as $type) {
             if ($type instanceof FieldsAwareDefinitionInterface) {
-                foreach ($type->getFields() as $field) {
-                    $field->setType($this->normalizeType($manager, $field->getType()));
-                    if (!$field->getType()) {
-                        $msg = sprintf('The field "%s" of "%s" does not have a valid type', $field->getName(), $type->getName());
-                        throw new \RuntimeException($msg);
-                    }
-                }
+                $this->normalizeFields($manager, $type);
             }
         }
 
         foreach ($manager->allQueries() as $query) {
             if ($query instanceof ArgumentAwareInterface) {
-                foreach ($query->getArguments() as $argument) {
-                    $argument->setType($this->normalizeType($manager, $argument->getType()));
-                    if (!$argument->getType()) {
-                        $msg = sprintf('The argument "%s" of "%s" does not have a valid type', $argument->getName(), $argument->getName());
-                        throw new \RuntimeException($msg);
-                    }
-                }
+                $this->normalizeArguments($manager, $query);
             }
+        }
+    }
+
+    /**
+     * @param DefinitionManager      $manager
+     * @param ArgumentAwareInterface $argumentAware
+     */
+    private function normalizeArguments(DefinitionManager $manager, ArgumentAwareInterface $argumentAware)
+    {
+        foreach ($argumentAware->getArguments() as $argument) {
+            $argument->setType($this->normalizeType($manager, $argument->getType()));
+            if (!$argument->getType()) {
+                $msg = sprintf('The argument "%s" of "%s" does not have a valid type', $argument->getName(), $argumentAware->getName());
+                throw new \RuntimeException($msg);
+            }
+        }
+    }
+
+    /**
+     * @param DefinitionManager              $manager
+     * @param FieldsAwareDefinitionInterface $fieldsAwareDefinition
+     */
+    private function normalizeFields(DefinitionManager $manager, FieldsAwareDefinitionInterface $fieldsAwareDefinition)
+    {
+        foreach ($fieldsAwareDefinition->getFields() as $field) {
+            $field->setType($this->normalizeType($manager, $field->getType()));
+            if (!$field->getType()) {
+                $msg = sprintf('The field "%s" of "%s" does not have a valid type', $field->getName(), $fieldsAwareDefinition->getName());
+                throw new \RuntimeException($msg);
+            }
+            $this->normalizeArguments($manager, $field);
         }
     }
 
@@ -115,9 +134,8 @@ class DefinitionRegistry
     {
         if ($type) {
             if (class_exists($type) || interface_exists($type)) {
-                $classType = $manager->getTypeForClass($type);
-                if ($classType) {
-                    $type = $classType;
+                if ($manager->hasTypeForClass($type)) {
+                    $type = $manager->getTypeForClass($type);
                 }
             }
         }

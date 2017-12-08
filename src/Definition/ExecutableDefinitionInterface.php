@@ -8,26 +8,22 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Annotation;
+namespace Ynlo\GraphQLBundle\Definition;
 
-use Doctrine\Common\Annotations\Annotation;
-
-/**
- * @Annotation()
- *
- * @Target({"CLASS", "METHOD"})
- */
-final class VirtualField extends Annotation
+interface ExecutableDefinitionInterface extends
+    DefinitionInterface,
+    TypeAwareDefinitionInterface,
+    ArgumentAwareInterface,
+    DeprecateInterface,
+    MetaAwareInterface
 {
     /**
-     * @var string
-     *
-     * @required
+     * {@inheritDoc}
      */
-    public $type;
+    public function getResolver():?string;
 
     /**
-     * @var string
+     * {@inheritDoc}
      */
-    public $name;
+    public function setResolver(?string $resolver);
 }

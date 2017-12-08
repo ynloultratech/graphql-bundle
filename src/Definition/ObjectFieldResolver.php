@@ -65,9 +65,11 @@ class ObjectFieldResolver implements ContainerAwareInterface, DefinitionManagerA
         //when use external resolver or use a object method with arguments
         if ($fieldDefinition->getResolver() || $fieldDefinition->getArguments()) {
             $queryDefinition = new QueryDefinition();
+            $queryDefinition->setName($fieldDefinition->getName());
             $queryDefinition->setType($fieldDefinition->getType());
             $queryDefinition->setArguments($fieldDefinition->getArguments());
             $queryDefinition->setList($fieldDefinition->isList());
+            $queryDefinition->setMetas($fieldDefinition->getMetas());
 
             if (!$fieldDefinition->getResolver()) {
                 if ($fieldDefinition->getOriginType() === \ReflectionMethod::class) {
