@@ -13,10 +13,11 @@ namespace Ynlo\GraphQLBundle\Definition;
 /**
  * Class QueryDefinition
  */
-class QueryDefinition implements DeprecateInterface, ArgumentAwareInterface
+class QueryDefinition implements DeprecateInterface, ArgumentAwareInterface, MetaAwareInterface
 {
     use DeprecateTrait;
     use ArgumentAwareTrait;
+    use MetaAwareTrait;
 
     protected $name;
 

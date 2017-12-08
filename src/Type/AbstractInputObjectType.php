@@ -10,6 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Type;
 
+use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
@@ -21,7 +22,7 @@ use Ynlo\GraphQLBundle\Definition\ObjectFieldResolver;
 /**
  * Class AbstractInputObjectType
  */
-abstract class AbstractInputObjectType extends ObjectType implements
+abstract class AbstractInputObjectType extends InputObjectType implements
     ContainerAwareInterface,
     DefinitionManagerAwareInterface
 {

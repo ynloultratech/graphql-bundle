@@ -15,6 +15,7 @@ use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
+use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
@@ -48,7 +49,7 @@ class ObjectTypeResolver implements DefinitionResolverInterface
      */
     public function supports($annotation): bool
     {
-        return $annotation instanceof Annotation\ObjectType;
+        return $annotation instanceof Annotation\ObjectType || $annotation instanceof Annotation\InputObjectType;
     }
 
     /**
@@ -56,8 +57,12 @@ class ObjectTypeResolver implements DefinitionResolverInterface
      */
     public function resolve($annotation, \ReflectionClass $refClass, DefinitionManager $definitionManager)
     {
-        /** @var Annotation\ObjectType $annotation */
-        $objectDefinition = new ObjectDefinition();
+        if ($annotation instanceof Annotation\ObjectType) {
+            $objectDefinition = new ObjectDefinition();
+        } else {
+            $objectDefinition = new InputObjectDefinition();
+        }
+
         $objectDefinition->setName($annotation->name);
         $objectDefinition->setExclusionPolicy($annotation->exclusionPolicy);
         $objectDefinition->setClass($refClass->name);
@@ -74,7 +79,10 @@ class ObjectTypeResolver implements DefinitionResolverInterface
         $objectDefinition->setClass($refClass->getName());
         $objectDefinition->setDescription($annotation->description);
 
-        $this->resolveObjectInterfaces($refClass, $objectDefinition, $definitionManager);
+        if ($objectDefinition instanceof ObjectDefinition) {
+            $this->resolveObjectInterfaces($refClass, $objectDefinition, $definitionManager);
+        }
+
         $this->loadInheritedProperties($refClass, $objectDefinition);
         $this->resolveFields($refClass, $objectDefinition);
 
@@ -127,10 +135,10 @@ class ObjectTypeResolver implements DefinitionResolverInterface
     }
 
     /**
-     * @param \ReflectionClass $refClass
-     * @param ObjectDefinition $objectDefinition
+     * @param \ReflectionClass          $refClass
+     * @param ObjectDefinitionInterface $objectDefinition
      */
-    protected function loadInheritedProperties(\ReflectionClass $refClass, ObjectDefinition $objectDefinition)
+    protected function loadInheritedProperties(\ReflectionClass $refClass, ObjectDefinitionInterface $objectDefinition)
     {
         while ($parent = $refClass->getParentClass()) {
             $this->resolveFields($refClass, $objectDefinition);

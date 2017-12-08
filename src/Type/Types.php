@@ -109,7 +109,7 @@ class Types
 
                 };
             } elseif ($definition instanceof InputObjectDefinition) {
-                $type = new class(self::$container, self::$manager, $definition) extends AbstractInputObjectType
+                $type = new class($definition) extends AbstractInputObjectType
                 {
 
                 };

@@ -11,6 +11,7 @@
 namespace Ynlo\GraphQLBundle\Annotation;
 
 use Doctrine\Common\Annotations\Annotation;
+use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 
 /**
  * @Annotation()
@@ -27,4 +28,9 @@ final class InputObjectType
      * @var string
      */
     public $description;
+
+    /**
+     * @var string
+     */
+    public $exclusionPolicy = ObjectDefinitionInterface::EXCLUDE_NONE;
 }

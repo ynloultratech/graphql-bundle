@@ -10,6 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity;
 
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -27,7 +28,7 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  * @GraphQL\ObjectType()
  *
  * @GraphQL\QueryGet(fetchBy="username")
- * @GraphQL\QueryGetAll()
+ * @GraphQL\QueryGetAll(orderBy={{"field":"username", "direction":"ASC"}})
  * @GraphQL\MutationAdd()
  * @GraphQL\MutationUpdate()
  * @GraphQL\MutationDelete()
@@ -74,7 +75,7 @@ class User implements NodeInterface, TimestampableInterface
     protected $enabled = true;
 
     /**
-     * @var Post
+     * @var Collection
      *
      * @ORM\OneToMany(targetEntity="Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity\Post", mappedBy="author", fetch="EXTRA_LAZY")
      */
@@ -142,5 +143,21 @@ class User implements NodeInterface, TimestampableInterface
     public function setEnabled(bool $enabled)
     {
         $this->enabled = $enabled;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getPosts(): Collection
+    {
+        return $this->posts;
+    }
+
+    /**
+     * @param Collection $posts
+     */
+    public function setPosts(Collection $posts)
+    {
+        $this->posts = $posts;
     }
 }

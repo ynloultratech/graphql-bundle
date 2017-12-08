@@ -156,6 +156,19 @@ class ResolverExecutor implements ContainerAwareInterface
                     $normalizedValue = $value;
                 } else {
                     $normalizedValue = $this->normalizeValue($value, $argument->getType());
+
+                    //normalize argument into respective inputs objects
+                    if (is_array($normalizedValue) && $this->manager->hasType($argument->getType())) {
+                        if ($argument->isList()) {
+                            $tmp = [];
+                            foreach ($normalizedValue as $childValue) {
+                                $tmp[] = $this->arrayToObject($childValue, $this->manager->getType($argument->getType()));
+                            }
+                            $normalizedValue = $tmp;
+                        } else {
+                            $normalizedValue = $this->arrayToObject($normalizedValue, $this->manager->getType($argument->getType()));
+                        }
+                    }
                 }
                 $normalizedArguments[$argument->getName()] = $normalizedValue;
                 $normalizedArguments[$argument->getInternalName()] = $normalizedValue;
@@ -406,11 +419,6 @@ class ResolverExecutor implements ContainerAwareInterface
             if (!$value) {
                 throw new UserError(sprintf('Invalid ID given in "%s"', $fieldDefinition->getName()));
             }
-        }
-
-        //ignore read-only fields
-        if ($fieldDefinition->isReadOnly()) {
-            return;
         }
 
         //using setter

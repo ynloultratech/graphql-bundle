@@ -12,6 +12,7 @@ namespace Ynlo\GraphQLBundle\DefinitionLoader;
 
 use Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices;
 use Ynlo\GraphQLBundle\Component\TaggedServices\TagSpecification;
+use Ynlo\GraphQLBundle\Definition\ArgumentAwareInterface;
 use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 
 /**
@@ -85,6 +86,18 @@ class DefinitionRegistry
                     $field->setType($this->normalizeType($manager, $field->getType()));
                     if (!$field->getType()) {
                         $msg = sprintf('The field "%s" of "%s" does not have a valid type', $field->getName(), $type->getName());
+                        throw new \RuntimeException($msg);
+                    }
+                }
+            }
+        }
+
+        foreach ($manager->allQueries() as $query) {
+            if ($query instanceof ArgumentAwareInterface) {
+                foreach ($query->getArguments() as $argument) {
+                    $argument->setType($this->normalizeType($manager, $argument->getType()));
+                    if (!$argument->getType()) {
+                        $msg = sprintf('The argument "%s" of "%s" does not have a valid type', $argument->getName(), $argument->getName());
                         throw new \RuntimeException($msg);
                     }
                 }
