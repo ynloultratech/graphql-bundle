@@ -60,20 +60,20 @@ services:
         tags:
             - { name: 'graphql.definition_resolver', priority: 50 }
 
-    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\FieldMeta\GraphQLFieldMetadataFactory:
-        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\FieldMeta\GraphQLFieldMetadataFactory
+    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\FieldDecorator\GraphQLFieldDefinitionDecorator:
+        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\FieldDecorator\GraphQLFieldDefinitionDecorator
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
-            - { name: 'graphql.field_metadata_factory', priority: 100 }
+            - { name: 'graphql.field_definition_decorator', priority: 100 }
 
-    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\FieldMeta\DoctrineFieldMetadataFactory:
-        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\FieldMeta\DoctrineFieldMetadataFactory
+    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\FieldDecorator\DoctrineFieldDefinitionDecorator:
+        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\FieldDecorator\DoctrineFieldDefinitionDecorator
         arguments: ['@tagged_services']
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
-            - { name: 'graphql.field_metadata_factory' }
+            - { name: 'graphql.field_definition_decorator' }
 
     graphql.types_autoloader:
         class: Ynlo\GraphQLBundle\Type\TypeAutoLoader

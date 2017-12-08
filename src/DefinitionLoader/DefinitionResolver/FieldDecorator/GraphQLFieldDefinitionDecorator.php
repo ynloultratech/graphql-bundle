@@ -8,38 +8,48 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\FieldMeta;
+namespace Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\FieldDecorator;
 
 use Ynlo\GraphQLBundle\Annotation;
+use Ynlo\GraphQLBundle\Definition\FieldDefinition;
+use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\AnnotationReaderAwareTrait;
 use Ynlo\GraphQLBundle\Type\TypeUtil;
 
 /**
- * Class GraphQLFieldMetadataFactory
+ * Class GraphQLFieldDefinitionDecorator
  */
-class GraphQLFieldMetadataFactory implements FieldMetadataFactoryInterface
+class GraphQLFieldDefinitionDecorator implements FieldDefinitionDecoratorInterface
 {
     use AnnotationReaderAwareTrait;
 
     /**
      * {@inheritdoc}
      */
-    public function getMetadataForField($field): FieldMetadata
+    public function decorateFieldDefinition($field, FieldDefinition $definition, ObjectDefinitionInterface $objectDefinition)
     {
         if (!$field instanceof \ReflectionProperty && !$field instanceof \ReflectionMethod) {
             throw new \InvalidArgumentException('Invalid argument, expected reflection of property or method');
         }
 
-        $fieldMeta = new FieldMetadata();
-        $fieldMeta->name = $this->resolveFieldName($field);
-        $fieldMeta->nonNull = $this->resolveFieldNonNull($field);
-        $fieldMeta->nonNullList = $this->resolveFieldNonNullList($field);
-        $fieldMeta->description = $this->resolveFieldDescription($field);
-        $fieldMeta->deprecationReason = $this->resolveFieldDeprecationReason($field);
-        $fieldMeta->list = $this->resolveFieldIsList($field);
-        $fieldMeta->type = $this->resolveFieldType($field);
+        if (($name = $this->resolveFieldName($field)) && null !== $name) {
+            $definition->setName($name);
+        }
 
-        return $fieldMeta;
+        if (($type = $this->resolveFieldType($field)) && null !== $type) {
+            $definition->setType($this->resolveFieldType($field));
+            $definition->setList($this->resolveFieldIsList($field));
+            $definition->setNonNull($this->resolveFieldNonNull($field));
+            $definition->setNonNullList($this->resolveFieldNonNullList($field));
+        }
+
+        if (($description = $this->resolveFieldDescription($field)) && null !== $description) {
+            $definition->setDescription($definition);
+        }
+
+        if (($deprecationReason = $this->resolveFieldDeprecationReason($field)) && null !== $deprecationReason) {
+            $definition->setDeprecationReason($deprecationReason);
+        }
     }
 
     /**

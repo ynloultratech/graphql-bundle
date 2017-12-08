@@ -20,8 +20,9 @@ use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionManager;
-use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\FieldMeta\FieldMetadata;
-use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\FieldMeta\FieldMetadataFactoryInterface;
+use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\FieldDecorator\FieldDefinitionDecoratorInterface;
+use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\FieldDecorator\FieldMetadata;
+use Ynlo\GraphQLBundle\Type\DefinitionManagerAwareInterface;
 use Ynlo\GraphQLBundle\Type\TypeUtil;
 
 /**
@@ -35,6 +36,11 @@ class ObjectTypeResolver implements DefinitionResolverInterface
      * @var TaggedServices
      */
     protected $taggedServices;
+
+    /**
+     * @var DefinitionManager
+     */
+    protected $definitionManager;
 
     /**
      * @param TaggedServices $taggedServices
@@ -57,6 +63,8 @@ class ObjectTypeResolver implements DefinitionResolverInterface
      */
     public function resolve($annotation, \ReflectionClass $refClass, DefinitionManager $definitionManager)
     {
+        $this->definitionManager = $definitionManager;
+
         if ($annotation instanceof Annotation\ObjectType) {
             $objectDefinition = new ObjectDefinition();
         } else {
@@ -171,33 +179,23 @@ class ObjectTypeResolver implements DefinitionResolverInterface
     {
         $props = array_merge($this->getClassProperties($refClass), $this->getClassMethods($refClass));
 
-        $fieldMetaFactories = $this->getFieldMetadataFactories();
+        $fieldDecorators = $this->getFieldDecorators();
 
         foreach ($props as $prop) {
             if ($this->isExposed($objectDefinition, $prop)) {
                 $field = new FieldDefinition();
+                $field->setOriginName($prop->name);
+                $field->setOriginType(\get_class($prop));
 
-                $meta = new FieldMetadata();
-                foreach ($fieldMetaFactories as $fieldMetaFactory) {
-                    $resolvedMeta = $fieldMetaFactory->getMetadataForField($prop);
-                    $meta->merge($resolvedMeta);
+                foreach ($fieldDecorators as $fieldDecorator) {
+                    $fieldDecorator->decorateFieldDefinition($prop, $field, $objectDefinition);
                 }
 
-                $field->setName($meta->name);
                 if ($objectDefinition->hasField($field->getName())) {
                     $field = $objectDefinition->getField($field->getName());
                 } else {
                     $objectDefinition->addField($field);
                 }
-
-                $field->setType(null !== $meta->type ? $meta->type : $field->getType());
-                $field->setDescription(null !== $meta->description ? $meta->description : $field->getDescription());
-                $field->setDeprecationReason(null !== $meta->deprecationReason ? $meta->deprecationReason : $field->getDeprecationReason());
-                $field->setList(null !== $meta->list ? $meta->list : $field->isList());
-                $field->setNonNull(null !== $meta->nonNull ? $meta->nonNull : $field->isNonNull());
-                $field->setNonNullList(null !== $meta->nonNullList ? $meta->nonNullList : $field->isNonNullList());
-                $field->setOriginName($prop->name);
-                $field->setOriginType(\get_class($prop));
 
                 //resolve field arguments
                 if ($prop instanceof \ReflectionMethod) {
@@ -248,28 +246,34 @@ class ObjectTypeResolver implements DefinitionResolverInterface
     }
 
     /**
-     * @return array|FieldMetadataFactoryInterface[]
+     * @return array|FieldDefinitionDecoratorInterface[]
      */
-    protected function getFieldMetadataFactories(): array
+    protected function getFieldDecorators(): array
     {
         /** @var Definition $resolversServiceDefinition */
-        $factoryDefs = $this->taggedServices
-            ->findTaggedServices('graphql.field_metadata_factory');
+        $decoratorsDef = $this->taggedServices
+            ->findTaggedServices('graphql.field_definition_decorator');
 
-        $factories = [];
-        foreach ($factoryDefs as $factoryDef) {
-            $attr = $factoryDef->getAttributes();
+        $decorators = [];
+        foreach ($decoratorsDef as $decoratorDef) {
+            $attr = $decoratorDef->getAttributes();
             $priority = 0;
             if (isset($attr['priority'])) {
                 $priority = $attr['priority'];
             }
 
-            $factories[] = [$priority, $factoryDef->getService()];
+            $decorator = $decoratorDef->getService();
+
+            if ($decorator instanceof DefinitionManagerAwareInterface) {
+                $decorator->setDefinitionManager($this->definitionManager);
+            }
+
+            $decorators[] = [$priority, $decorator];
         }
 
         //sort by priority
         usort(
-            $factories,
+            $decorators,
             function ($service1, $service2) {
                 list($priority1) = $service1;
                 list($priority2) = $service2;
@@ -278,7 +282,7 @@ class ObjectTypeResolver implements DefinitionResolverInterface
             }
         );
 
-        return array_column($factories, 1);
+        return array_column($decorators, 1);
     }
 
     /**
