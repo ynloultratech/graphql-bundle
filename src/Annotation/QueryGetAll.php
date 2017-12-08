@@ -38,4 +38,9 @@ final class QueryGetAll extends Annotation
      * @var bool
      */
     public $pagination = true;
+
+    /**
+     * @var int
+     */
+    public $limit;
 }

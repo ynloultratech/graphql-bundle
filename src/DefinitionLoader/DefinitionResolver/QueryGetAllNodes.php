@@ -86,6 +86,11 @@ class QueryGetAllNodes implements DefinitionResolverInterface
 
         $query->setType($objectDefinition->getName());
         $query->setList(true);
+
+        //TODO: resolve default limit from bundle global config
+        $limit = $annotation->limit ?? 100;
+        $query->setMeta('limit', $limit);
+
         $query->setResolver(AllNodes::class);
         $query->setDeprecationReason($annotation->deprecationReason);
         $query->setDescription($annotation->description);

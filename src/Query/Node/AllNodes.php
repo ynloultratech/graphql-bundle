@@ -14,6 +14,7 @@ use Doctrine\ORM\QueryBuilder;
 use GraphQL\Error\Error;
 use Ynlo\GraphQLBundle\Action\AbstractNodeAction;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
+use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Model\OrderBy;
 
 /**
@@ -32,6 +33,11 @@ class AllNodes extends AbstractNodeAction
     protected $entity;
 
     /**
+     * @var QueryDefinition
+     */
+    protected $queryDefinition;
+
+    /**
      * @var ObjectDefinition
      */
     protected $objectDefinition;
@@ -46,11 +52,45 @@ class AllNodes extends AbstractNodeAction
     public function __invoke($first = null, $last = null, $orderBy = [])
     {
         $objectType = $this->context->getDefinition()->getType();
+        $this->queryDefinition = $this->context->getDefinition();
         $this->objectDefinition = $this->context->getDefinitionManager()->getType($objectType);
         $this->entity = $this->context->getDefinitionManager()->getType($objectType)->getClass();
 
         $qb = $this->createQuery();
         $this->applyOrderBy($qb, $orderBy);
+        $this->applyLimits($qb, $first, $last);
+
+        return $qb->getQuery()->execute();
+    }
+
+    /**
+     * @param QueryBuilder $qb
+     * @param null         $first
+     * @param null         $last
+     *
+     * @throws Error
+     */
+    protected function applyLimits(QueryBuilder $qb, $first = null, $last = null)
+    {
+        if (!$first && !$last) {
+            throw new Error('You must provide a `first` or `last` value to properly paginate records.');
+        }
+
+        if ($this->queryDefinition->hasMeta('limit')) {
+            $limit = $this->queryDefinition->getMeta('limit');
+            if ($first > $limit || $last > $limit) {
+                $current = $first ?? $last;
+                $where = $first ? 'first' : 'last';
+                $error = sprintf(
+                    'Requesting %s records for `%s` exceeds the `%s` limit of %s records.',
+                    $current,
+                    $this->queryDefinition->getName(),
+                    $where,
+                    $limit
+                );
+                throw new Error($error);
+            }
+        }
 
         if ($first) {
             $qb->setMaxResults(abs($first));
@@ -73,8 +113,6 @@ class AllNodes extends AbstractNodeAction
                 }
             }
         }
-
-        return $qb->getQuery()->execute();
     }
 
     /**
