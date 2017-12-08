@@ -35,9 +35,7 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  * @GraphQL\ObjectType()
  * @GraphQL\QueryGet()
  * @GraphQL\QueryGetAll()
- * @GraphQL\MutationAdd()
- * @GraphQL\MutationUpdate()
- * @GraphQL\MutationDelete()
+ * @GraphQL\MutationAdd(form="Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Form\AddPostForm")
  */
 class Post implements NodeInterface, CommentableInterface, TimestampableInterface
 {
@@ -110,7 +108,7 @@ class Post implements NodeInterface, CommentableInterface, TimestampableInterfac
     /**
      * @return User
      */
-    public function getAuthor(): User
+    public function getAuthor(): ?User
     {
         return $this->author;
     }
@@ -126,7 +124,7 @@ class Post implements NodeInterface, CommentableInterface, TimestampableInterfac
     /**
      * @return string
      */
-    public function getTitle(): string
+    public function getTitle(): ?string
     {
         return $this->title;
     }

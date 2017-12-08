@@ -16,9 +16,6 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
 
 /**
  * @GraphQL\InterfaceType()
- * @GraphQL\MutationAdd()
- * @GraphQL\MutationDelete()
- * @GraphQL\MutationUpdate()
  */
 interface CommentInterface extends NodeInterface
 {

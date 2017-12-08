@@ -55,6 +55,30 @@ services:
         tags:
             - { name: 'graphql.definition_resolver', priority: 100 }
 
+    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\MutationDefinitionLoader:
+        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\MutationDefinitionLoader
+        arguments: ['@form.factory']
+        calls:
+            - [ setReader, ['@annotations.reader']]
+        tags:
+            - { name: 'graphql.definition_resolver', priority: 100 }
+
+    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\MutationAddDefinitionLoader:
+        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\MutationAddDefinitionLoader
+        arguments: ['@form.factory']
+        calls:
+            - [ setReader, ['@annotations.reader']]
+        tags:
+            - { name: 'graphql.definition_resolver', priority: 100 }
+
+    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\MutationUpdateDefinitionLoader:
+        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\MutationUpdateDefinitionLoader
+        arguments: ['@form.factory']
+        calls:
+            - [ setReader, ['@annotations.reader']]
+        tags:
+            - { name: 'graphql.definition_resolver', priority: 100 }
+
     Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryFieldResolver:
         class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryFieldResolver
         arguments: ['@graphql.connection_builder']
@@ -87,3 +111,11 @@ services:
         class: Ynlo\GraphQLBundle\Type\TypeAutoLoader
         calls:
           - [ setContainer, ['@service_container']]
+
+    Ynlo\GraphQLBundle\Form\TypeGuesser\GraphQLIDTypeGuesser:
+        arguments: ['@annotations.reader']
+        tags: [form.type_guesser]
+
+    Ynlo\GraphQLBundle\Form\Type\IDType:
+        arguments: ['@Doctrine\ORM\EntityManagerInterface', '@graphql.definition_registry']
+        tags: [form.type]

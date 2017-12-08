@@ -27,11 +27,10 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  *
  * @GraphQL\ObjectType()
  *
- * @GraphQL\QueryGet(fetchBy="username")
+ * @GraphQL\QueryGet(fetchBy="login")
  * @GraphQL\QueryGetAll()
- * @GraphQL\MutationAdd()
- * @GraphQL\MutationUpdate()
- * @GraphQL\MutationDelete()
+ * @GraphQL\MutationAdd(form="Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Form\CreateUserForm")
+ * @GraphQL\MutationUpdate(form="Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Form\UpdateUserForm")
  */
 class User implements NodeInterface, TimestampableInterface
 {
@@ -55,7 +54,9 @@ class User implements NodeInterface, TimestampableInterface
      * @ORM\Column(name="username", type="string")
      *
      * @Assert\NotBlank()
-     * @Assert\Length(min="5", groups={"one"})
+     * @Assert\Length(min="5")
+     *
+     * @GraphQL\Field(name="login")
      */
     protected $username;
 
@@ -72,8 +73,6 @@ class User implements NodeInterface, TimestampableInterface
      * @ORM\OneToOne(targetEntity="Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity\Profile", inversedBy="user", cascade={"all"}, orphanRemoval=true)
      *
      * @Assert\Valid()
-     *
-     * @GraphQL\NonNull()
      */
     protected $profile;
 
@@ -120,7 +119,7 @@ class User implements NodeInterface, TimestampableInterface
     /**
      * @param string $username
      */
-    public function setUsername(string $username)
+    public function setUsername(?string $username)
     {
         $this->username = $username;
     }

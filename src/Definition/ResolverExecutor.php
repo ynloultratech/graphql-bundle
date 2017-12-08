@@ -178,34 +178,34 @@ class ResolverExecutor implements ContainerAwareInterface
         //parameters inside input will be injected as is
         //allowing the use of any of this parameters out of input
         //e.g. [input][id] => ($id)
-        $inputType = null;
-        if (isset($args['input']) && $this->query->hasArgument('input')) {
-            $inputType = $this->query->getArgument('input')->getType();
-            foreach ($args['input'] as $key => $value) {
-                $fieldDefinition = $this->manager->getType($inputType)->getField($key);
-                $normalizedValue = $this->normalizeValue($value, $fieldDefinition->getType());
-                $normalizedArguments[$key] = $normalizedValue;
-            }
-        }
+        //        $inputType = null;
+        //        if (isset($args['input']) && $this->query->hasArgument('input')) {
+        //            $inputType = $this->query->getArgument('input')->getType();
+        //            foreach ($args['input'] as $key => $value) {
+        //                $fieldDefinition = $this->manager->getType($inputType)->getField($key);
+        //                $normalizedValue = $this->normalizeValue($value, $fieldDefinition->getType());
+        //                $normalizedArguments[$key] = $normalizedValue;
+        //            }
+        //        }
 
-        $this->applyConventions($normalizedArguments);
+        //   $this->applyConventions($normalizedArguments);
 
         //if node exist, apply all arguments to populate the object
-        if (isset($normalizedArguments['node'], $normalizedArguments['id'], $normalizedArguments['input'])
-            && is_object($normalizedArguments['node'])
-            && $normalizedArguments['id'] instanceof ID
-        ) {
-            /** @var ID $id */
-            $id = $normalizedArguments['id'];
-            $id->getNodeType();
-            if ($this->manager->hasType($id->getNodeType())) {
-                $this->arrayToObject(
-                    $normalizedArguments['input'],
-                    $this->manager->getType($id->getNodeType()),
-                    $normalizedArguments['node']
-                );
-            }
-        }
+        //        if (isset($normalizedArguments['node'], $normalizedArguments['id'], $normalizedArguments['input'])
+        //            && is_object($normalizedArguments['node'])
+        //            && $normalizedArguments['id'] instanceof ID
+        //        ) {
+        //            /** @var ID $id */
+        //            $id = $normalizedArguments['id'];
+        //            $id->getNodeType();
+        //            if ($this->manager->hasType($id->getNodeType())) {
+        //                $this->arrayToObject(
+        //                    $normalizedArguments['input'],
+        //                    $this->manager->getType($id->getNodeType()),
+        //                    $normalizedArguments['node']
+        //                );
+        //            }
+        //        }
 
         $indexedArguments = $this->resolveMethodArguments($refMethod, $normalizedArguments);
         ksort($indexedArguments);

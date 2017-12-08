@@ -10,14 +10,14 @@
 
 namespace Ynlo\GraphQLBundle\Annotation;
 
-use Doctrine\Common\Annotations\Annotation;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 
 /**
  * @Annotation()
- * @Annotation\Target("CLASS")
+ *
+ * @Target("CLASS")
  */
-final class ObjectType extends Annotation
+final class ObjectType
 {
     /**
      * @var string
@@ -33,4 +33,9 @@ final class ObjectType extends Annotation
      * @var string
      */
     public $exclusionPolicy = ObjectDefinitionInterface::EXCLUDE_NONE;
+
+    /**
+     * @var array
+     */
+    public $endpoints = ['default'];
 }

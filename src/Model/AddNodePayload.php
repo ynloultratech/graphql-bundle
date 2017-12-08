@@ -8,29 +8,14 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Annotation;
+namespace Ynlo\GraphQLBundle\Model;
 
-use Doctrine\Common\Annotations\Annotation\Target;
+use Ynlo\GraphQLBundle\Annotation as API;
 
 /**
- * @Annotation()
- *
- * @Target({"CLASS"})
+ * @API\ObjectType()
+ * @API\OverrideField(name="node", description="Added node instance")
  */
-class MutationUpdate extends Mutation
+class AddNodePayload extends UpdateNodePayload
 {
-    /**
-     * @var string
-     */
-    public $name;
-
-    /**
-     * @var string
-     */
-    public $resolver;
-
-    /**
-     * @var string
-     */
-    public $payload;
 }

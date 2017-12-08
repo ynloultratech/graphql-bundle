@@ -87,8 +87,16 @@ class DefinitionRegistry
         }
 
         foreach ($manager->allQueries() as $query) {
+            $query->setType($this->normalizeType($manager, $query->getType()));
             if ($query instanceof ArgumentAwareInterface) {
                 $this->normalizeArguments($manager, $query);
+            }
+        }
+
+        foreach ($manager->allMutations() as $mutation) {
+            $mutation->setType($this->normalizeType($manager, $mutation->getType()));
+            if ($mutation instanceof ArgumentAwareInterface) {
+                $this->normalizeArguments($manager, $mutation);
             }
         }
     }

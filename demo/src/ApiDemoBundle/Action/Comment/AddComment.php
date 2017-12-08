@@ -14,7 +14,7 @@ use Ynlo\GraphQLBundle\Action\AbstractNodeAction;
 use Ynlo\GraphQLBundle\Annotation as API;
 use Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity\User;
 use Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Model\CommentableInterface;
-use Ynlo\GraphQLBundle\Model\CreateNodePayload;
+use Ynlo\GraphQLBundle\Model\AddNodePayload;
 
 /**
  * @API\MutationAdd(node="Comment", args={
@@ -29,9 +29,9 @@ class AddComment extends AbstractNodeAction
      * @param bool                 $dryRun
      * @param null                 $clientMutationId
      *
-     * @return CreateNodePayload
+     * @return AddNodePayload
      */
-    public function __invoke(CommentableInterface $commentable, array $input, $dryRun = false, $clientMutationId = null): CreateNodePayload
+    public function __invoke(CommentableInterface $commentable, array $input, $dryRun = false, $clientMutationId = null): AddNodePayload
     {
         $comment = $commentable->createComment();
         $comment->setBody($input['body'] ?? null);
@@ -49,6 +49,6 @@ class AddComment extends AbstractNodeAction
             $this->getManager()->flush();
         }
 
-        return new CreateNodePayload($comment, $violations, $clientMutationId);
+        return new AddNodePayload($comment, $violations, $clientMutationId);
     }
 }

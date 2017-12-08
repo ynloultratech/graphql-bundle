@@ -25,7 +25,7 @@ class ConstraintViolation
     /**
      * @var string
      *
-     * @API\Field(type="string!",
+     * @API\Field(type="string",
      *     description="Returns the property path from the root element to the violation.")
      */
     protected $propertyPath;

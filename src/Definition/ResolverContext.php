@@ -23,7 +23,7 @@ class ResolverContext
     protected $args = [];
 
     /**
-     * @var QueryDefinition
+     * @var ExecutableDefinitionInterface
      */
     protected $definition;
 
@@ -70,7 +70,7 @@ class ResolverContext
     }
 
     /**
-     * @return QueryDefinition
+     * @return ExecutableDefinitionInterface
      */
     public function getDefinition()
     {
@@ -78,9 +78,9 @@ class ResolverContext
     }
 
     /**
-     * @param QueryDefinition $definition
+     * @param ExecutableDefinitionInterface $definition
      */
-    public function setDefinition(QueryDefinition $definition)
+    public function setDefinition(ExecutableDefinitionInterface $definition)
     {
         $this->definition = $definition;
     }

@@ -12,13 +12,9 @@ namespace Ynlo\GraphQLBundle\Action;
 
 use Doctrine\ORM\EntityManager;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
-use Symfony\Component\Validator\ConstraintViolationListInterface;
+use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Ynlo\GraphQLBundle\Definition\MutationDefinition;
 use Ynlo\GraphQLBundle\Definition\ResolverContext;
-use Ynlo\GraphQLBundle\Model\ConstraintViolation;
-use Ynlo\GraphQLBundle\Model\NodeInterface;
-use Ynlo\GraphQLBundle\Validator\ValidatorBridge;
 
 /**
  * Class AbstractNodeAction
@@ -31,22 +27,6 @@ abstract class AbstractNodeAction implements APIActionInterface
      * @var ResolverContext
      */
     protected $context;
-
-    /**
-     * @return EntityManager
-     */
-    public function getManager(): EntityManager
-    {
-        return $this->container->get('doctrine')->getManager();
-    }
-
-    /**
-     * @return ValidatorInterface
-     */
-    public function getValidator(): ValidatorInterface
-    {
-        return $this->container->get('validator');
-    }
 
     /**
      * @return ResolverContext
@@ -65,43 +45,44 @@ abstract class AbstractNodeAction implements APIActionInterface
     }
 
     /**
-     * @param NodeInterface $node
+     * Gets a container service by its id.
      *
-     * @return ConstraintViolation[]
+     * @param string $id The service id
+     *
+     * @return mixed The service
      */
-    protected function validate(NodeInterface $node): array
+    protected function get($id)
     {
-        $groups = [];
-        $actionDefinition = $this->getContext()->getDefinition();
-        if ($actionDefinition instanceof MutationDefinition) {
-            $groups = $actionDefinition->getValidationGroups();
-        }
-        $this->preValidate($node);
-
-        $violations = $this->getValidator()->validate($node, null, $groups);
-
-        $this->postValidation($node, $violations);
-
-        $definition = $this->getContext()->getDefinitionManager()->getType($actionDefinition->getNodeType());
-        $validatorBridge = new ValidatorBridge($this->getContext()->getDefinitionManager());
-
-        return $validatorBridge->convertViolations($violations, $definition);
+        return $this->container->get($id);
     }
 
     /**
-     * @param NodeInterface                    $node
-     * @param ConstraintViolationListInterface $violations
+     * @return EntityManager
      */
-    protected function postValidation(NodeInterface $node, ConstraintViolationListInterface $violations)
+    protected function getManager(): EntityManager
     {
-        //override in child
+        return $this->get('doctrine')->getManager();
     }
 
     /**
-     * @param NodeInterface $node
+     * @return ValidatorInterface
      */
-    protected function preValidate(NodeInterface $node)
+    protected function getValidator(): ValidatorInterface
     {
-        //override in child
+        return $this->get('validator');
+    }
+
+    /**
+     * Creates and returns a Form Builder instance from the type of the form.
+     *
+     * @param string $type    The fully qualified class name of the form type
+     * @param mixed  $data    The initial data for the form
+     * @param array  $options Options for the form
+     *
+     * @return FormBuilderInterface
+     */
+    protected function createFormBuilder($type, $data = null, array $options = [])
+    {
+        return $this->container->get('form.factory')->createBuilder($type, $data, $options);
     }
 }

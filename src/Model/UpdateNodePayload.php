@@ -17,8 +17,6 @@ use Ynlo\GraphQLBundle\Annotation as API;
  */
 class UpdateNodePayload
 {
-    public const TYPE = 'UpdateNodePayload';
-
     /**
      * @var mixed
      *

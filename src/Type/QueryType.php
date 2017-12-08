@@ -63,6 +63,7 @@ class QueryType extends ObjectType implements
         $config['args'] = $this->resolveArguments($query);
 
         $config['resolve'] = new ResolverExecutor($this->container, $this->manager, $query);
+        $config['description'] = $query->getDescription();
         $config['deprecationReason'] = $query->getDeprecationReason();
 
         return $config;

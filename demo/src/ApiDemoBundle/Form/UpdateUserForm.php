@@ -8,15 +8,21 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Model;
+namespace Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Form;
 
-use Ynlo\GraphQLBundle\Annotation as API;
+use Symfony\Component\Form\FormBuilderInterface;
 
 /**
- * @API\ObjectType()
- * @API\OverrideField(name="node", description="Created node instance")
+ * Class UpdateUserForm
  */
-class CreateNodePayload extends UpdateNodePayload
+class UpdateUserForm extends CreateUserForm
 {
-    public const TYPE = 'CreateNodePayload';
+    /**
+     * {@inheritdoc}
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options)
+    {
+        $builder->add('id');
+        parent::buildForm($builder, $options);
+    }
 }

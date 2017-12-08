@@ -10,40 +10,13 @@
 
 namespace Ynlo\GraphQLBundle\Annotation;
 
-use Doctrine\Common\Annotations\Annotation\Target;
-
 /**
- * @Annotation()
+ * @Annotation
  *
  * @Target({"CLASS"})
  */
-final class MutationAdd
+class MutationAdd extends Mutation
 {
-    /**
-     * @var string
-     */
-    public $input;
-
-    /**
-     * @var array
-     */
-    public $validationGroups = [];
-
-    /**
-     * @var string
-     */
-    public $node;
-
-    /**
-     * @var array
-     */
-    public $args = [];
-
-    /**
-     * @var string
-     */
-    public $description;
-
     /**
      * @var string
      */
@@ -52,5 +25,10 @@ final class MutationAdd
     /**
      * @var string
      */
-    public $deprecationReason;
+    public $resolver;
+
+    /**
+     * @var string
+     */
+    public $payload;
 }

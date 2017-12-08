@@ -17,8 +17,6 @@ use Ynlo\GraphQLBundle\Annotation as API;
  */
 class RemoveNodePayload
 {
-    public const TYPE = 'RemoveNodePayload';
-
     /**
      * @var ID
      *

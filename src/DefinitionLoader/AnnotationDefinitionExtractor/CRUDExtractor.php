@@ -16,7 +16,7 @@ use Ynlo\GraphQLBundle\Action\RemoveNode;
 use Ynlo\GraphQLBundle\Action\UpdateNode;
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionManager;
-use Ynlo\GraphQLBundle\Model\CreateNodePayload;
+use Ynlo\GraphQLBundle\Model\AddNodePayload;
 use Ynlo\GraphQLBundle\Model\RemoveNodePayload;
 use Ynlo\GraphQLBundle\Model\UpdateNodePayload;
 use Ynlo\GraphQLBundle\Query\Node\AllNodes;
@@ -246,7 +246,7 @@ Must check `constraintViolations` in the payload to get validation messages.',
                     ],
                     $annotation->args
                 ),
-                'returns' => CreateNodePayload::TYPE,
+                'returns' => AddNodePayload::TYPE,
             ]
         );
     }
