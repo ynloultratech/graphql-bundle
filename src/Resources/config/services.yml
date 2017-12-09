@@ -8,8 +8,7 @@ services:
           tags:
               - { name: 'kernel.event_subscriber' }
 
-    graphql.schema_compiler:
-        class: Ynlo\GraphQLBundle\Definition\SchemaCompiler
+    Ynlo\GraphQLBundle\Schema\SchemaCompiler:
         arguments: ['@graphql.definition_registry']
         calls:
           - [ setContainer, ['@service_container']]

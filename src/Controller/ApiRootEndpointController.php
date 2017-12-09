@@ -17,6 +17,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Ynlo\GraphQLBundle\Schema\SchemaCompiler;
 
 /**
  * Class ApiRootEndpointController
@@ -36,7 +37,7 @@ class ApiRootEndpointController extends Controller
             throw new HttpException(Response::HTTP_BAD_REQUEST, 'The method should be POST to talk with GraphQL API');
         }
 
-        $schema = $this->get('graphql.schema_compiler')->compile();
+        $schema = $this->get(SchemaCompiler::class)->compile();
 
         $input = json_decode($request->getContent(), true);
         $query = $input['query'];
