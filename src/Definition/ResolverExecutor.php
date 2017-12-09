@@ -11,7 +11,6 @@
 namespace Ynlo\GraphQLBundle\Definition;
 
 use Doctrine\Common\Util\ClassUtils;
-use GraphQL\Error\UserError;
 use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -125,7 +124,7 @@ class ResolverExecutor implements ContainerAwareInterface
             //everything indicates that is a issue with cached entities through test executions
             //any clear on tests or during load fixtures does not have any effect
             //I'm not sure if this patch has any other side effect
-            //Reproduce: comment the above line and run all integration tests
+            //Reproduce: comment the following line and run all integration tests
             //FIXME: find the cause of the issue and fix it
             $this->container->get('doctrine')->getManager()->clear();
             $params = $this->prepareMethodParameters($refMethod, $args);
@@ -175,81 +174,10 @@ class ResolverExecutor implements ContainerAwareInterface
             }
         }
 
-        //parameters inside input will be injected as is
-        //allowing the use of any of this parameters out of input
-        //e.g. [input][id] => ($id)
-        //        $inputType = null;
-        //        if (isset($args['input']) && $this->query->hasArgument('input')) {
-        //            $inputType = $this->query->getArgument('input')->getType();
-        //            foreach ($args['input'] as $key => $value) {
-        //                $fieldDefinition = $this->manager->getType($inputType)->getField($key);
-        //                $normalizedValue = $this->normalizeValue($value, $fieldDefinition->getType());
-        //                $normalizedArguments[$key] = $normalizedValue;
-        //            }
-        //        }
-
-        //   $this->applyConventions($normalizedArguments);
-
-        //if node exist, apply all arguments to populate the object
-        //        if (isset($normalizedArguments['node'], $normalizedArguments['id'], $normalizedArguments['input'])
-        //            && is_object($normalizedArguments['node'])
-        //            && $normalizedArguments['id'] instanceof ID
-        //        ) {
-        //            /** @var ID $id */
-        //            $id = $normalizedArguments['id'];
-        //            $id->getNodeType();
-        //            if ($this->manager->hasType($id->getNodeType())) {
-        //                $this->arrayToObject(
-        //                    $normalizedArguments['input'],
-        //                    $this->manager->getType($id->getNodeType()),
-        //                    $normalizedArguments['node']
-        //                );
-        //            }
-        //        }
-
         $indexedArguments = $this->resolveMethodArguments($refMethod, $normalizedArguments);
         ksort($indexedArguments);
 
         return $indexedArguments;
-    }
-
-    /**
-     * Apply conventions to a set of arguments
-     * e.g.
-     *
-     * - If arguments contains a key 'id' with type ID,
-     * a new key 'node' will be created with the real object
-     *  > $id(ID) => $node(Object)
-     *
-     * - foreach arguments containing a key with suffix '*id' with type ID
-     * a key with the same name (without '*id') will be created with the real object
-     * > $userId(ID) => $user(Object)
-     *
-     * - If exist a input argument, the query has a valid type and the node has not been created yet
-     *   create the node using the query type and input data
-     * > $input(array) => $node(object)
-     *
-     * @param array $arguments
-     */
-    protected function applyConventions(array &$arguments)
-    {
-        if (isset($arguments['id']) && $arguments['id'] instanceof ID && !isset($arguments['node'])) {
-            $arguments['node'] = $this->resolveIdObject($arguments['id']);
-        }
-
-        foreach ($arguments as $key => $value) {
-            if (preg_match('/(\w+)Id$/', $key, $matches) && !isset($arguments[$matches[1]]) && $arguments[$key] instanceof ID) {
-                $arguments[$matches[1]] = $this->resolveIdObject($value);
-            }
-        }
-
-        if (!isset($arguments['node']) && isset($arguments['input']) && $this->manager->hasType($this->query->getType())) {
-            $objectDefinition = $this->manager->getType($this->query->getType());
-            $node = $this->arrayToObject($arguments['input'], $objectDefinition);
-            if (\is_object($node)) {
-                $arguments['node'] = $node;
-            }
-        }
     }
 
     /**
@@ -310,34 +238,14 @@ class ResolverExecutor implements ContainerAwareInterface
     }
 
     /**
-     * @param ID $ID
-     *
-     * @return null|object
-     */
-    protected function resolveIdObject(ID $ID)
-    {
-        if ($this->manager->hasType($ID->getNodeType())) {
-            $managedClass = $this->manager->getType($ID->getNodeType())->getClass();
-            $objectManager = $this->container->get('doctrine')->getManagerForClass($managedClass);
-            if (null !== $objectManager) {
-                return $objectManager->find($managedClass, $ID->getDatabaseId());
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * Convert a array into object using given definition, if  the third parameter is given
-     * this object will be populated instead of create new instance
+     * Convert a array into object using given definition
      *
      * @param array                     $data       data to populate the object
      * @param ObjectDefinitionInterface $definition object definition
-     * @param mixed                     $object     populate given object instead of create new one
      *
      * @return mixed
      */
-    protected function arrayToObject(array $data, ObjectDefinitionInterface $definition, $object = null)
+    protected function arrayToObject(array $data, ObjectDefinitionInterface $definition)
     {
         $class = $definition->getClass();
 
@@ -352,23 +260,10 @@ class ResolverExecutor implements ContainerAwareInterface
         unset($value);
 
         //instantiate object
-        if (null === $object) {
-            if (!class_exists($class)) {
-                return $data;
-            }
-
-            if (class_exists($class)) {
-                $objectManager = $this->container->get('doctrine')->getManagerForClass($class);
-                if (null !== $objectManager
-                    && isset($data['id'])
-                    && $data['id']
-                    && $id = ID::createFromString($data['id'])->getDatabaseId()
-                ) {
-                    $object = $objectManager->find($class, $id);
-                } else {
-                    $object = new $class();
-                }
-            }
+        if (class_exists($class)) {
+            $object = new $class();
+        } else {
+            return $data;
         }
 
         //populate object
@@ -377,33 +272,6 @@ class ResolverExecutor implements ContainerAwareInterface
                 continue;
             }
             $fieldDefinition = $definition->getField($key);
-
-            if ($this->manager->hasType($fieldDefinition->getType())) {
-                if ($fieldDefinition->isList()) {
-                    $valueArray = [];
-                    foreach ($value as $item) {
-                        if (\is_array($item)) {
-                            $valueArray[] = $this->arrayToObject(
-                                $item,
-                                $this->manager->getType($fieldDefinition->getType())
-                            );
-                        }
-                    }
-                    $value = $valueArray;
-                } else {
-                    $childObject = null;
-                    if (($fieldValue = $this->getObjectValue($object, $fieldDefinition)) && \is_object($fieldValue)) {
-                        $childObject = $fieldValue;
-                    }
-                    if (\is_array($value)) {
-                        $value = $this->arrayToObject(
-                            $value,
-                            $this->manager->getType($fieldDefinition->getType()),
-                            $childObject
-                        );
-                    }
-                }
-            }
             $this->setObjectValue($object, $fieldDefinition, $value);
         }
 
@@ -417,13 +285,6 @@ class ResolverExecutor implements ContainerAwareInterface
      */
     protected function setObjectValue($object, FieldDefinition $fieldDefinition, $value)
     {
-        if ($value instanceof ID) {
-            $value = $this->resolveIdObject($value);
-            if (!$value) {
-                throw new UserError(sprintf('Invalid ID given in "%s"', $fieldDefinition->getName()));
-            }
-        }
-
         //using setter
         $accessor = new PropertyAccessor();
         $propertyName = $fieldDefinition->getOriginName();
@@ -439,33 +300,5 @@ class ResolverExecutor implements ContainerAwareInterface
                 }
             }
         }
-    }
-
-    /**
-     * @param mixed           $object
-     * @param FieldDefinition $fieldDefinition
-     *
-     * @return mixed|null
-     */
-    protected function getObjectValue($object, FieldDefinition $fieldDefinition)
-    {
-        //using setter
-        $accessor = new PropertyAccessor();
-        $propertyName = $fieldDefinition->getOriginName();
-        if ($propertyName) {
-            if ($accessor->isReadable($object, $propertyName)) {
-                return $accessor->getValue($object, $propertyName);
-            }
-
-            //using reflection
-            $refClass = new \ReflectionClass(\get_class($object));
-            if ($refClass->hasProperty($fieldDefinition->getOriginName()) && $property = $refClass->getProperty($fieldDefinition->getOriginName())) {
-                $property->setAccessible(true);
-
-                return $property->getValue($object);
-            }
-        }
-
-        return null;
     }
 }
