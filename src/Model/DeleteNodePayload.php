@@ -15,12 +15,12 @@ use Ynlo\GraphQLBundle\Annotation as API;
 /**
  * @API\ObjectType()
  */
-class RemoveNodePayload
+class DeleteNodePayload
 {
     /**
      * @var ID
      *
-     * @API\Field(type="ID!", description="ID of the node removed on success")
+     * @API\Field(type="ID!", description="ID of the node deleted on success")
      */
     public $id;
 

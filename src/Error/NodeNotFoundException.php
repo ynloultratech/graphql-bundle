@@ -21,7 +21,7 @@ class NodeNotFoundException extends UserError
     /**
      * {@inheritdoc}
      */
-    public function __construct($message = "", $code = 0, Throwable $previous = null)
+    public function __construct($message = null, $code = 0, Throwable $previous = null)
     {
         $message = $message ?? 'Node not Found';
         parent::__construct($message, $code, $previous);

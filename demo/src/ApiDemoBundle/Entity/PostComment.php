@@ -90,7 +90,7 @@ class PostComment implements NodeInterface, CommentInterface, CommentableInterfa
     /**
      * @return int
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }

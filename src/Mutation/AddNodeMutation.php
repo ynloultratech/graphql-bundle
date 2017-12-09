@@ -10,6 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Mutation;
 
+use Ynlo\GraphQLBundle\Model\AddNodePayload;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 
 /**
@@ -18,7 +19,7 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
 class AddNodeMutation extends AbstractMutationResolver
 {
     /**
-     * @param mixed $data
+     * {@inheritdoc}
      */
     protected function process($data)
     {
@@ -26,6 +27,18 @@ class AddNodeMutation extends AbstractMutationResolver
         $this->getManager()->persist($data);
         $this->getManager()->flush();
         $this->postPersist($data);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function returnPayload($data, $violations, $inputSource)
+    {
+        if (count($violations)) {
+            $data = null;
+        }
+
+        return new AddNodePayload($data, $violations, $inputSource['clientMutationId'] ?? null);
     }
 
     /**

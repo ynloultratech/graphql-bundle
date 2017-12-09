@@ -11,22 +11,35 @@
 namespace Ynlo\GraphQLBundle\Mutation;
 
 use Ynlo\GraphQLBundle\Error\NodeNotFoundException;
+use Ynlo\GraphQLBundle\Model\DeleteNodePayload;
+use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
-use Ynlo\GraphQLBundle\Model\UpdateNodePayload;
 
 /**
- * Class UpdateNodeMutation
+ * Class DeleteNodeMutation
  */
-class UpdateNodeMutation extends AbstractMutationResolver
+class DeleteNodeMutation extends AbstractMutationResolver
 {
     /**
      * {@inheritdoc}
      */
     protected function process($data)
     {
-        $this->preUpdate($data);
+        $this->preDelete($data);
+        $this->getManager()->remove($data);
         $this->getManager()->flush();
-        $this->postUpdate($data);
+        $this->postDelete($data);
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function returnPayload($data, $violations, $inputSource)
+    {
+        return new DeleteNodePayload(
+            $inputSource['id'] ? ID::createFromString($inputSource['id']) : null,
+            $inputSource['clientMutationId'] ?? null
+        );
     }
 
     /**
@@ -42,21 +55,9 @@ class UpdateNodeMutation extends AbstractMutationResolver
     }
 
     /**
-     * {@inheritdoc}
-     */
-    protected function returnPayload($data, $violations, $inputSource)
-    {
-        if (count($violations)) {
-            $data = null;
-        }
-
-        return new UpdateNodePayload($data, $violations, $inputSource['clientMutationId'] ?? null);
-    }
-
-    /**
      * @param NodeInterface $node
      */
-    protected function preUpdate(NodeInterface $node)
+    protected function preDelete(NodeInterface $node)
     {
         //override
     }
@@ -64,7 +65,7 @@ class UpdateNodeMutation extends AbstractMutationResolver
     /**
      * @param NodeInterface $node
      */
-    protected function postUpdate(NodeInterface $node)
+    protected function postDelete(NodeInterface $node)
     {
         //override
     }

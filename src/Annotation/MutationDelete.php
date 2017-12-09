@@ -11,32 +11,32 @@
 namespace Ynlo\GraphQLBundle\Annotation;
 
 use Doctrine\Common\Annotations\Annotation\Target;
+use Ynlo\GraphQLBundle\Form\Node\NodeDeleteInput;
 
 /**
  * @Annotation()
  *
  * @Target({"CLASS"})
  */
-final class MutationDelete extends Annotation
+final class MutationDelete extends Mutation
 {
     /**
      * @var string
      */
-    public $node;
+    public $name;
 
     /**
      * @var string
      */
-    public $description;
+    public $resolver;
 
     /**
      * @var string
      */
-    public $mutationName;
+    public $form = NodeDeleteInput::class;
 
     /**
      * @var string
      */
-    public $deprecationReason;
+    public $payload;
 }
-

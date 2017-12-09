@@ -81,6 +81,10 @@ class IDToNodeTransformer implements DataTransformerInterface
 
         $id = ID::createFromString($globalId);
 
+        if (!$id || !$id->getNodeType() || $this->dm->hasType($id->getNodeType())) {
+            return null;
+        }
+
         $node = $this->em
             ->getRepository($this->dm->getClassForType($id->getNodeType()))
             ->find($id->getDatabaseId());

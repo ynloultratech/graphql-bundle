@@ -103,7 +103,7 @@ class User implements NodeInterface, TimestampableInterface
     /**
      * {@inheritdoc}
      */
-    public function getId()
+    public function getId(): ?Int
     {
         return $this->id;
     }

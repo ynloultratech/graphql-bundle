@@ -79,6 +79,13 @@ services:
         tags:
             - { name: 'graphql.definition_resolver', priority: 100 }
 
+    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\MutationDeleteDefinitionLoader:
+        arguments: ['@form.factory']
+        calls:
+            - [ setReader, ['@annotations.reader']]
+        tags:
+            - { name: 'graphql.definition_resolver', priority: 100 }
+
     Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryFieldResolver:
         class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryFieldResolver
         arguments: ['@graphql.connection_builder']

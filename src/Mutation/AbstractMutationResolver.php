@@ -16,11 +16,10 @@ use Symfony\Component\Validator\ConstraintViolation as SymfonyConstraintViolatio
 use Ynlo\GraphQLBundle\Action\AbstractNodeAction;
 use Ynlo\GraphQLBundle\Form\DataTransformer\DataWithIdToNodeTransformer;
 use Ynlo\GraphQLBundle\Model\ConstraintViolation;
-use Ynlo\GraphQLBundle\Model\UpdateNodePayload;
 
 /**
  * Base class for mutations
- * Implement the method "process()" is enough in many scenarios
+ * Implement the method "process()" and "returnPayload()" is enough in many scenarios
  */
 abstract class AbstractMutationResolver extends AbstractNodeAction
 {
@@ -35,6 +34,7 @@ abstract class AbstractMutationResolver extends AbstractNodeAction
 
         $this->preValidate($input);
         $form->submit($input, false);
+        $this->postFormSubmit($input, $form->getData());
 
         $violations = $this->extractFormErrors($form);
         $this->postValidation($input, $violations);
@@ -45,29 +45,26 @@ abstract class AbstractMutationResolver extends AbstractNodeAction
             $this->process($form->getData());
         }
 
-        return $this->createPayload($data, $violations, $input);
+        return $this->returnPayload($data, $violations, $input);
     }
 
     /**
+     * Actions to process
+     *
+     * @param mixed $data
+     */
+    abstract protected function process($data);
+
+    /**
+     * The payload object or array matching the GraphQL definition
+     *
      * @param mixed $data        normalized data, its the input data processed by the form
      * @param array $violations  array of violations returned by the form validation process
      * @param array $inputSource the original submitted data in array
      *
-     * @return UpdateNodePayload
+     * @return mixed
      */
-    protected function createPayload($data, $violations, $inputSource)
-    {
-        if (count($violations)) {
-            $data = null;
-        }
-
-        return new UpdateNodePayload($data, $violations, $inputSource['clientMutationId'] ?? null);
-    }
-
-    /**
-     * @param mixed $data
-     */
-    abstract protected function process($data);
+    abstract protected function returnPayload($data, $violations, $inputSource);
 
     /**
      * @param mixed $data
@@ -151,13 +148,24 @@ abstract class AbstractMutationResolver extends AbstractNodeAction
         return $violations;
     }
 
+    /**
+     * Can use this method to verify if submitted data is valid
+     * otherwise can trow a error
+     *
+     * @param mixed $inputSource   contain the original submitted input data
+     * @param mixed $submittedData contains the processed data by the form
+     */
+    protected function postFormSubmit($inputSource, $submittedData)
+    {
+        //override in child
+    }
 
     /**
      * Can do something before validate the submitted data
      *
      * @param mixed $data
      */
-    protected function preValidate($data)
+    protected function preValidate(&$data)
     {
         //override in child
     }

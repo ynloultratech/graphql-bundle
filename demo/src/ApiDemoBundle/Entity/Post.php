@@ -36,6 +36,7 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  * @GraphQL\QueryGet()
  * @GraphQL\QueryGetAll()
  * @GraphQL\MutationAdd(form="Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Form\AddPostForm")
+ * @GraphQL\MutationDelete()
  */
 class Post implements NodeInterface, CommentableInterface, TimestampableInterface
 {
@@ -100,7 +101,7 @@ class Post implements NodeInterface, CommentableInterface, TimestampableInterfac
     /**
      * @return int
      */
-    public function getId(): int
+    public function getId(): ?int
     {
         return $this->id;
     }
