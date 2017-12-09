@@ -52,6 +52,10 @@ trait ObjectQueryTrait
      */
     public function getObjectDefinition(\ReflectionClass $refClass, DefinitionManager $definitionManager): ObjectDefinitionInterface
     {
+        if ($definitionManager->hasTypeForClass($refClass->getName())) {
+            return $definitionManager->getType($definitionManager->getTypeForClass($refClass->getName()));
+        }
+
         $objectType = null;
         preg_match('/(\w+)(\\\\w+)?\\\\(\w+)$/', $refClass->getName(), $matches);
         if (!isset($matches[1]) || !$definitionManager->hasType($matches[1])) {
