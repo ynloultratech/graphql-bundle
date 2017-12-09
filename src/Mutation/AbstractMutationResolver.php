@@ -16,6 +16,7 @@ use Symfony\Component\Validator\ConstraintViolation as SymfonyConstraintViolatio
 use Ynlo\GraphQLBundle\Action\AbstractNodeAction;
 use Ynlo\GraphQLBundle\Form\DataTransformer\DataWithIdToNodeTransformer;
 use Ynlo\GraphQLBundle\Model\ConstraintViolation;
+use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
 
 /**
  * Base class for mutations
@@ -34,20 +35,21 @@ abstract class AbstractMutationResolver extends AbstractNodeAction
 
         $this->preValidate($input);
         $form->submit($input, false);
-        $this->postFormSubmit($input, $form->getData());
-
-        $violations = $this->extractFormErrors($form);
-        $this->postValidation($input, $violations);
 
         $data = $form->getData();
+        $this->onSubmit($input, $data);
+
+        $violations = new ConstraintViolationList();
+        $this->extractFormErrors($form, $violations);
+        $this->postValidation($data, $violations);
 
         $dryRun = $input['dryRun'] ?? false;
 
         if ($dryRun) {
             $data = null;
         } else {
-            if ($form->isSubmitted() && $form->isValid() && !count($violations)) {
-                $this->process($form->getData());
+            if ($form->isSubmitted() && $form->isValid() && !$violations->count()) {
+                $this->process($data);
             }
         }
 
@@ -56,21 +58,22 @@ abstract class AbstractMutationResolver extends AbstractNodeAction
 
     /**
      * Actions to process
+     * the result processed data is given to payload
      *
      * @param mixed $data
      */
-    abstract protected function process($data);
+    abstract protected function process(&$data);
 
     /**
      * The payload object or array matching the GraphQL definition
      *
-     * @param mixed $data        normalized data, its the input data processed by the form
-     * @param array $violations  array of violations returned by the form validation process
-     * @param array $inputSource the original submitted data in array
+     * @param mixed                   $data        normalized data, its the input data processed by the form
+     * @param ConstraintViolationList $violations  violations returned by the form validation process
+     * @param array                   $inputSource the original submitted data in array
      *
      * @return mixed
      */
-    abstract protected function returnPayload($data, $violations, $inputSource);
+    abstract protected function returnPayload($data, ConstraintViolationList $violations, $inputSource);
 
     /**
      * @param mixed $data
@@ -101,14 +104,12 @@ abstract class AbstractMutationResolver extends AbstractNodeAction
     }
 
     /**
-     * @param FormInterface $form
-     * @param null|string   $parentName
-     *
-     * @return array
+     * @param FormInterface           $form
+     * @param ConstraintViolationList $violations
+     * @param null|string             $parentName
      */
-    protected function extractFormErrors(FormInterface $form, ?string $parentName = null): array
+    protected function extractFormErrors(FormInterface $form, ConstraintViolationList $violations, ?string $parentName = null)
     {
-        $violations = [];
         $errors = $form->getErrors();
         foreach ($errors as $error) {
             $violation = new ConstraintViolation();
@@ -135,7 +136,7 @@ abstract class AbstractMutationResolver extends AbstractNodeAction
                 $violation->setPlural($cause->getPlural());
             }
 
-            $violations[] = $violation;
+            $violations->addViolation($violation);
         }
         if ($form->all()) {
             foreach ($form->all() as $child) {
@@ -146,22 +147,19 @@ abstract class AbstractMutationResolver extends AbstractNodeAction
                     $parentName = null;
                 }
 
-                $childViolations = $this->extractFormErrors($child, $parentName);
-                $violations = array_merge($violations, $childViolations);
+                $this->extractFormErrors($child, $violations, $parentName);
             }
         }
-
-        return $violations;
     }
 
     /**
      * Can use this method to verify if submitted data is valid
      * otherwise can trow a error
      *
-     * @param mixed $inputSource   contain the original submitted input data
-     * @param mixed $submittedData contains the processed data by the form
+     * @param mixed $inputSource contain the original submitted input data
+     * @param mixed $normData    contains the processed and normalized data by the form
      */
-    protected function postFormSubmit($inputSource, $submittedData)
+    protected function onSubmit($inputSource, &$normData)
     {
         //override in child
     }
@@ -179,10 +177,10 @@ abstract class AbstractMutationResolver extends AbstractNodeAction
     /**
      * Can use this to add your custom validations errors
      *
-     * @param mixed                       $data
-     * @param array|ConstraintViolation[] $violations
+     * @param mixed                   $data
+     * @param ConstraintViolationList $violations
      */
-    protected function postValidation($data, &$violations)
+    protected function postValidation($data, ConstraintViolationList $violations)
     {
         //override in child
     }

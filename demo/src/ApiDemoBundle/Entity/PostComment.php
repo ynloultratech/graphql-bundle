@@ -12,6 +12,7 @@ namespace Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Model\CommentableInterface;
@@ -26,6 +27,9 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  * @ORM\Table()
  *
  * @GraphQL\ObjectType()
+ *
+ * @UniqueEntity(fields={"post", "author", "body"}, message="Duplicate comment", errorPath="body")
+ * @UniqueEntity(fields={"parentComment", "author", "body"}, message="Duplicate comment")
  */
 class PostComment implements NodeInterface, CommentInterface, CommentableInterface, TimestampableInterface
 {
@@ -106,7 +110,7 @@ class PostComment implements NodeInterface, CommentInterface, CommentableInterfa
     /**
      * @param User $author
      */
-    public function setAuthor(User $author)
+    public function setAuthor(?User $author)
     {
         $this->author = $author;
     }
@@ -146,7 +150,7 @@ class PostComment implements NodeInterface, CommentInterface, CommentableInterfa
     /**
      * @param string $body
      */
-    public function setBody(string $body)
+    public function setBody(?string $body)
     {
         $this->body = $body;
     }

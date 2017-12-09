@@ -74,14 +74,13 @@ class IDToNodeTransformer implements DataTransformerInterface
      */
     public function reverseTransform($globalId)
     {
-        // no issue number? It's optional, so that's ok
         if (!$globalId) {
             return null;
         }
 
         $id = ID::createFromString($globalId);
 
-        if (!$id || !$id->getNodeType() || $this->dm->hasType($id->getNodeType())) {
+        if (!$id || !$id->getNodeType() || !$this->dm->hasType($id->getNodeType())) {
             return null;
         }
 

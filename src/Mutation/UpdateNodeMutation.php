@@ -13,6 +13,7 @@ namespace Ynlo\GraphQLBundle\Mutation;
 use Ynlo\GraphQLBundle\Error\NodeNotFoundException;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Model\UpdateNodePayload;
+use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
 
 /**
  * Class UpdateNodeMutation
@@ -22,7 +23,7 @@ class UpdateNodeMutation extends AbstractMutationResolver
     /**
      * {@inheritdoc}
      */
-    protected function process($data)
+    protected function process(&$data)
     {
         $this->preUpdate($data);
         $this->getManager()->flush();
@@ -32,9 +33,9 @@ class UpdateNodeMutation extends AbstractMutationResolver
     /**
      * {@inheritdoc}
      */
-    protected function postFormSubmit($inputSource, $submittedData)
+    protected function onSubmit($inputSource, &$normData)
     {
-        if ($submittedData instanceof NodeInterface && $submittedData->getId()) {
+        if ($normData instanceof NodeInterface && $normData->getId()) {
             return;
         }
 
@@ -44,13 +45,13 @@ class UpdateNodeMutation extends AbstractMutationResolver
     /**
      * {@inheritdoc}
      */
-    protected function returnPayload($data, $violations, $inputSource)
+    protected function returnPayload($data, ConstraintViolationList $violations, $inputSource)
     {
-        if (count($violations)) {
+        if ($violations->count()) {
             $data = null;
         }
 
-        return new UpdateNodePayload($data, $violations, $inputSource['clientMutationId'] ?? null);
+        return new UpdateNodePayload($data, $violations->all(), $inputSource['clientMutationId'] ?? null);
     }
 
     /**

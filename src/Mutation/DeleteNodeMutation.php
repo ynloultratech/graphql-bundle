@@ -14,6 +14,7 @@ use Ynlo\GraphQLBundle\Error\NodeNotFoundException;
 use Ynlo\GraphQLBundle\Model\DeleteNodePayload;
 use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
+use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
 
 /**
  * Class DeleteNodeMutation
@@ -23,7 +24,7 @@ class DeleteNodeMutation extends AbstractMutationResolver
     /**
      * {@inheritdoc}
      */
-    protected function process($data)
+    protected function process(&$data)
     {
         $this->preDelete($data);
         $this->getManager()->remove($data);
@@ -34,7 +35,7 @@ class DeleteNodeMutation extends AbstractMutationResolver
     /**
      * {@inheritdoc}
      */
-    protected function returnPayload($data, $violations, $inputSource)
+    protected function returnPayload($data, ConstraintViolationList $violations, $inputSource)
     {
         return new DeleteNodePayload(
             $inputSource['id'] ? ID::createFromString($inputSource['id']) : null,
@@ -45,9 +46,9 @@ class DeleteNodeMutation extends AbstractMutationResolver
     /**
      * {@inheritdoc}
      */
-    protected function postFormSubmit($inputSource, $submittedData)
+    protected function onSubmit($inputSource, &$normData)
     {
-        if ($submittedData instanceof NodeInterface && $submittedData->getId()) {
+        if ($normData instanceof NodeInterface && $normData->getId()) {
             return;
         }
 

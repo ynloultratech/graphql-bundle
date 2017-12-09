@@ -21,12 +21,17 @@ trait ObjectQueryTrait
     /**
      * Get default name based in given class using naming convention
      *
-     * @param \ReflectionClass $refClass
+     * @param \ReflectionClass  $refClass
+     * @param DefinitionManager $definitionManager
      *
      * @return string
      */
-    public function getDefaultName(\ReflectionClass $refClass): string
+    public function getDefaultName(\ReflectionClass $refClass, DefinitionManager $definitionManager): string
     {
+        if ($definitionManager->hasTypeForClass($refClass->getName())) {
+            return $definitionManager->getTypeForClass($refClass->getName());
+        }
+
         preg_match('/\w+$/', $refClass->getName(), $matches);
 
         return lcfirst($matches[0] ?? '');

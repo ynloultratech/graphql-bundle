@@ -56,7 +56,7 @@ class QueryGetAllNodes implements DefinitionResolverInterface
         if ($annotation->name) {
             $name = $annotation->name;
         } else {
-            $name = 'all'.Inflector::pluralize(ucfirst($this->getDefaultName($refClass)));
+            $name = 'all'.Inflector::pluralize(ucfirst($this->getDefaultName($refClass, $definitionManager)));
         }
 
         $query = new QueryDefinition();

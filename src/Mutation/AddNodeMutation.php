@@ -12,6 +12,7 @@ namespace Ynlo\GraphQLBundle\Mutation;
 
 use Ynlo\GraphQLBundle\Model\AddNodePayload;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
+use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
 
 /**
  * Class AddNodeMutation
@@ -21,7 +22,7 @@ class AddNodeMutation extends AbstractMutationResolver
     /**
      * {@inheritdoc}
      */
-    protected function process($data)
+    protected function process(&$data)
     {
         $this->prePersist($data);
         $this->getManager()->persist($data);
@@ -32,13 +33,13 @@ class AddNodeMutation extends AbstractMutationResolver
     /**
      * {@inheritdoc}
      */
-    protected function returnPayload($data, $violations, $inputSource)
+    protected function returnPayload($data, ConstraintViolationList $violations, $inputSource)
     {
-        if (count($violations)) {
+        if ($violations->count()) {
             $data = null;
         }
 
-        return new AddNodePayload($data, $violations, $inputSource['clientMutationId'] ?? null);
+        return new AddNodePayload($data, $violations->all(), $inputSource['clientMutationId'] ?? null);
     }
 
     /**

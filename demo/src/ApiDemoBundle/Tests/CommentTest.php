@@ -25,43 +25,26 @@ class CommentTest extends ApiTestCase
      */
     public function testAddComment()
     {
-        //disabled test temporarily
-        self::assertTrue(true);
-
-        return;
-
-        self::query(
-            'userList',
-            [
-                'id',
-                'login',
-                'profile' => [
-                    'phone',
-                    'address' => [
-                        'zipCode',
-                    ],
-                ],
-            ]
-        );
-
         $faker = Factory::create();
 
         /** @var Post $post */
         $post = self::getFixtureReference('post1');
+        $user = self::getFixtureReference('admin');
 
         self::mutation(
             'addComment',
             [
                 'input' => [
                     'commentableId' => $commentableId = self::encodeID('Post', $post->getId()),
+                    'authorId' => $authorId = self::encodeID('User', $user->getId()),
                     'body' => $comment = $faker->sentence,
                     'clientMutationId' => (string) $clientMutationId = mt_rand(),
                 ],
             ],
             [
                 'node' => [
+                    'id',
                     '... on PostComment' => [
-                        'id',
                         'body',
                         'commentable' => [
                             '... on Post' => [
@@ -89,17 +72,12 @@ class CommentTest extends ApiTestCase
     /**
      * testRemoveComment
      */
-    public function testRemoveComment()
+    public function testDeleteComment()
     {
-        //disabled test temporarily
-        self::assertTrue(true);
-
-        return;
-
         $id = $this->testAddComment();
 
         self::mutation(
-            'removeComment',
+            'deleteComment',
             [
                 'input' => [
                     'id' => $id,
@@ -113,7 +91,7 @@ class CommentTest extends ApiTestCase
         );
 
         self::assertResponseCodeIsOK();
-        self::assertJsonPathEquals($id, 'data.removeComment.id');
-        self::assertJsonPathEquals($clientMutationId, 'data.removeComment.clientMutationId');
+        self::assertJsonPathEquals($id, 'data.deleteComment.id');
+        self::assertJsonPathEquals($clientMutationId, 'data.deleteComment.clientMutationId');
     }
 }

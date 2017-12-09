@@ -21,15 +21,11 @@ class Mutation
 {
     /**
      * @var string
-     *
-     * @Required()
      */
     public $name;
 
     /**
      * @var string
-     *
-     * @Required()
      */
     public $form;
 
@@ -50,8 +46,6 @@ class Mutation
 
     /**
      * @var string
-     *
-     * @Required()
      */
     public $resolver;
 

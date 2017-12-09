@@ -36,7 +36,7 @@ class MutationDeleteDefinitionLoader extends MutationDefinitionLoader
     {
         /** @var Annotation\MutationDelete $annotation */
         if (!$annotation->name) {
-            $annotation->name = 'delete'.ucfirst($this->getDefaultName($refClass));
+            $annotation->name = 'delete'.ucfirst($this->getDefaultName($refClass, $definitionManager));
         }
 
         if ($definitionManager->hasTypeForClass($refClass->getName())) {

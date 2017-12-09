@@ -64,9 +64,55 @@ class MutationDefinitionLoader implements DefinitionResolverInterface
      */
     public function resolve($annotation, \ReflectionClass $refClass, DefinitionManager $definitionManager)
     {
+        /** @var Annotation\Mutation $annotation */
+
+        if (!$annotation->name) {
+            $annotation->name = $this->getDefaultName($refClass, $definitionManager);
+        }
+
+        //try find form using naming convention
+        //the form should be placed in the same bundle with the same name of the mutation with "Input" suffix
+        //e.g. AppBundle\Mutation\User\AddUser => AppBundle\Form\Input\User\AddUserInput
+        if (!$annotation->form) {
+            $definition = $this->getObjectDefinition($refClass, $definitionManager);
+            if ($class = $definition->getClass()) {
+                $bundleNamespace = preg_replace('~Bundle(?!.*Bundle)[\\\\\w+]+~', null, $class).'Bundle';
+                $formClass = sprintf('%s\Form\Input\%s\%sInput', $bundleNamespace, $definition->getName(), ucfirst($annotation->name));
+                if (class_exists($formClass)) {
+                    $annotation->form = $formClass;
+                } else {
+                    $error = sprintf(
+                        'Can`t find a valid input form type to use in "%s".
+                         Create the form "%s" or specify a custom form in the annotation of "%s"',
+                        $annotation->name,
+                        $formClass,
+                        $refClass->getName()
+                    );
+                    throw new \Exception($error);
+                }
+            }
+        }
+
+
         $this->definitionManager = $definitionManager;
         $mutation = $this->createMutation($annotation);
         $this->definitionManager->addMutation($mutation);
+
+        if (!$mutation->getType()) {
+            $mutation->setType($annotation->payload);
+        }
+
+        if (!$mutation->getType()) {
+            $error = sprintf(
+                'The mutation "%s" does not have a valid payload, must define the payload in the annotation.',
+                $annotation->name
+            );
+            throw new \Exception($error);
+        }
+
+        if (!$mutation->getResolver()) {
+            $mutation->setResolver($refClass->getName());
+        }
     }
 
     /**

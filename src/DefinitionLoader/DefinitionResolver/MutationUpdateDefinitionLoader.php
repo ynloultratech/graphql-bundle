@@ -35,7 +35,7 @@ class MutationUpdateDefinitionLoader extends MutationDefinitionLoader
     public function resolve($annotation, \ReflectionClass $refClass, DefinitionManager $definitionManager)
     {
         if (!$annotation->name) {
-            $annotation->name = 'update'.ucfirst($this->getDefaultName($refClass));
+            $annotation->name = 'update'.ucfirst($this->getDefaultName($refClass, $definitionManager));
         }
 
         parent::resolve($annotation, $refClass, $definitionManager);

@@ -64,7 +64,7 @@ class QueryResolver implements DefinitionResolverInterface
         if ($annotation->name) {
             $query->setName($annotation->name);
         } else {
-            $query->setName($this->getDefaultName($refClass));
+            $query->setName($this->getDefaultName($refClass, $definitionManager));
         }
 
         if ($definitionManager->hasQuery($query->getName())) {
