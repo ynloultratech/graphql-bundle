@@ -41,6 +41,10 @@ trait ObjectQueryTrait
      * Get object type using naming convention
      * if Query is placed under User\AllUsers namespace, then "User" is the object type
      *
+     * Mutation\User\UpdateUser -> User
+     * Query\User\Users -> User
+     * Form\Input\User\AddUserInput -> User
+     *
      * @param \ReflectionClass  $refClass
      * @param DefinitionManager $definitionManager
      *
