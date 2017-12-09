@@ -130,10 +130,22 @@ GrahpQL;
      */
     private static function flattenExpectation(array $expectation)
     {
+
+
         $expectNormalized = [];
         foreach ($expectation as $path => $value) {
             if (\is_array($value)) {
-                $value = $path." {\n\t\t".self::flattenExpectation($value)."\n\t}";
+                if (isset($value[0], $value[1])
+                    && is_array($value[0])
+                    && is_array($value[1])
+                ) {
+                    $params = self::flattenParameters($value[0]);
+                    $expectation = self::flattenExpectation($value[1]);
+
+                    $value = "$path $params {\n\t\t$expectation\n\t}";
+                } else {
+                    $value = $path." {\n\t\t".self::flattenExpectation($value)."\n\t}";
+                }
             }
             $expectNormalized[] = $value;
         }

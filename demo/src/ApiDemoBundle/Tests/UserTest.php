@@ -10,6 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Tests;
 
+use Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity\Post;
 use Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity\User;
 use Ynlo\GraphQLBundle\Test\ApiTestCase;
 
@@ -336,5 +337,34 @@ class UserTest extends ApiTestCase
         self::assertRepositoryNotContains(User::class, ['username' => $user1->getUsername()]);
         self::assertJsonPathEquals($id, 'data.deleteUser.id');
         self::assertJsonPathEquals($clientMutationId, 'data.deleteUser.clientMutationId');
+    }
+
+    /**
+     * testUserList
+     */
+    public function testGetPostsInsideUser()
+    {
+        /** @var User $user1 */
+        $user1 = self::getFixtureReference('user1');
+        self::query(
+            'user',
+            ['login' => $user1->getUsername()],
+            [
+                'id',
+                'login',
+                'posts' => [
+                    ['first' => 10],
+                    [
+                        'title',
+                    ],
+                ],
+            ]
+        );
+
+        self::assertResponseCodeIsOK();
+        /** @var Post $post */
+        foreach ($user1->getPosts() as $index => $post) {
+            self::assertJsonPathEquals($post->getTitle(), "data.user.posts[$index].title");
+        }
     }
 }
