@@ -35,7 +35,7 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  * @GraphQL\ObjectType()
  * @GraphQL\QueryGet()
  * @GraphQL\QueryGetAll()
- * @GraphQL\MutationAdd(form="Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Form\AddPostForm")
+ * @GraphQL\MutationAdd()
  * @GraphQL\MutationDelete()
  */
 class Post implements NodeInterface, CommentableInterface, TimestampableInterface

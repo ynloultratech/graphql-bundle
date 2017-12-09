@@ -8,7 +8,7 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Form;
+namespace Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Form\Input\Profile;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -16,9 +16,9 @@ use Symfony\Component\OptionsResolver\OptionsResolver;
 use Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity\Profile;
 
 /**
- * Class ProfileType
+ * Class ProfileInput
  */
-class ProfileType extends AbstractType
+class ProfileInput extends AbstractType
 {
     /**
      * {@inheritdoc}

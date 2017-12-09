@@ -8,17 +8,17 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Form;
+namespace Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Form\Input\Post;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity\User;
+use Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity\Post;
 
 /**
- * Class CreateUserForm
+ * AddPostInput
  */
-class CreateUserForm extends AbstractType
+class AddPostInput extends AbstractType
 {
     /**
      * {@inheritdoc}
@@ -26,9 +26,9 @@ class CreateUserForm extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('login', null, ['property_path' => 'username', 'required' => true])
-            ->add('profile', ProfileType::class, ['required' => false])
-            ->add('enabled');
+            ->add('title')
+            ->add('body')
+            ->add('author');
     }
 
     /**
@@ -40,7 +40,7 @@ class CreateUserForm extends AbstractType
 
         $resolver->setDefaults(
             [
-                'data_class' => User::class,
+                'data_class' => Post::class,
             ]
         );
     }

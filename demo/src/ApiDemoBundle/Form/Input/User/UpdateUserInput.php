@@ -8,14 +8,14 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Form;
+namespace Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Form\Input\User;
 
 use Symfony\Component\Form\FormBuilderInterface;
 
 /**
- * Class UpdateUserForm
+ * Class UpdateUserInput
  */
-class UpdateUserForm extends CreateUserForm
+class UpdateUserInput extends AddUserInput
 {
     /**
      * {@inheritdoc}
