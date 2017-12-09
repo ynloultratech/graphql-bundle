@@ -53,6 +53,33 @@ class UserTest extends ApiTestCase
     }
 
     /**
+     * testUserList
+     */
+    public function testUserListWithOrder()
+    {
+        $records = self::getRepository(User::class)->findBy([], ['username' => 'DESC'], 3);
+        self::query(
+            'allUsers',
+            ['first' => 3, 'orderBy' => ['field' => 'login', 'direction' => 'DESC']],
+            [
+                'id',
+                'login',
+                'profile' => [
+                    'phone',
+                    'address' => [
+                        'zipCode',
+                    ],
+                ],
+            ]
+        );
+
+        self::assertResponseCodeIsOK();
+        self::assertJsonPathEquals($records[0]->getUsername(), 'data.allUsers[0].login');
+        self::assertJsonPathEquals($records[1]->getUsername(), 'data.allUsers[1].login');
+        self::assertJsonPathEquals($records[2]->getUsername(), 'data.allUsers[2].login');
+    }
+
+    /**
      * testUserGet
      */
     public function testUserGet()
