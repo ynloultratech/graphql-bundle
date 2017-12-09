@@ -8,7 +8,7 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Definition;
+namespace Ynlo\GraphQLBundle\Definition\Traits;
 
 /**
  * Trait ExecutableDefinitionTrait

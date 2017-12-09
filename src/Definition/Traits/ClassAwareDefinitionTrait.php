@@ -8,31 +8,37 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Definition;
+namespace Ynlo\GraphQLBundle\Definition\Traits;
+
+use Ynlo\GraphQLBundle\Definition\ClassAwareDefinitionInterface;
 
 /**
- * Trait ObjectDefinitionTrait
+ * Trait ClassAwareDefinitionTrait
  */
-trait ObjectDefinitionTrait
+trait ClassAwareDefinitionTrait
 {
     /**
      * @var string
      */
-    protected $exclusionPolicy = ObjectDefinitionInterface::EXCLUDE_NONE;
+    protected $class;
 
     /**
      * @return string
      */
-    public function getExclusionPolicy(): string
+    public function getClass(): ?string
     {
-        return $this->exclusionPolicy;
+        return $this->class;
     }
 
     /**
-     * @param string $exclusionPolicy
+     * @param string $class
+     *
+     * @return ClassAwareDefinitionInterface
      */
-    public function setExclusionPolicy(string $exclusionPolicy)
+    public function setClass(?string $class): ClassAwareDefinitionInterface
     {
-        $this->exclusionPolicy = $exclusionPolicy;
+        $this->class = $class;
+
+        return $this;
     }
 }

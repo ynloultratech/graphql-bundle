@@ -10,6 +10,8 @@
 
 namespace Ynlo\GraphQLBundle\Definition;
 
+use Ynlo\GraphQLBundle\Definition\Traits\ExecutableDefinitionTrait;
+
 /**
  * Class FieldDefinition
  */
