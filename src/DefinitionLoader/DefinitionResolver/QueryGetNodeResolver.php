@@ -43,7 +43,7 @@ class QueryGetNodeResolver implements DefinitionResolverInterface
         if ($annotation->name) {
             $name = $annotation->name;
         } else {
-            $name = $this->getDefaultName($refClass, $definitionManager);
+            $name = lcfirst($this->getDefaultName($refClass, $definitionManager));
         }
         $this->createGetNoneQuery($name, $annotation, $refClass, $definitionManager);
 
@@ -51,7 +51,7 @@ class QueryGetNodeResolver implements DefinitionResolverInterface
             if ($annotation->pluralQueryName) {
                 $name = $annotation->pluralQueryName;
             } else {
-                $name = Inflector::pluralize($this->getDefaultName($refClass, $definitionManager));
+                $name = Inflector::pluralize(lcfirst($this->getDefaultName($refClass, $definitionManager)));
             }
             $this->createGetNoneQuery($name, $annotation, $refClass, $definitionManager, true);
         }
