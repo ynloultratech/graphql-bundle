@@ -94,6 +94,18 @@ class MutationDefinitionLoader implements DefinitionResolverInterface
             $inputObject->prependField($clientMutationId);
         }
 
+        if ($annotation->dryRun) {
+            $clientMutationId = new FieldDefinition();
+            $clientMutationId->setName('dryRun');
+            $clientMutationId->setType(Type::BOOLEAN);
+            $clientMutationId->setDescription(
+                'Execute only a validation process without save anything.
+Helpful to create a server side validation. 
+Must check `constraintViolations` in the payload to get validation messages.'
+            );
+            $inputObject->prependField($clientMutationId);
+        }
+
         $this->definitionManager->addType($inputObject);
 
         $input = new ArgumentDefinition();

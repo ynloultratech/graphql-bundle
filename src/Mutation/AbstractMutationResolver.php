@@ -41,8 +41,14 @@ abstract class AbstractMutationResolver extends AbstractNodeAction
 
         $data = $form->getData();
 
-        if ($form->isSubmitted() && $form->isValid() && !count($violations)) {
-            $this->process($form->getData());
+        $dryRun = $input['dryRun'] ?? false;
+
+        if ($dryRun) {
+            $data = null;
+        } else {
+            if ($form->isSubmitted() && $form->isValid() && !count($violations)) {
+                $this->process($form->getData());
+            }
         }
 
         return $this->returnPayload($data, $violations, $input);

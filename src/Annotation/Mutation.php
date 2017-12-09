@@ -44,6 +44,11 @@ class Mutation
     public $clientMutationId = true;
 
     /**
+     * @var bool
+     */
+    public $dryRun;
+
+    /**
      * @var string
      *
      * @Required()

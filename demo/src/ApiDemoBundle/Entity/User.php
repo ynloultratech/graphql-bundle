@@ -29,8 +29,9 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  *
  * @GraphQL\QueryGet(fetchBy="login")
  * @GraphQL\QueryGetAll()
- * @GraphQL\MutationAdd(form="Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Form\CreateUserForm")
+ * @GraphQL\MutationAdd(form="Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Form\CreateUserForm", dryRun=true)
  * @GraphQL\MutationUpdate(form="Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Form\UpdateUserForm")
+ * @GraphQL\MutationDelete()
  */
 class User implements NodeInterface, TimestampableInterface
 {
@@ -171,7 +172,7 @@ class User implements NodeInterface, TimestampableInterface
     /**
      * @param Profile $profile
      */
-    public function setProfile(Profile $profile)
+    public function setProfile(?Profile $profile)
     {
         $this->profile = $profile;
     }

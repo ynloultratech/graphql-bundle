@@ -110,11 +110,6 @@ class UserTest extends ApiTestCase
      */
     public function testAddUser()
     {
-        //disabled test temporarily
-        self::assertTrue(true);
-
-        return;
-
         self::mutation(
             'addUser',
             [
@@ -160,11 +155,6 @@ class UserTest extends ApiTestCase
      */
     public function testAddUserDryRun()
     {
-        //disabled test temporarily
-        self::assertTrue(true);
-
-        return;
-
         self::mutation(
             'addUser',
             [
@@ -205,18 +195,13 @@ class UserTest extends ApiTestCase
      */
     public function testAddUserValidation()
     {
-        //disabled test temporarily
-        self::assertTrue(true);
-
-        return;
-
         self::mutation(
             'addUser',
             [
                 'input' => [
                     'login' => '',
                     'profile' => [
-                        'email' => '',
+                        'email' => 'sssss',
                     ],
                     'dryRun' => true,
                     'clientMutationId' => (string) $clientMutationId = mt_rand(),
@@ -245,7 +230,7 @@ class UserTest extends ApiTestCase
         self::assertJsonPathNull('data.addUser.node');
         self::assertJsonPathEquals('This value should not be blank.', 'data.addUser.constraintViolations[0].message');
         self::assertJsonPathEquals('login', 'data.addUser.constraintViolations[0].propertyPath');
-        self::assertJsonPathEquals('This value should not be blank.', 'data.addUser.constraintViolations[1].message');
+        self::assertJsonPathEquals('This value is not a valid email address.', 'data.addUser.constraintViolations[1].message');
         self::assertJsonPathEquals('profile.email', 'data.addUser.constraintViolations[1].propertyPath');
     }
 
@@ -254,11 +239,6 @@ class UserTest extends ApiTestCase
      */
     public function testUpdateUser()
     {
-        //disabled test temporarily
-        self::assertTrue(true);
-
-        return;
-
         $newLogin = 'graphql';
 
         /** @var User $user1 */
@@ -303,21 +283,16 @@ class UserTest extends ApiTestCase
     }
 
     /**
-     * testRemoveUser
+     * testDeleteUser
      */
-    public function testRemoveUser()
+    public function testDeleteUser()
     {
-        //disabled test temporarily
-        self::assertTrue(true);
-
-        return;
-
         /** @var User $user1 */
         $user1 = self::getFixtureReference('user1');
         self::assertRepositoryContains(User::class, ['username' => $user1->getUsername()]);
 
         self::mutation(
-            'removeUser',
+            'deleteUser',
             [
                 'input' => [
                     'id' => $id = self::encodeID('User', $user1->getId()),
@@ -332,7 +307,7 @@ class UserTest extends ApiTestCase
 
         self::assertResponseCodeIsOK();
         self::assertRepositoryNotContains(User::class, ['username' => $user1->getUsername()]);
-        self::assertJsonPathEquals($id, 'data.removeUser.id');
-        self::assertJsonPathEquals($clientMutationId, 'data.removeUser.clientMutationId');
+        self::assertJsonPathEquals($id, 'data.deleteUser.id');
+        self::assertJsonPathEquals($clientMutationId, 'data.deleteUser.clientMutationId');
     }
 }
