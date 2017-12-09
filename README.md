@@ -11,5 +11,8 @@
 
 - [X] GraphQL types using doctrine annotations
 - [X] GraphQL Relay Specification
-- [X] Integrated API explorer and documentation with [GraphiQL](https://github.com/graphql/graphiql)
-- [X] Integrated common CRUD operations (Queries & Mutations)
+- [X] API explorer and documentation with [GraphiQL](https://github.com/graphql/graphiql)
+- [X] Common CRUD operations (Queries & Mutations)
+- [X] Customizable mutations using Symfony Forms & Validator
+- [X] Test framework to write functional GraphQL API tests easily
+- [X] *Convention over configuration* approach to avoid complicated configurations
