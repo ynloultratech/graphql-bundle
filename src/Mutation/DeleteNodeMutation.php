@@ -19,7 +19,7 @@ use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
 /**
  * Class DeleteNodeMutation
  */
-class DeleteNodeMutation extends AbstractMutationResolver
+class DeleteNodeMutation extends AbstractMutationAbstractResolver
 {
     /**
      * {@inheritdoc}

@@ -10,16 +10,16 @@
 
 namespace Ynlo\GraphQLBundle\Query\Node;
 
-use Ynlo\GraphQLBundle\Action\AbstractNodeAction;
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Model\ID;
+use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
 
 /**
  * @GraphQL\Query(name="node")
  * @GraphQL\Argument(name="id", type="ID!")
  */
-class Node extends AbstractNodeAction
+class Node extends AbstractResolver
 {
     /**
      * @param mixed $id

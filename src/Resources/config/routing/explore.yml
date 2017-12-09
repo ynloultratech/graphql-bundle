@@ -1,3 +1,3 @@
 api_explore:
-    path:      /explore
-    defaults:  { _controller: YnloGraphQLBundle:Explore:explore }
+    path:      /explorer
+    defaults:  { _controller: YnloGraphQLBundle:Explorer:explorer }

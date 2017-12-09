@@ -12,7 +12,7 @@ namespace Ynlo\GraphQLBundle\Form\DataTransformer;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\DataTransformerInterface;
-use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
 use Ynlo\GraphQLBundle\Model\ID;
 
 /**

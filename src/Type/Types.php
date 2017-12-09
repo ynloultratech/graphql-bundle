@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
-use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
 
 /**
  * Class Types

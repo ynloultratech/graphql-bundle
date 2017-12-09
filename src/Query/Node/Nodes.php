@@ -11,16 +11,16 @@
 namespace Ynlo\GraphQLBundle\Query\Node;
 
 use Doctrine\Common\Util\Inflector;
-use Ynlo\GraphQLBundle\Action\AbstractNodeAction;
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Model\ID;
+use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
 
 /**
  * @GraphQL\Query(list=true)
  * @GraphQL\Argument(name="ids", type="[ID!]!")
  */
-class Nodes extends AbstractNodeAction
+class Nodes extends AbstractResolver
 {
     /**
      * @param ID[]|mixed[] $ids

@@ -12,16 +12,16 @@ namespace Ynlo\GraphQLBundle\Query\Node;
 
 use Doctrine\ORM\QueryBuilder;
 use GraphQL\Error\Error;
-use Ynlo\GraphQLBundle\Action\AbstractNodeAction;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Model\OrderBy;
+use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
 
 /**
  * Base class to fetch nodes
  */
-class AllNodes extends AbstractNodeAction
+class AllNodes extends AbstractResolver
 {
     /**
      * @var string

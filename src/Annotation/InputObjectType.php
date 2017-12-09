@@ -10,12 +10,12 @@
 
 namespace Ynlo\GraphQLBundle\Annotation;
 
-use Doctrine\Common\Annotations\Annotation;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 
 /**
  * @Annotation()
- * @Annotation\Target("CLASS")
+ *
+ * @Target("CLASS")
  */
 final class InputObjectType
 {

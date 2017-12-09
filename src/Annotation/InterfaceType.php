@@ -10,14 +10,12 @@
 
 namespace Ynlo\GraphQLBundle\Annotation;
 
-use Doctrine\Common\Annotations\Annotation\Target;
-
 /**
  * @Annotation()
  *
  * @Target("CLASS")
  */
-final class InterfaceType extends Annotation
+final class InterfaceType
 {
     /**
      * @var string

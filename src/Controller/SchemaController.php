@@ -24,7 +24,7 @@ class SchemaController extends Controller
      */
     public function schemaAction(): Response
     {
-        $schema = $this->get('graphql.schema_compiler')->compile();
+        $schema = $this->get('Ynlo\GraphQLBundle\Schema\SchemaCompiler')->compile();
 
         return new Response(SchemaPrinter::doPrint($schema));
     }

@@ -14,7 +14,7 @@ use Doctrine\Common\Util\ClassUtils;
 use GraphQL\Type\Definition\InterfaceType;
 use GraphQL\Type\Definition\Type;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
-use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
 
 /**
  * Class AbstractInterfaceType

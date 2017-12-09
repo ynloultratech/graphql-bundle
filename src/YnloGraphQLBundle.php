@@ -13,6 +13,7 @@ namespace Ynlo\GraphQLBundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServicesCompilerPass;
+use Ynlo\GraphQLBundle\Type\TypeAutoLoader;
 
 /**
  * Class YnloGraphQLBundle
@@ -24,7 +25,7 @@ class YnloGraphQLBundle extends Bundle
      */
     public function boot()
     {
-        $this->container->get('graphql.types_autoloader')->autoloadTypes();
+        $this->container->get(TypeAutoLoader::class)->autoloadTypes();
     }
 
     /**

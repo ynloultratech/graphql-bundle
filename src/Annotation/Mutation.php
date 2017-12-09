@@ -10,8 +10,6 @@
 
 namespace Ynlo\GraphQLBundle\Annotation;
 
-use Doctrine\Common\Annotations\Annotation\Required;
-
 /**
  * @Annotation()
  *

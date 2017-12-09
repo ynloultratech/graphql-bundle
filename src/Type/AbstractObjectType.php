@@ -16,7 +16,7 @@ use GraphQL\Type\Definition\Type;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
-use Ynlo\GraphQLBundle\Definition\ObjectFieldResolver;
+use Ynlo\GraphQLBundle\Resolver\ObjectFieldResolver;
 
 /**
  * Class AbstractObjectType

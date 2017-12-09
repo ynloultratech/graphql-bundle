@@ -15,7 +15,7 @@ use GraphQL\Type\Definition\Type;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
-use Ynlo\GraphQLBundle\Definition\ResolverExecutor;
+use Ynlo\GraphQLBundle\Resolver\ResolverExecutor;
 
 /**
  * Class QueryType

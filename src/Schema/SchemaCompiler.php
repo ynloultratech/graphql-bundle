@@ -13,12 +13,14 @@ namespace Ynlo\GraphQLBundle\Schema;
 use GraphQL\Type\Schema;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
-use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionManager;
-use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionRegistry;
+use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
 use Ynlo\GraphQLBundle\Type\Types;
 
 /**
- * Class SchemaCompiler
+ * GraphQL Schema compiler
+ *
+ * Compile all definitions into graphql-php schema
  */
 class SchemaCompiler implements ContainerAwareInterface
 {
@@ -45,13 +47,13 @@ class SchemaCompiler implements ContainerAwareInterface
     }
 
     /**
-     * @param string $manager
+     * @param string $endpoint
      *
      * @return Schema
      */
-    public function compile(string $manager = 'default'): Schema
+    public function compile(string $endpoint = 'default'): Schema
     {
-        $this->manager = $this->registry->getManager($manager);
+        $this->manager = $this->registry->getManager($endpoint);
         Types::setUp($this->container, $this->manager);
 
         //automatically create all interface implementors

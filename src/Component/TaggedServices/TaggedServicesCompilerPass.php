@@ -26,11 +26,11 @@ class TaggedServicesCompilerPass implements CompilerPassInterface
      */
     public function process(ContainerBuilder $container)
     {
-        if (!$container->hasDefinition('tagged_services')) {
+        if (!$container->hasDefinition(TaggedServices::class)) {
             return;
         }
 
-        $manager = $container->getDefinition('tagged_services');
+        $manager = $container->getDefinition(TaggedServices::class);
 
         $definitions = $container->getDefinitions();
         foreach ($definitions as $id => $definition) {

@@ -10,11 +10,8 @@
 
 namespace Ynlo\GraphQLBundle\Annotation;
 
-use Doctrine\Common\Annotations\Annotation;
-
 /**
  * @Annotation
- * @Annotation\Target({"CLASS", "METHOD"})
  */
 final class Connection
 {

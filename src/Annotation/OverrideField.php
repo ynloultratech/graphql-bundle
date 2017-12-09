@@ -10,13 +10,12 @@
 
 namespace Ynlo\GraphQLBundle\Annotation;
 
-use Doctrine\Common\Annotations\Annotation;
-
 /**
  * @Annotation
- * @Annotation\Target({"CLASS"})
+ *
+ * @Target({"CLASS"})
  */
-final class OverrideField extends Annotation
+final class OverrideField
 {
     /**
      * @var string

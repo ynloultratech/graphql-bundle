@@ -10,7 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Type;
 
-use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
 
 /**
  * Interface DefinitionManagerAwareInterface

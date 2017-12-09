@@ -1,120 +1,104 @@
 services:
-    tagged_services:
-        class: Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices
+    Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices:
         arguments: [ '@service_container' ]
 
     Ynlo\GraphQLBundle\EventListener\CorsListener:
-          class: Ynlo\GraphQLBundle\EventListener\CorsListener
-          tags:
-              - { name: 'kernel.event_subscriber' }
+        tags:
+          - { name: 'kernel.event_subscriber' }
 
     Ynlo\GraphQLBundle\Schema\SchemaCompiler:
-        arguments: ['@graphql.definition_registry']
+        arguments: ['@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry']
         calls:
           - [ setContainer, ['@service_container']]
 
-    graphql.definition_registry:
-        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionRegistry
-        arguments: ['@tagged_services', '%kernel.cache_dir%']
+    Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry:
+        arguments: ['@Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices', '%kernel.cache_dir%']
 
-    graphql.definition_auto_loader:
-        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionAutoLoader
+    Ynlo\GraphQLBundle\Definition\Loader\AnnotationLoader:
         arguments: ['@service_container']
         tags:
             - { name: 'graphql.definition_loader' }
 
-    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\ObjectTypeResolver:
-        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\ObjectTypeResolver
-        arguments: ['@tagged_services','@graphql.connection_builder']
+    Ynlo\GraphQLBundle\Definition\Loader\Annotation\ObjectTypeAnnotationParser:
+        arguments: ['@Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices','@Ynlo\GraphQLBundle\Definition\ConnectionDefinitionBuilder']
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
             - { name: 'graphql.definition_resolver', priority: 200}
 
-    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryGetNodeResolver:
-        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryGetNodeResolver
+    Ynlo\GraphQLBundle\Definition\Loader\Annotation\QueryGetNodeAnnotationParser:
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
             - { name: 'graphql.definition_resolver', priority: 150 }
 
-    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryGetAllNodes:
-        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryGetAllNodes
-        arguments: ['@graphql.connection_builder']
+    Ynlo\GraphQLBundle\Definition\Loader\Annotation\QueryGetAllNodesAnnotationParser:
+        arguments: ['@Ynlo\GraphQLBundle\Definition\ConnectionDefinitionBuilder']
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
             - { name: 'graphql.definition_resolver', priority: 150 }
 
-    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryResolver:
-        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryResolver
-        arguments: ['@graphql.connection_builder']
+    Ynlo\GraphQLBundle\Definition\Loader\Annotation\QueryAnnotationParser:
+        arguments: ['@Ynlo\GraphQLBundle\Definition\ConnectionDefinitionBuilder']
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
             - { name: 'graphql.definition_resolver', priority: 100 }
 
-    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\MutationDefinitionLoader:
-        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\MutationDefinitionLoader
+    Ynlo\GraphQLBundle\Definition\Loader\Annotation\MutationAnnotationParser:
         arguments: ['@form.factory']
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
             - { name: 'graphql.definition_resolver', priority: 100 }
 
-    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\MutationAddDefinitionLoader:
-        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\MutationAddDefinitionLoader
+    Ynlo\GraphQLBundle\Definition\Loader\Annotation\MutationAddAnnotationParser:
         arguments: ['@form.factory']
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
             - { name: 'graphql.definition_resolver', priority: 100 }
 
-    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\MutationUpdateDefinitionLoader:
-        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\MutationUpdateDefinitionLoader
+    Ynlo\GraphQLBundle\Definition\Loader\Annotation\MutationUpdateAnnotationParser:
         arguments: ['@form.factory']
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
             - { name: 'graphql.definition_resolver', priority: 100 }
 
-    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\MutationDeleteDefinitionLoader:
+    Ynlo\GraphQLBundle\Definition\Loader\Annotation\MutationDeleteAnnotationParser:
         arguments: ['@form.factory']
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
             - { name: 'graphql.definition_resolver', priority: 100 }
 
-    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryFieldResolver:
-        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\QueryFieldResolver
-        arguments: ['@graphql.connection_builder']
+    Ynlo\GraphQLBundle\Definition\Loader\Annotation\FieldConnectionAnnotationParser:
+        arguments: ['@Ynlo\GraphQLBundle\Definition\ConnectionDefinitionBuilder']
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
             - { name: 'graphql.definition_resolver', priority: 50 }
 
-    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\FieldDecorator\GraphQLFieldDefinitionDecorator:
-        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\FieldDecorator\GraphQLFieldDefinitionDecorator
+    Ynlo\GraphQLBundle\Definition\Loader\Annotation\FieldDecorator\GraphQLFieldDefinitionDecorator:
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
             - { name: 'graphql.field_definition_decorator', priority: 100 }
 
-    Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\FieldDecorator\DoctrineFieldDefinitionDecorator:
-        class: Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\FieldDecorator\DoctrineFieldDefinitionDecorator
-        arguments: ['@tagged_services']
+    Ynlo\GraphQLBundle\Definition\Loader\Annotation\FieldDecorator\DoctrineFieldDefinitionDecorator:
+        arguments: ['@Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices']
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
             - { name: 'graphql.field_definition_decorator' }
 
-    graphql.connection_builder:
-        class: Ynlo\GraphQLBundle\Definition\ConnectionDefinitionBuilder
-        arguments: ['@graphql.definition_registry']
+    Ynlo\GraphQLBundle\Definition\ConnectionDefinitionBuilder:
+        arguments: ['@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry']
         shared: false
 
-    graphql.types_autoloader:
-        class: Ynlo\GraphQLBundle\Type\TypeAutoLoader
+    Ynlo\GraphQLBundle\Type\TypeAutoLoader:
         calls:
           - [ setContainer, ['@service_container']]
 
@@ -123,5 +107,5 @@ services:
         tags: [form.type_guesser]
 
     Ynlo\GraphQLBundle\Form\Type\IDType:
-        arguments: ['@Doctrine\ORM\EntityManagerInterface', '@graphql.definition_registry']
+        arguments: ['@Doctrine\ORM\EntityManagerInterface', '@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry']
         tags: [form.type]

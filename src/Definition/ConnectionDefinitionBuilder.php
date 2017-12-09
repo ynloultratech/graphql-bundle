@@ -10,7 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Definition;
 
-use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionRegistry;
+use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
 use Ynlo\GraphQLBundle\Model\OrderBy;
 use Ynlo\GraphQLBundle\Query\Node\AllNodes;
 

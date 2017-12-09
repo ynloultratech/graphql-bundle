@@ -14,7 +14,7 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
-use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
 use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 

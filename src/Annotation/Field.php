@@ -10,18 +10,13 @@
 
 namespace Ynlo\GraphQLBundle\Annotation;
 
-use Doctrine\Common\Annotations\Annotation;
-
 /**
  * @Annotation()
- * @Annotation\Target()
  */
-final class Field extends Annotation
+final class Field
 {
     /**
      * @var string
-     *
-     * @required
      */
     public $type;
 

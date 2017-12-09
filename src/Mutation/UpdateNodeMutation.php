@@ -18,7 +18,7 @@ use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
 /**
  * Class UpdateNodeMutation
  */
-class UpdateNodeMutation extends AbstractMutationResolver
+class UpdateNodeMutation extends AbstractMutationAbstractResolver
 {
     /**
      * {@inheritdoc}

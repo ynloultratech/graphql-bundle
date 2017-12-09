@@ -10,14 +10,12 @@
 
 namespace Ynlo\GraphQLBundle\Annotation;
 
-use Doctrine\Common\Annotations\Annotation\Target;
-
 /**
  * @Annotation()
  *
  * @Target({"CLASS"})
  */
-final class Query extends Annotation
+final class Query
 {
     /**
      * @var string
