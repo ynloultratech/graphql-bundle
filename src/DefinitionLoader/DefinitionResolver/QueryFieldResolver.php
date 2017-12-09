@@ -15,7 +15,7 @@ use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Definition\ConnectionDefinitionBuilder;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionManager;
-use Ynlo\GraphQLBundle\Type\TypeUtil;
+use Ynlo\GraphQLBundle\Util\TypeUtil;
 
 /**
  * Resolve field of types queries using naming conventions

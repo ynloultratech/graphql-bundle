@@ -8,10 +8,13 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Type;
+namespace Ynlo\GraphQLBundle\Util;
 
 use GraphQL\Type\Definition\Type;
 
+/**
+ * Util to work with GraphQL types
+ */
 final class TypeUtil
 {
     /**

@@ -14,7 +14,7 @@ use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\AnnotationReaderAwareTrait;
-use Ynlo\GraphQLBundle\Type\TypeUtil;
+use Ynlo\GraphQLBundle\Util\TypeUtil;
 
 /**
  * Class GraphQLFieldDefinitionDecorator

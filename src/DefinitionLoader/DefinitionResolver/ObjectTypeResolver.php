@@ -24,7 +24,7 @@ use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionManager;
 use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\FieldDecorator\FieldDefinitionDecoratorInterface;
 use Ynlo\GraphQLBundle\DefinitionLoader\DefinitionResolver\FieldDecorator\FieldMetadata;
 use Ynlo\GraphQLBundle\Type\DefinitionManagerAwareInterface;
-use Ynlo\GraphQLBundle\Type\TypeUtil;
+use Ynlo\GraphQLBundle\Util\TypeUtil;
 
 /**
  * Resolve object types using ObjectType annotation
