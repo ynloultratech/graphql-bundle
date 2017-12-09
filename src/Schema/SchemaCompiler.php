@@ -8,7 +8,7 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Definition;
+namespace Ynlo\GraphQLBundle\Schema;
 
 use GraphQL\Type\Schema;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -33,8 +33,6 @@ class SchemaCompiler implements ContainerAwareInterface
      * @var DefinitionManager
      */
     protected $manager;
-
-    protected $resolvedModelConfigs = [];
 
     /**
      * SchemaCompiler constructor.
