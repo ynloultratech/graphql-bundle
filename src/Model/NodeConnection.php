@@ -15,7 +15,7 @@ use Ynlo\GraphQLBundle\Annotation as GraphQL;
 /**
  * @GraphQL\ObjectType()
  */
-class NodeConnection
+class NodeConnection implements ConnectionInterface
 {
     /**
      * @var int
@@ -27,7 +27,7 @@ class NodeConnection
     /**
      * @var array
      *
-     * @GraphQL\Field(type="[Ynlo\GraphQLBundle\Model\Edge]")
+     * @GraphQL\Field(type="[Ynlo\GraphQLBundle\Model\EdgeInterface]")
      */
     protected $edges = [];
 
@@ -47,7 +47,7 @@ class NodeConnection
     }
 
     /**
-     * @return int
+     * {@inheritdoc}
      */
     public function getTotalCount(): int
     {
@@ -55,7 +55,7 @@ class NodeConnection
     }
 
     /**
-     * @param int $totalCount
+     * {@inheritdoc}
      */
     public function setTotalCount(int $totalCount)
     {
@@ -63,16 +63,23 @@ class NodeConnection
     }
 
     /**
-     * @param NodeInterface $node
-     * @param string        $cursor
+     * {@inheritdoc}
      */
-    public function addEdge(NodeInterface $node, string $cursor)
+    public function addEdge(EdgeInterface $edge)
     {
-        $this->edges[] = new Edge($node, $cursor);
+        $this->edges[] = $edge;
     }
 
     /**
-     * @return array
+     * {@inheritdoc}
+     */
+    public function createEdge(NodeInterface $node, string $cursor)
+    {
+        return new NodeConnectionEdge($node, $cursor);
+    }
+
+    /**
+     * {@inheritdoc}
      */
     public function getEdges(): array
     {
@@ -80,7 +87,7 @@ class NodeConnection
     }
 
     /**
-     * @param array $edges
+     * {@inheritdoc}
      */
     public function setEdges(array $edges)
     {
@@ -88,7 +95,7 @@ class NodeConnection
     }
 
     /**
-     * @return PageInfo
+     * {@inheritdoc}
      */
     public function getPageInfo(): PageInfo
     {
@@ -96,7 +103,7 @@ class NodeConnection
     }
 
     /**
-     * @param PageInfo $pageInfo
+     * {@inheritdoc}
      */
     public function setPageInfo(PageInfo $pageInfo)
     {

@@ -11,7 +11,7 @@
 namespace Ynlo\GraphQLBundle\Pagination;
 
 use Doctrine\ORM\QueryBuilder;
-use Ynlo\GraphQLBundle\Model\NodeConnection;
+use Ynlo\GraphQLBundle\Model\ConnectionInterface;
 
 /**
  * DoctrineCursorPaginatorInterface
@@ -19,10 +19,9 @@ use Ynlo\GraphQLBundle\Model\NodeConnection;
 interface DoctrineCursorPaginatorInterface
 {
     /**
-     * @param QueryBuilder      $query
-     * @param PaginationRequest $pagination
-     *
-     * @return NodeConnection
+     * @param QueryBuilder        $query
+     * @param PaginationRequest   $pagination
+     * @param ConnectionInterface $connection
      */
-    public function paginate(QueryBuilder $query, PaginationRequest $pagination): NodeConnection;
+    public function paginate(QueryBuilder $query, PaginationRequest $pagination, ConnectionInterface $connection);
 }

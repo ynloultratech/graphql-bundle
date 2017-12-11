@@ -14,8 +14,11 @@ use Doctrine\ORM\QueryBuilder;
 use GraphQL\Error\Error;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
+use Ynlo\GraphQLBundle\Model\ConnectionInterface;
+use Ynlo\GraphQLBundle\Model\NodeConnection;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Model\OrderBy;
+use Ynlo\GraphQLBundle\Pagination\DoctrineCursorPaginatorInterface;
 use Ynlo\GraphQLBundle\Pagination\DoctrineOffsetCursorPaginator;
 use Ynlo\GraphQLBundle\Pagination\PaginationRequest;
 use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
@@ -100,9 +103,12 @@ class AllNodes extends AbstractResolver
             }
         }
 
-        $paginator = new DoctrineOffsetCursorPaginator();
+        $paginator = $this->createPaginator();
 
-        return $paginator->paginate($qb, new PaginationRequest($first, $last, $after, $before));
+        $connection = $this->createConnection();
+        $paginator->paginate($qb, new PaginationRequest($first, $last, $after, $before), $connection);
+
+        return $connection;
     }
 
     /**
@@ -111,6 +117,22 @@ class AllNodes extends AbstractResolver
     public function modifyQuery(QueryBuilder $qb)
     {
         //implements on childs to customize the query
+    }
+
+    /**
+     * @return ConnectionInterface
+     */
+    protected function createConnection(): ConnectionInterface
+    {
+        return new NodeConnection();
+    }
+
+    /**
+     * @return DoctrineCursorPaginatorInterface
+     */
+    protected function createPaginator(): DoctrineCursorPaginatorInterface
+    {
+        return new DoctrineOffsetCursorPaginator();
     }
 
     /**

@@ -11,6 +11,7 @@
 namespace Ynlo\GraphQLBundle\Definition;
 
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
+use Ynlo\GraphQLBundle\Model\ConnectionInterface;
 use Ynlo\GraphQLBundle\Model\NodeConnection;
 use Ynlo\GraphQLBundle\Model\OrderBy;
 use Ynlo\GraphQLBundle\Query\Node\AllNodes;
@@ -168,7 +169,7 @@ class ConnectionDefinitionBuilder
         $orderBy->setDescription('Ordering options for this list.');
         $definition->addArgument($orderBy);
 
-        $definition->setType(NodeConnection::class);
+        $definition->setType(ConnectionInterface::class);
         $definition->setList(false);
         $definition->setMeta('node', $objectDefinition->getName());
 

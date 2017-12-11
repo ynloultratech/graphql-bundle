@@ -11,6 +11,7 @@
 namespace Ynlo\GraphQLBundle\Pagination;
 
 use Doctrine\ORM\QueryBuilder;
+use Ynlo\GraphQLBundle\Model\ConnectionInterface;
 use Ynlo\GraphQLBundle\Model\NodeConnection;
 
 /**
@@ -24,15 +25,12 @@ class DoctrineOffsetCursorPaginator implements DoctrineCursorPaginatorInterface
     protected $connection;
 
     /**
-     * @param QueryBuilder      $query
-     * @param PaginationRequest $pagination
-     *
-     * @return NodeConnection
+     * {@inheritdoc}
      */
-    public function paginate(QueryBuilder $query, PaginationRequest $pagination): NodeConnection
+    public function paginate(QueryBuilder $query, PaginationRequest $pagination, ConnectionInterface $connection)
     {
         $count = $this->getQueryTotal($query);
-        $this->connection = new NodeConnection();
+        $this->connection = $connection;
         $this->connection->setTotalCount($count);
 
         $this->applyCursor($query, $count, $pagination);
@@ -44,7 +42,6 @@ class DoctrineOffsetCursorPaginator implements DoctrineCursorPaginatorInterface
 
         $offset = $query->getFirstResult();
 
-
         $cursorOffset = $offset - 1;
         foreach ($results as $result) {
             $cursorOffset ++;
@@ -54,13 +51,10 @@ class DoctrineOffsetCursorPaginator implements DoctrineCursorPaginatorInterface
             }
 
             $cursor = $this->encodeCursor($cursorOffset);
-            $this->connection->addEdge($result, $cursor);
+            $this->connection->addEdge($this->connection->createEdge($result, $cursor));
             $this->connection->getPageInfo()->setEndCursor($cursor);
         }
-
-        return $this->connection;
     }
-
 
     /**
      * @param QueryBuilder $qb

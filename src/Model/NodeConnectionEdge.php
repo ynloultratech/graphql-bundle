@@ -15,7 +15,7 @@ use Ynlo\GraphQLBundle\Annotation as GraphQL;
 /**
  * @GraphQL\ObjectType()
  */
-class Edge
+class NodeConnectionEdge implements EdgeInterface
 {
     /**
      * @var NodeInterface
@@ -32,7 +32,7 @@ class Edge
     protected $cursor;
 
     /**
-     * Edge constructor.
+     * NodeConnectionEdge constructor.
      *
      * @param NodeInterface $node
      * @param string        $cursor
@@ -44,7 +44,7 @@ class Edge
     }
 
     /**
-     * @return NodeInterface
+     * {@inheritdoc}
      */
     public function getNode(): NodeInterface
     {
@@ -52,7 +52,7 @@ class Edge
     }
 
     /**
-     * @param NodeInterface $node
+     * {@inheritdoc}
      */
     public function setNode(NodeInterface $node)
     {
@@ -60,7 +60,7 @@ class Edge
     }
 
     /**
-     * @return string
+     * {@inheritdoc}
      */
     public function getCursor(): string
     {
@@ -68,7 +68,7 @@ class Edge
     }
 
     /**
-     * @param string $cursor
+     * {@inheritdoc}
      */
     public function setCursor(string $cursor)
     {
