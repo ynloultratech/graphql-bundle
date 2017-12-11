@@ -12,9 +12,12 @@ namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation;
 
 use Doctrine\Common\Util\Inflector;
 use Ynlo\GraphQLBundle\Annotation;
-use Ynlo\GraphQLBundle\Definition\ConnectionDefinitionBuilder;
+use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Extension\ExtensionManager;
+use Ynlo\GraphQLBundle\Model\OrderBy;
+use Ynlo\GraphQLBundle\Query\Node\AllNodes;
 
 /**
  * Resolve queries
@@ -25,18 +28,18 @@ class QueryGetAllNodesAnnotationParser implements AnnotationParserInterface
     use AnnotationParserHelper;
 
     /**
-     * @var ConnectionDefinitionBuilder
+     * @var ExtensionManager
      */
-    protected $connectionBuilder;
+    protected $extensionManager;
 
     /**
      * QueryGetAllNodesAnnotationParser constructor.
      *
-     * @param ConnectionDefinitionBuilder $connectionBuilder
+     * @param ExtensionManager $extensionManager
      */
-    public function __construct(ConnectionDefinitionBuilder $connectionBuilder)
+    public function __construct(ExtensionManager $extensionManager)
     {
-        $this->connectionBuilder = $connectionBuilder;
+        $this->extensionManager = $extensionManager;
     }
 
     /**
@@ -61,17 +64,28 @@ class QueryGetAllNodesAnnotationParser implements AnnotationParserInterface
 
         $query = new QueryDefinition();
         $query->setName($name);
+        $query->setResolver(AllNodes::class);
 
         $objectDefinition = null;
         $typeName = null;
         if ($objectType = $this->reader->getClassAnnotation($refClass, Annotation\ObjectType::class)) {
             $typeName = $definitionManager->getTypeForClass($refClass->getName());
+            $query->setType($typeName);
+            $query->setList(true);
         }
 
-        $this->connectionBuilder->setEndpoint($definitionManager->getEndpoint());
-        $this->connectionBuilder->setLimit($annotation->limit);
-        $this->connectionBuilder->setDeprecationReason($annotation->deprecationReason);
-        $this->connectionBuilder->setDescription($annotation->description);
-        $this->connectionBuilder->build($query, $typeName);
+        $orderBy = new ArgumentDefinition();
+        $orderBy->setName('orderBy');
+        $orderBy->setType(OrderBy::class);
+        $orderBy->setNonNull(false);
+        $orderBy->setList(true);
+        $orderBy->setDescription('Ordering options for this list.');
+        $query->addArgument($orderBy);
+
+        foreach ($this->extensionManager->getExtensions() as $extension) {
+            $extension->configureDefinition($query, $refClass, $definitionManager);
+        }
+
+        $definitionManager->addQuery($query);
     }
 }

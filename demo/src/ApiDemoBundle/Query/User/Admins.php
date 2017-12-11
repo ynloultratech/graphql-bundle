@@ -13,18 +13,18 @@ namespace Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Query\User;
 use Doctrine\ORM\QueryBuilder;
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity\User;
-use Ynlo\GraphQLBundle\Query\Node\AllNodes;
+use Ynlo\GraphQLBundle\Query\Node\AllNodesConnection;
 
 /**
  * @GraphQL\Query()
  * @GraphQL\Connection()
  */
-class Admins extends AllNodes
+class Admins extends AllNodesConnection
 {
     /**
      * {@inheritdoc}
      */
-    public function modifyQuery(QueryBuilder $qb)
+    public function configureQuery(QueryBuilder $qb)
     {
         $qb->andWhere('o.type = :adminType')
            ->setParameter('adminType', User::TYPE_ADMIN);

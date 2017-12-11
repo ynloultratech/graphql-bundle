@@ -12,9 +12,9 @@ namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation;
 
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
-use Ynlo\GraphQLBundle\Definition\ConnectionDefinitionBuilder;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Util\TypeUtil;
 
 /**
@@ -26,21 +26,23 @@ class QueryAnnotationParser implements AnnotationParserInterface
     use AnnotationParserHelper;
 
     /**
-     * @var ConnectionDefinitionBuilder
-     */
-    protected $connectionBuilder;
-
-    /**
      * @var DefinitionManager
      */
     protected $definitionManager;
 
     /**
-     * @param ConnectionDefinitionBuilder $connectionBuilder
+     * @var ExtensionManager
      */
-    public function __construct(ConnectionDefinitionBuilder $connectionBuilder)
+    protected $extensionManager;
+
+    /**
+     * QueryGetAllNodesAnnotationParser constructor.
+     *
+     * @param ExtensionManager $extensionManager
+     */
+    public function __construct(ExtensionManager $extensionManager)
     {
-        $this->connectionBuilder = $connectionBuilder;
+        $this->extensionManager = $extensionManager;
     }
 
     /**
@@ -102,13 +104,12 @@ class QueryAnnotationParser implements AnnotationParserInterface
         $query->setDeprecationReason($annotation->deprecationReason);
         $query->setDescription($annotation->description);
 
-        /** @var Annotation\Connection $connection */
-        if ($connection = $this->reader->getClassAnnotation($refClass, Annotation\Connection::class)) {
-            $this->connectionBuilder->setEndpoint($this->definitionManager->getEndpoint());
-            $this->connectionBuilder->setLimit($connection->limit);
-            $this->connectionBuilder->setParentField($connection->parentField);
-            $this->connectionBuilder->build($query, $query->getType());
-            $query->setResolver($refClass->getName());
+        foreach ($this->extensionManager->getExtensions() as $extension) {
+            $extension->configureDefinition($query, $refClass, $definitionManager);
+        }
+
+        if (!$definitionManager->hasQuery($query->getName())) {
+            $definitionManager->addQuery($query);
         }
     }
 }

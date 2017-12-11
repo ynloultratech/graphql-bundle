@@ -11,6 +11,7 @@
 namespace Ynlo\GraphQLBundle\Mutation;
 
 use Ynlo\GraphQLBundle\Error\NodeNotFoundException;
+use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Model\UpdateNodePayload;
 use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
@@ -26,8 +27,16 @@ class UpdateNodeMutation extends AbstractMutationAbstractResolver
     protected function process(&$data)
     {
         $this->preUpdate($data);
+        foreach ($this->container->get(ExtensionManager::class)->getExtensions() as $extension) {
+            $extension->preUpdate($data, $this, $this->context);
+        }
+
         $this->getManager()->flush();
+
         $this->postUpdate($data);
+        foreach ($this->container->get(ExtensionManager::class)->getExtensions() as $extension) {
+            $extension->postUpdate($data, $this, $this->context);
+        }
     }
 
     /**

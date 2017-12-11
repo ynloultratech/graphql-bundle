@@ -19,8 +19,16 @@ use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
  */
 class ResolverContext
 {
+    /**
+     * @var mixed
+     */
     protected $root;
 
+    /**
+     * Array of arguments given
+     *
+     * @var array
+     */
     protected $args = [];
 
     /**

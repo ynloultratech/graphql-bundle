@@ -10,6 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Mutation;
 
+use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Model\AddNodePayload;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
@@ -25,9 +26,17 @@ class AddNodeMutation extends AbstractMutationAbstractResolver
     protected function process(&$data)
     {
         $this->prePersist($data);
+        foreach ($this->container->get(ExtensionManager::class)->getExtensions() as $extension) {
+            $extension->prePersist($data, $this, $this->context);
+        }
+
         $this->getManager()->persist($data);
         $this->getManager()->flush();
+
         $this->postPersist($data);
+        foreach ($this->container->get(ExtensionManager::class)->getExtensions() as $extension) {
+            $extension->postPersist($data, $this, $this->context);
+        }
     }
 
     /**

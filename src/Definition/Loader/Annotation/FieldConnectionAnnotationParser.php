@@ -12,9 +12,9 @@ namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation;
 
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
-use Ynlo\GraphQLBundle\Definition\ConnectionDefinitionBuilder;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Util\TypeUtil;
 
 /**
@@ -25,21 +25,16 @@ class FieldConnectionAnnotationParser implements AnnotationParserInterface
     use AnnotationReaderAwareTrait;
 
     /**
-     * @var ConnectionDefinitionBuilder
+     * @var ExtensionManager
      */
-    protected $connectionBuilder;
+    protected $extensionManager;
 
     /**
-     * @var DefinitionManager
+     * @param ExtensionManager $extensionManager
      */
-    protected $definitionManager;
-
-    /**
-     * @param ConnectionDefinitionBuilder $connectionBuilder
-     */
-    public function __construct(ConnectionDefinitionBuilder $connectionBuilder)
+    public function __construct(ExtensionManager $extensionManager)
     {
-        $this->connectionBuilder = $connectionBuilder;
+        $this->extensionManager = $extensionManager;
     }
 
     /**
@@ -55,8 +50,6 @@ class FieldConnectionAnnotationParser implements AnnotationParserInterface
      */
     public function parse($annotation, \ReflectionClass $refClass, DefinitionManager $definitionManager)
     {
-        $this->definitionManager = $definitionManager;
-
         /** @var Annotation\Field $annotation */
         $field = new FieldDefinition();
 
@@ -113,13 +106,8 @@ class FieldConnectionAnnotationParser implements AnnotationParserInterface
 
         $field->setResolver($refClass->getName());
 
-        /** @var Annotation\Connection $connection */
-        if ($connection = $this->reader->getClassAnnotation($refClass, Annotation\Connection::class)) {
-            $this->connectionBuilder->setEndpoint($this->definitionManager->getEndpoint());
-            $this->connectionBuilder->setLimit($connection->limit);
-            $this->connectionBuilder->setParentField($connection->parentField);
-            $this->connectionBuilder->build($field, $field->getType());
-            $field->setResolver($refClass->getName());
+        foreach ($this->extensionManager->getExtensions() as $extension) {
+            $extension->configureDefinition($field, $refClass, $definitionManager);
         }
     }
 }

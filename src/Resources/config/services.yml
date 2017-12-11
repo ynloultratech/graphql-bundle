@@ -20,27 +20,28 @@ services:
             - { name: 'graphql.definition_loader' }
 
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\ObjectTypeAnnotationParser:
-        arguments: ['@Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices','@Ynlo\GraphQLBundle\Definition\ConnectionDefinitionBuilder']
+        arguments: ['@Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices', '@Ynlo\GraphQLBundle\Extension\ExtensionManager']
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
             - { name: 'graphql.definition_resolver', priority: 200}
 
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\QueryGetNodeAnnotationParser:
+        arguments: ['@Ynlo\GraphQLBundle\Extension\ExtensionManager']
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
             - { name: 'graphql.definition_resolver', priority: 150 }
 
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\QueryGetAllNodesAnnotationParser:
-        arguments: ['@Ynlo\GraphQLBundle\Definition\ConnectionDefinitionBuilder']
+        arguments: [ '@Ynlo\GraphQLBundle\Extension\ExtensionManager']
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
             - { name: 'graphql.definition_resolver', priority: 150 }
 
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\QueryAnnotationParser:
-        arguments: ['@Ynlo\GraphQLBundle\Definition\ConnectionDefinitionBuilder']
+        arguments: ['@Ynlo\GraphQLBundle\Extension\ExtensionManager']
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
@@ -75,7 +76,7 @@ services:
             - { name: 'graphql.definition_resolver', priority: 100 }
 
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\FieldConnectionAnnotationParser:
-        arguments: ['@Ynlo\GraphQLBundle\Definition\ConnectionDefinitionBuilder']
+        arguments: ['@Ynlo\GraphQLBundle\Extension\ExtensionManager']
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
@@ -94,10 +95,6 @@ services:
         tags:
             - { name: 'graphql.field_definition_decorator' }
 
-    Ynlo\GraphQLBundle\Definition\ConnectionDefinitionBuilder:
-        arguments: ['@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry']
-        shared: false
-
     Ynlo\GraphQLBundle\Type\TypeAutoLoader:
         calls:
           - [ setContainer, ['@service_container']]
@@ -109,3 +106,11 @@ services:
     Ynlo\GraphQLBundle\Form\Type\IDType:
         arguments: ['@Doctrine\ORM\EntityManagerInterface', '@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry']
         tags: [form.type]
+
+    Ynlo\GraphQLBundle\Extension\ExtensionManager:
+        arguments: ['@Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices']
+
+    Ynlo\GraphQLBundle\Extension\PaginationExtension:
+        arguments: ['@annotations.reader']
+        tags:
+          - { name: 'graphql.extension'}

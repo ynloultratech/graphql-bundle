@@ -138,7 +138,6 @@ class UserTest extends ApiTestCase
                     'node' => [
                         '... on User' => [
                             'id',
-                            'databaseId',
                             'login',
                             'profile' => [
                                 'phone',
@@ -185,7 +184,6 @@ class UserTest extends ApiTestCase
                     'node' => [
                         '... on User' => [
                             'id',
-                            'databaseId',
                             'login',
                             'profile' => [
                                 'phone',
@@ -232,7 +230,6 @@ class UserTest extends ApiTestCase
                     'node' => [
                         '... on User' => [
                             'id',
-                            'databaseId',
                             'login',
                             'profile' => [
                                 'phone',
@@ -279,7 +276,6 @@ class UserTest extends ApiTestCase
                     'node' => [
                         '... on User' => [
                             'id',
-                            'databaseId',
                             'login',
                             'profile' => [
                                 'phone',

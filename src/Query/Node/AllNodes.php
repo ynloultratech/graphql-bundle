@@ -14,17 +14,11 @@ use Doctrine\ORM\QueryBuilder;
 use GraphQL\Error\Error;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
-use Ynlo\GraphQLBundle\Model\ConnectionInterface;
-use Ynlo\GraphQLBundle\Model\NodeConnection;
-use Ynlo\GraphQLBundle\Model\NodeInterface;
-use Ynlo\GraphQLBundle\Model\OrderBy;
-use Ynlo\GraphQLBundle\Pagination\DoctrineCursorPaginatorInterface;
-use Ynlo\GraphQLBundle\Pagination\DoctrineOffsetCursorPaginator;
-use Ynlo\GraphQLBundle\Pagination\PaginationRequest;
+use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
 
 /**
- * Base class to fetch nodes
+ * Resolver to fetch a simple list of nodes without pagination, edges etc
  */
 class AllNodes extends AbstractResolver
 {
@@ -49,18 +43,32 @@ class AllNodes extends AbstractResolver
     protected $objectDefinition;
 
     /**
-     * @param NodeInterface|null $root
-     * @param int|null           $first
-     * @param int|null           $last
-     * @param int|null           $after
-     * @param int|null           $before
-     * @param OrderBy[]          $orderBy
+     * @param array[] $args
      *
      * @return mixed
      *
      * @throws Error
      */
-    public function __invoke(NodeInterface $root = null, $first = null, $last = null, $after = null, $before = null, $orderBy = [])
+    public function __invoke($args = [])
+    {
+        $orderBy = $args['orderBy'] ?? [];
+
+        $this->initialize();
+        $qb = $this->createQuery();
+        $this->applyOrderBy($qb, $orderBy);
+
+        $this->configureQuery($qb);
+        foreach ($this->container->get(ExtensionManager::class)->getExtensions() as $extension) {
+            $extension->configureQuery($qb, $this, $this->context);
+        }
+
+        return $qb->getQuery()->getResult();
+    }
+
+    /**
+     * initialize
+     */
+    public function initialize()
     {
         if ($this->context->getDefinition()->hasMeta('node')) {
             $objectType = $this->context->getDefinition()->getMeta('node');
@@ -71,91 +79,14 @@ class AllNodes extends AbstractResolver
         $this->queryDefinition = $this->context->getDefinition();
         $this->objectDefinition = $this->context->getDefinitionManager()->getType($objectType);
         $this->entity = $this->context->getDefinitionManager()->getType($objectType)->getClass();
-
-        $qb = $this->createQuery();
-        $this->applyOrderBy($qb, $orderBy);
-
-        if ($root) {
-            $this->applyFilterByParent($qb, $root);
-        }
-
-        $this->modifyQuery($qb);
-
-        if (!$first && !$last) {
-            $error = sprintf('You must provide a `first` or `last` value to properly paginate records in "%s" connection.', $this->queryDefinition->getName());
-            throw new Error($error);
-        }
-
-        if ($this->queryDefinition->hasMeta('connection_limit')) {
-            $limitAllowed = $this->queryDefinition->getMeta('connection_limit');
-            if ($first > $limitAllowed || $last > $limitAllowed) {
-                $current = $first ?? $last;
-                $where = $first ? 'first' : 'last';
-                $error = sprintf(
-                    'Requesting %s records for `%s` exceeds the `%s` limit of %s records for "%s" connection',
-                    $current,
-                    $this->queryDefinition->getName(),
-                    $where,
-                    $limitAllowed,
-                    $this->queryDefinition->getName()
-                );
-                throw new Error($error);
-            }
-        }
-
-        $paginator = $this->createPaginator();
-
-        $connection = $this->createConnection();
-        $paginator->paginate($qb, new PaginationRequest($first, $last, $after, $before), $connection);
-
-        return $connection;
     }
 
     /**
      * @param QueryBuilder $qb
      */
-    public function modifyQuery(QueryBuilder $qb)
+    public function configureQuery(QueryBuilder $qb)
     {
         //implements on childs to customize the query
-    }
-
-    /**
-     * @return ConnectionInterface
-     */
-    protected function createConnection(): ConnectionInterface
-    {
-        return new NodeConnection();
-    }
-
-    /**
-     * @return DoctrineCursorPaginatorInterface
-     */
-    protected function createPaginator(): DoctrineCursorPaginatorInterface
-    {
-        return new DoctrineOffsetCursorPaginator();
-    }
-
-    /**
-     * @param QueryBuilder  $qb
-     * @param NodeInterface $root
-     */
-    protected function applyFilterByParent(QueryBuilder $qb, NodeInterface $root)
-    {
-        $parentField = null;
-        if ($this->queryDefinition->hasMeta('connection_parent_field')) {
-            $parentField = $this->queryDefinition->getMeta('connection_parent_field');
-        }
-        if (!$parentField) {
-            throw new \RuntimeException(sprintf('Missing parent field to filter "%s" by given parent. The parentField should be specified in the connection.', $this->queryDefinition->getName()));
-        }
-
-        if ($this->objectDefinition->hasField($parentField)) {
-            $parentField = $this->objectDefinition->getField($parentField)->getOriginName();
-        }
-
-        $paramName = 'root'.mt_rand();
-        $qb->andWhere(sprintf('%s.%s = :%s', $this->queryAlias, $parentField, $paramName))
-           ->setParameter($paramName, $root);
     }
 
     /**
@@ -181,7 +112,7 @@ class AllNodes extends AbstractResolver
                 }
             }
 
-            throw new Error(sprintf('The field "%s" its not valid to order in "%s" connection', $order->getField(), $this->queryDefinition->getName()));
+            throw new Error(sprintf('The field "%s" its not valid to order in "%s"', $order->getField(), $this->queryDefinition->getName()));
         }
     }
 

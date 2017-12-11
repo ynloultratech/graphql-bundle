@@ -22,6 +22,7 @@ use Ynlo\GraphQLBundle\Definition\Loader\Annotation\FieldDecorator\FieldDefiniti
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Type\DefinitionManagerAwareInterface;
 use Ynlo\GraphQLBundle\Util\TypeUtil;
 
@@ -38,9 +39,9 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
     protected $taggedServices;
 
     /**
-     * @var ConnectionDefinitionBuilder
+     * @var ExtensionManager
      */
-    protected $connectionBuilder;
+    protected $extensionManager;
 
     /**
      * @var DefinitionManager
@@ -50,13 +51,13 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
     /**
      * ObjectTypeAnnotationParser constructor.
      *
-     * @param TaggedServices              $taggedServices
-     * @param ConnectionDefinitionBuilder $connectionBuilder
+     * @param TaggedServices   $taggedServices
+     * @param ExtensionManager $extensionManager
      */
-    public function __construct(TaggedServices $taggedServices, ConnectionDefinitionBuilder $connectionBuilder)
+    public function __construct(TaggedServices $taggedServices, ExtensionManager $extensionManager)
     {
         $this->taggedServices = $taggedServices;
-        $this->connectionBuilder = $connectionBuilder;
+        $this->extensionManager = $extensionManager;
     }
 
     /**
@@ -102,6 +103,10 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
 
         $this->loadInheritedProperties($refClass, $objectDefinition);
         $this->resolveFields($refClass, $objectDefinition);
+
+        foreach ($this->extensionManager->getExtensions() as $extension) {
+            $extension->configureDefinition($objectDefinition, $refClass, $this->definitionManager);
+        }
 
         $definitionManager->addType($objectDefinition);
     }
@@ -224,14 +229,6 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
                         }
                     }
                 }
-
-                /** @var Annotation\Connection $connection */
-                if ($connection = $this->getFieldAnnotation($prop, Annotation\Connection::class)) {
-                    $this->connectionBuilder->setEndpoint($this->definitionManager->getEndpoint());
-                    $this->connectionBuilder->setLimit($connection->limit);
-                    $this->connectionBuilder->setParentField($connection->parentField);
-                    $this->connectionBuilder->build($field, $field->getType());
-                }
             }
         }
 
@@ -258,6 +255,12 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
                         $fieldDefinition->setName($annotation->alias);
                     }
                 }
+            }
+        }
+
+        foreach ($objectDefinition->getFields() as $field) {
+            foreach ($this->extensionManager->getExtensions() as $extension) {
+                $extension->configureDefinition($field, $refClass, $this->definitionManager);
             }
         }
     }

@@ -11,6 +11,7 @@
 namespace Ynlo\GraphQLBundle\Mutation;
 
 use Ynlo\GraphQLBundle\Error\NodeNotFoundException;
+use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Model\DeleteNodePayload;
 use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
@@ -27,9 +28,17 @@ class DeleteNodeMutation extends AbstractMutationAbstractResolver
     protected function process(&$data)
     {
         $this->preDelete($data);
+        foreach ($this->container->get(ExtensionManager::class)->getExtensions() as $extension) {
+            $extension->preDelete($data, $this, $this->context);
+        }
+
         $this->getManager()->remove($data);
         $this->getManager()->flush();
+
         $this->postDelete($data);
+        foreach ($this->container->get(ExtensionManager::class)->getExtensions() as $extension) {
+            $extension->postDelete($data, $this, $this->context);
+        }
     }
 
     /**

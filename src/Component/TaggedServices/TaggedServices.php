@@ -12,6 +12,7 @@
 namespace Ynlo\GraphQLBundle\Component\TaggedServices;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Ynlo\GraphQLBundle\Definition\Loader\Annotation\FieldDecorator\FieldDefinitionDecoratorInterface;
 
 /**
  * Class TaggedServices
@@ -55,16 +56,52 @@ class TaggedServices
     /**
      * findTaggedServices.
      *
-     * @param string $tag
+     * @param string  $tag
+     * @param boolean $orderByPriority
      *
      * @return array|TagSpecification[]
      */
-    public function findTaggedServices($tag)
+    public function findTaggedServices($tag, $orderByPriority = true)
     {
+        $services = [];
         if (array_key_exists($tag, $this->servicesByTags)) {
-            return $this->servicesByTags[$tag];
+            $services = $this->servicesByTags[$tag];
         }
 
-        return [];
+        if ($orderByPriority) {
+            $this->sortByPriority($services);
+        }
+
+        return $services;
+    }
+
+    /**
+     * @param TagSpecification[] $tagSpecifications
+     */
+    private function sortByPriority(&$tagSpecifications)
+    {
+        $orderedSpecifications = [];
+        foreach ($tagSpecifications as $tagSpecification) {
+            $attr = $tagSpecification->getAttributes();
+            $priority = 0;
+            if (isset($attr['priority'])) {
+                $priority = $attr['priority'];
+            }
+
+            $orderedSpecifications[] = [$priority, $tagSpecification];
+        }
+
+        //sort by priority
+        usort(
+            $orderedSpecifications,
+            function ($tagSpecification1, $tagSpecification2) {
+                list($priority1) = $tagSpecification1;
+                list($priority2) = $tagSpecification2;
+
+                return version_compare($priority2, $priority1);
+            }
+        );
+
+        $tagSpecifications = array_column($orderedSpecifications, 1);
     }
 }
