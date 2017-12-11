@@ -10,13 +10,13 @@
 
 namespace Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Model;
 
-use Ynlo\GraphQLBundle\Annotation as API;
+use Ynlo\GraphQLBundle\Annotation as GraphQL;
 
 /**
  * Use this interface in all entities that you need to automatically
  * set a timestamp on creation or update.
  *
- * @API\InterfaceType()
+ * @GraphQL\InterfaceType()
  */
 interface TimestampableInterface
 {
@@ -25,7 +25,7 @@ interface TimestampableInterface
      *
      * @return \DateTime
      *
-     * @API\Field(type="datetime!")
+     * @GraphQL\Field(type="datetime!")
      */
     public function getCreatedAt(): \DateTime;
 
@@ -34,7 +34,7 @@ interface TimestampableInterface
      *
      * @return \DateTime
      *
-     * @API\Field(type="datetime!")
+     * @GraphQL\Field(type="datetime!")
      */
     public function getUpdatedAt(): \DateTime;
 

@@ -10,31 +10,31 @@
 
 namespace Ynlo\GraphQLBundle\Model;
 
-use Ynlo\GraphQLBundle\Annotation as API;
+use Ynlo\GraphQLBundle\Annotation as GraphQL;
 
 /**
- * @API\ObjectType()
+ * @GraphQL\ObjectType()
  */
 class UpdateNodePayload
 {
     /**
      * @var mixed
      *
-     * @API\Field(type="Ynlo\GraphQLBundle\Model\NodeInterface", description="Updated node instance")
+     * @GraphQL\Field(type="Ynlo\GraphQLBundle\Model\NodeInterface", description="Updated node instance")
      */
     public $node;
 
     /**
      * @var null|string
      *
-     * @API\Field(type="string", description="Unique client mutation identifier")
+     * @GraphQL\Field(type="string", description="Unique client mutation identifier")
      */
     public $clientMutationId;
 
     /**
      * @var ConstraintViolation[]
      *
-     * @API\Field(type="[Ynlo\GraphQLBundle\Model\ConstraintViolation]", description="List of `ConstraintViolation` if the validation fails.")
+     * @GraphQL\Field(type="[Ynlo\GraphQLBundle\Model\ConstraintViolation]", description="List of `ConstraintViolation` if the validation fails.")
      */
     public $constraintViolations = [];
 

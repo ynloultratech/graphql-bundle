@@ -11,15 +11,15 @@
 namespace Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Model;
 
 use Doctrine\Common\Collections\Collection;
-use Ynlo\GraphQLBundle\Annotation as API;
+use Ynlo\GraphQLBundle\Annotation as GraphQL;
 
 /**
- * @API\InterfaceType(description="Accept comments")
+ * @GraphQL\InterfaceType(description="Accept comments")
  */
 interface CommentableInterface
 {
     /**
-     * @API\Field(type="[Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Model\CommentInterface]")
+     * @GraphQL\Field(type="[Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Model\CommentInterface]")
      *
      * @return Collection
      */

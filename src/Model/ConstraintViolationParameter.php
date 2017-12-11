@@ -10,17 +10,17 @@
 
 namespace Ynlo\GraphQLBundle\Model;
 
-use Ynlo\GraphQLBundle\Annotation as API;
+use Ynlo\GraphQLBundle\Annotation as GraphQL;
 
 /**
- * @API\ObjectType()
+ * @GraphQL\ObjectType()
  */
 class ConstraintViolationParameter
 {
     /**
      * @var string
      *
-     * @API\Field(type="string!",
+     * @GraphQL\Field(type="string!",
      *     description="Parameter name to use as placeholder in ConstraintViolation.messageTemplate")
      */
     protected $name;
@@ -28,7 +28,7 @@ class ConstraintViolationParameter
     /**
      * @var string
      *
-     * @API\Field(type="string!",
+     * @GraphQL\Field(type="string!",
      *     description="Parameter value to replace")
      */
     protected $value;

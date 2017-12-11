@@ -10,10 +10,10 @@
 
 namespace Ynlo\GraphQLBundle\Model;
 
-use Ynlo\GraphQLBundle\Annotation as API;
+use Ynlo\GraphQLBundle\Annotation as GraphQL;
 
 /**
- * @API\ObjectType(description="A violation of a constraint that happened during validation.
+ * @GraphQL\ObjectType(description="A violation of a constraint that happened during validation.
 
 For each constraint that fails during validation one or more violations are
 created. The violations store the violation message, the path to the failing
@@ -25,7 +25,7 @@ class ConstraintViolation
     /**
      * @var string
      *
-     * @API\Field(type="string",
+     * @GraphQL\Field(type="string",
      *     description="Returns the property path from the root element to the violation.")
      */
     protected $propertyPath;
@@ -33,7 +33,7 @@ class ConstraintViolation
     /**
      * @var string
      *
-     * @API\Field(type="string!",
+     * @GraphQL\Field(type="string!",
      *     description="Returns the violation message.")
      */
     protected $message;
@@ -41,7 +41,7 @@ class ConstraintViolation
     /**
      * @var string
      *
-     * @API\Field(type="string!", description="Returns the raw violation message.
+     * @GraphQL\Field(type="string!", description="Returns the raw violation message.
     The raw violation message contains placeholders for the parameters returned by parameters.
     Typically you'll pass the message template and parameters to a translation engine.")
      */
@@ -50,7 +50,7 @@ class ConstraintViolation
     /**
      * @var ConstraintViolationParameter[]
      *
-     * @API\Field(type="[Ynlo\GraphQLBundle\Model\ConstraintViolationParameter]",
+     * @GraphQL\Field(type="[Ynlo\GraphQLBundle\Model\ConstraintViolationParameter]",
      *     description="Returns the parameters to be inserted into the raw violation message.")
      */
     protected $parameters;
@@ -58,7 +58,7 @@ class ConstraintViolation
     /**
      * @var int
      *
-     * @API\Field(type="int",
+     * @GraphQL\Field(type="int",
      *     description="Returns a number for pluralizing the violation message")
      */
     protected $plural = 0;
@@ -66,7 +66,7 @@ class ConstraintViolation
     /**
      * @var string
      *
-     * @API\Field(type="string",
+     * @GraphQL\Field(type="string",
      *     description="Returns the value that caused the violation.")
      */
     protected $invalidValue;
@@ -74,7 +74,7 @@ class ConstraintViolation
     /**
      * @var string
      *
-     * @API\Field(type="string!",
+     * @GraphQL\Field(type="string!",
      *     description="Returns a machine-digestible error code for the violation.")
      */
     protected $code;
