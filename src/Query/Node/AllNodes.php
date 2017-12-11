@@ -16,6 +16,8 @@ use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Model\OrderBy;
+use Ynlo\GraphQLBundle\Pagination\DoctrineOffsetCursorPaginator;
+use Ynlo\GraphQLBundle\Pagination\PaginationRequest;
 use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
 
 /**
@@ -47,20 +49,28 @@ class AllNodes extends AbstractResolver
      * @param NodeInterface|null $root
      * @param int|null           $first
      * @param int|null           $last
+     * @param int|null           $after
+     * @param int|null           $before
      * @param OrderBy[]          $orderBy
      *
      * @return mixed
+     *
+     * @throws Error
      */
-    public function __invoke(NodeInterface $root = null, $first = null, $last = null, $orderBy = [])
+    public function __invoke(NodeInterface $root = null, $first = null, $last = null, $after = null, $before = null, $orderBy = [])
     {
-        $objectType = $this->context->getDefinition()->getType();
+        if ($this->context->getDefinition()->hasMeta('node')) {
+            $objectType = $this->context->getDefinition()->getMeta('node');
+        } else {
+            $objectType = $this->context->getDefinition()->getType();
+        }
+
         $this->queryDefinition = $this->context->getDefinition();
         $this->objectDefinition = $this->context->getDefinitionManager()->getType($objectType);
         $this->entity = $this->context->getDefinitionManager()->getType($objectType)->getClass();
 
         $qb = $this->createQuery();
         $this->applyOrderBy($qb, $orderBy);
-        $this->applyLimits($qb, $first, $last);
 
         if ($root) {
             $this->applyFilterByParent($qb, $root);
@@ -68,7 +78,31 @@ class AllNodes extends AbstractResolver
 
         $this->modifyQuery($qb);
 
-        return $qb->getQuery()->execute();
+        if (!$first && !$last) {
+            $error = sprintf('You must provide a `first` or `last` value to properly paginate records in "%s" connection.', $this->queryDefinition->getName());
+            throw new Error($error);
+        }
+
+        if ($this->queryDefinition->hasMeta('connection_limit')) {
+            $limitAllowed = $this->queryDefinition->getMeta('connection_limit');
+            if ($first > $limitAllowed || $last > $limitAllowed) {
+                $current = $first ?? $last;
+                $where = $first ? 'first' : 'last';
+                $error = sprintf(
+                    'Requesting %s records for `%s` exceeds the `%s` limit of %s records for "%s" connection',
+                    $current,
+                    $this->queryDefinition->getName(),
+                    $where,
+                    $limitAllowed,
+                    $this->queryDefinition->getName()
+                );
+                throw new Error($error);
+            }
+        }
+
+        $paginator = new DoctrineOffsetCursorPaginator();
+
+        return $paginator->paginate($qb, new PaginationRequest($first, $last, $after, $before));
     }
 
     /**
@@ -100,60 +134,6 @@ class AllNodes extends AbstractResolver
         $paramName = 'root'.mt_rand();
         $qb->andWhere(sprintf('%s.%s = :%s', $this->queryAlias, $parentField, $paramName))
            ->setParameter($paramName, $root);
-    }
-
-    /**
-     * @param QueryBuilder $qb
-     * @param null         $first
-     * @param null         $last
-     *
-     * @throws Error
-     */
-    protected function applyLimits(QueryBuilder $qb, $first = null, $last = null)
-    {
-        if (!$first && !$last) {
-            $error = sprintf('You must provide a `first` or `last` value to properly paginate records in "%s" connection.', $this->queryDefinition->getName());
-            throw new Error($error);
-        }
-
-        if ($this->queryDefinition->hasMeta('connection_limit')) {
-            $limit = $this->queryDefinition->getMeta('connection_limit');
-            if ($first > $limit || $last > $limit) {
-                $current = $first ?? $last;
-                $where = $first ? 'first' : 'last';
-                $error = sprintf(
-                    'Requesting %s records for `%s` exceeds the `%s` limit of %s records for "%s" connection',
-                    $current,
-                    $this->queryDefinition->getName(),
-                    $where,
-                    $limit,
-                    $this->queryDefinition->getName()
-                );
-                throw new Error($error);
-            }
-        }
-
-        if ($first) {
-            $qb->setMaxResults(abs($first));
-        } elseif ($last) {
-            $qb->setMaxResults(abs($last));
-
-            //invert all orders
-            /** @var \Doctrine\ORM\Query\Expr\OrderBy[] $orders */
-            $orders = $qb->getDQLPart('orderBy');
-            $qb->resetDQLPart('orderBy');
-            foreach ($orders as &$order) {
-                foreach ($order->getParts() as &$part) {
-                    if (strpos($part, 'ASC')) {
-                        $part = str_replace('ASC', '', $part);
-                        $qb->addOrderBy($part, 'DESC');
-                    } else {
-                        $part = str_replace('DESC', '', $part);
-                        $qb->addOrderBy($part, 'ASC');
-                    }
-                }
-            }
-        }
     }
 
     /**

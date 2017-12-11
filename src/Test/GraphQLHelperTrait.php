@@ -21,6 +21,8 @@ trait GraphQLHelperTrait
 {
     private static $endpoint;
 
+    private static $query;
+
     /**
      * @param string $endpoint
      */
@@ -66,6 +68,14 @@ trait GraphQLHelperTrait
     }
 
     /**
+     * debugQuery
+     */
+    protected static function debugQuery()
+    {
+        print_r(self::$query);
+    }
+
+    /**
      * @param string $type
      * @param string $name
      * @param array  $parameters
@@ -88,7 +98,7 @@ $type $name{
 }
 GrahpQL;
         $body = ['query' => $query];
-
+        self::$query = $query;
         self::getClient()->request(Request::METHOD_POST, self::$endpoint, [], [], [], json_encode($body));
     }
 
@@ -130,8 +140,6 @@ GrahpQL;
      */
     private static function flattenExpectation(array $expectation)
     {
-
-
         $expectNormalized = [];
         foreach ($expectation as $path => $value) {
             if (\is_array($value)) {

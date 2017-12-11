@@ -110,6 +110,16 @@ class User implements NodeInterface, TimestampableInterface
     }
 
     /**
+     * @GraphQL\Field(type="int")
+     *
+     * @return int
+     */
+    public function getDatabaseId()
+    {
+        return $this->id;
+    }
+
+    /**
      * @return string
      */
     public function getUsername()

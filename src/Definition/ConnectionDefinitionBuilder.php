@@ -11,6 +11,7 @@
 namespace Ynlo\GraphQLBundle\Definition;
 
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
+use Ynlo\GraphQLBundle\Model\NodeConnection;
 use Ynlo\GraphQLBundle\Model\OrderBy;
 use Ynlo\GraphQLBundle\Query\Node\AllNodes;
 
@@ -145,6 +146,20 @@ class ConnectionDefinitionBuilder
         $last->setDescription('Returns the last *n* elements from the list.');
         $definition->addArgument($last);
 
+        $after = new ArgumentDefinition();
+        $after->setName('after');
+        $after->setType('string');
+        $after->setNonNull(false);
+        $after->setDescription('Returns the last *n* elements from the list.');
+        $definition->addArgument($after);
+
+        $before = new ArgumentDefinition();
+        $before->setName('before');
+        $before->setType('string');
+        $before->setNonNull(false);
+        $before->setDescription('Returns the last *n* elements from the list.');
+        $definition->addArgument($before);
+
         $orderBy = new ArgumentDefinition();
         $orderBy->setName('orderBy');
         $orderBy->setType(OrderBy::class);
@@ -153,8 +168,9 @@ class ConnectionDefinitionBuilder
         $orderBy->setDescription('Ordering options for this list.');
         $definition->addArgument($orderBy);
 
-        $definition->setType($objectDefinition->getName());
-        $definition->setList(true);
+        $definition->setType(NodeConnection::class);
+        $definition->setList(false);
+        $definition->setMeta('node', $objectDefinition->getName());
 
         $definition->setMeta('connection_limit', $this->limit);
 
