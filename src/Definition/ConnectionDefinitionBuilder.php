@@ -12,7 +12,6 @@ namespace Ynlo\GraphQLBundle\Definition;
 
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
 use Ynlo\GraphQLBundle\Model\ConnectionInterface;
-use Ynlo\GraphQLBundle\Model\NodeConnection;
 use Ynlo\GraphQLBundle\Model\OrderBy;
 use Ynlo\GraphQLBundle\Query\Node\AllNodes;
 
