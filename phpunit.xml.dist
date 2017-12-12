@@ -22,7 +22,7 @@
             <directory>src/Tests/</directory>
         </testsuite>
         <testsuite name="Integration Tests">
-            <directory>demo/src/ApiDemoBundle/Tests/</directory>
+            <directory>demo/src/AppBundle/Tests/</directory>
         </testsuite>
     </testsuites>
 

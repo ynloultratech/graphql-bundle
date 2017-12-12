@@ -32,7 +32,7 @@ class CommentTest extends ApiTestCase
         $user = self::getFixtureReference('admin');
 
         self::mutation(
-            'addComment',
+            'comments.add',
             [
                 'input' => [
                     'commentableId' => $commentableId = self::encodeID('Post', $post->getId()),
@@ -62,11 +62,11 @@ class CommentTest extends ApiTestCase
         );
 
         self::assertRepositoryContains(PostComment::class, ['body' => $comment, 'post' => $post]);
-        self::assertJsonPathEquals($comment, 'data.addComment.node.body');
-        self::assertJsonPathEquals($post->getTitle(), 'data.addComment.node.commentable.title');
-        self::assertJsonPathEquals($clientMutationId, 'data.addComment.clientMutationId');
+        self::assertJsonPathEquals($comment, 'data.comments.add.node.body');
+        self::assertJsonPathEquals($post->getTitle(), 'data.comments.add.node.commentable.title');
+        self::assertJsonPathEquals($clientMutationId, 'data.comments.add.clientMutationId');
 
-        return self::getJsonPathValue('data.addComment.node.id');
+        return self::getJsonPathValue('data.comments.add.node.id');
     }
 
     /**
@@ -77,7 +77,7 @@ class CommentTest extends ApiTestCase
         $id = $this->testAddComment();
 
         self::mutation(
-            'deleteComment',
+            'comments.delete',
             [
                 'input' => [
                     'id' => $id,
@@ -91,7 +91,7 @@ class CommentTest extends ApiTestCase
         );
 
         self::assertResponseCodeIsOK();
-        self::assertJsonPathEquals($id, 'data.deleteComment.id');
-        self::assertJsonPathEquals($clientMutationId, 'data.deleteComment.clientMutationId');
+        self::assertJsonPathEquals($id, 'data.comments.delete.id');
+        self::assertJsonPathEquals($clientMutationId, 'data.comments.delete.clientMutationId');
     }
 }

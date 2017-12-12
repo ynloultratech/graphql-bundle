@@ -25,7 +25,7 @@ class UserTest extends ApiTestCase
     public function testUserList()
     {
         self::query(
-            'allUsers',
+            'users.all',
             ['first' => 5],
             [
                 'totalCount',
@@ -53,21 +53,21 @@ class UserTest extends ApiTestCase
         );
 
         self::assertResponseCodeIsOK();
-        self::assertJsonPathEquals('Y3Vyc29yOjA=', 'data.allUsers.pageInfo.startCursor');
-        self::assertJsonPathEquals('Y3Vyc29yOjQ=', 'data.allUsers.pageInfo.endCursor');
-        self::assertJsonPathEquals(false, 'data.allUsers.pageInfo.hasPreviousPage');
-        self::assertJsonPathEquals(true, 'data.allUsers.pageInfo.hasNextPage');
+        self::assertJsonPathEquals('Y3Vyc29yOjA=', 'data.users.all.pageInfo.startCursor');
+        self::assertJsonPathEquals('Y3Vyc29yOjQ=', 'data.users.all.pageInfo.endCursor');
+        self::assertJsonPathEquals(false, 'data.users.all.pageInfo.hasPreviousPage');
+        self::assertJsonPathEquals(true, 'data.users.all.pageInfo.hasNextPage');
 
-        self::assertJsonPathEquals('admin', 'data.allUsers.edges[0].node.login');
+        self::assertJsonPathEquals('admin', 'data.users.all.edges[0].node.login');
 
         /** @var User $user1 */
         $user1 = self::getFixtureReference('user1');
 
-        self::assertJsonArraySubset(['admin', $user1->getUsername()], 'data.allUsers.edges[*].node.login');
-        self::assertJsonPathEquals($user1->getProfile()->getPhone(), 'data.allUsers.edges[1].node.profile.phone');
+        self::assertJsonArraySubset(['admin', $user1->getUsername()], 'data.users.all.edges[*].node.login');
+        self::assertJsonPathEquals($user1->getProfile()->getPhone(), 'data.users.all.edges[1].node.profile.phone');
         self::assertJsonPathEquals(
             $user1->getProfile()->getAddress()->getZipCode(),
-            'data.allUsers.edges[1].node.profile.address.zipCode'
+            'data.users.all.edges[1].node.profile.address.zipCode'
         );
     }
 
@@ -78,7 +78,7 @@ class UserTest extends ApiTestCase
     {
         $records = self::getRepository(User::class)->findBy([], ['username' => 'DESC'], 3);
         self::query(
-            'allUsers',
+            'users.all',
             ['first' => 3, 'orderBy' => ['field' => 'login', 'direction' => 'DESC']],
             [
                 'totalCount',
@@ -105,15 +105,15 @@ class UserTest extends ApiTestCase
             ]
         );
 
-        self::assertJsonPathEquals('Y3Vyc29yOjA=', 'data.allUsers.pageInfo.startCursor');
-        self::assertJsonPathEquals('Y3Vyc29yOjI=', 'data.allUsers.pageInfo.endCursor');
-        self::assertJsonPathEquals(false, 'data.allUsers.pageInfo.hasPreviousPage');
-        self::assertJsonPathEquals(true, 'data.allUsers.pageInfo.hasNextPage');
+        self::assertJsonPathEquals('Y3Vyc29yOjA=', 'data.users.all.pageInfo.startCursor');
+        self::assertJsonPathEquals('Y3Vyc29yOjI=', 'data.users.all.pageInfo.endCursor');
+        self::assertJsonPathEquals(false, 'data.users.all.pageInfo.hasPreviousPage');
+        self::assertJsonPathEquals(true, 'data.users.all.pageInfo.hasNextPage');
 
         self::assertResponseCodeIsOK();
-        self::assertJsonPathEquals($records[0]->getUsername(), 'data.allUsers.edges[0].node.login');
-        self::assertJsonPathEquals($records[1]->getUsername(), 'data.allUsers.edges[1].node.login');
-        self::assertJsonPathEquals($records[2]->getUsername(), 'data.allUsers.edges[2].node.login');
+        self::assertJsonPathEquals($records[0]->getUsername(), 'data.users.all.edges[0].node.login');
+        self::assertJsonPathEquals($records[1]->getUsername(), 'data.users.all.edges[1].node.login');
+        self::assertJsonPathEquals($records[2]->getUsername(), 'data.users.all.edges[2].node.login');
     }
 
     /**
@@ -124,7 +124,7 @@ class UserTest extends ApiTestCase
         $records = self::getRepository(User::class)->findBy([], ['username' => 'ASC'], 3, 3);
 
         self::query(
-            'allUsers',
+            'users.all',
             ['first' => 3, 'orderBy' => ['field' => 'login', 'direction' => 'ASC'], 'after' => base64_encode('cursor:2')],
             [
                 'totalCount',
@@ -151,15 +151,15 @@ class UserTest extends ApiTestCase
             ]
         );
 
-        self::assertJsonPathEquals(base64_encode('cursor:3'), 'data.allUsers.pageInfo.startCursor');
-        self::assertJsonPathEquals(base64_encode('cursor:5'), 'data.allUsers.pageInfo.endCursor');
-        self::assertJsonPathEquals(true, 'data.allUsers.pageInfo.hasPreviousPage');
-        self::assertJsonPathEquals(true, 'data.allUsers.pageInfo.hasNextPage');
+        self::assertJsonPathEquals(base64_encode('cursor:3'), 'data.users.all.pageInfo.startCursor');
+        self::assertJsonPathEquals(base64_encode('cursor:5'), 'data.users.all.pageInfo.endCursor');
+        self::assertJsonPathEquals(true, 'data.users.all.pageInfo.hasPreviousPage');
+        self::assertJsonPathEquals(true, 'data.users.all.pageInfo.hasNextPage');
 
         self::assertResponseCodeIsOK();
-        self::assertJsonPathEquals($records[0]->getUsername(), 'data.allUsers.edges[0].node.login');
-        self::assertJsonPathEquals($records[1]->getUsername(), 'data.allUsers.edges[1].node.login');
-        self::assertJsonPathEquals($records[2]->getUsername(), 'data.allUsers.edges[2].node.login');
+        self::assertJsonPathEquals($records[0]->getUsername(), 'data.users.all.edges[0].node.login');
+        self::assertJsonPathEquals($records[1]->getUsername(), 'data.users.all.edges[1].node.login');
+        self::assertJsonPathEquals($records[2]->getUsername(), 'data.users.all.edges[2].node.login');
     }
 
     /**
@@ -170,7 +170,7 @@ class UserTest extends ApiTestCase
         $records = self::getRepository(User::class)->findBy([], ['username' => 'ASC'], 3, 0);
 
         self::query(
-            'allUsers',
+            'users.all',
             ['first' => 3, 'orderBy' => ['field' => 'login', 'direction' => 'ASC'], 'before' => base64_encode('cursor:7')],
             [
                 'totalCount',
@@ -197,15 +197,15 @@ class UserTest extends ApiTestCase
             ]
         );
 
-        self::assertJsonPathEquals(base64_encode('cursor:0'), 'data.allUsers.pageInfo.startCursor');
-        self::assertJsonPathEquals(base64_encode('cursor:2'), 'data.allUsers.pageInfo.endCursor');
-        self::assertJsonPathEquals(false, 'data.allUsers.pageInfo.hasPreviousPage');
-        self::assertJsonPathEquals(true, 'data.allUsers.pageInfo.hasNextPage');
+        self::assertJsonPathEquals(base64_encode('cursor:0'), 'data.users.all.pageInfo.startCursor');
+        self::assertJsonPathEquals(base64_encode('cursor:2'), 'data.users.all.pageInfo.endCursor');
+        self::assertJsonPathEquals(false, 'data.users.all.pageInfo.hasPreviousPage');
+        self::assertJsonPathEquals(true, 'data.users.all.pageInfo.hasNextPage');
 
         self::assertResponseCodeIsOK();
-        self::assertJsonPathEquals($records[0]->getUsername(), 'data.allUsers.edges[0].node.login');
-        self::assertJsonPathEquals($records[1]->getUsername(), 'data.allUsers.edges[1].node.login');
-        self::assertJsonPathEquals($records[2]->getUsername(), 'data.allUsers.edges[2].node.login');
+        self::assertJsonPathEquals($records[0]->getUsername(), 'data.users.all.edges[0].node.login');
+        self::assertJsonPathEquals($records[1]->getUsername(), 'data.users.all.edges[1].node.login');
+        self::assertJsonPathEquals($records[2]->getUsername(), 'data.users.all.edges[2].node.login');
     }
 
     /**
@@ -216,7 +216,7 @@ class UserTest extends ApiTestCase
         $records = self::getRepository(User::class)->findBy([], ['username' => 'ASC'], 3, 8);
 
         self::query(
-            'allUsers',
+            'users.all',
             ['last' => 3, 'orderBy' => ['field' => 'login', 'direction' => 'ASC'], 'after' => base64_encode('cursor:5')],
             [
                 'totalCount',
@@ -243,15 +243,15 @@ class UserTest extends ApiTestCase
             ]
         );
 
-        self::assertJsonPathEquals(base64_encode('cursor:8'), 'data.allUsers.pageInfo.startCursor');
-        self::assertJsonPathEquals(base64_encode('cursor:10'), 'data.allUsers.pageInfo.endCursor');
-        self::assertJsonPathEquals(true, 'data.allUsers.pageInfo.hasPreviousPage');
-        self::assertJsonPathEquals(false, 'data.allUsers.pageInfo.hasNextPage');
+        self::assertJsonPathEquals(base64_encode('cursor:8'), 'data.users.all.pageInfo.startCursor');
+        self::assertJsonPathEquals(base64_encode('cursor:10'), 'data.users.all.pageInfo.endCursor');
+        self::assertJsonPathEquals(true, 'data.users.all.pageInfo.hasPreviousPage');
+        self::assertJsonPathEquals(false, 'data.users.all.pageInfo.hasNextPage');
 
         self::assertResponseCodeIsOK();
-        self::assertJsonPathEquals($records[0]->getUsername(), 'data.allUsers.edges[0].node.login');
-        self::assertJsonPathEquals($records[1]->getUsername(), 'data.allUsers.edges[1].node.login');
-        self::assertJsonPathEquals($records[2]->getUsername(), 'data.allUsers.edges[2].node.login');
+        self::assertJsonPathEquals($records[0]->getUsername(), 'data.users.all.edges[0].node.login');
+        self::assertJsonPathEquals($records[1]->getUsername(), 'data.users.all.edges[1].node.login');
+        self::assertJsonPathEquals($records[2]->getUsername(), 'data.users.all.edges[2].node.login');
     }
 
     /**
@@ -262,7 +262,7 @@ class UserTest extends ApiTestCase
         $records = self::getRepository(User::class)->findBy([], ['username' => 'ASC'], 3, 2);
 
         self::query(
-            'allUsers',
+            'users.all',
             ['last' => 3, 'orderBy' => ['field' => 'login', 'direction' => 'ASC'], 'before' => base64_encode('cursor:5')],
             [
                 'totalCount',
@@ -289,15 +289,15 @@ class UserTest extends ApiTestCase
             ]
         );
 
-        self::assertJsonPathEquals(base64_encode('cursor:2'), 'data.allUsers.pageInfo.startCursor');
-        self::assertJsonPathEquals(base64_encode('cursor:4'), 'data.allUsers.pageInfo.endCursor');
-        self::assertJsonPathEquals(true, 'data.allUsers.pageInfo.hasPreviousPage');
-        self::assertJsonPathEquals(true, 'data.allUsers.pageInfo.hasNextPage');
+        self::assertJsonPathEquals(base64_encode('cursor:2'), 'data.users.all.pageInfo.startCursor');
+        self::assertJsonPathEquals(base64_encode('cursor:4'), 'data.users.all.pageInfo.endCursor');
+        self::assertJsonPathEquals(true, 'data.users.all.pageInfo.hasPreviousPage');
+        self::assertJsonPathEquals(true, 'data.users.all.pageInfo.hasNextPage');
 
         self::assertResponseCodeIsOK();
-        self::assertJsonPathEquals($records[0]->getUsername(), 'data.allUsers.edges[0].node.login');
-        self::assertJsonPathEquals($records[1]->getUsername(), 'data.allUsers.edges[1].node.login');
-        self::assertJsonPathEquals($records[2]->getUsername(), 'data.allUsers.edges[2].node.login');
+        self::assertJsonPathEquals($records[0]->getUsername(), 'data.users.all.edges[0].node.login');
+        self::assertJsonPathEquals($records[1]->getUsername(), 'data.users.all.edges[1].node.login');
+        self::assertJsonPathEquals($records[2]->getUsername(), 'data.users.all.edges[2].node.login');
     }
 
     /**
@@ -306,7 +306,7 @@ class UserTest extends ApiTestCase
     public function testUserGet()
     {
         self::query(
-            'user',
+            'users.user',
             ['login' => 'admin'],
             [
                 'id',
@@ -314,7 +314,7 @@ class UserTest extends ApiTestCase
             ]
         );
         self::assertResponseCodeIsOK();
-        self::assertJsonPathEquals('admin', 'data.user.login');
+        self::assertJsonPathEquals('admin', 'data.users.user.login');
     }
 
     /**
@@ -326,7 +326,7 @@ class UserTest extends ApiTestCase
         $user1 = self::getFixtureReference('user1');
 
         self::query(
-            'users',
+            'users.users',
             ['logins' => ['admin', $user1->getUsername()]],
             [
                 'id',
@@ -335,12 +335,12 @@ class UserTest extends ApiTestCase
         );
 
         self::assertResponseCodeIsOK();
-        self::assertJsonPathEquals('admin', 'data.users[0].login');
-        self::assertJsonPathEquals($user1->getUsername(), 'data.users[1].login');
+        self::assertJsonPathEquals('admin', 'data.users.users[0].login');
+        self::assertJsonPathEquals($user1->getUsername(), 'data.users.users[1].login');
 
         //The order of logins should be equal to response
         self::query(
-            'users',
+            'users.users',
             ['logins' => [$user1->getUsername(), 'admin']],
             [
                 'id',
@@ -349,8 +349,8 @@ class UserTest extends ApiTestCase
         );
 
         self::assertResponseCodeIsOK();
-        self::assertJsonPathEquals($user1->getUsername(), 'data.users[0].login');
-        self::assertJsonPathEquals('admin', 'data.users[1].login');
+        self::assertJsonPathEquals($user1->getUsername(), 'data.users.users[0].login');
+        self::assertJsonPathEquals('admin', 'data.users.users[1].login');
     }
 
     /**
@@ -359,7 +359,7 @@ class UserTest extends ApiTestCase
     public function testAddUser()
     {
         self::mutation(
-            'addUser',
+            'users.add',
             [
                 'input' => [
                     'login' => $login = 'graphql',
@@ -384,10 +384,10 @@ class UserTest extends ApiTestCase
         );
 
         self::assertResponseCodeIsOK();
-        self::assertJsonPathEquals($clientMutationId, 'data.addUser.clientMutationId');
+        self::assertJsonPathEquals($clientMutationId, 'data.users.add.clientMutationId');
         self::assertRepositoryContains(User::class, ['username' => $login]);
-        $id = self::getJsonPathValue('data.addUser.node.id');
-        $loginInResponse = self::getJsonPathValue('data.addUser.node.login');
+        $id = self::getJsonPathValue('data.users.add.node.id');
+        $loginInResponse = self::getJsonPathValue('data.users.add.node.login');
         self::assertEquals($login, $loginInResponse);
 
         /** @var User $createdUser */
@@ -395,7 +395,7 @@ class UserTest extends ApiTestCase
 
         self::assertEquals($login, $createdUser->getUsername());
 
-        self::assertJsonPathEquals($email, 'data.addUser.node.profile.email');
+        self::assertJsonPathEquals($email, 'data.users.add.node.profile.email');
     }
 
     /**
@@ -404,7 +404,7 @@ class UserTest extends ApiTestCase
     public function testAddUserDryRun()
     {
         self::mutation(
-            'addUser',
+            'users.add',
             [
                 'input' => [
                     'login' => $login = 'graphql',
@@ -433,8 +433,8 @@ class UserTest extends ApiTestCase
         );
 
         self::assertResponseCodeIsOK();
-        self::assertJsonPathEquals($clientMutationId, 'data.addUser.clientMutationId');
-        self::assertJsonPathEquals([], 'data.addUser.constraintViolations');
+        self::assertJsonPathEquals($clientMutationId, 'data.users.add.clientMutationId');
+        self::assertJsonPathEquals([], 'data.users.add.constraintViolations');
         self::assertRepositoryNotContains(User::class, ['username' => $login]);
     }
 
@@ -444,7 +444,7 @@ class UserTest extends ApiTestCase
     public function testAddUserValidation()
     {
         self::mutation(
-            'addUser',
+            'users.add',
             [
                 'input' => [
                     'login' => '',
@@ -474,12 +474,12 @@ class UserTest extends ApiTestCase
         );
 
         self::assertResponseCodeIsOK();
-        self::assertJsonPathEquals($clientMutationId, 'data.addUser.clientMutationId');
-        self::assertJsonPathNull('data.addUser.node');
-        self::assertJsonPathEquals('This value should not be blank.', 'data.addUser.constraintViolations[0].message');
-        self::assertJsonPathEquals('login', 'data.addUser.constraintViolations[0].propertyPath');
-        self::assertJsonPathEquals('This value is not a valid email address.', 'data.addUser.constraintViolations[1].message');
-        self::assertJsonPathEquals('profile.email', 'data.addUser.constraintViolations[1].propertyPath');
+        self::assertJsonPathEquals($clientMutationId, 'data.users.add.clientMutationId');
+        self::assertJsonPathNull('data.users.add.node');
+        self::assertJsonPathEquals('This value should not be blank.', 'data.users.add.constraintViolations[0].message');
+        self::assertJsonPathEquals('login', 'data.users.add.constraintViolations[0].propertyPath');
+        self::assertJsonPathEquals('This value is not a valid email address.', 'data.users.add.constraintViolations[1].message');
+        self::assertJsonPathEquals('profile.email', 'data.users.add.constraintViolations[1].propertyPath');
     }
 
     /**
@@ -495,7 +495,7 @@ class UserTest extends ApiTestCase
         self::assertRepositoryNotContains(User::class, ['username' => $newLogin]);
 
         self::mutation(
-            'updateUser',
+            'users.update',
             [
                 'input' => [
                     'id' => $id = self::encodeID('User', $user1->getId()),
@@ -524,10 +524,10 @@ class UserTest extends ApiTestCase
 
         self::assertResponseCodeIsOK();
         self::assertRepositoryContains(User::class, ['username' => $newLogin]);
-        $loginInResponse = self::getJsonPathValue('data.updateUser.node.login');
+        $loginInResponse = self::getJsonPathValue('data.users.update.node.login');
         self::assertEquals($newLogin, $loginInResponse);
 
-        self::assertJsonPathEquals($email, 'data.updateUser.node.profile.email');
+        self::assertJsonPathEquals($email, 'data.users.update.node.profile.email');
     }
 
     /**
@@ -540,7 +540,7 @@ class UserTest extends ApiTestCase
         self::assertRepositoryContains(User::class, ['username' => $user1->getUsername()]);
 
         self::mutation(
-            'deleteUser',
+            'users.delete',
             [
                 'input' => [
                     'id' => $id = self::encodeID('User', $user1->getId()),
@@ -555,8 +555,8 @@ class UserTest extends ApiTestCase
 
         self::assertResponseCodeIsOK();
         self::assertRepositoryNotContains(User::class, ['username' => $user1->getUsername()]);
-        self::assertJsonPathEquals($id, 'data.deleteUser.id');
-        self::assertJsonPathEquals($clientMutationId, 'data.deleteUser.clientMutationId');
+        self::assertJsonPathEquals($id, 'data.users.delete.id');
+        self::assertJsonPathEquals($clientMutationId, 'data.users.delete.clientMutationId');
     }
 
     /**
@@ -567,7 +567,7 @@ class UserTest extends ApiTestCase
         /** @var User $user1 */
         $user1 = self::getFixtureReference('user1');
         self::query(
-            'user',
+            'users.user',
             ['login' => $user1->getUsername()],
             [
                 'id',
@@ -597,7 +597,7 @@ class UserTest extends ApiTestCase
         self::assertResponseCodeIsOK();
         /** @var Post $post */
         foreach ($user1->getPosts() as $index => $post) {
-            self::assertJsonPathEquals($post->getTitle(), "data.user.posts.edges[$index].node.title");
+            self::assertJsonPathEquals($post->getTitle(), "data.users.user.posts.edges[$index].node.title");
         }
     }
 }
