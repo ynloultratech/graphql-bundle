@@ -90,7 +90,8 @@ Can be used to group multiple bundles or publish a bundle with a different name'
               ->defaultValue('Mutation');
 
         $nodes->variableNode('ignore')
-              ->info('The following nodes will be ignore for grouping, all definitions will be placed in the root query or mutation');
+              ->info('The following nodes will be ignore for grouping, all definitions will be placed in the root query or mutation')
+              ->defaultValue(['Node']);
 
         $nodes->arrayNode('aliases')
               ->info(

@@ -39,6 +39,11 @@ class NamespaceDefinitionParserExtension extends AbstractGraphQLExtension
     protected $ignoreBundles = [];
 
     /**
+     * @var array
+     */
+    protected $ignoreNodes = [];
+
+    /**
      * @var bool
      */
     protected $groupByBundle = true;
@@ -51,7 +56,12 @@ class NamespaceDefinitionParserExtension extends AbstractGraphQLExtension
     /**
      * @var array
      */
-    protected $aliases = [];
+    protected $bundleAliases = [];
+
+    /**
+     * @var array
+     */
+    protected $nodeAliases = [];
 
     /**
      * PaginationExtension constructor.
@@ -63,7 +73,9 @@ class NamespaceDefinitionParserExtension extends AbstractGraphQLExtension
     {
         $this->reader = $reader;
         $this->ignoreBundles = $config['bundles']['ignore'] ?? [];
-        $this->aliases = $config['bundles']['aliases'] ?? [];
+        $this->ignoreNodes = $config['nodes']['ignore'] ?? [];
+        $this->bundleAliases = $config['bundles']['aliases'] ?? [];
+        $this->nodeAliases = $config['nodes']['aliases'] ?? [];
         $this->groupByBundle = $config['bundles']['enabled']  ?? true;
         $this->groupByNode = $config['nodes']['enabled']  ?? true;
     }
@@ -80,6 +92,14 @@ class NamespaceDefinitionParserExtension extends AbstractGraphQLExtension
         $node = null;
         if ($this->groupByNode && $definition instanceof MetaAwareInterface && $definition->hasMeta('node')) {
             $node = $definition->getMeta('node');
+
+            if (isset($this->nodeAliases[$node])) {
+                $node = $this->nodeAliases[$node];
+            }
+
+            if ($node && in_array($node, $this->ignoreNodes)) {
+                $node = null;
+            }
         }
 
         $bundle = null;
@@ -92,8 +112,8 @@ class NamespaceDefinitionParserExtension extends AbstractGraphQLExtension
                         $bundle = current(array_reverse($matches[1]));
                     }
 
-                    if (isset($this->aliases[$bundle])) {
-                        $bundle = $this->aliases[$bundle];
+                    if (isset($this->bundleAliases[$bundle])) {
+                        $bundle = $this->bundleAliases[$bundle];
                     }
 
                     if ($bundle && in_array($bundle, $this->ignoreBundles)) {

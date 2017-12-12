@@ -10,6 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Test;
 
+use Doctrine\Common\Util\Inflector;
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\HttpFoundation\Request;
 use Ynlo\GraphQLBundle\Model\ID;
@@ -83,23 +84,63 @@ trait GraphQLHelperTrait
      */
     private static function graphqlQuery($type, $name, array $parameters = [], array $expected = [])
     {
+        $flattenQuery = self::flattenQuery($name, $parameters, $expected);
+        if (strpos($name, '.') !== false) {
+            $name = Inflector::camelize(str_replace('.', '_', $name));
+        }
+        $query =
+            <<<GrahpQL
+$type $name{
+  $flattenQuery
+}
+GrahpQL;
+
+        $body = ['query' => $query];
+        self::$query = $query;
+        self::getClient()->request(Request::METHOD_POST, self::$endpoint, [], [], [], json_encode($body));
+    }
+
+    /**
+     * @param string $name
+     * @param array  $parameters
+     * @param array  $expected
+     *
+     * @return string
+     */
+    private static function flattenQuery($name, array $parameters = [], array $expected = [])
+    {
         $expectedStr = self::flattenExpectation($expected);
+
+        //namespaced query
+        if (strpos($name, '.') !== false) {
+            $namespace = explode('.', $name);
+
+            $name = array_reverse($namespace)[0];
+            array_pop($namespace);
+            $query = '{child}';
+            foreach ($namespace as $path) {
+                $content = <<<GrahpQL
+$path {
+    {child}
+}
+GrahpQL;
+                $query = str_replace('{child}', $content, $query);
+            }
+
+            return str_replace('{child}', self::flattenQuery($name, $parameters, $expected), $query);
+        }
+
 
         $paramsStr = null;
         if ($parameters) {
             $paramsStr = self::flattenParameters($parameters);
         }
 
-        $query = <<<GrahpQL
-$type $name{
+        return <<<GrahpQL
   $name$paramsStr{
     $expectedStr
   }
-}
 GrahpQL;
-        $body = ['query' => $query];
-        self::$query = $query;
-        self::getClient()->request(Request::METHOD_POST, self::$endpoint, [], [], [], json_encode($body));
     }
 
     /**
@@ -147,10 +188,7 @@ GrahpQL;
                     && is_array($value[0])
                     && is_array($value[1])
                 ) {
-                    $params = self::flattenParameters($value[0]);
-                    $expectation = self::flattenExpectation($value[1]);
-
-                    $value = "$path $params {\n\t\t$expectation\n\t}";
+                    $value = self::flattenQuery($path, $value[0], $value[1]);
                 } else {
                     $value = $path." {\n\t\t".self::flattenExpectation($value)."\n\t}";
                 }
