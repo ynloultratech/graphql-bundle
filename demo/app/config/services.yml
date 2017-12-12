@@ -4,7 +4,7 @@ parameters:
 #    parameter_name: value
 
 services:
-    Ynlo\GraphQLBundle\Demo\ApiDemoBundle\EventListener\Doctrine\TimestampableSubscriber:
+    Ynlo\GraphQLBundle\Demo\AppBundle\EventListener\Doctrine\TimestampableSubscriber:
         tags:
             -  { name: doctrine.event_subscriber}
         public: false

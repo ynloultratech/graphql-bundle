@@ -25,7 +25,7 @@ class ApiDemoKernel extends Kernel
             new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
 
             new Ynlo\GraphQLBundle\YnloGraphQLBundle(),
-            new Ynlo\GraphQLBundle\Demo\ApiDemoBundle\ApiDemoBundle(),
+            new Ynlo\GraphQLBundle\Demo\AppBundle\AppBundle(),
         ];
 
         if ($this->isDebug()) {

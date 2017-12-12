@@ -2,7 +2,7 @@
 # http://symfony.com/doc/current/book/security.html
 security:
     encoders:
-        Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity\User:
+        Ynlo\GraphQLBundle\Demo\AppBundle\Entity\User:
             algorithm: md5
             encode_as_base64: false
             iterations: 1
