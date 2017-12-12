@@ -59,8 +59,9 @@ class AllNodesConnection extends AllNodes
             throw new Error($error);
         }
 
-        if ($this->queryDefinition->hasMeta('connection_limit')) {
-            $limitAllowed = $this->queryDefinition->getMeta('connection_limit');
+        if ($this->queryDefinition->hasMeta('connection')) {
+            $limitAllowed = $this->queryDefinition->getMeta('connection')->limit;
+
             if ($first > $limitAllowed || $last > $limitAllowed) {
                 $current = $first ?? $last;
                 $where = $first ? 'first' : 'last';
@@ -107,11 +108,17 @@ class AllNodesConnection extends AllNodes
     protected function applyFilterByParent(QueryBuilder $qb, NodeInterface $root)
     {
         $parentField = null;
-        if ($this->queryDefinition->hasMeta('connection_parent_field')) {
-            $parentField = $this->queryDefinition->getMeta('connection_parent_field');
+        if ($this->queryDefinition->hasMeta('connection')) {
+            $parentField = $this->queryDefinition->getMeta('connection')->parentField;
         }
         if (!$parentField) {
-            throw new \RuntimeException(sprintf('Missing parent field to filter "%s" by given parent. The parentField should be specified in the connection.', $this->queryDefinition->getName()));
+            throw new \RuntimeException(
+                sprintf(
+                    'Missing parent field to filter "%s" by given parent.
+             The parentField should be specified in the connection.',
+                    $this->queryDefinition->getName()
+                )
+            );
         }
 
         if ($this->objectDefinition->hasField($parentField)) {

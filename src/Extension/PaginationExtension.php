@@ -15,6 +15,7 @@ use Ynlo\GraphQLBundle\Annotation as GraphqQL;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
+use Ynlo\GraphQLBundle\Definition\MetaAwareInterface;
 use Ynlo\GraphQLBundle\Definition\MutationDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
@@ -69,14 +70,9 @@ class PaginationExtension extends AbstractGraphQLExtension
         } else {
             $connection = $this->reader->getClassAnnotation($refClass, GraphqQL\Connection::class);
 
-            /** @var GraphqQL\QueryGetAll $queryGetAll */
-            $queryGetAll = $this->reader->getClassAnnotation($refClass, GraphqQL\QueryGetAll::class);
-            if (!$connection && $queryGetAll) {
-                $connection = new GraphqQL\Connection();
-            }
-
-            if ($connection) {
-                $connection->limit = $connection->limit ?? ($queryGetAll->limit ?? $this->limit);
+            //if not connection, review if the meta connection has been settled
+            if (!$connection && $definition instanceof MetaAwareInterface && $definition->hasMeta('connection')) {
+                $connection = $definition->getMeta('connection');
             }
         }
 
@@ -100,6 +96,8 @@ class PaginationExtension extends AbstractGraphQLExtension
         if (!$connection || !$node) {
             return;
         }
+
+        $connection->limit = $connection->limit ??  $this->limit;
 
         $objectDefinition = $endpoint->getType($node);
 
@@ -157,12 +155,7 @@ class PaginationExtension extends AbstractGraphQLExtension
         $definition->setType(ConnectionInterface::class);
         $definition->setList(false);
         $definition->setMeta('node', $objectDefinition->getName());
-
-        $definition->setMeta('connection_limit', $connection->limit ?? $this->limit);
-
-        if ($connection->parentField) {
-            $definition->setMeta('connection_parent_field', $connection->parentField);
-        }
+        $definition->setMeta('connection', $connection);
 
         if (!$refClass->hasMethod('__invoke')) {
             $definition->setResolver(AllNodesConnection::class);

@@ -75,6 +75,11 @@ class QueryGetAllNodesAnnotationParser implements AnnotationParserInterface
             $query->setMeta('node', $typeName);
         }
 
+        if ($annotation->pagination) {
+            //the extension PaginationExtension use this meta
+            $query->setMeta('connection', new Annotation\Connection());
+        }
+
         $orderBy = new ArgumentDefinition();
         $orderBy->setName('orderBy');
         $orderBy->setType(OrderBy::class);
