@@ -17,6 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Resolver\ObjectFieldResolver;
+use Ynlo\GraphQLBundle\Util\GraphQLBuilder;
 
 /**
  * Class AbstractObjectType
@@ -82,36 +83,11 @@ abstract class AbstractObjectType extends ObjectType implements
                 $type = Type::nonNull($type);
             }
 
-            $args = [];
-            foreach ($fieldDefinition->getArguments() as $argument) {
-                $argumentType = Types::get($argument->getType());
-
-                if ($argument->isList()) {
-                    if ($argument->isNonNullList()) {
-                        $argumentType = Type::nonNull($type);
-                    }
-                    $argumentType = Type::listOf($argumentType);
-                }
-
-                if ($argument->isNonNull()) {
-                    $argumentType = Type::nonNull($argumentType);
-                }
-                $arg['name'] = $argument->getName();
-                $arg['type'] = $argumentType;
-                $arg['description'] = $argument->getDescription();
-
-                if ($argument->getDefaultValue() !== null) {
-                    $arg['defaultValue'] = $argument->getDefaultValue();
-                }
-
-                $args[] = $arg;
-            }
-
             $fields[$fieldDefinition->getName()] = [
                 'type' => $type,
                 'description' => $fieldDefinition->getDescription(),
                 'deprecationReason' => $fieldDefinition->getDeprecationReason(),
-                'args' => $args,
+                'args' => GraphQLBuilder::buildArguments($fieldDefinition),
             ];
         }
 

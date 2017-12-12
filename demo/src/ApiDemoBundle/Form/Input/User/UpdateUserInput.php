@@ -24,5 +24,8 @@ class UpdateUserInput extends AddUserInput
     {
         $builder->add('id');
         parent::buildForm($builder, $options);
+
+        $builder->get('login')->setRequired(false);
+        $builder->get('profile')->setRequired(false);
     }
 }

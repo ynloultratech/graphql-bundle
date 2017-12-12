@@ -28,7 +28,7 @@ class AddUserInput extends AbstractType
     {
         $builder
             ->add('login', null, ['property_path' => 'username', 'required' => true])
-            ->add('profile', ProfileInput::class, ['required' => false])
+            ->add('profile', ProfileInput::class, ['required' => true])
             ->add('enabled');
     }
 

@@ -10,6 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Registry;
 
+use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\MutationDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
@@ -245,6 +246,24 @@ class Endpoint
     public function getQuery($name): QueryDefinition
     {
         return $this->queries[$name];
+    }
+
+    /**
+     * @param DefinitionInterface $definition
+     *
+     * @return Endpoint
+     */
+    public function add(DefinitionInterface $definition): Endpoint
+    {
+        if ($definition instanceof MutationDefinition) {
+            return $this->addMutation($definition);
+        }
+
+        if ($definition instanceof QueryDefinition) {
+            return $this->addQuery($definition);
+        }
+
+        return $this->addType($definition);
     }
 
     /**

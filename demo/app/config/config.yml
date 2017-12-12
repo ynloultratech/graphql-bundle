@@ -49,3 +49,8 @@ doctrine:
 twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
+
+ynlo_graph_ql:
+    schema:
+        namespaces:
+            bundles: false

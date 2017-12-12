@@ -46,4 +46,9 @@ final class QueryGet
      * @var string
      */
     public $deprecationReason;
+
+    /**
+     * @var bool
+     */
+    public $namespace = true;
 }

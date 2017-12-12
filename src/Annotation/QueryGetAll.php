@@ -41,4 +41,9 @@ final class QueryGetAll
      * @var int
      */
     public $limit;
+
+    /**
+     * @var bool
+     */
+    public $namespace = true;
 }

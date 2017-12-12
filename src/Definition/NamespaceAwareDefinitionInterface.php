@@ -10,21 +10,20 @@
 
 namespace Ynlo\GraphQLBundle\Definition;
 
-interface ExecutableDefinitionInterface extends
-    DefinitionInterface,
-    TypeAwareDefinitionInterface,
-    ArgumentAwareInterface,
-    DeprecateInterface,
-    MetaAwareInterface,
-    NamespaceAwareDefinitionInterface
+/**
+ * NamespaceAwareDefinitionInterface
+ */
+interface NamespaceAwareDefinitionInterface
 {
     /**
-     * {@inheritDoc}
+     * @param DefinitionNamespace $namespace
+     *
+     * @return NamespaceAwareDefinitionInterface
      */
-    public function getResolver():?string;
+    public function setNamespace(DefinitionNamespace $namespace): NamespaceAwareDefinitionInterface;
 
     /**
-     * {@inheritDoc}
+     * @return null|DefinitionNamespace
      */
-    public function setResolver(?string $resolver);
+    public function getNamespace(): ?DefinitionNamespace;
 }

@@ -16,6 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Resolver\ResolverExecutor;
+use Ynlo\GraphQLBundle\Util\GraphQLBuilder;
 
 /**
  * Class QueryType
@@ -60,46 +61,12 @@ class QueryType extends ObjectType implements
             $config['type'] = Type::listOf($config['type']);
         }
 
-        $config['args'] = $this->resolveArguments($query);
+        $config['args'] = GraphQLBuilder::buildArguments($query);
 
         $config['resolve'] = new ResolverExecutor($this->container, $this->endpoint, $query);
         $config['description'] = $query->getDescription();
         $config['deprecationReason'] = $query->getDeprecationReason();
 
         return $config;
-    }
-
-    /**
-     * @param QueryDefinition $query
-     *
-     * @return array
-     */
-    protected function resolveArguments(QueryDefinition $query): array
-    {
-        $args = [];
-        foreach ($query->getArguments() as $argDefinition) {
-            $arg = [];
-            $arg['description'] = $argDefinition->getDescription();
-            $type = Types::get($argDefinition->getType());
-
-            if ($argDefinition->isList()) {
-                if ($argDefinition->isNonNullList()) {
-                    $type = Type::nonNull($type);
-                }
-                $type = Type::listOf($type);
-            }
-
-            if ($argDefinition->isNonNull()) {
-                $type = Type::nonNull($type);
-            }
-
-            $arg['type'] = $type;
-            if ($argDefinition->getDefaultValue()) {
-                $arg['defaultValue'] = $argDefinition->getDefaultValue();
-            }
-            $args[$argDefinition->getName()] = $arg;
-        }
-
-        return $args;
     }
 }

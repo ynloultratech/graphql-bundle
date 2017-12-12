@@ -20,6 +20,7 @@ trait ExecutableDefinitionTrait
     use DeprecateTrait;
     use TypeAwareDefinitionTrait;
     use MetaAwareTrait;
+    use NamespaceAwareTrait;
 
     protected $resolver;
 

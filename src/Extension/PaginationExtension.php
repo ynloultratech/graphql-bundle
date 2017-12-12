@@ -15,6 +15,7 @@ use Ynlo\GraphQLBundle\Annotation as GraphqQL;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
+use Ynlo\GraphQLBundle\Definition\MutationDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Model\ConnectionInterface;
@@ -41,10 +42,10 @@ class PaginationExtension extends AbstractGraphQLExtension
      *
      * @param Reader $reader
      */
-    public function __construct(Reader $reader)
+    public function __construct(Reader $reader, $config = [])
     {
         $this->reader = $reader;
-        $this->limit = 100; //TODO: resolve from some global bundle config
+        $this->limit = $config['limit'] ?? 100;
     }
 
     /**
@@ -80,7 +81,7 @@ class PaginationExtension extends AbstractGraphQLExtension
         }
 
         $node = null;
-        if ($definition instanceof QueryDefinition) {
+        if ($definition instanceof QueryDefinition && !($definition instanceof MutationDefinition)) {
             $node = $definition->getType();
         } elseif ($definition instanceof FieldDefinition) {
             $node = $definition->getType();

@@ -14,6 +14,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity\Post;
+use Ynlo\GraphQLBundle\Form\Type\IDType;
 
 /**
  * AddPostInput
@@ -28,7 +29,7 @@ class AddPostInput extends AbstractType
         $builder
             ->add('title')
             ->add('body')
-            ->add('author');
+            ->add('authorId', IDType::class);
     }
 
     /**

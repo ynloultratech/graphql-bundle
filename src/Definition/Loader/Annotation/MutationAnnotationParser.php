@@ -23,6 +23,7 @@ use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\MutationDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Form\Type\IDType;
 
 /**
@@ -44,11 +45,17 @@ class MutationAnnotationParser implements AnnotationParserInterface
     protected $endpoint;
 
     /**
+     * @var ExtensionManager
+     */
+    protected $extensionManager;
+
+    /**
      * @param FormFactory $formFactory
      */
-    public function __construct(FormFactory $formFactory)
+    public function __construct(FormFactory $formFactory, ExtensionManager $extensionManager)
     {
         $this->formFactory = $formFactory;
+        $this->extensionManager = $extensionManager;
     }
 
     /**
@@ -93,10 +100,8 @@ class MutationAnnotationParser implements AnnotationParserInterface
             }
         }
 
-
         $this->endpoint = $endpoint;
         $mutation = $this->createMutation($annotation);
-        $this->endpoint->addMutation($mutation);
 
         if (!$mutation->hasMeta('node')) {
             if (isset($definition)) {
@@ -127,6 +132,12 @@ class MutationAnnotationParser implements AnnotationParserInterface
         if (!$mutation->getResolver()) {
             $mutation->setResolver($refClass->getName());
         }
+
+        foreach ($this->extensionManager->getExtensions() as $extension) {
+            $extension->configureDefinition($mutation, $refClass, $endpoint);
+        }
+
+        $this->endpoint->addMutation($mutation);
     }
 
     /**

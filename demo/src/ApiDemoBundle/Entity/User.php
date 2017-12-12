@@ -74,6 +74,7 @@ class User implements NodeInterface, TimestampableInterface
      * @ORM\OneToOne(targetEntity="Ynlo\GraphQLBundle\Demo\ApiDemoBundle\Entity\Profile", inversedBy="user", cascade={"all"}, orphanRemoval=true)
      *
      * @Assert\Valid()
+     * @Assert\NotNull()
      */
     protected $profile;
 
@@ -92,14 +93,6 @@ class User implements NodeInterface, TimestampableInterface
      * @GraphQL\Connection()
      */
     protected $posts;
-
-    /**
-     * User constructor.
-     */
-    public function __construct()
-    {
-        $this->profile = new Profile();
-    }
 
     /**
      * {@inheritdoc}
@@ -166,6 +159,10 @@ class User implements NodeInterface, TimestampableInterface
      */
     public function getProfile(): Profile
     {
+        if (!$this->profile) {
+            $this->profile = new Profile();
+        }
+
         return $this->profile;
     }
 

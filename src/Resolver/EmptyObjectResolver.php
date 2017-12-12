@@ -8,37 +8,15 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Annotation;
+namespace Ynlo\GraphQLBundle\Resolver;
 
 /**
- * @Annotation()
  *
- * @Target({"CLASS"})
  */
-final class Query
+class EmptyObjectResolver
 {
-    /**
-     * @var string
-     */
-    public $name;
-
-    /**
-     * @var bool
-     */
-    public $list = false;
-
-    /**
-     * @var string
-     */
-    public $description;
-
-    /**
-     * @var string
-     */
-    public $deprecationReason;
-
-    /**
-     * @var bool
-     */
-    public $namespace = true;
+    public function __invoke()
+    {
+        return [];
+    }
 }

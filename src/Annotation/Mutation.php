@@ -61,4 +61,9 @@ class Mutation
      * @var string
      */
     public $deprecationReason;
+
+    /**
+     * @var bool
+     */
+    public $namespace = true;
 }

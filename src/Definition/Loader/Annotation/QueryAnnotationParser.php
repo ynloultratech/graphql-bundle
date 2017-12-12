@@ -79,6 +79,7 @@ class QueryAnnotationParser implements AnnotationParserInterface
         if ($objectDefinition) {
             $query->setType($objectDefinition->getName());
             $query->setList($annotation->list);
+            $query->setMeta('node', $objectDefinition->getName());
         } else {
             $error = sprintf('Does not exist any valid type for class "%s"', $refClass->getName());
             throw new \RuntimeException($error);

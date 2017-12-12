@@ -72,6 +72,7 @@ class QueryGetAllNodesAnnotationParser implements AnnotationParserInterface
             $typeName = $endpoint->getTypeForClass($refClass->getName());
             $query->setType($typeName);
             $query->setList(true);
+            $query->setMeta('node', $typeName);
         }
 
         $orderBy = new ArgumentDefinition();

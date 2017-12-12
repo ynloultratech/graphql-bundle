@@ -10,6 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Mutation;
 
+use Mockery\Exception;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Validator\ConstraintViolation as SymfonyConstraintViolation;

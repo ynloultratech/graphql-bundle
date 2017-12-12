@@ -15,6 +15,7 @@ use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Query\Node\Node;
 use Ynlo\GraphQLBundle\Query\Node\Nodes;
 
@@ -25,6 +26,21 @@ class QueryGetNodeAnnotationParser implements AnnotationParserInterface
 {
     use AnnotationReaderAwareTrait;
     use AnnotationParserHelper;
+
+    /**
+     * @var ExtensionManager
+     */
+    protected $extensionManager;
+
+    /**
+     * QueryGetAllNodesAnnotationParser constructor.
+     *
+     * @param ExtensionManager $extensionManager
+     */
+    public function __construct(ExtensionManager $extensionManager)
+    {
+        $this->extensionManager = $extensionManager;
+    }
 
     /**
      * {@inheritdoc}
@@ -75,6 +91,7 @@ class QueryGetNodeAnnotationParser implements AnnotationParserInterface
         if ($objectType = $this->reader->getClassAnnotation($refClass, Annotation\ObjectType::class)) {
             $typeName = $endpoint->getTypeForClass($refClass->getName());
             $objectDefinition = $endpoint->getType($typeName);
+            $query->setMeta('node', $typeName);
         }
 
         $fetchBy = $annotation->fetchBy ?? 'id';
@@ -98,6 +115,10 @@ class QueryGetNodeAnnotationParser implements AnnotationParserInterface
         $query->setResolver($plural ? Nodes::class : Node::class);
         $query->setDeprecationReason($annotation->deprecationReason);
         $query->setDescription($annotation->description);
+
+        foreach ($this->extensionManager->getExtensions() as $extension) {
+            $extension->configureDefinition($query, $refClass, $endpoint);
+        }
 
         $endpoint->addQuery($query);
     }
