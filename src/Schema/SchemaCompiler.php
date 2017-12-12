@@ -47,13 +47,11 @@ class SchemaCompiler implements ContainerAwareInterface
     }
 
     /**
-     * @param string $endpoint
-     *
      * @return Schema
      */
-    public function compile(string $endpoint = 'default'): Schema
+    public function compile(): Schema
     {
-        $this->endpoint = $this->registry->getEndpoint($endpoint);
+        $this->endpoint = $this->registry->getEndpoint();
         Types::setUp($this->container, $this->endpoint);
 
         //automatically create all interface implementors

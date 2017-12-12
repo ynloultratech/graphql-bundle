@@ -11,8 +11,6 @@
 namespace Ynlo\GraphQLBundle\Definition\Registry;
 
 use Doctrine\Common\Util\Inflector;
-use Ynlo\GraphQLBundle\Annotation\Mutation;
-use Ynlo\GraphQLBundle\Annotation\ObjectType;
 use Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices;
 use Ynlo\GraphQLBundle\Component\TaggedServices\TagSpecification;
 use Ynlo\GraphQLBundle\Definition\ArgumentAwareInterface;
@@ -28,7 +26,7 @@ use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Resolver\EmptyObjectResolver;
 
 /**
- * Contains many endpoints containing different definitions for each one
+ * DefinitionRegistry
  */
 class DefinitionRegistry
 {
@@ -38,9 +36,9 @@ class DefinitionRegistry
     private $taggedServices;
 
     /**
-     * @var Endpoint[]
+     * @var Endpoint
      */
-    private static $endpoints = [];
+    private static $endpoint;
 
     /**
      * @var string
@@ -67,20 +65,15 @@ class DefinitionRegistry
     }
 
     /**
-     * @param string $name
-     *
      * @return Endpoint
      */
-    public function getEndpoint($name = 'default'): Endpoint
+    public function getEndpoint(): Endpoint
     {
-        if (!$name) {
-            $name = 'default';
-        }
-        if (array_key_exists($name, self::$endpoints)) {
-            return self::$endpoints[$name];
+        if (self::$endpoint) {
+            return self::$endpoint;
         }
 
-        $endpoint = self::$endpoints[$name] = new Endpoint($name);
+        $endpoint = self::$endpoint = new Endpoint();
 
         $specifications = $this->getTaggedServices('graphql.definition_loader');
         foreach ($specifications as $specification) {
@@ -138,7 +131,10 @@ class DefinitionRegistry
     }
 
     /**
-     * @param ExecutableDefinitionInterface[] $definitions
+     * @param array    $definitions
+     * @param Endpoint $endpoint
+     *
+     * @return array
      */
     private function namespaceDefinitions($definitions, Endpoint $endpoint)
     {

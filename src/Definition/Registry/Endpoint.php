@@ -22,11 +22,6 @@ use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 class Endpoint
 {
     /**
-     * @var string
-     */
-    protected $name;
-
-    /**
      * @var ObjectDefinitionInterface[]
      */
     protected $types = [];
@@ -50,24 +45,6 @@ class Endpoint
      * @var QueryDefinition[]
      */
     protected $queries = [];
-
-    /**
-     * Endpoint constructor.
-     *
-     * @param string $endpoint
-     */
-    public function __construct(string $endpoint)
-    {
-        $this->name = $endpoint;
-    }
-
-    /**
-     * @return string
-     */
-    public function getName(): string
-    {
-        return $this->name;
-    }
 
     /**
      * @return ObjectDefinitionInterface[]
