@@ -10,7 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Loader;
 
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 
 /**
  * Interface DefinitionLoaderInterface
@@ -18,7 +18,7 @@ use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
 interface DefinitionLoaderInterface
 {
     /**
-     * @param DefinitionManager $definitionManager
+     * @param Endpoint $endpoint
      */
-    public function loadDefinitions(DefinitionManager $definitionManager);
+    public function loadDefinitions(Endpoint $endpoint);
 }

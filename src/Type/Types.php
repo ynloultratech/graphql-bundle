@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 
 /**
  * Class Types
@@ -24,9 +24,9 @@ use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
 class Types
 {
     /**
-     * @var DefinitionManager
+     * @var Endpoint
      */
-    protected static $manager;
+    protected static $endpoint;
 
     /**
      * @var ContainerInterface
@@ -45,12 +45,12 @@ class Types
 
     /**
      * @param ContainerInterface $container
-     * @param DefinitionManager  $manager
+     * @param Endpoint           $endpoint
      */
-    public static function setUp(ContainerInterface $container, DefinitionManager $manager)
+    public static function setUp(ContainerInterface $container, Endpoint $endpoint)
     {
         self::$container = $container;
-        self::$manager = $manager;
+        self::$endpoint = $endpoint;
     }
 
     /**
@@ -94,15 +94,15 @@ class Types
             if (self::$container && $type instanceof ContainerAwareInterface) {
                 $type->setContainer(self::$container);
             }
-            if (self::$manager && $type instanceof DefinitionManagerAwareInterface) {
-                $type->setDefinitionManager(self::$manager);
+            if (self::$endpoint && $type instanceof EndpointAwareInterface) {
+                $type->setEndpoint(self::$endpoint);
             }
             self::set($name, $type);
         }
 
-        //create using definition manager
-        if (self::$manager && self::$manager->hasType($name)) {
-            $definition = self::$manager->getType($name);
+        //create using definition endpoint
+        if (self::$endpoint && self::$endpoint->hasType($name)) {
+            $definition = self::$endpoint->getType($name);
             if ($definition instanceof ObjectDefinition) {
                 $type = new class($definition) extends AbstractObjectType
                 {
@@ -114,7 +114,7 @@ class Types
 
                 };
             } elseif ($definition instanceof InterfaceDefinition) {
-                $type = new class(self::$manager, $definition) extends AbstractInterfaceType
+                $type = new class(self::$endpoint, $definition) extends AbstractInterfaceType
                 {
 
                 };
@@ -124,8 +124,8 @@ class Types
                 $type->setContainer(self::$container);
             }
 
-            if ($type instanceof DefinitionManagerAwareInterface) {
-                $type->setDefinitionManager(self::$manager);
+            if ($type instanceof EndpointAwareInterface) {
+                $type->setEndpoint(self::$endpoint);
             }
 
             if (null !== $type) {

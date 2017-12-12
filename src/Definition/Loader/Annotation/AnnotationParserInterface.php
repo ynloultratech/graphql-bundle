@@ -10,7 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation;
 
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 
 /**
  * Interface AnnotationParserInterface
@@ -25,9 +25,9 @@ interface AnnotationParserInterface
     public function supports($annotation): bool;
 
     /**
-     * @param mixed             $annotation
-     * @param \ReflectionClass  $refClass
-     * @param DefinitionManager $definitionManager
+     * @param mixed            $annotation
+     * @param \ReflectionClass $refClass
+     * @param Endpoint         $endpoint
      */
-    public function parse($annotation, \ReflectionClass $refClass, DefinitionManager $definitionManager);
+    public function parse($annotation, \ReflectionClass $refClass, Endpoint $endpoint);
 }

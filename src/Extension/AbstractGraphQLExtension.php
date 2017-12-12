@@ -12,7 +12,7 @@ namespace Ynlo\GraphQLBundle\Extension;
 
 use Doctrine\ORM\QueryBuilder;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Resolver\ResolverContext;
 use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
@@ -25,7 +25,7 @@ abstract class AbstractGraphQLExtension implements GraphQLExtensionInterface
     /**
      * {@inheritdoc}
      */
-    public function configureDefinition(DefinitionInterface $definition, \ReflectionClass $refClass, DefinitionManager $definitionManager)
+    public function configureDefinition(DefinitionInterface $definition, \ReflectionClass $refClass, Endpoint $endpoint)
     {
         // TODO: Implement configureDefinition() method.
     }

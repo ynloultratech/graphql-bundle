@@ -16,7 +16,7 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\Finder\Finder;
 use Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices;
 use Ynlo\GraphQLBundle\Definition\Loader\Annotation\AnnotationParserInterface;
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 
 /**
  * Resolve and load definitions based on common annotations
@@ -56,7 +56,7 @@ class AnnotationLoader implements DefinitionLoaderInterface
     /**
      * {@inheritdoc}
      */
-    public function loadDefinitions(DefinitionManager $definitionManager): void
+    public function loadDefinitions(Endpoint $endpoint): void
     {
         /** @var Definition $resolversServiceDefinition */
         $resolverDefinitions = $this->container
@@ -94,7 +94,7 @@ class AnnotationLoader implements DefinitionLoaderInterface
                     $annotations = $this->reader->getClassAnnotations($refClass);
                     foreach ($annotations as $annotation) {
                         if ($resolver->supports($annotation)) {
-                            $resolver->parse($annotation, $refClass, $definitionManager);
+                            $resolver->parse($annotation, $refClass, $endpoint);
                         }
                     }
                 }

@@ -12,7 +12,7 @@ namespace Ynlo\GraphQLBundle\Extension;
 
 use Doctrine\ORM\QueryBuilder;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Resolver\ResolverContext;
 use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
@@ -25,11 +25,11 @@ interface GraphQLExtensionInterface
     /**
      * Use this to override or add some custom parts to definitions
      *
-     * @param DefinitionInterface $definition        definition to configure
-     * @param \ReflectionClass    $refClass          Class where definition has been loaded
-     * @param DefinitionManager   $definitionManager contains all definitions for current endpoint
+     * @param DefinitionInterface $definition definition to configure
+     * @param \ReflectionClass    $refClass   Class where definition has been loaded
+     * @param Endpoint            $endpoint   contains all definitions for current endpoint
      */
-    public function configureDefinition(DefinitionInterface $definition, \ReflectionClass $refClass, DefinitionManager $definitionManager);
+    public function configureDefinition(DefinitionInterface $definition, \ReflectionClass $refClass, Endpoint $endpoint);
 
     /**
      * Configure the query builder to filter records or add a complex logic

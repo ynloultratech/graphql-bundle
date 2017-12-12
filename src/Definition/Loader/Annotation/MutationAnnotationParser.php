@@ -22,7 +22,7 @@ use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\MutationDefinition;
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Form\Type\IDType;
 
 /**
@@ -39,9 +39,9 @@ class MutationAnnotationParser implements AnnotationParserInterface
     protected $formFactory;
 
     /**
-     * @var DefinitionManager
+     * @var Endpoint
      */
-    protected $definitionManager;
+    protected $endpoint;
 
     /**
      * @param FormFactory $formFactory
@@ -62,19 +62,19 @@ class MutationAnnotationParser implements AnnotationParserInterface
     /**
      * {@inheritdoc}
      */
-    public function parse($annotation, \ReflectionClass $refClass, DefinitionManager $definitionManager)
+    public function parse($annotation, \ReflectionClass $refClass, Endpoint $endpoint)
     {
         /** @var Annotation\Mutation $annotation */
 
         if (!$annotation->name) {
-            $annotation->name = $this->getDefaultName($refClass, $definitionManager);
+            $annotation->name = $this->getDefaultName($refClass, $endpoint);
         }
 
         //try find form using naming convention
         //the form should be placed in the same bundle with the same name of the mutation with "Input" suffix
         //e.g. AppBundle\Mutation\User\AddUser => AppBundle\Form\Input\User\AddUserInput
         if (!$annotation->form) {
-            $definition = $this->getObjectDefinition($refClass, $definitionManager);
+            $definition = $this->getObjectDefinition($refClass, $endpoint);
             if ($class = $definition->getClass()) {
                 $bundleNamespace = preg_replace('~Bundle(?!.*Bundle)[\\\\\w+]+~', null, $class).'Bundle';
                 $formClass = sprintf('%s\Form\Input\%s\%sInput', $bundleNamespace, $definition->getName(), ucfirst($annotation->name));
@@ -94,9 +94,23 @@ class MutationAnnotationParser implements AnnotationParserInterface
         }
 
 
-        $this->definitionManager = $definitionManager;
+        $this->endpoint = $endpoint;
         $mutation = $this->createMutation($annotation);
-        $this->definitionManager->addMutation($mutation);
+        $this->endpoint->addMutation($mutation);
+
+        if (!$mutation->hasMeta('node')) {
+            if (isset($definition)) {
+                $mutation->setMeta('node', $definition->getName());
+            }
+
+            if ($mutation->hasMeta('form_options')) {
+                $options = $mutation->getMeta('form_options');
+                $class = $options['data_class'] ?? '';
+                if ($endpoint->hasTypeForClass($class)) {
+                    $mutation->setMeta('node', $endpoint->getTypeForClass($class));
+                }
+            }
+        }
 
         if (!$mutation->getType()) {
             $mutation->setType($annotation->payload);
@@ -152,7 +166,7 @@ Must check `constraintViolations` in the payload to get validation messages.'
             $inputObject->prependField($clientMutationId);
         }
 
-        $this->definitionManager->addType($inputObject);
+        $this->endpoint->addType($inputObject);
 
         $input = new ArgumentDefinition();
         $input->setName('input');
@@ -185,7 +199,7 @@ Must check `constraintViolations` in the payload to get validation messages.'
             if ($formField->all()) {
                 $childName = $name.ucfirst($formField->getName());
                 $child = $this->createFormInputObject($formField, $childName);
-                $this->definitionManager->addType($child);
+                $this->endpoint->addType($child);
                 $field->setType($child->getName());
             } else {
                 $field->setType($this->getFormType($formField));

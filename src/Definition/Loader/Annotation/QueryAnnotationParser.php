@@ -13,7 +13,7 @@ namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation;
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Util\TypeUtil;
 
@@ -26,9 +26,9 @@ class QueryAnnotationParser implements AnnotationParserInterface
     use AnnotationParserHelper;
 
     /**
-     * @var DefinitionManager
+     * @var Endpoint
      */
-    protected $definitionManager;
+    protected $endpoint;
 
     /**
      * @var ExtensionManager
@@ -56,9 +56,9 @@ class QueryAnnotationParser implements AnnotationParserInterface
     /**
      * {@inheritdoc}
      */
-    public function parse($annotation, \ReflectionClass $refClass, DefinitionManager $definitionManager)
+    public function parse($annotation, \ReflectionClass $refClass, Endpoint $endpoint)
     {
-        $this->definitionManager = $definitionManager;
+        $this->endpoint = $endpoint;
 
         /** @var Annotation\Query $annotation */
         $query = new QueryDefinition();
@@ -66,16 +66,16 @@ class QueryAnnotationParser implements AnnotationParserInterface
         if ($annotation->name) {
             $query->setName($annotation->name);
         } else {
-            $query->setName(lcfirst($this->getDefaultName($refClass, $definitionManager)));
+            $query->setName(lcfirst($this->getDefaultName($refClass, $endpoint)));
         }
 
-        if ($definitionManager->hasQuery($query->getName())) {
-            $query = $definitionManager->getQuery($query->getName());
+        if ($endpoint->hasQuery($query->getName())) {
+            $query = $endpoint->getQuery($query->getName());
         } else {
-            $definitionManager->addQuery($query);
+            $endpoint->addQuery($query);
         }
 
-        $objectDefinition = $this->getObjectDefinition($refClass, $definitionManager);
+        $objectDefinition = $this->getObjectDefinition($refClass, $endpoint);
         if ($objectDefinition) {
             $query->setType($objectDefinition->getName());
             $query->setList($annotation->list);
@@ -105,11 +105,11 @@ class QueryAnnotationParser implements AnnotationParserInterface
         $query->setDescription($annotation->description);
 
         foreach ($this->extensionManager->getExtensions() as $extension) {
-            $extension->configureDefinition($query, $refClass, $definitionManager);
+            $extension->configureDefinition($query, $refClass, $endpoint);
         }
 
-        if (!$definitionManager->hasQuery($query->getName())) {
-            $definitionManager->addQuery($query);
+        if (!$endpoint->hasQuery($query->getName())) {
+            $endpoint->addQuery($query);
         }
     }
 }

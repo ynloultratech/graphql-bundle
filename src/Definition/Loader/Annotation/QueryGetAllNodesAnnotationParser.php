@@ -14,7 +14,7 @@ use Doctrine\Common\Util\Inflector;
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Model\OrderBy;
 use Ynlo\GraphQLBundle\Query\Node\AllNodes;
@@ -53,13 +53,13 @@ class QueryGetAllNodesAnnotationParser implements AnnotationParserInterface
     /**
      * {@inheritdoc}
      */
-    public function parse($annotation, \ReflectionClass $refClass, DefinitionManager $definitionManager)
+    public function parse($annotation, \ReflectionClass $refClass, Endpoint $endpoint)
     {
         /** @var Annotation\QueryGetAll $annotation */
         if ($annotation->name) {
             $name = $annotation->name;
         } else {
-            $name = 'all'.Inflector::pluralize(ucfirst($this->getDefaultName($refClass, $definitionManager)));
+            $name = 'all'.Inflector::pluralize(ucfirst($this->getDefaultName($refClass, $endpoint)));
         }
 
         $query = new QueryDefinition();
@@ -69,7 +69,7 @@ class QueryGetAllNodesAnnotationParser implements AnnotationParserInterface
         $objectDefinition = null;
         $typeName = null;
         if ($objectType = $this->reader->getClassAnnotation($refClass, Annotation\ObjectType::class)) {
-            $typeName = $definitionManager->getTypeForClass($refClass->getName());
+            $typeName = $endpoint->getTypeForClass($refClass->getName());
             $query->setType($typeName);
             $query->setList(true);
         }
@@ -83,9 +83,9 @@ class QueryGetAllNodesAnnotationParser implements AnnotationParserInterface
         $query->addArgument($orderBy);
 
         foreach ($this->extensionManager->getExtensions() as $extension) {
-            $extension->configureDefinition($query, $refClass, $definitionManager);
+            $extension->configureDefinition($query, $refClass, $endpoint);
         }
 
-        $definitionManager->addQuery($query);
+        $endpoint->addQuery($query);
     }
 }

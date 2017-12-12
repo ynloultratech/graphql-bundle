@@ -10,23 +10,23 @@
 
 namespace Ynlo\GraphQLBundle\Type;
 
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 
 /**
- * Trait DefinitionManagerAwareTrait
+ * Trait EndpointAwareTrait
  */
-trait DefinitionManagerAwareTrait
+trait EndpointAwareTrait
 {
     /**
-     * @var DefinitionManager
+     * @var Endpoint
      */
-    public $manager;
+    public $endpoint;
 
     /**
-     * @param DefinitionManager $manager
+     * @param Endpoint $endpoint
      */
-    public function setDefinitionManager(DefinitionManager $manager)
+    public function setEndpoint(Endpoint $endpoint)
     {
-        $this->manager = $manager;
+        $this->endpoint = $endpoint;
     }
 }

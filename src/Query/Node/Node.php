@@ -37,16 +37,16 @@ class Node extends AbstractResolver
             //@see QueryGet::fetchBy
             $searchValue = $id;
 
-            $type = $this->getContext()->getDefinition()->getType();
+            $type = $this->getContext()->getNodeDefinition()->getName();
 
             /** @var ArgumentDefinition $arg */
             $arg = array_values($this->getContext()->getDefinition()->getArguments())[0];
 
-            $field = $this->getContext()->getDefinitionManager()->getType($type)->getField($arg->getName());
+            $field = $this->context->getNodeDefinition()->getField($arg->getName());
             $searchField = $field->getOriginName();
         }
 
-        $entityClass = $this->getContext()->getDefinitionManager()->getClassForType($type);
+        $entityClass = $this->getContext()->getEndpoint()->getClassForType($type);
 
         return $this->getManager()
                     ->getRepository($entityClass)

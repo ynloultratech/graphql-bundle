@@ -17,14 +17,15 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Model\ID;
 
 /**
- * This resolver act as a middleware between the query and final resolvers.
+ * This resolver act as a middleware between the executableDefinition and final resolvers.
  * Using injection of parameters can resolve the parameters needed by the final resolver before invoke
  */
 class ResolverExecutor implements ContainerAwareInterface
@@ -32,14 +33,14 @@ class ResolverExecutor implements ContainerAwareInterface
     use ContainerAwareTrait;
 
     /**
-     * @var QueryDefinition
+     * @var ExecutableDefinitionInterface
      */
-    protected $query;
+    protected $executableDefinition;
 
     /**
-     * @var DefinitionManager
+     * @var Endpoint
      */
-    protected $manager;
+    protected $endpoint;
 
     /**
      * @var mixed
@@ -62,14 +63,14 @@ class ResolverExecutor implements ContainerAwareInterface
     protected $args = [];
 
     /**
-     * @param ContainerInterface $container
-     * @param DefinitionManager  $manager
-     * @param QueryDefinition    $query
+     * @param ContainerInterface            $container
+     * @param Endpoint                      $endpoint
+     * @param ExecutableDefinitionInterface $executableDefinition
      */
-    public function __construct(ContainerInterface $container, DefinitionManager $manager, QueryDefinition $query)
+    public function __construct(ContainerInterface $container, Endpoint $endpoint, ExecutableDefinitionInterface $executableDefinition)
     {
-        $this->query = $query;
-        $this->manager = $manager;
+        $this->executableDefinition = $executableDefinition;
+        $this->endpoint = $endpoint;
         $this->container = $container;
     }
 
@@ -90,7 +91,7 @@ class ResolverExecutor implements ContainerAwareInterface
         $this->context = $context;
         $this->resolveInfo = $resolveInfo;
 
-        $resolverName = $this->query->getResolver();
+        $resolverName = $this->executableDefinition->getResolver();
 
         $resolver = null;
         $refMethod = null;
@@ -113,11 +114,20 @@ class ResolverExecutor implements ContainerAwareInterface
 
         if ($resolver && $refMethod) {
             $resolveContext = new ResolverContext();
-            $resolveContext->setDefinition($this->query);
+            $resolveContext->setDefinition($this->executableDefinition);
             $resolveContext->setArgs($args);
             $resolveContext->setRoot($root);
-            $resolveContext->setDefinitionManager($this->manager);
+            $resolveContext->setEndpoint($this->endpoint);
             $resolveContext->setResolveInfo($resolveInfo);
+
+            $nodeType = $this->executableDefinition->getType();
+            if ($this->executableDefinition->hasMeta('node')) {
+                $nodeType = $this->executableDefinition->getMeta('node');
+            }
+
+            if ($nodeDefinition = $this->endpoint->getType($nodeType)) {
+                $resolveContext->setNodeDefinition($nodeDefinition);
+            }
 
             if ($resolver instanceof AbstractResolver) {
                 $resolver->setContext($resolveContext);
@@ -135,7 +145,7 @@ class ResolverExecutor implements ContainerAwareInterface
             return $refMethod->invokeArgs($resolver, $params);
         }
 
-        $error = sprintf('The resolver "%s" for query "%s" is not a valid resolver. Resolvers should have a method "__invoke(...)"', $resolverName, $this->query->getName());
+        $error = sprintf('The resolver "%s" for executableDefinition "%s" is not a valid resolver. Resolvers should have a method "__invoke(...)"', $resolverName, $this->executableDefinition->getName());
         throw new \RuntimeException($error);
     }
 
@@ -152,23 +162,23 @@ class ResolverExecutor implements ContainerAwareInterface
         //normalize arguments
         $normalizedArguments = [];
         foreach ($args as $key => $value) {
-            if ($this->query->hasArgument($key)) {
-                $argument = $this->query->getArgument($key);
+            if ($this->executableDefinition->hasArgument($key)) {
+                $argument = $this->executableDefinition->getArgument($key);
                 if ('input' === $key) {
                     $normalizedValue = $value;
                 } else {
                     $normalizedValue = $this->normalizeValue($value, $argument->getType());
 
                     //normalize argument into respective inputs objects
-                    if (is_array($normalizedValue) && $this->manager->hasType($argument->getType())) {
+                    if (is_array($normalizedValue) && $this->endpoint->hasType($argument->getType())) {
                         if ($argument->isList()) {
                             $tmp = [];
                             foreach ($normalizedValue as $childValue) {
-                                $tmp[] = $this->arrayToObject($childValue, $this->manager->getType($argument->getType()));
+                                $tmp[] = $this->arrayToObject($childValue, $this->endpoint->getType($argument->getType()));
                             }
                             $normalizedValue = $tmp;
                         } else {
-                            $normalizedValue = $this->arrayToObject($normalizedValue, $this->manager->getType($argument->getType()));
+                            $normalizedValue = $this->arrayToObject($normalizedValue, $this->endpoint->getType($argument->getType()));
                         }
                     }
                 }

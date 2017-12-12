@@ -12,7 +12,7 @@ namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation;
 
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\MutationDefinition;
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Model\DeleteNodePayload;
 use Ynlo\GraphQLBundle\Mutation\DeleteNodeMutation;
 
@@ -32,18 +32,18 @@ class MutationDeleteAnnotationParser extends MutationAnnotationParser
     /**
      * {@inheritdoc}
      */
-    public function parse($annotation, \ReflectionClass $refClass, DefinitionManager $definitionManager)
+    public function parse($annotation, \ReflectionClass $refClass, Endpoint $endpoint)
     {
         /** @var Annotation\MutationDelete $annotation */
         if (!$annotation->name) {
-            $annotation->name = 'delete'.ucfirst($this->getDefaultName($refClass, $definitionManager));
+            $annotation->name = 'delete'.ucfirst($this->getDefaultName($refClass, $endpoint));
         }
 
-        if ($definitionManager->hasTypeForClass($refClass->getName())) {
+        if ($endpoint->hasTypeForClass($refClass->getName())) {
             $annotation->formOptions = array_merge(['data_class' => $refClass->getName()], $annotation->formOptions);
         }
 
-        parent::parse($annotation, $refClass, $definitionManager);
+        parent::parse($annotation, $refClass, $endpoint);
     }
 
     /**

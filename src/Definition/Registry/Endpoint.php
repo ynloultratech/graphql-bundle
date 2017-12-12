@@ -16,14 +16,14 @@ use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 
 /**
- * Class DefinitionManager
+ * Class Endpoint
  */
-class DefinitionManager
+class Endpoint
 {
     /**
      * @var string
      */
-    protected $endpoint;
+    protected $name;
 
     /**
      * @var ObjectDefinitionInterface[]
@@ -51,21 +51,21 @@ class DefinitionManager
     protected $queries = [];
 
     /**
-     * DefinitionManager constructor.
+     * Endpoint constructor.
      *
      * @param string $endpoint
      */
     public function __construct(string $endpoint)
     {
-        $this->endpoint = $endpoint;
+        $this->name = $endpoint;
     }
 
     /**
      * @return string
      */
-    public function getEndpoint(): string
+    public function getName(): string
     {
-        return $this->endpoint;
+        return $this->name;
     }
 
     /**
@@ -146,12 +146,42 @@ class DefinitionManager
     }
 
     /**
+     * @param ObjectDefinitionInterface[] $types
+     */
+    public function setTypes(array $types)
+    {
+        $this->types = $types;
+    }
+
+    /**
+     * @param MutationDefinition[] $mutations
+     */
+    public function setMutations(array $mutations)
+    {
+        $this->mutations = $mutations;
+    }
+
+    /**
+     * @param QueryDefinition[] $queries
+     */
+    public function setQueries(array $queries)
+    {
+        $this->queries = $queries;
+    }
+
+    /**
      * @param string $name
      *
      * @return bool
      */
     public function hasType($name): bool
     {
+        if (class_exists($name) || interface_exists($name)) {
+            if ($this->hasTypeForClass($name)) {
+                $name = $this->getTypeForClass($name);
+            }
+        }
+
         return array_key_exists($name, $this->types);
     }
 
@@ -184,6 +214,12 @@ class DefinitionManager
      */
     public function getType($name)
     {
+        if (class_exists($name) || interface_exists($name)) {
+            if ($this->hasTypeForClass($name)) {
+                $name = $this->getTypeForClass($name);
+            }
+        }
+
         if (!$this->hasType($name)) {
             throw new \UnexpectedValueException(sprintf('Does not exist a valid definition for "%s" type', $name));
         }
@@ -214,9 +250,9 @@ class DefinitionManager
     /**
      * @param ObjectDefinitionInterface $type
      *
-     * @return DefinitionManager
+     * @return Endpoint
      */
-    public function addType(ObjectDefinitionInterface $type): DefinitionManager
+    public function addType(ObjectDefinitionInterface $type): Endpoint
     {
         if ($this->hasType($type->getName())) {
             throw new \RuntimeException(sprintf('Duplicate definition for type with name "%s"', $type->getName()));
@@ -237,9 +273,9 @@ class DefinitionManager
     /**
      * @param MutationDefinition $mutation
      *
-     * @return DefinitionManager
+     * @return Endpoint
      */
-    public function addMutation(MutationDefinition $mutation): DefinitionManager
+    public function addMutation(MutationDefinition $mutation): Endpoint
     {
         if ($this->hasMutation($mutation->getName())) {
             throw new \RuntimeException(sprintf('Duplicate definition for query with name "%s"', $mutation->getName()));
@@ -252,9 +288,9 @@ class DefinitionManager
     /**
      * @param QueryDefinition $query
      *
-     * @return DefinitionManager
+     * @return Endpoint
      */
-    public function addQuery(QueryDefinition $query): DefinitionManager
+    public function addQuery(QueryDefinition $query): Endpoint
     {
         if ($this->hasQuery($query->getName())) {
             throw new \RuntimeException(sprintf('Duplicate definition for query with name "%s"', $query->getName()));

@@ -11,7 +11,7 @@
 namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation;
 
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 
 /**
  * Common trait used un multiple parsers
@@ -21,15 +21,15 @@ trait AnnotationParserHelper
     /**
      * Get default name based in given class using naming convention
      *
-     * @param \ReflectionClass  $refClass
-     * @param DefinitionManager $definitionManager
+     * @param \ReflectionClass $refClass
+     * @param Endpoint         $endpoint
      *
      * @return string
      */
-    public function getDefaultName(\ReflectionClass $refClass, DefinitionManager $definitionManager): string
+    public function getDefaultName(\ReflectionClass $refClass, Endpoint $endpoint): string
     {
-        if ($definitionManager->hasTypeForClass($refClass->getName())) {
-            return $definitionManager->getTypeForClass($refClass->getName());
+        if ($endpoint->hasTypeForClass($refClass->getName())) {
+            return $endpoint->getTypeForClass($refClass->getName());
         }
 
         preg_match('/\w+$/', $refClass->getName(), $matches);
@@ -45,24 +45,24 @@ trait AnnotationParserHelper
      * Query\User\Users -> User
      * Form\Input\User\AddUserInput -> User
      *
-     * @param \ReflectionClass  $refClass
-     * @param DefinitionManager $definitionManager
+     * @param \ReflectionClass $refClass
+     * @param Endpoint         $endpoint
      *
      * @return ObjectDefinitionInterface
      */
-    public function getObjectDefinition(\ReflectionClass $refClass, DefinitionManager $definitionManager): ObjectDefinitionInterface
+    public function getObjectDefinition(\ReflectionClass $refClass, Endpoint $endpoint): ObjectDefinitionInterface
     {
-        if ($definitionManager->hasTypeForClass($refClass->getName())) {
-            return $definitionManager->getType($definitionManager->getTypeForClass($refClass->getName()));
+        if ($endpoint->hasTypeForClass($refClass->getName())) {
+            return $endpoint->getType($endpoint->getTypeForClass($refClass->getName()));
         }
 
         $objectType = null;
         preg_match('/(\w+)(\\\\w+)?\\\\(\w+)$/', $refClass->getName(), $matches);
-        if (!isset($matches[1]) || !$definitionManager->hasType($matches[1])) {
+        if (!isset($matches[1]) || !$endpoint->hasType($matches[1])) {
             $error = sprintf('Can`t resolve a valid object type for "%s"', $refClass->getName());
             throw new \RuntimeException($error);
         }
 
-        return $definitionManager->getType($matches[1]);
+        return $endpoint->getType($matches[1]);
     }
 }

@@ -22,10 +22,10 @@ use Ynlo\GraphQLBundle\Resolver\ResolverExecutor;
  */
 class QueryType extends ObjectType implements
     ContainerAwareInterface,
-    DefinitionManagerAwareInterface
+    EndpointAwareInterface
 {
     use ContainerAwareTrait;
-    use DefinitionManagerAwareTrait;
+    use EndpointAwareTrait;
 
     /**
      * QueryType constructor.
@@ -38,7 +38,7 @@ class QueryType extends ObjectType implements
             'name' => 'Query',
             'fields' => function () {
                 $queries = [];
-                foreach ($this->manager->allQueries() as $query) {
+                foreach ($this->endpoint->allQueries() as $query) {
                     $queries[$query->getName()] = $this->getQueryConfig($query);
                 }
 
@@ -62,7 +62,7 @@ class QueryType extends ObjectType implements
 
         $config['args'] = $this->resolveArguments($query);
 
-        $config['resolve'] = new ResolverExecutor($this->container, $this->manager, $query);
+        $config['resolve'] = new ResolverExecutor($this->container, $this->endpoint, $query);
         $config['description'] = $query->getDescription();
         $config['deprecationReason'] = $query->getDeprecationReason();
 

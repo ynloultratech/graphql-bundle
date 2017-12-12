@@ -97,7 +97,7 @@ abstract class AbstractMutationAbstractResolver extends AbstractResolver
         }
 
         $form = $this->createFormBuilder($form, $data, $options);
-        $viewTransformer = new DataWithIdToNodeTransformer($this->getManager(), $this->context->getDefinitionManager());
+        $viewTransformer = new DataWithIdToNodeTransformer($this->getManager(), $this->context->getEndpoint());
         $form->addViewTransformer($viewTransformer);
 
         return $form;

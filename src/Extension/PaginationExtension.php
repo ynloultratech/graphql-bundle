@@ -16,7 +16,7 @@ use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Model\ConnectionInterface;
 use Ynlo\GraphQLBundle\Model\OrderBy;
 use Ynlo\GraphQLBundle\Query\Node\AllNodesConnection;
@@ -50,7 +50,7 @@ class PaginationExtension extends AbstractGraphQLExtension
     /**
      * {@inheritdoc}
      */
-    public function configureDefinition(DefinitionInterface $definition, \ReflectionClass $refClass, DefinitionManager $definitionManager)
+    public function configureDefinition(DefinitionInterface $definition, \ReflectionClass $refClass, Endpoint $endpoint)
     {
         /** @var GraphqQL\Connection $connection */
         $connection = null;
@@ -87,12 +87,12 @@ class PaginationExtension extends AbstractGraphQLExtension
         }
 
         if (class_exists($node) || interface_exists($node)) {
-            if ($definitionManager->hasTypeForClass($node)) {
-                $node = $definitionManager->getTypeForClass($node);
+            if ($endpoint->hasTypeForClass($node)) {
+                $node = $endpoint->getTypeForClass($node);
             }
         }
 
-        if (!$definitionManager->hasType($node)) {
+        if (!$endpoint->hasType($node)) {
             $node = null;
         }
 
@@ -100,7 +100,7 @@ class PaginationExtension extends AbstractGraphQLExtension
             return;
         }
 
-        $objectDefinition = $definitionManager->getType($node);
+        $objectDefinition = $endpoint->getType($node);
 
         if ($definition instanceof FieldDefinition) {
             if ($objectDefinition->hasField($definition->getName())) {

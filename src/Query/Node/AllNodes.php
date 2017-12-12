@@ -70,15 +70,9 @@ class AllNodes extends AbstractResolver
      */
     public function initialize()
     {
-        if ($this->context->getDefinition()->hasMeta('node')) {
-            $objectType = $this->context->getDefinition()->getMeta('node');
-        } else {
-            $objectType = $this->context->getDefinition()->getType();
-        }
-
         $this->queryDefinition = $this->context->getDefinition();
-        $this->objectDefinition = $this->context->getDefinitionManager()->getType($objectType);
-        $this->entity = $this->context->getDefinitionManager()->getType($objectType)->getClass();
+        $this->entity = $this->context->getNodeDefinition()->getClass();
+        $this->objectDefinition = $this->context->getNodeDefinition();
     }
 
     /**

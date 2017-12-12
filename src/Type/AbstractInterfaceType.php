@@ -14,7 +14,7 @@ use Doctrine\Common\Util\ClassUtils;
 use GraphQL\Type\Definition\InterfaceType;
 use GraphQL\Type\Definition\Type;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 
 /**
  * Class AbstractInterfaceType
@@ -27,20 +27,20 @@ abstract class AbstractInterfaceType extends InterfaceType
     protected $definition;
 
     /**
-     * @var DefinitionManager
+     * @var Endpoint
      */
-    protected $definitionManager;
+    protected $endpoint;
 
     /**
      * AbstractInterfaceType constructor.
      *
-     * @param DefinitionManager   $definitionManager
+     * @param Endpoint            $endpoint
      * @param InterfaceDefinition $definition
      */
-    public function __construct(DefinitionManager $definitionManager, InterfaceDefinition $definition)
+    public function __construct(Endpoint $endpoint, InterfaceDefinition $definition)
     {
         $this->definition = $definition;
-        $this->definitionManager = $definitionManager;
+        $this->endpoint = $endpoint;
 
         parent::__construct(
             [
@@ -51,7 +51,7 @@ abstract class AbstractInterfaceType extends InterfaceType
                 },
                 'resolveType' => function ($value) {
                     foreach ($this->definition->getImplementors() as $implementor) {
-                        $implementorDef = $this->definitionManager->getType($implementor);
+                        $implementorDef = $this->endpoint->getType($implementor);
                         //ClassUtils::getClass is required to avoid proxies
                         if ($implementorDef->getClass() === ClassUtils::getClass($value)) {
                             return Types::get($implementorDef->getName());

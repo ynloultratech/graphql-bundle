@@ -21,9 +21,9 @@ use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\Loader\Annotation\FieldDecorator\FieldDefinitionDecoratorInterface;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Extension\ExtensionManager;
-use Ynlo\GraphQLBundle\Type\DefinitionManagerAwareInterface;
+use Ynlo\GraphQLBundle\Type\EndpointAwareInterface;
 use Ynlo\GraphQLBundle\Util\TypeUtil;
 
 /**
@@ -44,9 +44,9 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
     protected $extensionManager;
 
     /**
-     * @var DefinitionManager
+     * @var Endpoint
      */
-    protected $definitionManager;
+    protected $endpoint;
 
     /**
      * ObjectTypeAnnotationParser constructor.
@@ -71,9 +71,9 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
     /**
      * {@inheritdoc}
      */
-    public function parse($annotation, \ReflectionClass $refClass, DefinitionManager $definitionManager)
+    public function parse($annotation, \ReflectionClass $refClass, Endpoint $endpoint)
     {
-        $this->definitionManager = $definitionManager;
+        $this->endpoint = $endpoint;
 
         if ($annotation instanceof Annotation\ObjectType) {
             $objectDefinition = new ObjectDefinition();
@@ -90,7 +90,7 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
             $objectDefinition->setName($matches[0] ?? '');
         }
 
-        if ($definitionManager->hasType($objectDefinition->getName())) {
+        if ($endpoint->hasType($objectDefinition->getName())) {
             return;
         }
 
@@ -98,25 +98,25 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
         $objectDefinition->setDescription($annotation->description);
 
         if ($objectDefinition instanceof ObjectDefinition) {
-            $this->resolveObjectInterfaces($refClass, $objectDefinition, $definitionManager);
+            $this->resolveObjectInterfaces($refClass, $objectDefinition, $endpoint);
         }
 
         $this->loadInheritedProperties($refClass, $objectDefinition);
         $this->resolveFields($refClass, $objectDefinition);
 
         foreach ($this->extensionManager->getExtensions() as $extension) {
-            $extension->configureDefinition($objectDefinition, $refClass, $this->definitionManager);
+            $extension->configureDefinition($objectDefinition, $refClass, $this->endpoint);
         }
 
-        $definitionManager->addType($objectDefinition);
+        $endpoint->addType($objectDefinition);
     }
 
     /**
-     * @param \ReflectionClass  $refClass
-     * @param ObjectDefinition  $objectDefinition
-     * @param DefinitionManager $definitionManager
+     * @param \ReflectionClass $refClass
+     * @param ObjectDefinition $objectDefinition
+     * @param Endpoint         $endpoint
      */
-    protected function resolveObjectInterfaces(\ReflectionClass $refClass, ObjectDefinition $objectDefinition, DefinitionManager $definitionManager)
+    protected function resolveObjectInterfaces(\ReflectionClass $refClass, ObjectDefinition $objectDefinition, Endpoint $endpoint)
     {
         $int = $refClass->getInterfaces();
         foreach ($int as $intRef) {
@@ -138,9 +138,9 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
 
                 $objectDefinition->addInterface($intDef->getName());
 
-                if ($definitionManager->hasType($intDef->getName())) {
+                if ($endpoint->hasType($intDef->getName())) {
                     /** @var InterfaceDefinition $existentInterfaceDefinition */
-                    $existentInterfaceDefinition = $definitionManager->getType($intDef->getName());
+                    $existentInterfaceDefinition = $endpoint->getType($intDef->getName());
                     $existentInterfaceDefinition->addImplementor($objectDefinition->getName());
                     $this->copyFieldsFromInterface($existentInterfaceDefinition, $objectDefinition);
                     continue;
@@ -151,7 +151,7 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
 
                 $this->resolveFields($intRef, $intDef);
                 $this->copyFieldsFromInterface($intDef, $objectDefinition);
-                $definitionManager->addType($intDef);
+                $endpoint->addType($intDef);
             }
         }
     }
@@ -260,7 +260,7 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
 
         foreach ($objectDefinition->getFields() as $field) {
             foreach ($this->extensionManager->getExtensions() as $extension) {
-                $extension->configureDefinition($field, $refClass, $this->definitionManager);
+                $extension->configureDefinition($field, $refClass, $this->endpoint);
             }
         }
     }
@@ -284,8 +284,8 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
 
             $decorator = $decoratorDef->getService();
 
-            if ($decorator instanceof DefinitionManagerAwareInterface) {
-                $decorator->setDefinitionManager($this->definitionManager);
+            if ($decorator instanceof EndpointAwareInterface) {
+                $decorator->setEndpoint($this->endpoint);
             }
 
             $decorators[] = [$priority, $decorator];

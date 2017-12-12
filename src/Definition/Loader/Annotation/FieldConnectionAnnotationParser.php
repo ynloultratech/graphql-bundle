@@ -13,7 +13,7 @@ namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation;
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Util\TypeUtil;
 
@@ -48,7 +48,7 @@ class FieldConnectionAnnotationParser implements AnnotationParserInterface
     /**
      * {@inheritdoc}
      */
-    public function parse($annotation, \ReflectionClass $refClass, DefinitionManager $definitionManager)
+    public function parse($annotation, \ReflectionClass $refClass, Endpoint $endpoint)
     {
         /** @var Annotation\Field $annotation */
         $field = new FieldDefinition();
@@ -66,12 +66,12 @@ class FieldConnectionAnnotationParser implements AnnotationParserInterface
 
         $objectType = null;
         preg_match('/(\w+)\\\\Field\\\\(\w+)$/', $refClass->getName(), $matches);
-        if (!isset($matches[1]) || !$definitionManager->hasType($matches[1])) {
+        if (!isset($matches[1]) || !$endpoint->hasType($matches[1])) {
             $error = sprintf('Can`t resolve a valid object type for field "%s"', $refClass->getName());
             throw new \RuntimeException($error);
         }
 
-        $objectDefinition = $definitionManager->getType($matches[1]);
+        $objectDefinition = $endpoint->getType($matches[1]);
         if ($objectDefinition->hasField($field->getName())) {
             $field = $objectDefinition->getField($field->getName());
         } else {
@@ -107,7 +107,7 @@ class FieldConnectionAnnotationParser implements AnnotationParserInterface
         $field->setResolver($refClass->getName());
 
         foreach ($this->extensionManager->getExtensions() as $extension) {
-            $extension->configureDefinition($field, $refClass, $definitionManager);
+            $extension->configureDefinition($field, $refClass, $endpoint);
         }
     }
 }

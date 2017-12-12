@@ -26,7 +26,7 @@ class MutationType extends QueryType
             'name' => 'Mutation',
             'fields' => function () {
                 $mutations = [];
-                foreach ($this->manager->allMutations() as $query) {
+                foreach ($this->endpoint->allMutations() as $query) {
                     $mutations[$query->getName()] = $this->getQueryConfig($query);
                 }
 

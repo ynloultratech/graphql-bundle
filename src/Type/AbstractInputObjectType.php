@@ -24,10 +24,10 @@ use Ynlo\GraphQLBundle\Resolver\ObjectFieldResolver;
  */
 abstract class AbstractInputObjectType extends InputObjectType implements
     ContainerAwareInterface,
-    DefinitionManagerAwareInterface
+    EndpointAwareInterface
 {
     use ContainerAwareTrait;
-    use DefinitionManagerAwareTrait;
+    use EndpointAwareTrait;
 
     /**
      * @var InputObjectDefinition
@@ -49,7 +49,7 @@ abstract class AbstractInputObjectType extends InputObjectType implements
                     return $this->resolveFields();
                 },
                 'resolveField' => function ($root, array $args, $context, ResolveInfo $resolveInfo) {
-                    $resolver = new ObjectFieldResolver($this->container, $this->manager, $this->definition);
+                    $resolver = new ObjectFieldResolver($this->container, $this->endpoint, $this->definition);
 
                     return $resolver($root, $args, $context, $resolveInfo);
                 },

@@ -12,7 +12,8 @@ namespace Ynlo\GraphQLBundle\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 
 /**
  * Context used for resolvers
@@ -23,6 +24,11 @@ class ResolverContext
      * @var mixed
      */
     protected $root;
+
+    /**
+     * @var ObjectDefinitionInterface
+     */
+    protected $nodeDefinition;
 
     /**
      * Array of arguments given
@@ -37,9 +43,9 @@ class ResolverContext
     protected $definition;
 
     /**
-     * @var DefinitionManager
+     * @var Endpoint
      */
-    protected $definitionManager;
+    protected $endpoint;
 
     /**
      * @var ResolveInfo
@@ -60,6 +66,22 @@ class ResolverContext
     public function setRoot($root)
     {
         $this->root = $root;
+    }
+
+    /**
+     * @return ObjectDefinitionInterface
+     */
+    public function getNodeDefinition(): ObjectDefinitionInterface
+    {
+        return $this->nodeDefinition;
+    }
+
+    /**
+     * @param ObjectDefinitionInterface $nodeDefinition
+     */
+    public function setNodeDefinition(ObjectDefinitionInterface $nodeDefinition)
+    {
+        $this->nodeDefinition = $nodeDefinition;
     }
 
     /**
@@ -95,19 +117,19 @@ class ResolverContext
     }
 
     /**
-     * @return DefinitionManager
+     * @return Endpoint
      */
-    public function getDefinitionManager(): DefinitionManager
+    public function getEndpoint(): Endpoint
     {
-        return $this->definitionManager;
+        return $this->endpoint;
     }
 
     /**
-     * @param DefinitionManager $manager
+     * @param Endpoint $endpoint
      */
-    public function setDefinitionManager(DefinitionManager $manager)
+    public function setEndpoint(Endpoint $endpoint)
     {
-        $this->definitionManager = $manager;
+        $this->endpoint = $endpoint;
     }
 
     /**

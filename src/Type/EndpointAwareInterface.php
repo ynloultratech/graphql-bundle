@@ -10,17 +10,17 @@
 
 namespace Ynlo\GraphQLBundle\Type;
 
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 
 /**
- * Interface DefinitionManagerAwareInterface
+ * Interface EndpointAwareInterface
  */
-interface DefinitionManagerAwareInterface
+interface EndpointAwareInterface
 {
     /**
-     * @param DefinitionManager $manager
+     * @param Endpoint $endpoint
      *
      * @return mixed
      */
-    public function setDefinitionManager(DefinitionManager $manager);
+    public function setEndpoint(Endpoint $endpoint);
 }

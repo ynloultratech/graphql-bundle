@@ -12,7 +12,7 @@ namespace Ynlo\GraphQLBundle\Form\DataTransformer;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\DataTransformerInterface;
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Model\ID;
 
 /**
@@ -26,20 +26,20 @@ class DataWithIdToNodeTransformer implements DataTransformerInterface
     private $em;
 
     /**
-     * @var DefinitionManager
+     * @var Endpoint
      */
-    protected $dm;
+    protected $endpoint;
 
     /**
      * IDToNodeTransformer constructor.
      *
      * @param EntityManagerInterface $em
-     * @param DefinitionManager      $definitionManager
+     * @param Endpoint               $endpoint
      */
-    public function __construct(EntityManagerInterface $em, DefinitionManager $definitionManager)
+    public function __construct(EntityManagerInterface $em, Endpoint $endpoint)
     {
         $this->em = $em;
-        $this->dm = $definitionManager;
+        $this->endpoint = $endpoint;
     }
 
     /**
@@ -49,8 +49,8 @@ class DataWithIdToNodeTransformer implements DataTransformerInterface
     {
         if (is_array($data) && isset($data['id'])) {
             $id = ID::createFromString($data['id']);
-            if ($this->dm->hasType($id->getNodeType())) {
-                $class = $this->dm->getClassForType($id->getNodeType());
+            if ($this->endpoint->hasType($id->getNodeType())) {
+                $class = $this->endpoint->getClassForType($id->getNodeType());
                 if ($class) {
                     return $this->em->getRepository($class)->find($id->getDatabaseId());
                 }

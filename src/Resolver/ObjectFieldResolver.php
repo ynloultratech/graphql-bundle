@@ -19,18 +19,18 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Model\ID;
-use Ynlo\GraphQLBundle\Type\DefinitionManagerAwareInterface;
-use Ynlo\GraphQLBundle\Type\DefinitionManagerAwareTrait;
+use Ynlo\GraphQLBundle\Type\EndpointAwareInterface;
+use Ynlo\GraphQLBundle\Type\EndpointAwareTrait;
 
 /**
  * Default resolver for all object fields
  */
-class ObjectFieldResolver implements ContainerAwareInterface, DefinitionManagerAwareInterface
+class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInterface
 {
     use ContainerAwareTrait;
-    use DefinitionManagerAwareTrait;
+    use EndpointAwareTrait;
 
     /**
      * @var FieldsAwareDefinitionInterface
@@ -41,14 +41,14 @@ class ObjectFieldResolver implements ContainerAwareInterface, DefinitionManagerA
      * ObjectFieldResolver constructor.
      *
      * @param ContainerInterface             $container
-     * @param DefinitionManager              $definitionManager
+     * @param Endpoint                       $endpoint
      * @param FieldsAwareDefinitionInterface $definition
      */
-    public function __construct(ContainerInterface $container, DefinitionManager $definitionManager, FieldsAwareDefinitionInterface $definition)
+    public function __construct(ContainerInterface $container, Endpoint $endpoint, FieldsAwareDefinitionInterface $definition)
     {
         $this->definition = $definition;
         $this->container = $container;
-        $this->manager = $definitionManager;
+        $this->endpoint = $endpoint;
     }
 
     /**
@@ -81,7 +81,7 @@ class ObjectFieldResolver implements ContainerAwareInterface, DefinitionManagerA
                 $queryDefinition->setResolver($fieldDefinition->getResolver());
             }
 
-            $resolver = new ResolverExecutor($this->container, $this->manager, $queryDefinition);
+            $resolver = new ResolverExecutor($this->container, $this->endpoint, $queryDefinition);
             $value = $resolver($root, $args, $context, $info);
         } else {
             $accessor = new PropertyAccessor(true);

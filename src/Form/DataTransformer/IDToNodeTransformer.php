@@ -14,7 +14,7 @@ use Doctrine\Common\Util\ClassUtils;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 
@@ -29,20 +29,20 @@ class IDToNodeTransformer implements DataTransformerInterface
     private $em;
 
     /**
-     * @var DefinitionManager
+     * @var Endpoint
      */
-    protected $dm;
+    protected $endpoint;
 
     /**
      * IDToNodeTransformer constructor.
      *
      * @param EntityManagerInterface $em
-     * @param DefinitionManager      $definitionManager
+     * @param Endpoint               $endpoint
      */
-    public function __construct(EntityManagerInterface $em, DefinitionManager $definitionManager)
+    public function __construct(EntityManagerInterface $em, Endpoint $endpoint)
     {
         $this->em = $em;
-        $this->dm = $definitionManager;
+        $this->endpoint = $endpoint;
     }
 
     /**
@@ -58,7 +58,7 @@ class IDToNodeTransformer implements DataTransformerInterface
             return '';
         }
 
-        $nodeType = $this->dm->getTypeForClass(ClassUtils::getRealClass($node));
+        $nodeType = $this->endpoint->getTypeForClass(ClassUtils::getRealClass($node));
 
         return ID::encode($nodeType, $node->getId());
     }
@@ -80,12 +80,12 @@ class IDToNodeTransformer implements DataTransformerInterface
 
         $id = ID::createFromString($globalId);
 
-        if (!$id || !$id->getNodeType() || !$this->dm->hasType($id->getNodeType())) {
+        if (!$id || !$id->getNodeType() || !$this->endpoint->hasType($id->getNodeType())) {
             return null;
         }
 
         $node = $this->em
-            ->getRepository($this->dm->getClassForType($id->getNodeType()))
+            ->getRepository($this->endpoint->getClassForType($id->getNodeType()))
             ->find($id->getDatabaseId());
 
         if (null === $node) {

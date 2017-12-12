@@ -12,7 +12,7 @@ namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation;
 
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\MutationDefinition;
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Model\AddNodePayload;
 use Ynlo\GraphQLBundle\Mutation\AddNodeMutation;
 
@@ -32,13 +32,13 @@ class MutationAddAnnotationParser extends MutationAnnotationParser
     /**
      * {@inheritdoc}
      */
-    public function parse($annotation, \ReflectionClass $refClass, DefinitionManager $definitionManager)
+    public function parse($annotation, \ReflectionClass $refClass, Endpoint $endpoint)
     {
         if (!$annotation->name) {
-            $annotation->name = 'add'.ucfirst($this->getDefaultName($refClass, $definitionManager));
+            $annotation->name = 'add'.ucfirst($this->getDefaultName($refClass, $endpoint));
         }
 
-        parent::parse($annotation, $refClass, $definitionManager);
+        parent::parse($annotation, $refClass, $endpoint);
     }
 
     /**

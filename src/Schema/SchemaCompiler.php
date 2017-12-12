@@ -13,7 +13,7 @@ namespace Ynlo\GraphQLBundle\Schema;
 use GraphQL\Type\Schema;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
 use Ynlo\GraphQLBundle\Type\Types;
 
@@ -32,9 +32,9 @@ class SchemaCompiler implements ContainerAwareInterface
     protected $registry;
 
     /**
-     * @var DefinitionManager
+     * @var Endpoint
      */
-    protected $manager;
+    protected $endpoint;
 
     /**
      * SchemaCompiler constructor.
@@ -53,12 +53,12 @@ class SchemaCompiler implements ContainerAwareInterface
      */
     public function compile(string $endpoint = 'default'): Schema
     {
-        $this->manager = $this->registry->getManager($endpoint);
-        Types::setUp($this->container, $this->manager);
+        $this->endpoint = $this->registry->getEndpoint($endpoint);
+        Types::setUp($this->container, $this->endpoint);
 
         //automatically create all interface implementors
         //to avoid empty interfaces
-        foreach ($this->manager->allInterfaces() as $type) {
+        foreach ($this->endpoint->allInterfaces() as $type) {
             foreach ($type->getImplementors() as $implementor) {
                 if (!Types::has($implementor)) {
                     Types::create($implementor);
@@ -73,11 +73,11 @@ class SchemaCompiler implements ContainerAwareInterface
             },
         ];
 
-        if ($this->manager->allQueries()) {
+        if ($this->endpoint->allQueries()) {
             $config['query'] = Types::get('Query');
         }
 
-        if ($this->manager->allMutations()) {
+        if ($this->endpoint->allMutations()) {
             $config['mutation'] = Types::get('Mutation');
         }
 

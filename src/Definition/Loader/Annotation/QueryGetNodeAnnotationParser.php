@@ -14,7 +14,7 @@ use Doctrine\Common\Util\Inflector;
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionManager;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Query\Node\Node;
 use Ynlo\GraphQLBundle\Query\Node\Nodes;
 
@@ -37,40 +37,35 @@ class QueryGetNodeAnnotationParser implements AnnotationParserInterface
     /**
      * {@inheritdoc}
      */
-    public function parse($annotation, \ReflectionClass $refClass, DefinitionManager $definitionManager)
+    public function parse($annotation, \ReflectionClass $refClass, Endpoint $endpoint)
     {
         /** @var Annotation\QueryGet $annotation */
         if ($annotation->name) {
             $name = $annotation->name;
         } else {
-            $name = lcfirst($this->getDefaultName($refClass, $definitionManager));
+            $name = lcfirst($this->getDefaultName($refClass, $endpoint));
         }
-        $this->createGetNoneQuery($name, $annotation, $refClass, $definitionManager);
+        $this->createGetNoneQuery($name, $annotation, $refClass, $endpoint);
 
         if ($annotation->pluralQuery) {
             if ($annotation->pluralQueryName) {
                 $name = $annotation->pluralQueryName;
             } else {
-                $name = Inflector::pluralize(lcfirst($this->getDefaultName($refClass, $definitionManager)));
+                $name = Inflector::pluralize(lcfirst($this->getDefaultName($refClass, $endpoint)));
             }
-            $this->createGetNoneQuery($name, $annotation, $refClass, $definitionManager, true);
+            $this->createGetNoneQuery($name, $annotation, $refClass, $endpoint, true);
         }
     }
 
     /**
-     * @param string            $name
-     * @param mixed             $annotation
-     * @param \ReflectionClass  $refClass
-     * @param DefinitionManager $definitionManager
-     * @param bool              $plural
+     * @param string           $name
+     * @param mixed            $annotation
+     * @param \ReflectionClass $refClass
+     * @param Endpoint         $endpoint
+     * @param bool             $plural
      */
-    protected function createGetNoneQuery(
-        $name,
-        $annotation,
-        \ReflectionClass $refClass,
-        DefinitionManager $definitionManager,
-        $plural = false
-    ) {
+    protected function createGetNoneQuery($name, $annotation, \ReflectionClass $refClass, Endpoint $endpoint, $plural = false)
+    {
         /** @var Annotation\QueryGet $annotation */
         $query = new QueryDefinition();
         $query->setName($name);
@@ -78,8 +73,8 @@ class QueryGetNodeAnnotationParser implements AnnotationParserInterface
         $objectDefinition = null;
         /** @var Annotation\ObjectType $objectType */
         if ($objectType = $this->reader->getClassAnnotation($refClass, Annotation\ObjectType::class)) {
-            $typeName = $definitionManager->getTypeForClass($refClass->getName());
-            $objectDefinition = $definitionManager->getType($typeName);
+            $typeName = $endpoint->getTypeForClass($refClass->getName());
+            $objectDefinition = $endpoint->getType($typeName);
         }
 
         $fetchBy = $annotation->fetchBy ?? 'id';
@@ -104,6 +99,6 @@ class QueryGetNodeAnnotationParser implements AnnotationParserInterface
         $query->setDeprecationReason($annotation->deprecationReason);
         $query->setDescription($annotation->description);
 
-        $definitionManager->addQuery($query);
+        $endpoint->addQuery($query);
     }
 }
