@@ -29,10 +29,10 @@ class Configuration implements ConfigurationInterface
         /** @var NodeBuilder $rootNode */
         $rootNode = $treeBuilder->root('ynlo_graph_ql')->addDefaultsIfNotSet()->children();
 
-        $schema = $rootNode->arrayNode('pagination');
+        $schema = $rootNode->arrayNode('pagination')->addDefaultsIfNotSet();
         $this->configurePagination($schema->children());
 
-        $schema = $rootNode->arrayNode('schema');
+        $schema = $rootNode->arrayNode('schema')->addDefaultsIfNotSet();
         $this->configureSchema($schema->children());
 
         return $treeBuilder;
