@@ -31,6 +31,7 @@ class AddCommentInput extends AbstractType
                 IDType::class,
                 [
                     'constraints' => [new NotBlank()],
+                    'property_path' => '[commentable]',
                 ]
             )
             ->add(
@@ -45,6 +46,7 @@ class AddCommentInput extends AbstractType
                 IDType::class,
                 [
                     'constraints' => [new NotBlank()],
+                    'property_path' => '[author]',
                 ]
             );
     }

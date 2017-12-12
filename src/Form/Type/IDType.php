@@ -52,16 +52,6 @@ class IDType extends AbstractType
     {
         $transformer = new IDToNodeTransformer($this->em, $this->defRegistry->getEndpoint());
         $builder->addModelTransformer($transformer);
-
-        if (!isset($options['property_path'])) {
-            $isObject = isset($options['data_class']);
-            $propertyPath = preg_replace('/(\w+)Id$/', '$1', $builder->getName());
-            //if (!$isObject) {
-            //    $propertyPath = sprintf('[%s]', $propertyPath);
-            //    dump($propertyPath);
-            //}
-            $builder->setPropertyPath($propertyPath);
-        }
     }
 
     /**
