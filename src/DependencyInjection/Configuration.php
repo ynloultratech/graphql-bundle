@@ -27,7 +27,7 @@ class Configuration implements ConfigurationInterface
     {
         $treeBuilder = new TreeBuilder();
         /** @var NodeBuilder $rootNode */
-        $rootNode = $treeBuilder->root('ynlo_graph_ql')->addDefaultsIfNotSet()->children();
+        $rootNode = $treeBuilder->root('graphql')->addDefaultsIfNotSet()->children();
 
         $schema = $rootNode->arrayNode('pagination')->addDefaultsIfNotSet();
         $this->configurePagination($schema->children());

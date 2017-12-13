@@ -41,4 +41,12 @@ class YnloGraphQLExtension extends Extension
         $loader = new YamlFileLoader($container, new FileLocator($configDir));
         $loader->load('services.yml');
     }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getAlias()
+    {
+        return 'graphql';
+    }
 }
