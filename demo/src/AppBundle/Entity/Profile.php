@@ -13,6 +13,7 @@ namespace Ynlo\GraphQLBundle\Demo\AppBundle\Entity;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
+use Ynlo\GraphQLBundle\Model\NodeInterface;
 
 /**
  * @ORM\Entity()
@@ -20,7 +21,7 @@ use Ynlo\GraphQLBundle\Annotation as GraphQL;
  *
  * @GraphQL\ObjectType()
  */
-class Profile
+class Profile implements NodeInterface
 {
     /**
      * @var int
