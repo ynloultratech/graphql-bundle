@@ -42,4 +42,9 @@ final class Argument
      * @var string
      */
     public $internalName;
+
+    /**
+     * @var array
+     */
+    public $options = [];
 }

@@ -51,4 +51,9 @@ final class QueryGet
      * @var bool
      */
     public $namespace = true;
+
+    /**
+     * @var array
+     */
+    public $options = [];
 }

@@ -17,4 +17,8 @@ namespace Ynlo\GraphQLBundle\Annotation;
  */
 final class Expose
 {
+    /**
+     * @var array
+     */
+    public $options = [];
 }

@@ -52,4 +52,9 @@ final class OverrideField
      * @var bool
      */
     public $hidden;
+
+    /**
+     * @var array
+     */
+    public $options = [];
 }

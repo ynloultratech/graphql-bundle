@@ -46,4 +46,9 @@ final class QueryGetAll
      * @var bool
      */
     public $namespace = true;
+
+    /**
+     * @var array
+     */
+    public $options = [];
 }

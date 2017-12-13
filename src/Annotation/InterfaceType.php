@@ -26,4 +26,9 @@ final class InterfaceType
      * @var string
      */
     public $description;
+
+    /**
+     * @var array
+     */
+    public $options = [];
 }

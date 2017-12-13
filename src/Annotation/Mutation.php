@@ -66,4 +66,9 @@ class Mutation
      * @var bool
      */
     public $namespace = true;
+
+    /**
+     * @var array
+     */
+    public $options = [];
 }

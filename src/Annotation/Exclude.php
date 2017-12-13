@@ -17,4 +17,8 @@ namespace Ynlo\GraphQLBundle\Annotation;
  */
 final class Exclude
 {
+    /**
+     * @var array
+     */
+    public $options = [];
 }

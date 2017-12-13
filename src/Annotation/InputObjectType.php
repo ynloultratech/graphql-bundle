@@ -33,4 +33,9 @@ final class InputObjectType
      * @var string
      */
     public $exclusionPolicy = ObjectDefinitionInterface::EXCLUDE_NONE;
+
+    /**
+     * @var array
+     */
+    public $options = [];
 }
