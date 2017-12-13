@@ -11,7 +11,7 @@
 namespace Ynlo\GraphQLBundle\Annotation;
 
 /**
- * @Annotation
+ * @Annotation()
  *
  * @Target({"CLASS"})
  */

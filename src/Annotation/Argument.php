@@ -11,7 +11,7 @@
 namespace Ynlo\GraphQLBundle\Annotation;
 
 /**
- * @Annotation
+ * @Annotation()
  */
 final class Argument
 {
