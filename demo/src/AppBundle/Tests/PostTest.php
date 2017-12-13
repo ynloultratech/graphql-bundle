@@ -12,6 +12,7 @@ namespace Ynlo\GraphQLBundle\Demo\AppBundle\Tests;
 
 use Faker\Factory;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Post;
+use Ynlo\GraphQLBundle\Demo\AppBundle\Type\PostStatusType;
 use Ynlo\GraphQLBundle\Test\ApiTestCase;
 
 /**
@@ -31,6 +32,7 @@ class PostTest extends ApiTestCase
                 'input' => [
                     'title' => $title = $faker->sentence(),
                     'body' => $body = $faker->paragraph,
+                    'status' => self::literalValue(PostStatusType::PUBLISH),
                     'authorId' => self::encodeID('User', 1),
                     'clientMutationId' => (string) $clientMutationId = mt_rand(),
                 ],
@@ -40,14 +42,17 @@ class PostTest extends ApiTestCase
                     '... on Post' => [
                         'title',
                         'body',
+                        'status',
                     ],
                 ],
                 'clientMutationId',
             ]
         );
+
         self::assertRepositoryContains(Post::class, ['title' => $title, 'body' => $body]);
         self::assertJsonPathEquals($title, 'data.posts.add.node.title');
         self::assertJsonPathEquals($body, 'data.posts.add.node.body');
+        self::assertJsonPathEquals(PostStatusType::PUBLISH, 'data.posts.add.node.status');
         self::assertJsonPathEquals($clientMutationId, 'data.posts.add.clientMutationId');
     }
 }

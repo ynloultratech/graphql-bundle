@@ -69,6 +69,29 @@ trait GraphQLHelperTrait
     }
 
     /**
+     * @param string $value
+     *
+     * @return object
+     */
+    protected static function literalValue($value)
+    {
+        return new class ($value)
+        {
+            private $value;
+
+            public function __construct($value)
+            {
+                $this->value = (string) $value;
+            }
+
+            public function __toString()
+            {
+                return $this->value;
+            }
+        };
+    }
+
+    /**
      * debugQuery
      */
     protected static function debugQuery()
