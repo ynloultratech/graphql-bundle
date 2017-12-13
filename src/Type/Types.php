@@ -67,6 +67,14 @@ class Types
             return $internalType;
         }
 
+        //convert FQN into type,
+        //allowing the use of FQN for GraphQL scalar types
+        if (class_exists($name) || interface_exists($name)) {
+            if (in_array($name, self::$typesMap)) {
+                $name = array_flip(self::$typesMap)[$name];
+            }
+        }
+
         if (!self::has($name)) {
             self::create($name);
         }
@@ -158,6 +166,14 @@ class Types
      */
     public static function has($name)
     {
+        //convert FQN into type,
+        //allowing the use of FQN for GraphQL scalar types
+        if (class_exists($name) || interface_exists($name)) {
+            if (in_array($name, self::$typesMap)) {
+                $name = array_flip(self::$typesMap)[$name];
+            }
+        }
+
         return array_key_exists($name, self::$types);
     }
 

@@ -22,6 +22,7 @@ use Ynlo\GraphQLBundle\Demo\AppBundle\Model\CommentableTrait;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Model\CommentInterface;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Model\TimestampableInterface;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Model\TimestampableTrait;
+use Ynlo\GraphQLBundle\Demo\AppBundle\Type\PostStatusType;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 
 /**
@@ -72,6 +73,15 @@ class Post implements NodeInterface, CommentableInterface, TimestampableInterfac
     /**
      * @var string
      *
+     * @ORM\Column(name="status", type="string")
+     *
+     * @GraphQL\Field(type="Ynlo\GraphQLBundle\Demo\AppBundle\Type\PostStatusType")
+     */
+    protected $status;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="title", type="string")
      */
     protected $title;
@@ -96,6 +106,7 @@ class Post implements NodeInterface, CommentableInterface, TimestampableInterfac
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->status = PostStatusType::DRAFT;
     }
 
     /**
@@ -144,6 +155,22 @@ class Post implements NodeInterface, CommentableInterface, TimestampableInterfac
     public function setSlug(string $slug)
     {
         $this->slug = $slug;
+    }
+
+    /**
+     * @return string
+     */
+    public function getStatus(): string
+    {
+        return $this->status;
+    }
+
+    /**
+     * @param string $status
+     */
+    public function setStatus(string $status)
+    {
+        $this->status = $status;
     }
 
     /**

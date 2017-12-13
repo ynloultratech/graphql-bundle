@@ -103,6 +103,10 @@ services:
         arguments: ['@annotations.reader']
         tags: [form.type_guesser]
 
+    Ynlo\GraphQLBundle\Form\TypeGuesser\GraphQLEnumTypeGuesser:
+        arguments: ['@annotations.reader']
+        tags: [form.type_guesser]
+
     Ynlo\GraphQLBundle\Form\Type\IDType:
         arguments: ['@Doctrine\ORM\EntityManagerInterface', '@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry']
         tags: [form.type]

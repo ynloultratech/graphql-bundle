@@ -16,6 +16,7 @@ use Faker\Factory;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Post;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\PostComment;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\User;
+use Ynlo\GraphQLBundle\Demo\AppBundle\Type\PostStatusType;
 
 /**
  * Class Fixtures
@@ -57,7 +58,7 @@ class Fixtures extends Fixture
         $this->setReference($user->getUsername(), $user);
         $manager->persist($user);
 
-        for ($i = 1; $i <= 10; $i++) {
+        for ($i = 1; $i <= 10; $i ++) {
             $user = new User();
             $user->setUsername($this->faker->userName);
             $user->getProfile()->setFirstName($this->faker->firstName);
@@ -80,17 +81,19 @@ class Fixtures extends Fixture
      */
     protected function createPosts(ObjectManager $manager)
     {
-        for ($i = 1; $i <= 20; $i++) {
+        for ($i = 1; $i <= 20; $i ++) {
             $post = new Post();
             $author = $this->getReference('user'.\random_int(1, 10));
             $post->setTitle($this->faker->sentence(\random_int(3, 10)));
             $post->setBody($this->faker->paragraph(\random_int(3, 10)));
             $post->setAuthor($author);
+            $status = [PostStatusType::DRAFT, PostStatusType::PENDING, PostStatusType::PUBLISH];
+            $post->setStatus($status[array_rand($status)]);
 
             $manager->persist($post);
 
             $maxComments = random_int(1, 5);
-            for ($ic = 1; $ic <= $maxComments; $ic++) {
+            for ($ic = 1; $ic <= $maxComments; $ic ++) {
                 $comment = new PostComment();
                 $comment->setCommentable($post);
                 $comment->setAuthor($this->getReference('user'.\random_int(1, 10)));

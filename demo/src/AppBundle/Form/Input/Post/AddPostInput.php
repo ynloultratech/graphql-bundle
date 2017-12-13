@@ -29,6 +29,7 @@ class AddPostInput extends AbstractType
         $builder
             ->add('title')
             ->add('body')
+            ->add('status')
             ->add('authorId', IDType::class, ['property_path' => 'author']);
     }
 

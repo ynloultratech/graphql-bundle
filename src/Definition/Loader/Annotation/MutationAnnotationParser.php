@@ -24,6 +24,7 @@ use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\MutationDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Extension\ExtensionManager;
+use Ynlo\GraphQLBundle\Form\Type\GraphQLType;
 use Ynlo\GraphQLBundle\Form\Type\IDType;
 
 /**
@@ -232,6 +233,10 @@ Must check `constraintViolations` in the payload to get validation messages.'
         $resolver = $form->getConfig()->getType()->getOptionsResolver();
         if ($resolver->hasDefault('graphql_type')) {
             return $resolver->resolve([])['graphql_type'];
+        }
+
+        if (is_a($form->getConfig()->getType()->getInnerType(), GraphQLType::class, true)) {
+            return $form->getConfig()->getOptions()['graphql_type'];
         }
 
         if (is_a($form->getConfig()->getType()->getInnerType(), IDType::class, true)) {
