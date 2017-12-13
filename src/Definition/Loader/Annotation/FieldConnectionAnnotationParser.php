@@ -50,6 +50,7 @@ class FieldConnectionAnnotationParser implements AnnotationParserInterface
      */
     public function parse($annotation, \ReflectionClass $refClass, Endpoint $endpoint)
     {
+        return;
         /** @var Annotation\Field $annotation */
         $field = new FieldDefinition();
 

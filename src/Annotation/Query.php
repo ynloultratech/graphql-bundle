@@ -41,4 +41,11 @@ final class Query
      * @var bool
      */
     public $namespace = true;
+
+    /**
+     * Options used by extensions
+     *
+     * @var array
+     */
+    public $options = [];
 }

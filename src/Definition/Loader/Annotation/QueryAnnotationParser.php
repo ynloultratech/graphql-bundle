@@ -14,7 +14,6 @@ use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
-use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Util\TypeUtil;
 
 /**
@@ -29,21 +28,6 @@ class QueryAnnotationParser implements AnnotationParserInterface
      * @var Endpoint
      */
     protected $endpoint;
-
-    /**
-     * @var ExtensionManager
-     */
-    protected $extensionManager;
-
-    /**
-     * QueryGetAllNodesAnnotationParser constructor.
-     *
-     * @param ExtensionManager $extensionManager
-     */
-    public function __construct(ExtensionManager $extensionManager)
-    {
-        $this->extensionManager = $extensionManager;
-    }
 
     /**
      * {@inheritdoc}
@@ -105,12 +89,12 @@ class QueryAnnotationParser implements AnnotationParserInterface
         $query->setDeprecationReason($annotation->deprecationReason);
         $query->setDescription($annotation->description);
 
-        foreach ($this->extensionManager->getExtensions() as $extension) {
-            $extension->configureDefinition($query, $refClass, $endpoint);
-        }
-
         if (!$endpoint->hasQuery($query->getName())) {
             $endpoint->addQuery($query);
+        }
+
+        foreach ($annotation->options as $option => $value) {
+            $query->setMeta($option, $value);
         }
     }
 }

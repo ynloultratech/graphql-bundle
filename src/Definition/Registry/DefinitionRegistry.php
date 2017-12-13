@@ -10,20 +10,19 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Registry;
 
-use Doctrine\Common\Util\Inflector;
+use Symfony\Component\Config\Definition\Builder\NodeBuilder;
+use Symfony\Component\Config\Definition\Builder\TreeBuilder;
+use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
+use Symfony\Component\Config\Definition\Processor;
 use Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices;
 use Ynlo\GraphQLBundle\Component\TaggedServices\TagSpecification;
-use Ynlo\GraphQLBundle\Definition\ArgumentAwareInterface;
-use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
-use Ynlo\GraphQLBundle\Definition\FieldDefinition;
-use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
+use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
+use Ynlo\GraphQLBundle\Definition\Extension\DefinitionExtensionInterface;
+use Ynlo\GraphQLBundle\Definition\Extension\DefinitionExtensionManager;
 use Ynlo\GraphQLBundle\Definition\Loader\DefinitionLoaderInterface;
+use Ynlo\GraphQLBundle\Definition\MetaAwareInterface;
 use Ynlo\GraphQLBundle\Definition\MutationDefinition;
-use Ynlo\GraphQLBundle\Definition\NamespaceAwareDefinitionInterface;
-use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
-use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
-use Ynlo\GraphQLBundle\Resolver\EmptyObjectResolver;
 
 /**
  * DefinitionRegistry
@@ -34,6 +33,11 @@ class DefinitionRegistry
      * @var TaggedServices
      */
     private $taggedServices;
+
+    /**
+     * @var DefinitionExtensionManager
+     */
+    private $extensionManager;
 
     /**
      * @var Endpoint
@@ -53,13 +57,15 @@ class DefinitionRegistry
     /**
      * DefinitionRegistry constructor.
      *
-     * @param TaggedServices $taggedServices
-     * @param null|string    $cacheDir
-     * @param array          $config
+     * @param TaggedServices             $taggedServices
+     * @param DefinitionExtensionManager $extensionManager
+     * @param null|string                $cacheDir
+     * @param array                      $config
      */
-    public function __construct(TaggedServices $taggedServices, ?string $cacheDir = null, $config = [])
+    public function __construct(TaggedServices $taggedServices, DefinitionExtensionManager $extensionManager, ?string $cacheDir = null, $config = [])
     {
         $this->taggedServices = $taggedServices;
+        $this->extensionManager = $extensionManager;
         $this->cacheDir = $cacheDir;
         $this->config = $config;
     }
@@ -95,238 +101,66 @@ class DefinitionRegistry
      */
     private function compile(Endpoint $endpoint)
     {
-        foreach ($endpoint->allTypes() as $type) {
-            if ($type instanceof FieldsAwareDefinitionInterface) {
-                $this->normalizeFields($endpoint, $type);
-            }
-        }
-
-        foreach ($endpoint->allQueries() as $query) {
-            $query->setType($this->normalizeType($endpoint, $query->getType()));
-            if ($query instanceof ArgumentAwareInterface) {
-                $this->normalizeArguments($endpoint, $query);
-            }
-        }
-
-        foreach ($endpoint->allMutations() as $mutation) {
-            $mutation->setType($this->normalizeType($endpoint, $mutation->getType()));
-            if ($mutation instanceof ArgumentAwareInterface) {
-                $this->normalizeArguments($endpoint, $mutation);
-            }
-        }
-
-        $groupByBundle = $this->config['schema']['namespaces']['bundles']['enabled']  ?? true;
-        $groupByNode = $this->config['schema']['namespaces']['nodes']['enabled']  ?? true;
-        if ($groupByBundle || $groupByNode) {
-            $endpoint->setQueries($this->namespaceDefinitions($endpoint->allQueries(), $endpoint));
-            $endpoint->setMutations($this->namespaceDefinitions($endpoint->allMutations(), $endpoint));
-        } else {
-            //keep queries & mutations sorted by related node
-            $sortedQueries = $this->sortQueries($endpoint->allQueries());
-            $endpoint->setQueries($sortedQueries);
-
-            $sortedMutations = $this->sortQueries($endpoint->allMutations());
-            $endpoint->setMutations($sortedMutations);
-        }
-    }
-
-    /**
-     * @param array    $definitions
-     * @param Endpoint $endpoint
-     *
-     * @return array
-     */
-    private function namespaceDefinitions($definitions, Endpoint $endpoint)
-    {
-        $namespacedDefinitions = [];
-        foreach ($definitions as $definition) {
-            if (!$definition instanceof NamespaceAwareDefinitionInterface || !$definition->getNamespace()) {
-                $namespacedDefinitions[] = $definition;
-                continue;
-            }
-
-            $root = null;
-            $parent = null;
-            if ($definition->getNamespace()->getBundle()) {
-                $bundleSuffix = $this->config['schema']['namespaces']['bundles']['suffix'] ?? 'Bundle';
-                $name = lcfirst($definition->getNamespace()->getBundle());
-                $typeName = ucfirst($name).$bundleSuffix;
-                $root = $this->createRootNamespace(get_class($definition), $name, $typeName, $endpoint);
-                $parent = $endpoint->getType($root->getType());
-            }
-
-            if ($definition->getNamespace()->getNode()) {
-                $nodeName = $definition->getNamespace()->getNode();
-                $name = Inflector::pluralize(lcfirst($nodeName));
-
-                $querySuffix = $this->config['schema']['namespaces']['nodes']['query_suffix'] ?? 'Query';
-                $mutationSuffix = $this->config['schema']['namespaces']['nodes']['mutation_suffix'] ?? 'Mutation';
-
-                $typeName = ucfirst($nodeName).(($definition instanceof MutationDefinition) ? $mutationSuffix : $querySuffix);
-                if (!$root) {
-                    $root = $this->createRootNamespace(get_class($definition), $name, $typeName, $endpoint);
-                    $parent = $endpoint->getType($root->getType());
-                } elseif ($parent) {
-                    $parent = $this->createChildNamespace($parent, $name, $typeName, $endpoint);
-                }
-
-                //remove node suffix on namespaced definitions
-                $definition->setName(preg_replace(sprintf("/(\w+)%s$/", $nodeName), '$1', $definition->getName()));
-                $definition->setName(preg_replace(sprintf("/(\w+)%s$/", Inflector::pluralize($nodeName)), '$1', $definition->getName()));
-
-            }
-
-            if ($root && $parent) {
-                $this->addDefinitionToNamespace($parent, $definition);
-                $namespacedDefinitions[] = $root;
-            }
-        }
-
-        return $namespacedDefinitions;
-    }
-
-    /**
-     * @param FieldsAwareDefinitionInterface $fieldsAwareDefinition
-     * @param ExecutableDefinitionInterface  $definition
-     */
-    private function addDefinitionToNamespace(FieldsAwareDefinitionInterface $fieldsAwareDefinition, ExecutableDefinitionInterface $definition)
-    {
-        $field = new FieldDefinition();
-        $field->setName($definition->getName());
-        $field->setType($definition->getType());
-        $field->setResolver($definition->getResolver());
-        $field->setArguments($definition->getArguments());
-        $field->setList($definition->isList());
-        $field->setMetas($definition->getMetas());
-        $fieldsAwareDefinition->addField($field);
-    }
-
-    /**
-     * @param ObjectDefinitionInterface $parent   parent definition to add a child field
-     * @param string                    $name     name of the field
-     * @param string                    $typeName name of the type to create
-     * @param Endpoint                  $endpoint Endpoint instance to extract definitions
-     *
-     * @return ObjectDefinition
-     */
-    private function createChildNamespace(ObjectDefinitionInterface $parent, $name, $typeName, Endpoint $endpoint): ObjectDefinition
-    {
-        $child = new FieldDefinition();
-        $child->setName($name);
-        $child->setResolver(EmptyObjectResolver::class);
-
-        $type = new ObjectDefinition();
-        $type->setName($typeName);
-        if ($endpoint->hasType($type->getName())) {
-            $type = $endpoint->getType($type->getName());
-        } else {
-            $endpoint->add($type);
-        }
-
-        $child->setType($type->getName());
-        $parent->addField($child);
-
-        return $type;
-    }
-
-    /**
-     * @param string   $rootType Class of the root type to create QueryDefinition or MutationDefinition
-     * @param string   $name     name of the root field
-     * @param string   $typeName name for the root type
-     * @param Endpoint $endpoint Endpoint interface to extract existent definitions
-     *
-     * @return ExecutableDefinitionInterface
-     */
-    private function createRootNamespace($rootType, $name, $typeName, Endpoint $endpoint): ExecutableDefinitionInterface
-    {
-        /** @var ExecutableDefinitionInterface $rootDefinition */
-        $rootDefinition = new $rootType();
-        $rootDefinition->setName($name);
-        $rootDefinition->setResolver(EmptyObjectResolver::class);
-
-        $type = new ObjectDefinition();
-        $type->setName($typeName);
-        if ($endpoint->hasType($type->getName())) {
-            $type = $endpoint->getType($type->getName());
-        } else {
-            $endpoint->add($type);
-        }
-
-        $rootDefinition->setType($type->getName());
-
-        return $rootDefinition;
-    }
-
-    /**
-     * @param QueryDefinition[]|MutationDefinition[] $queries
-     *
-     * @return array
-     */
-    private function sortQueries($queries)
-    {
-        $sortedQueries = [];
-        foreach ($queries as $query) {
-            $name = $query->getName();
-            $node = $query->getType();
-            if ($query->hasMeta('node')) {
-                $node = $query->getMeta('node');
-            }
-            $sortedQueries[$node.'_'.$name] = $query;
-        }
-        ksort($sortedQueries);
-
-        return $sortedQueries;
-    }
-
-    /**
-     * @param Endpoint               $endpoint
-     * @param ArgumentAwareInterface $argumentAware
-     */
-    private function normalizeArguments(Endpoint $endpoint, ArgumentAwareInterface $argumentAware)
-    {
-        foreach ($argumentAware->getArguments() as $argument) {
-            $argument->setType($this->normalizeType($endpoint, $argument->getType()));
-            if (!$argument->getType()) {
-                $msg = sprintf('The argument "%s" of "%s" does not have a valid type', $argument->getName(), $argumentAware->getName());
-                throw new \RuntimeException($msg);
-            }
-        }
-    }
-
-    /**
-     * @param Endpoint                       $endpoint
-     * @param FieldsAwareDefinitionInterface $fieldsAwareDefinition
-     */
-    private function normalizeFields(Endpoint $endpoint, FieldsAwareDefinitionInterface $fieldsAwareDefinition)
-    {
-        foreach ($fieldsAwareDefinition->getFields() as $field) {
-            $field->setType($this->normalizeType($endpoint, $field->getType()));
-            if (!$field->getType()) {
-                $msg = sprintf('The field "%s" of "%s" does not have a valid type', $field->getName(), $fieldsAwareDefinition->getName());
-                throw new \RuntimeException($msg);
-            }
-            $this->normalizeArguments($endpoint, $field);
-        }
-    }
-
-    /**
-     * @param Endpoint    $endpoint
-     * @param string|null $type
-     *
-     * @return null|string
-     */
-    private function normalizeType(Endpoint $endpoint, $type)
-    {
-        if ($type) {
-            if (class_exists($type) || interface_exists($type)) {
-                if ($endpoint->hasTypeForClass($type)) {
-                    $type = $endpoint->getTypeForClass($type);
+        //run all extensions for each definition
+        foreach ($this->extensionManager->getExtensions() as $extension) {
+            foreach ($endpoint->allTypes() as $type) {
+                $this->configureDefinition($extension, $type, $endpoint);
+                foreach ($type->getFields() as $field) {
+                    $this->configureDefinition($extension, $field, $endpoint);
+                    foreach ($field->getArguments() as $argument) {
+                        $this->configureDefinition($extension, $argument, $endpoint);
+                    }
                 }
             }
-        }
+            foreach ($endpoint->allQueries() as $query) {
+                $this->configureDefinition($extension, $query, $endpoint);
+                foreach ($query->getArguments() as $argument) {
+                    $this->configureDefinition($extension, $argument, $endpoint);
+                }
+            }
+            foreach ($endpoint->allMutations() as $mutation) {
+                $this->configureDefinition($extension, $mutation, $endpoint);
+                foreach ($mutation->getArguments() as $argument) {
+                    $this->configureDefinition($extension, $argument, $endpoint);
+                }
+            }
 
-        return $type;
+            $extension->configureEndpoint($endpoint);
+        }
     }
+
+    /**
+     * @param DefinitionExtensionInterface $extension
+     * @param DefinitionInterface          $definition
+     * @param Endpoint                     $endpoint
+     */
+    protected function configureDefinition(DefinitionExtensionInterface $extension, DefinitionInterface $definition, Endpoint $endpoint)
+    {
+        $config = [];
+        if ($definition instanceof MetaAwareInterface) {
+            $treeBuilder = new TreeBuilder();
+            /** @var NodeBuilder $root */
+            $root = $treeBuilder->root($extension->getName());
+            $extension->buildConfig($root);
+
+            if ($definition->hasMeta($extension->getName())) {
+                $options = $definition->getMeta($extension->getName());
+                $processor = new Processor();
+
+                try {
+                    $options = $extension->normalizeConfig($definition, $options);
+                    $config = $processor->process($treeBuilder->buildTree(), [$options]);
+                } catch (InvalidConfigurationException $exception) {
+                    $error = sprintf('Error compiling schema definition "%s", %s', $definition->getName(), $exception->getMessage());
+                    throw new \RuntimeException($error, 0, $exception);
+                }
+
+            }
+        }
+        $extension->configure($definition, $endpoint, $config);
+    }
+
+
 
     /**
      * @param string $tag

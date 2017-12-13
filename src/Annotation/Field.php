@@ -34,4 +34,9 @@ final class Field
      * @var string
      */
     public $deprecationReason;
+
+    /**
+     * @var array
+     */
+    public $options = [];
 }

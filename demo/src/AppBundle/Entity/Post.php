@@ -71,6 +71,13 @@ class Post implements NodeInterface, CommentableInterface, TimestampableInterfac
     protected $author;
 
     /**
+     * @var Collection
+     *
+     * @ORM\ManyToMany(targetEntity="Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Category", inversedBy="posts")
+     */
+    protected $categories;
+
+    /**
      * @var string
      *
      * @ORM\Column(name="status", type="string")
@@ -106,6 +113,7 @@ class Post implements NodeInterface, CommentableInterface, TimestampableInterfac
     public function __construct()
     {
         $this->comments = new ArrayCollection();
+        $this->categories = new ArrayCollection();
         $this->status = PostStatusType::DRAFT;
     }
 
@@ -215,5 +223,21 @@ class Post implements NodeInterface, CommentableInterface, TimestampableInterfac
         $comment->setCommentable($this);
 
         return $comment;
+    }
+
+    /**
+     * @return Collection
+     */
+    public function getCategories(): Collection
+    {
+        return $this->categories;
+    }
+
+    /**
+     * @param Collection $categories
+     */
+    public function setCategories(Collection $categories)
+    {
+        $this->categories = $categories;
     }
 }

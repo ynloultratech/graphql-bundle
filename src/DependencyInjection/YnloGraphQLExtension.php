@@ -29,13 +29,16 @@ class YnloGraphQLExtension extends Extension
         $configuration = new Configuration($container->getParameter('kernel.debug'));
         $config = $this->processConfiguration($configuration, $configs);
 
-        if (!isset($config['schema']['namespaces']['bundles']['aliases']['GraphQLBundle'])) {
-            $config['schema']['namespaces']['bundles']['aliases']['GraphQLBundle'] = 'AppBundle';
+        if (!isset($config['definitions']['extensions']['namespaces']['bundles']['aliases']['GraphQLBundle'])) {
+            $config['definitions']['extensions']['namespaces']['bundles']['aliases']['GraphQLBundle'] = 'AppBundle';
         }
 
         $container->setParameter('graphql.config', $config);
-        $container->setParameter('graphql.schema_namespaces', $config['schema']['namespaces'] ?? []);
-        $container->setParameter('graphql.pagination', $config['pagination'] ?? []);
+        if (isset($config['definitions']['extensions'])) {
+            foreach ($config['definitions']['extensions'] as $extension => $config) {
+                $container->setParameter('graphql.extension_config.'.$extension, $config ?? []);
+            }
+        }
 
         $configDir = __DIR__.'/../Resources/config';
         $loader = new YamlFileLoader($container, new FileLocator($configDir));

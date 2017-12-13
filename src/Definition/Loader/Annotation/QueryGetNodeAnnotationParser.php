@@ -28,21 +28,6 @@ class QueryGetNodeAnnotationParser implements AnnotationParserInterface
     use AnnotationParserHelper;
 
     /**
-     * @var ExtensionManager
-     */
-    protected $extensionManager;
-
-    /**
-     * QueryGetAllNodesAnnotationParser constructor.
-     *
-     * @param ExtensionManager $extensionManager
-     */
-    public function __construct(ExtensionManager $extensionManager)
-    {
-        $this->extensionManager = $extensionManager;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function supports($annotation): bool
@@ -115,10 +100,6 @@ class QueryGetNodeAnnotationParser implements AnnotationParserInterface
         $query->setResolver($plural ? Nodes::class : Node::class);
         $query->setDeprecationReason($annotation->deprecationReason);
         $query->setDescription($annotation->description);
-
-        foreach ($this->extensionManager->getExtensions() as $extension) {
-            $extension->configureDefinition($query, $refClass, $endpoint);
-        }
 
         $endpoint->addQuery($query);
     }

@@ -14,7 +14,6 @@ use Symfony\Component\DependencyInjection\Definition;
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
-use Ynlo\GraphQLBundle\Definition\ConnectionDefinitionBuilder;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
@@ -22,7 +21,6 @@ use Ynlo\GraphQLBundle\Definition\Loader\Annotation\FieldDecorator\FieldDefiniti
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
-use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Type\EndpointAwareInterface;
 use Ynlo\GraphQLBundle\Util\TypeUtil;
 
@@ -37,12 +35,6 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
      * @var TaggedServices
      */
     protected $taggedServices;
-
-    /**
-     * @var ExtensionManager
-     */
-    protected $extensionManager;
-
     /**
      * @var Endpoint
      */
@@ -51,13 +43,11 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
     /**
      * ObjectTypeAnnotationParser constructor.
      *
-     * @param TaggedServices   $taggedServices
-     * @param ExtensionManager $extensionManager
+     * @param TaggedServices $taggedServices
      */
-    public function __construct(TaggedServices $taggedServices, ExtensionManager $extensionManager)
+    public function __construct(TaggedServices $taggedServices)
     {
         $this->taggedServices = $taggedServices;
-        $this->extensionManager = $extensionManager;
     }
 
     /**
@@ -103,11 +93,6 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
 
         $this->loadInheritedProperties($refClass, $objectDefinition);
         $this->resolveFields($refClass, $objectDefinition);
-
-        foreach ($this->extensionManager->getExtensions() as $extension) {
-            $extension->configureDefinition($objectDefinition, $refClass, $this->endpoint);
-        }
-
         $endpoint->addType($objectDefinition);
     }
 
@@ -255,12 +240,6 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
                         $fieldDefinition->setName($annotation->alias);
                     }
                 }
-            }
-        }
-
-        foreach ($objectDefinition->getFields() as $field) {
-            foreach ($this->extensionManager->getExtensions() as $extension) {
-                $extension->configureDefinition($field, $refClass, $this->endpoint);
             }
         }
     }

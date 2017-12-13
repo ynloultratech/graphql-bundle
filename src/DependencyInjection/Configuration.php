@@ -28,22 +28,28 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         /** @var NodeBuilder $rootNode */
         $rootNode = $treeBuilder->root('graphql')->addDefaultsIfNotSet()->children();
-
-        $schema = $rootNode->arrayNode('pagination')->addDefaultsIfNotSet();
-        $this->configurePagination($schema->children());
-
-        $schema = $rootNode->arrayNode('schema')->addDefaultsIfNotSet();
-        $this->configureSchema($schema->children());
+        $this->configureDefinition($rootNode);
 
         return $treeBuilder;
     }
 
-    protected function configurePagination(NodeBuilder $root)
+    protected function configureDefinition(NodeBuilder $root)
     {
-        $root->integerNode('limit')->defaultValue(100)->info('Maximum limit allowed for all paginations');
+        $definitions = $root->arrayNode('definitions')->addDefaultsIfNotSet()->children();
+
+        $extensions = $definitions->arrayNode('extensions')->addDefaultsIfNotSet();
+        $this->configureExtensionPagination($extensions->children());
+        $this->configureExtensionNamespace($extensions->children());
     }
 
-    protected function configureSchema(NodeBuilder $root)
+    protected function configureExtensionPagination(NodeBuilder $root)
+    {
+        $pagination = $root->arrayNode('pagination')->addDefaultsIfNotSet()->children();
+        $pagination->integerNode('limit')
+                   ->defaultValue(100)->info('Maximum limit allowed for all paginations');
+    }
+
+    protected function configureExtensionNamespace(NodeBuilder $root)
     {
         $namespaces = $root->arrayNode('namespaces')
                            ->info(
@@ -51,11 +57,13 @@ class Configuration implements ConfigurationInterface
 On large schemas is  helpful to keep schemas grouped by bundle and node'
                            )
                            ->canBeDisabled()
+                           ->addDefaultsIfNotSet()
                            ->children();
 
         $bundles = $namespaces->arrayNode('bundles')
                               ->info('Group each bundle into a separate schema definition')
                               ->canBeDisabled()
+                              ->addDefaultsIfNotSet()
                               ->children();
 
         $bundles->scalarNode('suffix')
@@ -78,6 +86,7 @@ Can be used to group multiple bundles or publish a bundle with a different name'
 
         $nodes = $namespaces->arrayNode('nodes')
                             ->info('Group queries and mutations of the same node into a node specific schema definition.')
+                            ->addDefaultsIfNotSet()
                             ->canBeDisabled()
                             ->children();
 

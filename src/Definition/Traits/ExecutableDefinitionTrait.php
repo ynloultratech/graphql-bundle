@@ -19,7 +19,6 @@ trait ExecutableDefinitionTrait
     use ArgumentAwareTrait;
     use DeprecateTrait;
     use TypeAwareDefinitionTrait;
-    use MetaAwareTrait;
     use NamespaceAwareTrait;
 
     protected $resolver;

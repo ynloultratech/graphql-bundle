@@ -13,7 +13,7 @@ namespace Ynlo\GraphQLBundle\Definition;
 /**
  * Interface DefinitionInterface
  */
-interface DefinitionInterface
+interface DefinitionInterface extends MetaAwareInterface
 {
     /**
      * @return string

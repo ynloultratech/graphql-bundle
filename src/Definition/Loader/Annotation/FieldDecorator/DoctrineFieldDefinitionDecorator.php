@@ -11,6 +11,7 @@
 namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation\FieldDecorator;
 
 use Doctrine\DBAL\Types\Type as DoctrineType;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Embedded;
 use Doctrine\ORM\Mapping\Id;
@@ -44,7 +45,8 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
         }
 
         if (!$definition->getType()) {
-            $parentField = null;
+            $pagination = [];
+            $targetNode = null;
 
             /** @var Column $column */
             if ($column = $this->reader->getPropertyAnnotation($field, Column::class)) {
@@ -60,27 +62,35 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
 
             /** @var OneToOne $oneToOne */
             if ($oneToOne = $this->reader->getPropertyAnnotation($field, OneToOne::class)) {
-                $definition->setType($oneToOne->targetEntity);
+                $definition->setType($targetNode = $oneToOne->targetEntity);
                 $definition->setNonNull(true);
             }
 
             /** @var OneToMany $oneToMany */
             if ($oneToMany = $this->reader->getPropertyAnnotation($field, OneToMany::class)) {
-                $definition->setType($oneToMany->targetEntity);
+                $definition->setType($targetNode = $oneToMany->targetEntity);
                 $definition->setList(true);
-                $parentField = $oneToMany->mappedBy;
+                if ($oneToMany->fetch === 'EXTRA_LAZY') {
+                    $pagination['target'] = $targetNode;
+                    $pagination['parent_field'] = $oneToMany->mappedBy;
+                    $pagination['parent_relation'] = 'ONE_TO_MANY';
+                }
             }
 
             /** @var ManyToOne $manyToOne */
             if ($manyToOne = $this->reader->getPropertyAnnotation($field, ManyToOne::class)) {
-                $definition->setType($manyToOne->targetEntity);
+                $definition->setType($targetNode = $manyToOne->targetEntity);
             }
 
             /** @var ManyToMany $manyToMany */
             if ($manyToMany = $this->reader->getPropertyAnnotation($field, ManyToMany::class)) {
-                $definition->setType($manyToMany->targetEntity);
+                $definition->setType($targetNode = $manyToMany->targetEntity);
                 $definition->setList(true);
-                $parentField = $oneToMany->mappedBy;
+                if ($manyToMany->fetch === 'EXTRA_LAZY') {
+                    $pagination['target'] = $targetNode;
+                    $pagination['parent_field'] = $manyToMany->mappedBy ?? $manyToMany->inversedBy;
+                    $pagination['parent_relation'] = 'MANY_TO_MANY';
+                }
             }
 
             /** @var Embedded $embedded */
@@ -88,8 +98,12 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
                 $definition->setType($embedded->class);
             }
 
-            if ($definition->isList() && $parentField) {
-                $definition->setMeta('connection_parent_field', $parentField);
+            if ($definition->isList() && $pagination) {
+                $definition->setMeta('pagination', $pagination);
+            }
+
+            if ($targetNode) {
+                $definition->setMeta('node', $targetNode);
             }
         }
     }

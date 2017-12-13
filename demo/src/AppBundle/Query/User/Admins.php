@@ -16,8 +16,7 @@ use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\User;
 use Ynlo\GraphQLBundle\Query\Node\AllNodesConnection;
 
 /**
- * @GraphQL\Query()
- * @GraphQL\Connection()
+ * @GraphQL\Query(list=true, options={"pagination": {"limit":2}})
  */
 class Admins extends AllNodesConnection
 {

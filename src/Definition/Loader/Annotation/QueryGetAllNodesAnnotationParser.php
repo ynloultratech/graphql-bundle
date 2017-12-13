@@ -15,7 +15,6 @@ use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
-use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Model\OrderBy;
 use Ynlo\GraphQLBundle\Query\Node\AllNodes;
 
@@ -26,21 +25,6 @@ class QueryGetAllNodesAnnotationParser implements AnnotationParserInterface
 {
     use AnnotationReaderAwareTrait;
     use AnnotationParserHelper;
-
-    /**
-     * @var ExtensionManager
-     */
-    protected $extensionManager;
-
-    /**
-     * QueryGetAllNodesAnnotationParser constructor.
-     *
-     * @param ExtensionManager $extensionManager
-     */
-    public function __construct(ExtensionManager $extensionManager)
-    {
-        $this->extensionManager = $extensionManager;
-    }
 
     /**
      * {@inheritdoc}
@@ -76,8 +60,7 @@ class QueryGetAllNodesAnnotationParser implements AnnotationParserInterface
         }
 
         if ($annotation->pagination) {
-            //the extension PaginationExtension use this meta
-            $query->setMeta('connection', new Annotation\Connection());
+            $query->setMeta('pagination', ['target' => $typeName]);
         }
 
         $orderBy = new ArgumentDefinition();
@@ -87,11 +70,6 @@ class QueryGetAllNodesAnnotationParser implements AnnotationParserInterface
         $orderBy->setList(true);
         $orderBy->setDescription('Ordering options for this list.');
         $query->addArgument($orderBy);
-
-        foreach ($this->extensionManager->getExtensions() as $extension) {
-            $extension->configureDefinition($query, $refClass, $endpoint);
-        }
-
         $endpoint->addQuery($query);
     }
 }

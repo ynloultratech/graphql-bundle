@@ -89,8 +89,6 @@ class User implements NodeInterface, TimestampableInterface
      * @var Collection
      *
      * @ORM\OneToMany(targetEntity="Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Post", mappedBy="author", fetch="EXTRA_LAZY")
-     *
-     * @GraphQL\Connection()
      */
     protected $posts;
 

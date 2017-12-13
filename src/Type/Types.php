@@ -72,6 +72,8 @@ class Types
         if (class_exists($name) || interface_exists($name)) {
             if (in_array($name, self::$typesMap)) {
                 $name = array_flip(self::$typesMap)[$name];
+            } elseif (self::$endpoint->hasTypeForClass($name)) {
+                $name = self::$endpoint->getTypeForClass($name);
             }
         }
 

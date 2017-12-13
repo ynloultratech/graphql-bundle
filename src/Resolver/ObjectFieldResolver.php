@@ -85,7 +85,7 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
             $value = $resolver($root, $args, $context, $info);
         } else {
             $accessor = new PropertyAccessor(true);
-            $originName = $fieldDefinition->getOriginName();
+            $originName = $fieldDefinition->getOriginName() ?? $fieldDefinition->getName();
             $value = $accessor->getValue($root, $originName);
         }
 

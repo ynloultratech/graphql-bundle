@@ -17,6 +17,8 @@ use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
  */
 trait DefinitionTrait
 {
+    use MetaAwareTrait;
+
     /**
      * @var string
      */

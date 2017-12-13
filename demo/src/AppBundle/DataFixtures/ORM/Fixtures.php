@@ -13,6 +13,7 @@ namespace Ynlo\GraphQLBundle\Demo\AppBundle\DataFixtures\ORM;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Faker\Factory;
+use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Category;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Post;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\PostComment;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\User;
@@ -41,6 +42,7 @@ class Fixtures extends Fixture
     public function load(ObjectManager $manager)
     {
         $this->createUsers($manager);
+        $this->createCategories($manager);
         $this->createPosts($manager);
 
         $manager->flush();
@@ -79,6 +81,20 @@ class Fixtures extends Fixture
     /**
      * @param ObjectManager $manager
      */
+    protected function createCategories(ObjectManager $manager)
+    {
+        $categories = ['Gadgets', 'Software', 'Servers', 'Development', 'Internet'];
+        foreach ($categories as $index => $categoryName) {
+            $category = new Category();
+            $category->setName($categoryName);
+            $manager->persist($category);
+            $this->setReference("category$index", $category);
+        }
+    }
+
+    /**
+     * @param ObjectManager $manager
+     */
     protected function createPosts(ObjectManager $manager)
     {
         for ($i = 1; $i <= 20; $i ++) {
@@ -87,6 +103,13 @@ class Fixtures extends Fixture
             $post->setTitle($this->faker->sentence(\random_int(3, 10)));
             $post->setBody($this->faker->paragraph(\random_int(3, 10)));
             $post->setAuthor($author);
+
+            $cat = \random_int(0, 4);
+            $post->getCategories()->add($this->getReference('category'.$cat));
+            if ($cat > 2 && $cat < 4) {
+                $post->getCategories()->add($this->getReference('category'.($cat + 1)));
+            }
+
             $status = [PostStatusType::DRAFT, PostStatusType::PENDING, PostStatusType::PUBLISH];
             $post->setStatus($status[array_rand($status)]);
 

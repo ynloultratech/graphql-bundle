@@ -46,17 +46,11 @@ class MutationAnnotationParser implements AnnotationParserInterface
     protected $endpoint;
 
     /**
-     * @var ExtensionManager
-     */
-    protected $extensionManager;
-
-    /**
      * @param FormFactory $formFactory
      */
-    public function __construct(FormFactory $formFactory, ExtensionManager $extensionManager)
+    public function __construct(FormFactory $formFactory)
     {
         $this->formFactory = $formFactory;
-        $this->extensionManager = $extensionManager;
     }
 
     /**
@@ -132,10 +126,6 @@ class MutationAnnotationParser implements AnnotationParserInterface
 
         if (!$mutation->getResolver()) {
             $mutation->setResolver($refClass->getName());
-        }
-
-        foreach ($this->extensionManager->getExtensions() as $extension) {
-            $extension->configureDefinition($mutation, $refClass, $endpoint);
         }
 
         $this->endpoint->addMutation($mutation);

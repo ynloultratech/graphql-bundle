@@ -12,6 +12,7 @@ namespace Ynlo\GraphQLBundle\Query\Node;
 
 use Doctrine\ORM\QueryBuilder;
 use GraphQL\Error\Error;
+use Ynlo\GraphQLBundle\Definition\Extension\PaginationDefinitionExtension;
 use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Model\ConnectionInterface;
 use Ynlo\GraphQLBundle\Model\NodeConnection;
@@ -59,8 +60,8 @@ class AllNodesConnection extends AllNodes
             throw new Error($error);
         }
 
-        if ($this->queryDefinition->hasMeta('connection')) {
-            $limitAllowed = $this->queryDefinition->getMeta('connection')->limit;
+        if ($this->queryDefinition->hasMeta('pagination')) {
+            $limitAllowed = $this->queryDefinition->getMeta('pagination')['limit'];
 
             if ($first > $limitAllowed || $last > $limitAllowed) {
                 $current = $first ?? $last;
@@ -108,14 +109,14 @@ class AllNodesConnection extends AllNodes
     protected function applyFilterByParent(QueryBuilder $qb, NodeInterface $root)
     {
         $parentField = null;
-        if ($this->queryDefinition->hasMeta('connection')) {
-            $parentField = $this->queryDefinition->getMeta('connection')->parentField;
+        if ($this->queryDefinition->hasMeta('pagination')) {
+            $parentField = $this->queryDefinition->getMeta('pagination')['parent_field'];
         }
         if (!$parentField) {
             throw new \RuntimeException(
                 sprintf(
                     'Missing parent field to filter "%s" by given parent.
-             The parentField should be specified in the connection.',
+             The "parent_field" should be specified.',
                     $this->queryDefinition->getName()
                 )
             );
@@ -126,7 +127,12 @@ class AllNodesConnection extends AllNodes
         }
 
         $paramName = 'root'.mt_rand();
-        $qb->andWhere(sprintf('%s.%s = :%s', $this->queryAlias, $parentField, $paramName))
-           ->setParameter($paramName, $root);
+        if ($this->queryDefinition->getMeta('pagination')['parent_relation'] === PaginationDefinitionExtension::MANY_TO_MANY) {
+            $qb->andWhere(sprintf(':%s MEMBER OF %s.%s', $paramName, $this->queryAlias, $parentField))
+               ->setParameter($paramName, $root);
+        } else {
+            $qb->andWhere(sprintf('%s.%s = :%s', $this->queryAlias, $parentField, $paramName))
+               ->setParameter($paramName, $root);
+        }
     }
 }
