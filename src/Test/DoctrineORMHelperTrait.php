@@ -12,6 +12,7 @@ namespace Ynlo\GraphQLBundle\Test;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Ynlo\GraphQLBundle\Model\ID;
 
@@ -31,7 +32,7 @@ trait DoctrineORMHelperTrait
     /**
      * @param string $class
      *
-     * @return ObjectRepository
+     * @return ObjectRepository|EntityRepository
      */
     public static function getRepository($class): ObjectRepository
     {
