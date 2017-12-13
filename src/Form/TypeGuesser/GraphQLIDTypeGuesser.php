@@ -11,10 +11,12 @@
 namespace Ynlo\GraphQLBundle\Form\TypeGuesser;
 
 use Doctrine\Common\Annotations\Reader;
+use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Symfony\Component\Form\FormTypeGuesserInterface;
 use Symfony\Component\Form\Guess\Guess;
 use Symfony\Component\Form\Guess\TypeGuess;
+use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Form\Type\IDType;
 
 /**
@@ -48,11 +50,18 @@ class GraphQLIDTypeGuesser implements FormTypeGuesserInterface
 
         $refClass = new \ReflectionClass($class);
         if ($refClass->hasProperty($property)) {
-            $annotations = $this->reader->getPropertyAnnotations($refClass->getProperty($property));
+            $refClass->getProperty($property);
+            $objectType = $this->reader->getClassAnnotation($refClass, Annotation\ObjectType::class);
+            if ($objectType) {
+                $annotations = $this->reader->getPropertyAnnotations($refClass->getProperty($property));
+                foreach ($annotations as $annotation) {
+                    if ($annotation instanceof ManyToOne) {
+                        return new TypeGuess(IDType::class, [], Guess::VERY_HIGH_CONFIDENCE);
+                    }
 
-            foreach ($annotations as $annotation) {
-                if ($annotation instanceof ManyToOne) {
-                    return new TypeGuess(IDType::class, [], Guess::VERY_HIGH_CONFIDENCE);
+                    if ($annotation instanceof ManyToMany) {
+                        return new TypeGuess(IDType::class, ['multiple' => true], Guess::VERY_HIGH_CONFIDENCE);
+                    }
                 }
             }
         }

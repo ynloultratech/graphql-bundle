@@ -37,6 +37,7 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  * @GraphQL\QueryGet()
  * @GraphQL\QueryGetAll()
  * @GraphQL\MutationAdd()
+ * @GraphQL\MutationUpdate()
  * @GraphQL\MutationDelete()
  */
 class Post implements NodeInterface, CommentableInterface, TimestampableInterface
@@ -74,6 +75,9 @@ class Post implements NodeInterface, CommentableInterface, TimestampableInterfac
      * @var Collection
      *
      * @ORM\ManyToMany(targetEntity="Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Category", inversedBy="posts")
+     *
+     * @Assert\NotNull()
+     * @Assert\Expression(expression="!this.getCategories().isEmpty()", message="Should have at least one category")
      */
     protected $categories;
 
@@ -236,8 +240,8 @@ class Post implements NodeInterface, CommentableInterface, TimestampableInterfac
     /**
      * @param Collection $categories
      */
-    public function setCategories(Collection $categories)
+    public function setCategories($categories)
     {
-        $this->categories = $categories;
+        $this->categories = new ArrayCollection($categories);
     }
 }

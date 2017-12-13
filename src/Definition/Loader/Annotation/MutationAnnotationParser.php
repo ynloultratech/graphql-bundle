@@ -23,7 +23,6 @@ use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\MutationDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
-use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Form\Type\GraphQLType;
 use Ynlo\GraphQLBundle\Form\Type\IDType;
 
@@ -204,7 +203,7 @@ Must check `constraintViolations` in the payload to get validation messages.'
                 $this->endpoint->addType($child);
                 $field->setType($child->getName());
             } else {
-                $field->setType($this->getFormType($formField));
+                $this->resolveFormFieldDefinition($field, $formField);
             }
 
             $inputObject->addField($field);
@@ -214,39 +213,54 @@ Must check `constraintViolations` in the payload to get validation messages.'
     }
 
     /**
-     * @param FormInterface $form
-     *
-     * @return string
+     * @param FieldDefinition $field
+     * @param FormInterface   $form
      */
-    public function getFormType(FormInterface $form)
+    public function resolveFormFieldDefinition(FieldDefinition $field, FormInterface $form)
     {
+        $type = null;
         $resolver = $form->getConfig()->getType()->getOptionsResolver();
         if ($resolver->hasDefault('graphql_type')) {
-            return $resolver->resolve([])['graphql_type'];
+            $type = $resolver->resolve([])['graphql_type'];
         }
 
         if (is_a($form->getConfig()->getType()->getInnerType(), GraphQLType::class, true)) {
-            return $form->getConfig()->getOptions()['graphql_type'];
+            $type = $form->getConfig()->getOptions()['graphql_type'];
         }
 
         if (is_a($form->getConfig()->getType()->getInnerType(), IDType::class, true)) {
-            return Type::ID;
+            if ($form->getConfig()->hasOption('multiple') && $form->getConfig()->getOption('multiple')) {
+                $field->setList(true);
+            }
+            $type = Type::ID;
         }
 
         if (is_a($form->getConfig()->getType()->getInnerType(), TextType::class, true)) {
-            return Type::STRING;
+            $type = Type::STRING;
         }
 
         if (is_a($form->getConfig()->getType()->getInnerType(), EmailType::class, true)) {
-            return Type::STRING;
+            $type = Type::STRING;
         }
 
         if (is_a($form->getConfig()->getType()->getInnerType(), CheckboxType::class, true)) {
-            return Type::BOOLEAN;
+            $type = Type::BOOLEAN;
         }
 
         if (is_a($form->getConfig()->getType()->getInnerType(), IntegerType::class, true)) {
-            return Type::INT;
+            $type = Type::INT;
         }
+
+        if (!$type) {
+            $error = sprintf(
+                'The field "%s" in the parent form "%s" does not have a valid type. 
+                If your are using a custom type, must define a option called "graphql_type" to resolve the form to a valid GraphQL type',
+                $form->getName(),
+                $form->getParent()->getName()
+            );
+            throw new \InvalidArgumentException($error);
+        }
+
+        $field->setType($type);
     }
 }

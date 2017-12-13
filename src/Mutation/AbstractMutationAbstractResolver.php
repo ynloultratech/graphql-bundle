@@ -36,7 +36,6 @@ abstract class AbstractMutationAbstractResolver extends AbstractResolver
 
         $this->preValidate($input);
         $form->submit($input, false);
-
         $data = $form->getData();
         $this->onSubmit($input, $data);
 

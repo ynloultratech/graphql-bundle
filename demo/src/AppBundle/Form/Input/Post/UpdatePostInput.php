@@ -10,40 +10,27 @@
 
 namespace Ynlo\GraphQLBundle\Demo\AppBundle\Form\Input\Post;
 
-use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
-use Symfony\Component\OptionsResolver\OptionsResolver;
-use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Post;
 
 /**
- * AddPostInput
+ * UpdatePostInput
  */
-class AddPostInput extends AbstractType
+class UpdatePostInput extends AddPostInput
 {
     /**
      * {@inheritdoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder
-            ->add('title')
-            ->add('body')
-            ->add('status')
-            ->add('categories')
-            ->add('author');
-    }
+        $builder->add('id');
 
-    /**
-     * {@inheritdoc}
-     */
-    public function configureOptions(OptionsResolver $resolver)
-    {
-        parent::configureOptions($resolver);
+        parent::buildForm($builder, $options);
 
-        $resolver->setDefaults(
-            [
-                'data_class' => Post::class,
-            ]
-        );
+        /** @var FormBuilderInterface $field */
+        foreach ($builder->all() as $field) {
+            $field->setRequired(false);
+        }
+
+        $builder->get('id')->setRequired(true);
     }
 }

@@ -11,6 +11,7 @@
 namespace Ynlo\GraphQLBundle\Demo\AppBundle\Tests;
 
 use Faker\Factory;
+use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Category;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Post;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Type\PostStatusType;
 use Ynlo\GraphQLBundle\Test\ApiTestCase;
@@ -33,7 +34,11 @@ class PostTest extends ApiTestCase
                     'title' => $title = $faker->sentence(),
                     'body' => $body = $faker->paragraph,
                     'status' => self::literalValue(PostStatusType::PUBLISH),
-                    'authorId' => self::encodeID('User', 1),
+                    'author' => self::encodeID('User', 1),
+                    'categories' => [
+                        self::encodeID('Category', 1),
+                        self::encodeID('Category', 2),
+                    ],
                     'clientMutationId' => (string) $clientMutationId = mt_rand(),
                 ],
             ],
@@ -43,6 +48,9 @@ class PostTest extends ApiTestCase
                         'title',
                         'body',
                         'status',
+                        'categories' => [
+                            'name',
+                        ],
                     ],
                 ],
                 'clientMutationId',
@@ -54,6 +62,12 @@ class PostTest extends ApiTestCase
         self::assertJsonPathEquals($body, 'data.posts.add.node.body');
         self::assertJsonPathEquals(PostStatusType::PUBLISH, 'data.posts.add.node.status');
         self::assertJsonPathEquals($clientMutationId, 'data.posts.add.clientMutationId');
+
+        $category1 = self::getRepository(Category::class)->find(1);
+        self::assertJsonPathEquals($category1->getName(), 'data.posts.add.node.categories[0].name');
+
+        $category2 = self::getRepository(Category::class)->find(2);
+        self::assertJsonPathEquals($category2->getName(), 'data.posts.add.node.categories[1].name');
     }
 
     /**

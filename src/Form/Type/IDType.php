@@ -14,6 +14,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\OptionsResolver\OptionsResolver;
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
 use Ynlo\GraphQLBundle\Form\DataTransformer\IDToNodeTransformer;
 
@@ -52,6 +53,14 @@ class IDType extends AbstractType
     {
         $transformer = new IDToNodeTransformer($this->em, $this->defRegistry->getEndpoint());
         $builder->addModelTransformer($transformer);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function configureOptions(OptionsResolver $resolver)
+    {
+        $resolver->setDefault('multiple', false);
     }
 
     /**

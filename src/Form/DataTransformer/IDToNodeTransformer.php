@@ -48,17 +48,26 @@ class IDToNodeTransformer implements DataTransformerInterface
     /**
      * Transforms an object (issue) to a string (number).
      *
-     * @param  NodeInterface|null $node
+     * @param NodeInterface|NodeInterface[] $node
      *
      * @return string
      */
     public function transform($node)
     {
-        if (null === $node) {
-            return '';
+        if (!$node) {
+            return $node;
         }
 
-        $nodeType = $this->endpoint->getTypeForClass(ClassUtils::getRealClass($node));
+        if (is_array($node) || $node instanceof \Traversable) {
+            $ids = [];
+            foreach ($node as $n) {
+                $ids[] = $this->transform($n);
+            }
+
+            return $ids;
+        }
+
+        $nodeType = $this->endpoint->getTypeForClass(ClassUtils::getClass($node));
 
         return ID::encode($nodeType, $node->getId());
     }
@@ -66,18 +75,26 @@ class IDToNodeTransformer implements DataTransformerInterface
     /**
      * Transforms a string (id) to an object (node).
      *
-     * @param  string $globalId
+     * @param string|string[] $globalId
      *
-     * @return NodeInterface|null
+     * @return mixed
      *
      * @throws TransformationFailedException if object (issue) is not found.
      */
     public function reverseTransform($globalId)
     {
-        if (!$globalId) {
-            return null;
+        if (!$globalId || is_object($globalId)) {
+            return $globalId;
         }
 
+        if (is_array($globalId)) {
+            $nodes = [];
+            foreach ($globalId as $id) {
+                $nodes[] = $this->reverseTransform($id);
+            }
+
+            return $nodes;
+        }
         $id = ID::createFromString($globalId);
 
         if (!$id || !$id->getNodeType() || !$this->endpoint->hasType($id->getNodeType())) {
