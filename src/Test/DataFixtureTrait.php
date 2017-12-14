@@ -52,6 +52,6 @@ trait DataFixtureTrait
         $em = self::getDoctrine()->getManager();
         $em->refresh($reference);
 
-        return clone $reference;
+        return $reference;
     }
 }
