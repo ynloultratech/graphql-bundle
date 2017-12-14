@@ -66,6 +66,15 @@ class QueryAnnotationParser implements AnnotationParserInterface
                 $query->setType($objectDefinition->getName());
                 $query->setNode($objectDefinition->getName());
             } else {
+                //avoid throw Exception when the schema is empty
+                //when the schema is empty the NodeInterface has not been loaded
+                //then the node(id) and nodes(ids) queries fails
+                if ('Node' === $nodeType) {
+                    $endpoint->removeQuery($query->getName());
+
+                    return;
+                }
+
                 $error = sprintf('Does not exist any valid type for class "%s"', $refClass->getName());
                 throw new \RuntimeException($error);
             }
@@ -89,10 +98,6 @@ class QueryAnnotationParser implements AnnotationParserInterface
         $query->setResolver($annotation->resolver ?? $refClass->getName());
         $query->setDeprecationReason($annotation->deprecationReason);
         $query->setDescription($annotation->description);
-
-        if (!$endpoint->hasQuery($query->getName())) {
-            $endpoint->addQuery($query);
-        }
 
         foreach ($annotation->options as $option => $value) {
             $query->setMeta($option, $value);

@@ -79,6 +79,10 @@ class SchemaCompiler implements ContainerAwareInterface
             $config['mutation'] = Types::get('Mutation');
         }
 
-        return new Schema($config);
+        if (isset($config['query']) || isset($config['mutation'])) {
+            return new Schema($config);
+        }
+
+        throw new \RuntimeException('Your GraphQL schema is empty. Create your first object and query and try again');
     }
 }
