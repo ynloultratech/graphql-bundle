@@ -58,8 +58,7 @@ services:
         tags:
             - { name: 'graphql.definition_annotation_parser' }
 
-    Ynlo\GraphQLBundle\Definition\Loader\Annotation\FieldConnectionAnnotationParser:
-        arguments: ['@Ynlo\GraphQLBundle\Extension\ExtensionManager']
+    Ynlo\GraphQLBundle\Definition\Loader\Annotation\StandaloneFieldParser:
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:

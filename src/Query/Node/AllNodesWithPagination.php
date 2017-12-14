@@ -110,7 +110,7 @@ class AllNodesWithPagination extends AllNodes
     {
         $parentField = null;
         if ($this->queryDefinition->hasMeta('pagination')) {
-            $parentField = $this->queryDefinition->getMeta('pagination')['parent_field'];
+            $parentField = $this->queryDefinition->getMeta('pagination')['parent_field'] ?? null;
         }
         if (!$parentField) {
             throw new \RuntimeException(

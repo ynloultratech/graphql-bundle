@@ -152,7 +152,12 @@ class PaginationDefinitionExtension extends AbstractDefinitionExtension
             $definition->addArgument($orderBy);
         }
 
-        $target = $config['target'];
+        $target = null;
+        if ($definition instanceof FieldDefinition) {
+            $target = $definition->getType();
+        }
+
+        $target = $config['target'] ?? $target;
         if ($endpoint->hasTypeForClass($target)) {
             $target = $endpoint->getTypeForClass($target);
         }

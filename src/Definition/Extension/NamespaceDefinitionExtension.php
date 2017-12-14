@@ -16,7 +16,6 @@ use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\MutationDefinition;
-use Ynlo\GraphQLBundle\Definition\NamespaceAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\NodeAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
