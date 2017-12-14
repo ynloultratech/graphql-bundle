@@ -24,52 +24,52 @@ services:
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
-            - { name: 'graphql.definition_resolver', priority: 200}
+            - { name: 'graphql.definition_annotation_parser', priority: 200}
 
 #    Ynlo\GraphQLBundle\Definition\Loader\Annotation\QueryGetNodeAnnotationParser:
 #        calls:
 #            - [ setReader, ['@annotations.reader']]
 #        tags:
-#            - { name: 'graphql.definition_resolver', priority: 150 }
+#            - { name: 'graphql.definition_annotation_parser', priority: 150 }
 #
 #    Ynlo\GraphQLBundle\Definition\Loader\Annotation\QueryGetAllNodesAnnotationParser:
 #        calls:
 #            - [ setReader, ['@annotations.reader']]
 #        tags:
-#            - { name: 'graphql.definition_resolver', priority: 150 }
+#            - { name: 'graphql.definition_annotation_parser', priority: 150 }
 
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\QueryAnnotationParser:
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
-            - { name: 'graphql.definition_resolver', priority: 100 }
+            - { name: 'graphql.definition_annotation_parser', priority: 100 }
 
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\MutationAnnotationParser:
         arguments: ['@form.factory']
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
-            - { name: 'graphql.definition_resolver', priority: 100 }
+            - { name: 'graphql.definition_annotation_parser', priority: 100 }
 
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\CRUDAnnotationParser:
         arguments: ['@Ynlo\GraphQLBundle\Definition\Loader\Annotation\QueryAnnotationParser','@Ynlo\GraphQLBundle\Definition\Loader\Annotation\MutationAnnotationParser']
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
-            - { name: 'graphql.definition_resolver' }
+            - { name: 'graphql.definition_annotation_parser' }
 
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\FieldConnectionAnnotationParser:
         arguments: ['@Ynlo\GraphQLBundle\Extension\ExtensionManager']
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
-            - { name: 'graphql.definition_resolver', priority: 50 }
+            - { name: 'graphql.definition_annotation_parser', priority: 50 }
 
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\DoctrineORMNodeChecker:
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
-            - { name: 'graphql.definition_resolver' }
+            - { name: 'graphql.definition_annotation_parser' }
 
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\FieldDecorator\GraphQLFieldDefinitionDecorator:
         calls:

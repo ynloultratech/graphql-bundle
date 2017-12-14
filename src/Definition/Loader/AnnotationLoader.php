@@ -61,7 +61,7 @@ class AnnotationLoader implements DefinitionLoaderInterface
         /** @var Definition $resolversServiceDefinition */
         $resolverDefinitions = $this->container
             ->get(TaggedServices::class)
-            ->findTaggedServices('graphql.definition_resolver');
+            ->findTaggedServices('graphql.definition_annotation_parser');
 
         $resolvers = [];
         foreach ($resolverDefinitions as $resolverDefinition) {
