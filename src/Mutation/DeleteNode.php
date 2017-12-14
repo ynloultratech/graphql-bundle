@@ -10,32 +10,34 @@
 
 namespace Ynlo\GraphQLBundle\Mutation;
 
+use Ynlo\GraphQLBundle\Error\NodeNotFoundException;
 use Ynlo\GraphQLBundle\Extension\ExtensionManager;
-use Ynlo\GraphQLBundle\Model\AddNodePayload;
+use Ynlo\GraphQLBundle\Model\DeleteNodePayload;
+use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
 
 /**
- * Class AddNodeMutation
+ * Class DeleteNodeMutation
  */
-class AddNodeMutation extends AbstractMutationAbstractResolver
+class DeleteNode extends AbstractMutationResolver
 {
     /**
      * {@inheritdoc}
      */
     protected function process(&$data)
     {
-        $this->prePersist($data);
+        $this->preDelete($data);
         foreach ($this->container->get(ExtensionManager::class)->getExtensions() as $extension) {
-            $extension->prePersist($data, $this, $this->context);
+            $extension->preDelete($data, $this, $this->context);
         }
 
-        $this->getManager()->persist($data);
+        $this->getManager()->remove($data);
         $this->getManager()->flush();
 
-        $this->postPersist($data);
+        $this->postDelete($data);
         foreach ($this->container->get(ExtensionManager::class)->getExtensions() as $extension) {
-            $extension->postPersist($data, $this, $this->context);
+            $extension->postDelete($data, $this, $this->context);
         }
     }
 
@@ -44,17 +46,28 @@ class AddNodeMutation extends AbstractMutationAbstractResolver
      */
     protected function returnPayload($data, ConstraintViolationList $violations, $inputSource)
     {
-        if ($violations->count()) {
-            $data = null;
+        return new DeleteNodePayload(
+            $inputSource['id'] ? ID::createFromString($inputSource['id']) : null,
+            $inputSource['clientMutationId'] ?? null
+        );
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    protected function onSubmit($inputSource, &$normData)
+    {
+        if ($normData instanceof NodeInterface && $normData->getId()) {
+            return;
         }
 
-        return new AddNodePayload($data, $violations->all(), $inputSource['clientMutationId'] ?? null);
+        throw new NodeNotFoundException();
     }
 
     /**
      * @param NodeInterface $node
      */
-    protected function prePersist(NodeInterface $node)
+    protected function preDelete(NodeInterface $node)
     {
         //override
     }
@@ -62,7 +75,7 @@ class AddNodeMutation extends AbstractMutationAbstractResolver
     /**
      * @param NodeInterface $node
      */
-    protected function postPersist(NodeInterface $node)
+    protected function postDelete(NodeInterface $node)
     {
         //override
     }

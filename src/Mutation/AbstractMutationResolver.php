@@ -22,7 +22,7 @@ use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
  * Base class for mutations
  * Implement the method "process()" and "returnPayload()" is enough in many scenarios
  */
-abstract class AbstractMutationAbstractResolver extends AbstractResolver
+abstract class AbstractMutationResolver extends AbstractResolver
 {
     /**
      * @param array $input

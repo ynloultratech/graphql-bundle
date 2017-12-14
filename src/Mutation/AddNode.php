@@ -10,45 +10,33 @@
 
 namespace Ynlo\GraphQLBundle\Mutation;
 
-use Ynlo\GraphQLBundle\Error\NodeNotFoundException;
 use Ynlo\GraphQLBundle\Extension\ExtensionManager;
+use Ynlo\GraphQLBundle\Model\AddNodePayload;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
-use Ynlo\GraphQLBundle\Model\UpdateNodePayload;
 use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
 
 /**
- * Class UpdateNodeMutation
+ * Class AddNode
  */
-class UpdateNodeMutation extends AbstractMutationAbstractResolver
+class AddNode extends AbstractMutationResolver
 {
     /**
      * {@inheritdoc}
      */
     protected function process(&$data)
     {
-        $this->preUpdate($data);
+        $this->prePersist($data);
         foreach ($this->container->get(ExtensionManager::class)->getExtensions() as $extension) {
-            $extension->preUpdate($data, $this, $this->context);
+            $extension->prePersist($data, $this, $this->context);
         }
 
+        $this->getManager()->persist($data);
         $this->getManager()->flush();
 
-        $this->postUpdate($data);
+        $this->postPersist($data);
         foreach ($this->container->get(ExtensionManager::class)->getExtensions() as $extension) {
-            $extension->postUpdate($data, $this, $this->context);
+            $extension->postPersist($data, $this, $this->context);
         }
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    protected function onSubmit($inputSource, &$normData)
-    {
-        if ($normData instanceof NodeInterface && $normData->getId()) {
-            return;
-        }
-
-        throw new NodeNotFoundException();
     }
 
     /**
@@ -60,13 +48,13 @@ class UpdateNodeMutation extends AbstractMutationAbstractResolver
             $data = null;
         }
 
-        return new UpdateNodePayload($data, $violations->all(), $inputSource['clientMutationId'] ?? null);
+        return new AddNodePayload($data, $violations->all(), $inputSource['clientMutationId'] ?? null);
     }
 
     /**
      * @param NodeInterface $node
      */
-    protected function preUpdate(NodeInterface $node)
+    protected function prePersist(NodeInterface $node)
     {
         //override
     }
@@ -74,7 +62,7 @@ class UpdateNodeMutation extends AbstractMutationAbstractResolver
     /**
      * @param NodeInterface $node
      */
-    protected function postUpdate(NodeInterface $node)
+    protected function postPersist(NodeInterface $node)
     {
         //override
     }

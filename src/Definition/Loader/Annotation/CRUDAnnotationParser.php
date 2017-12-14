@@ -20,9 +20,9 @@ use Ynlo\GraphQLBundle\Model\AddNodePayload;
 use Ynlo\GraphQLBundle\Model\DeleteNodePayload;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Model\UpdateNodePayload;
-use Ynlo\GraphQLBundle\Mutation\AddNodeMutation;
-use Ynlo\GraphQLBundle\Mutation\DeleteNodeMutation;
-use Ynlo\GraphQLBundle\Mutation\UpdateNodeMutation;
+use Ynlo\GraphQLBundle\Mutation\AddNode;
+use Ynlo\GraphQLBundle\Mutation\DeleteNode;
+use Ynlo\GraphQLBundle\Mutation\UpdateNode;
 use Ynlo\GraphQLBundle\Query\Node\AllNodesWithPagination;
 use Ynlo\GraphQLBundle\Query\Node\Node;
 use Ynlo\GraphQLBundle\Query\Node\Nodes;
@@ -237,7 +237,7 @@ class CRUDAnnotationParser implements AnnotationParserInterface
         }
 
         $mutation->options = array_merge(['form' => ['type' => $formType, 'options' => $options]], $mutation->options);
-        $resolverReflection = new \ReflectionClass(AddNodeMutation::class);
+        $resolverReflection = new \ReflectionClass(AddNode::class);
 
         $resolver = ClassUtils::applyNamingConvention($bundleNamespace, 'Mutation', $definition->getName(), $mutation->name);
         if (class_exists($resolver)) {
@@ -288,7 +288,7 @@ class CRUDAnnotationParser implements AnnotationParserInterface
         }
 
         $mutation->options = array_merge(['form' => ['type' => $formType, 'options' => $options]], $mutation->options);
-        $resolverReflection = new \ReflectionClass(UpdateNodeMutation::class);
+        $resolverReflection = new \ReflectionClass(UpdateNode::class);
 
         $resolver = ClassUtils::applyNamingConvention($bundleNamespace, 'Mutation', $definition->getName(), $mutation->name);
         if (class_exists($resolver)) {
@@ -313,7 +313,7 @@ class CRUDAnnotationParser implements AnnotationParserInterface
         }
         $mutation->node = $mutation->node ?? $definition->getName();
         $mutation->options = array_merge(['form' => ['type' => NodeDeleteInput::class]], $mutation->options);
-        $resolverReflection = new \ReflectionClass(DeleteNodeMutation::class);
+        $resolverReflection = new \ReflectionClass(DeleteNode::class);
 
         $resolver = ClassUtils::applyNamingConvention($bundleNamespace, 'Mutation', $definition->getName(), $mutation->name);
         if (class_exists($resolver)) {
