@@ -13,12 +13,12 @@ namespace Ynlo\GraphQLBundle\Demo\AppBundle\Query\User;
 use Doctrine\ORM\QueryBuilder;
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\User;
-use Ynlo\GraphQLBundle\Query\Node\AllNodesConnection;
+use Ynlo\GraphQLBundle\Query\Node\AllNodesWithPagination;
 
 /**
  * @GraphQL\Query(list=true, options={"pagination": {"limit": 30 }})
  */
-class Admins extends AllNodesConnection
+class Admins extends AllNodesWithPagination
 {
     /**
      * {@inheritdoc}

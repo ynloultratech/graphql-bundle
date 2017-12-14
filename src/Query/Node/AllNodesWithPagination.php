@@ -24,7 +24,7 @@ use Ynlo\GraphQLBundle\Pagination\PaginationRequest;
 /**
  * Base class to fetch nodes
  */
-class AllNodesConnection extends AllNodes
+class AllNodesWithPagination extends AllNodes
 {
     /**
      * @param array[] $args

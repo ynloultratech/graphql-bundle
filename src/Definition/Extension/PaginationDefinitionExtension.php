@@ -21,7 +21,7 @@ use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Model\OrderBy;
-use Ynlo\GraphQLBundle\Query\Node\AllNodesConnection;
+use Ynlo\GraphQLBundle\Query\Node\AllNodesWithPagination;
 
 /**
  * Convert a simple return of nodes into a paginated collection with edges
@@ -206,7 +206,7 @@ class PaginationDefinitionExtension extends AbstractDefinitionExtension
         $definition->setMeta('pagination', $config);
 
         if (!$definition->getResolver()) {
-            $definition->setResolver(AllNodesConnection::class);
+            $definition->setResolver(AllNodesWithPagination::class);
         }
     }
 }

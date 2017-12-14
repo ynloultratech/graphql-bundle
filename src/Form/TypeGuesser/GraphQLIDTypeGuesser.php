@@ -30,8 +30,6 @@ class GraphQLIDTypeGuesser implements FormTypeGuesserInterface
     protected $reader;
 
     /**
-     * ConnectionDefinitionBuilder constructor.
-     *
      * @param Reader $reader
      */
     public function __construct(Reader $reader)

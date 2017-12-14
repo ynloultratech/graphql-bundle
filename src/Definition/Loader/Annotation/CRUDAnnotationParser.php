@@ -23,7 +23,7 @@ use Ynlo\GraphQLBundle\Model\UpdateNodePayload;
 use Ynlo\GraphQLBundle\Mutation\AddNodeMutation;
 use Ynlo\GraphQLBundle\Mutation\DeleteNodeMutation;
 use Ynlo\GraphQLBundle\Mutation\UpdateNodeMutation;
-use Ynlo\GraphQLBundle\Query\Node\AllNodesConnection;
+use Ynlo\GraphQLBundle\Query\Node\AllNodesWithPagination;
 use Ynlo\GraphQLBundle\Query\Node\Node;
 use Ynlo\GraphQLBundle\Query\Node\Nodes;
 use Ynlo\GraphQLBundle\Util\ClassUtils;
@@ -207,7 +207,7 @@ class CRUDAnnotationParser implements AnnotationParserInterface
         $query->name = $query->name ?? 'all'.Inflector::pluralize(ucfirst($definition->getName()));
         $query->node = $query->node ?? $definition->getName();
         $query->options = array_merge(['pagination' => true], $query->options);
-        $resolverReflection = new \ReflectionClass(AllNodesConnection::class);
+        $resolverReflection = new \ReflectionClass(AllNodesWithPagination::class);
 
         $resolver = ClassUtils::applyNamingConvention($bundleNamespace, 'Query', $definition->getName(), $query->name);
         if (class_exists($resolver)) {
