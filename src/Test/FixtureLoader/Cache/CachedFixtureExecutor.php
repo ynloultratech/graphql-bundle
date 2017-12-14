@@ -14,8 +14,6 @@ use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\FixtureInterface;
 use Doctrine\Common\Persistence\ObjectManager;
 use function DeepCopy\deep_copy;
-use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Category;
-use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Post;
 
 /**
  * This executor work with a cache of fixtures to load fixtures only once
@@ -40,15 +38,12 @@ class CachedFixtureExecutor extends ORMExecutor
 
         if ($manager instanceof CachedFixtureEntityManager) {
             if (isset(self::$loadedFixtures[$fixtureClass])) {
-                $fixtures = deep_copy(self::$loadedFixtures);
-                foreach ($fixtures as $loadedFixture) {
-                    foreach ($loadedFixture as $oid => $object) {
-                        $manager->persistReal($object);
-                        if ($this->referenceRepository instanceof CachedReferenceRepository) {
-                            $this->referenceRepository->setReferenceByObjectId($oid, $object);
-                        }
+                $objects = deep_copy(self::$loadedFixtures[$fixtureClass]);
+                foreach ($objects as $oid => $object) {
+                    $manager->persistReal($object);
+                    if ($this->referenceRepository instanceof CachedReferenceRepository) {
+                        $this->referenceRepository->setReferenceByObjectId($oid, $object);
                     }
-                    $manager->flushReal();
                 }
             } else {
                 parent::load($manager, $fixture);
