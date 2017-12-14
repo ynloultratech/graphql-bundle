@@ -56,7 +56,7 @@ class Configuration implements ConfigurationInterface
                                'Group GraphQL schema using namespaced schemas. 
 On large schemas is  helpful to keep schemas grouped by bundle and node'
                            )
-                           ->canBeDisabled()
+                           ->canBeEnabled()
                            ->addDefaultsIfNotSet()
                            ->children();
 
@@ -87,7 +87,7 @@ Can be used to group multiple bundles or publish a bundle with a different name'
         $nodes = $namespaces->arrayNode('nodes')
                             ->info('Group queries and mutations of the same node into a node specific schema definition.')
                             ->addDefaultsIfNotSet()
-                            ->canBeDisabled()
+                            ->canBeEnabled()
                             ->children();
 
         $nodes->scalarNode('query_suffix')
