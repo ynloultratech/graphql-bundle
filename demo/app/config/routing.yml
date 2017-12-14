@@ -3,5 +3,5 @@ api:
       prefix:   /
 
 api_explore:
-      resource: '@YnloGraphQLBundle/Resources/config/routing/explore.yml'
-      prefix:   /
+      resource: '@YnloGraphQLBundle/Resources/config/routing/explorer.yml'
+      prefix:   /explorer
