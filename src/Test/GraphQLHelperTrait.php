@@ -69,6 +69,16 @@ trait GraphQLHelperTrait
     }
 
     /**
+     * @param string $globalID
+     *
+     * @return ID
+     */
+    protected static function decodeID($globalID):ID
+    {
+        return ID::createFromString($globalID);
+    }
+
+    /**
      * @param string $value
      *
      * @return object

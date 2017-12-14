@@ -88,7 +88,7 @@ class Fixtures extends Fixture
             $category = new Category();
             $category->setName($categoryName);
             $manager->persist($category);
-            $this->setReference("category$index", $category);
+            $this->setReference("category".($index + 1), $category);
         }
     }
 
@@ -104,7 +104,7 @@ class Fixtures extends Fixture
             $post->setBody($this->faker->paragraph(\random_int(3, 10)));
             $post->setAuthor($author);
 
-            $cat = \random_int(0, 4);
+            $cat = \random_int(1, 5);
             $post->getCategories()->add($this->getReference('category'.$cat));
             if ($cat > 2 && $cat < 4) {
                 $post->getCategories()->add($this->getReference('category'.($cat + 1)));
@@ -125,7 +125,6 @@ class Fixtures extends Fixture
             }
 
             $this->setReference("post$i", $post);
-
         }
     }
 }

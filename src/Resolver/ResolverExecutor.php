@@ -132,13 +132,6 @@ class ResolverExecutor implements ContainerAwareInterface
                 $resolver->setContext($resolveContext);
             }
 
-            //A very strange issue are causing the fail of some tests without this clear
-            //everything indicates that is a issue with cached entities through test executions
-            //any clear on tests or during load fixtures does not have any effect
-            //I'm not sure if this patch has any other side effect
-            //Reproduce: comment the following line and run all integration tests
-            //FIXME: find the cause of the issue and fix it
-            $this->container->get('doctrine')->getManager()->clear();
             $params = $this->prepareMethodParameters($refMethod, $args);
 
             return $refMethod->invokeArgs($resolver, $params);

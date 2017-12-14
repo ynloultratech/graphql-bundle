@@ -32,7 +32,8 @@
     "symfony/symfony": "^3.3",
     "webonyx/graphql-php": "^0.11.4",
     "doctrine/annotations": "^1.5",
-    "doctrine/common": "^2.8"
+    "doctrine/common": "^2.8",
+    "myclabs/deep-copy": "^1.7"
   },
   "require-dev": {
     "phpunit/phpunit": "^6.2",
