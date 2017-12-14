@@ -21,8 +21,6 @@ use Ynlo\GraphQLBundle\Definition\Extension\DefinitionExtensionInterface;
 use Ynlo\GraphQLBundle\Definition\Extension\DefinitionExtensionManager;
 use Ynlo\GraphQLBundle\Definition\Loader\DefinitionLoaderInterface;
 use Ynlo\GraphQLBundle\Definition\MetaAwareInterface;
-use Ynlo\GraphQLBundle\Definition\MutationDefinition;
-use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 
 /**
  * DefinitionRegistry
@@ -112,6 +110,7 @@ class DefinitionRegistry
                     }
                 }
             }
+
             foreach ($endpoint->allQueries() as $query) {
                 $this->configureDefinition($extension, $query, $endpoint);
                 foreach ($query->getArguments() as $argument) {
@@ -154,12 +153,10 @@ class DefinitionRegistry
                     $error = sprintf('Error compiling schema definition "%s", %s', $definition->getName(), $exception->getMessage());
                     throw new \RuntimeException($error, 0, $exception);
                 }
-
             }
         }
         $extension->configure($definition, $endpoint, $config);
     }
-
 
 
     /**

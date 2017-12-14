@@ -10,34 +10,34 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Traits;
 
-/**
- * Trait ExecutableDefinitionTrait
- */
-trait ExecutableDefinitionTrait
-{
-    use DefinitionTrait;
-    use ArgumentAwareTrait;
-    use DeprecateTrait;
-    use TypeAwareDefinitionTrait;
+use Ynlo\GraphQLBundle\Definition\NodeAwareDefinitionInterface;
 
-    protected $resolver;
+/**
+ * Trait TypeAwareDefinitionTrait
+ */
+trait NodeAwareDefinitionTrait
+{
+    /**
+     * @var string
+     */
+    protected $node;
 
     /**
-     * @return null|string
+     * @return mixed
      */
-    public function getResolver():?string
+    public function getNode():?string
     {
-        return $this->resolver;
+        return $this->node;
     }
 
     /**
-     * @param null|string $resolver
+     * @param string $node
      *
-     * @return $this
+     * @return NodeAwareDefinitionInterface
      */
-    public function setResolver(?string $resolver)
+    public function setNode(?string $node): NodeAwareDefinitionInterface
     {
-        $this->resolver = $resolver;
+        $this->node = $node;
 
         return $this;
     }

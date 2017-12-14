@@ -25,7 +25,7 @@ class NodeDeleteInput extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder->add('id');
+        $builder->add('id', null, ['required' => true]);
     }
 
     /**

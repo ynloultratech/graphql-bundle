@@ -10,7 +10,6 @@
 
 namespace Ynlo\GraphQLBundle\Mutation;
 
-use Mockery\Exception;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Validator\ConstraintViolation as SymfonyConstraintViolation;
@@ -32,15 +31,27 @@ abstract class AbstractMutationAbstractResolver extends AbstractResolver
      */
     public function __invoke($input)
     {
-        $form = $this->createDefinitionForm($input)->getForm();
+        $formBuilder = $this->createDefinitionForm($input);
+
+        $form = null;
+        if ($formBuilder) {
+            $form = $formBuilder->getForm();
+        }
 
         $this->preValidate($input);
-        $form->submit($input, false);
-        $data = $form->getData();
+        if ($form) {
+            $form->submit($input, false);
+            $data = $form->getData();
+        } else {
+            $data = $input;
+        }
+
         $this->onSubmit($input, $data);
 
         $violations = new ConstraintViolationList();
-        $this->extractFormErrors($form, $violations);
+        if ($form) {
+            $this->extractFormErrors($form, $violations);
+        }
         $this->postValidation($data, $violations);
 
         $dryRun = $input['dryRun'] ?? false;
@@ -48,7 +59,10 @@ abstract class AbstractMutationAbstractResolver extends AbstractResolver
         if ($dryRun) {
             $data = null;
         } else {
-            if ($form->isSubmitted() && $form->isValid() && !$violations->count()) {
+            if ((!$form && !$violations->count())
+                || ($form->isSubmitted() && $form->isValid() && !$violations->count())
+            ) {
+
                 $this->process($data);
             }
         }
@@ -78,25 +92,27 @@ abstract class AbstractMutationAbstractResolver extends AbstractResolver
     /**
      * @param mixed $data
      *
-     * @return FormBuilderInterface
+     * @return FormBuilderInterface|null
      */
-    protected function createDefinitionForm($data): FormBuilderInterface
+    protected function createDefinitionForm($data): ?FormBuilderInterface
     {
-        if (!$this->context->getDefinition()->getMeta('form')) {
-            throw new \RuntimeException(sprintf('Can`t find a valid form for %s', $this->context->getDefinition()->getName()));
+        if (!$this->context->getDefinition()->hasMeta('form')) {
+            return null;
         }
 
-        $form = $this->context->getDefinition()->getMeta('form');
+        $formConfig = $this->context->getDefinition()->getMeta('form') ?? [];
+        $formType = $formConfig['type'] ?? null;
+        if (!$formConfig || !$formType) {
+            throw new \RuntimeException(sprintf('Can`t find a valid form for %s', $this->context->getDefinition()->getName()));
+        }
 
         $options = [
             'csrf_protection' => false,
             'allow_extra_fields' => true,
         ];
-        if ($this->context->getDefinition()->hasMeta('form_options')) {
-            $options = array_merge($options, $this->context->getDefinition()->getMeta('form_options'));
-        }
 
-        $form = $this->createFormBuilder($form, $data, $options);
+        $options = array_merge($options, $formConfig['options'] ?? []);
+        $form = $this->createFormBuilder($formType, $data, $options);
         $viewTransformer = new DataWithIdToNodeTransformer($this->getManager(), $this->context->getEndpoint());
         $form->addViewTransformer($viewTransformer);
 

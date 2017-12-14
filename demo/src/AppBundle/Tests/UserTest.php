@@ -37,14 +37,12 @@ class UserTest extends ApiTestCase
                 ],
                 'edges' => [
                     'node' => [
-                        '... on User' => [
-                            'id',
-                            'login',
-                            'profile' => [
-                                'phone',
-                                'address' => [
-                                    'zipCode',
-                                ],
+                        'id',
+                        'login',
+                        'profile' => [
+                            'phone',
+                            'address' => [
+                                'zipCode',
                             ],
                         ],
                     ],
@@ -90,14 +88,12 @@ class UserTest extends ApiTestCase
                 ],
                 'edges' => [
                     'node' => [
-                        '... on User' => [
-                            'id',
-                            'login',
-                            'profile' => [
-                                'phone',
-                                'address' => [
-                                    'zipCode',
-                                ],
+                        'id',
+                        'login',
+                        'profile' => [
+                            'phone',
+                            'address' => [
+                                'zipCode',
                             ],
                         ],
                     ],
@@ -136,14 +132,12 @@ class UserTest extends ApiTestCase
                 ],
                 'edges' => [
                     'node' => [
-                        '... on User' => [
-                            'id',
-                            'login',
-                            'profile' => [
-                                'phone',
-                                'address' => [
-                                    'zipCode',
-                                ],
+                        'id',
+                        'login',
+                        'profile' => [
+                            'phone',
+                            'address' => [
+                                'zipCode',
                             ],
                         ],
                     ],
@@ -182,14 +176,12 @@ class UserTest extends ApiTestCase
                 ],
                 'edges' => [
                     'node' => [
-                        '... on User' => [
-                            'id',
-                            'login',
-                            'profile' => [
-                                'phone',
-                                'address' => [
-                                    'zipCode',
-                                ],
+                        'id',
+                        'login',
+                        'profile' => [
+                            'phone',
+                            'address' => [
+                                'zipCode',
                             ],
                         ],
                     ],
@@ -228,14 +220,12 @@ class UserTest extends ApiTestCase
                 ],
                 'edges' => [
                     'node' => [
-                        '... on User' => [
-                            'id',
-                            'login',
-                            'profile' => [
-                                'phone',
-                                'address' => [
-                                    'zipCode',
-                                ],
+                        'id',
+                        'login',
+                        'profile' => [
+                            'phone',
+                            'address' => [
+                                'zipCode',
                             ],
                         ],
                     ],
@@ -274,14 +264,12 @@ class UserTest extends ApiTestCase
                 ],
                 'edges' => [
                     'node' => [
-                        '... on User' => [
-                            'id',
-                            'login',
-                            'profile' => [
-                                'phone',
-                                'address' => [
-                                    'zipCode',
-                                ],
+                        'id',
+                        'login',
+                        'profile' => [
+                            'phone',
+                            'address' => [
+                                'zipCode',
                             ],
                         ],
                     ],
@@ -399,46 +387,6 @@ class UserTest extends ApiTestCase
     }
 
     /**
-     * testAddUserDryRun
-     */
-    public function testAddUserDryRun()
-    {
-        self::mutation(
-            'users.add',
-            [
-                'input' => [
-                    'login' => $login = 'graphql',
-                    'profile' => [
-                        'email' => $email = 'test@example.com',
-                    ],
-                    'dryRun' => true,
-                    'clientMutationId' => (string) $clientMutationId = mt_rand(),
-                ],
-            ],
-            [
-                'node' => [
-                    '... on User' => [
-                        'id',
-                        'login',
-                        'profile' => [
-                            'email',
-                        ],
-                    ],
-                ],
-                'clientMutationId',
-                'constraintViolations' => [
-                    'message',
-                ],
-            ]
-        );
-
-        self::assertResponseCodeIsOK();
-        self::assertJsonPathEquals($clientMutationId, 'data.users.add.clientMutationId');
-        self::assertJsonPathEquals([], 'data.users.add.constraintViolations');
-        self::assertRepositoryNotContains(User::class, ['username' => $login]);
-    }
-
-    /**
      * testAddUserValidation
      */
     public function testAddUserValidation()
@@ -451,7 +399,6 @@ class UserTest extends ApiTestCase
                     'profile' => [
                         'email' => 'sssss',
                     ],
-                    'dryRun' => true,
                     'clientMutationId' => (string) $clientMutationId = mt_rand(),
                 ],
             ],
@@ -584,9 +531,7 @@ class UserTest extends ApiTestCase
                         ],
                         'edges' => [
                             'node' => [
-                                '... on Post' => [
-                                    'title',
-                                ],
+                                'title',
                             ],
                         ],
                     ],

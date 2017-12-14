@@ -46,6 +46,10 @@ abstract class AbstractDefinitionExtension implements DefinitionExtensionInterfa
      */
     public function normalizeConfig(DefinitionInterface $definition, $config): array
     {
+        if (is_bool($config)) {
+            $config = ['enabled' => $config];
+        }
+
         return $config;
     }
 

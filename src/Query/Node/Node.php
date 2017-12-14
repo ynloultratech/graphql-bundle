@@ -11,7 +11,6 @@
 namespace Ynlo\GraphQLBundle\Query\Node;
 
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
-use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
 
@@ -21,6 +20,8 @@ use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
  */
 class Node extends AbstractResolver
 {
+    protected $fetchBy = 'id';
+
     /**
      * @param mixed $id
      *
@@ -31,25 +32,18 @@ class Node extends AbstractResolver
         if ($id instanceof ID) {
             $type = $id->getNodeType();
             $searchValue = $id->getDatabaseId();
-            $searchField = 'id';
         } else {
             //when use a different field to fetch,
             //@see QueryGet::fetchBy
             $searchValue = $id;
 
             $type = $this->getContext()->getNodeDefinition()->getName();
-
-            /** @var ArgumentDefinition $arg */
-            $arg = array_values($this->getContext()->getDefinition()->getArguments())[0];
-
-            $field = $this->context->getNodeDefinition()->getField($arg->getName());
-            $searchField = $field->getOriginName();
         }
 
         $entityClass = $this->getContext()->getEndpoint()->getClassForType($type);
 
         return $this->getManager()
                     ->getRepository($entityClass)
-                    ->findOneBy([$searchField => $searchValue]);
+                    ->findOneBy([$this->fetchBy => $searchValue]);
     }
 }

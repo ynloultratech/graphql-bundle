@@ -11,19 +11,19 @@
 namespace Ynlo\GraphQLBundle\Definition;
 
 /**
- * NamespaceAwareDefinitionInterface
+ * NodeAwareDefinitionInterface
  */
-interface NamespaceAwareDefinitionInterface
+interface NodeAwareDefinitionInterface
 {
     /**
-     * @param DefinitionNamespace $namespace
+     * @param string $node
      *
-     * @return NamespaceAwareDefinitionInterface
+     * @return NodeAwareDefinitionInterface
      */
-    public function setNamespace(DefinitionNamespace $namespace): NamespaceAwareDefinitionInterface;
+    public function setNode(?string $node): NodeAwareDefinitionInterface;
 
     /**
-     * @return null|DefinitionNamespace
+     * @return null|string
      */
-    public function getNamespace(): ?DefinitionNamespace;
+    public function getNode(): ?string;
 }

@@ -204,6 +204,9 @@ class PaginationDefinitionExtension extends AbstractDefinitionExtension
         $definition->setList(false);
         $definition->setMeta('node', $target);
         $definition->setMeta('pagination', $config);
-        $definition->setResolver(AllNodesConnection::class);
+
+        if (!$definition->getResolver()) {
+            $definition->setResolver(AllNodesConnection::class);
+        }
     }
 }

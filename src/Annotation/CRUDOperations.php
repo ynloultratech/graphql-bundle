@@ -12,48 +12,50 @@ namespace Ynlo\GraphQLBundle\Annotation;
 
 /**
  * @Annotation()
- *
- * @Target({"CLASS"})
  */
-final class QueryGet
+class CRUDOperations
 {
     /**
-     * @var string
+     * @var \Ynlo\GraphQLBundle\Annotation\Query
      */
-    public $name;
+    public $get;
 
     /**
-     * @var string
+     * @var \Ynlo\GraphQLBundle\Annotation\Query
      */
-    public $description;
+    public $gets;
 
     /**
-     * @var bool
+     * @var \Ynlo\GraphQLBundle\Annotation\Query
      */
-    public $pluralQuery = true;
+    public $all;
 
     /**
-     * @var string
+     * @var \Ynlo\GraphQLBundle\Annotation\Mutation
      */
-    public $pluralQueryName;
+    public $add;
 
     /**
-     * @var string
+     * @var \Ynlo\GraphQLBundle\Annotation\Mutation
      */
-    public $fetchBy = 'id';
+    public $update;
 
     /**
-     * @var string
+     * @var \Ynlo\GraphQLBundle\Annotation\Mutation
      */
-    public $deprecationReason;
+    public $delete;
 
     /**
-     * @var bool
-     */
-    public $namespace = true;
-
-    /**
+     * Operations to include
+     *
      * @var array
      */
-    public $options = [];
+    public $include = ['get', 'gets', 'all', 'add', 'update', 'delete'];
+
+    /**
+     * Operations to exclude
+     *
+     * @var array
+     */
+    public $exclude = [];
 }

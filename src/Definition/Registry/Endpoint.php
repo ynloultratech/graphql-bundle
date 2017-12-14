@@ -186,6 +186,45 @@ class Endpoint
     /**
      * @param string $name
      *
+     * @return Endpoint
+     */
+    public function removeType($name): Endpoint
+    {
+        unset($this->types[$name]);
+        if (isset($this->typeMap[$name])) {
+            unset($this->typeMap[$name]);
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return Endpoint
+     */
+    public function removeQuery($name): Endpoint
+    {
+        unset($this->queries[$name]);
+
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return Endpoint
+     */
+    public function removeMutation($name): Endpoint
+    {
+        unset($this->mutations[$name]);
+
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     *
      * @return ObjectDefinitionInterface
      *
      * @throws \UnexpectedValueException

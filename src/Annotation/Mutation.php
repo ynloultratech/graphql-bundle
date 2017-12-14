@@ -13,7 +13,7 @@ namespace Ynlo\GraphQLBundle\Annotation;
 /**
  * @Annotation()
  *
- * @Target("CLASS")
+ * @Target({"CLASS", "ANNOTATION"})
  */
 class Mutation
 {
@@ -23,34 +23,14 @@ class Mutation
     public $name;
 
     /**
-     * @var string
-     */
-    public $form;
-
-    /**
-     * @var array
-     */
-    public $formOptions = [];
-
-    /**
-     * @var bool
-     */
-    public $clientMutationId = true;
-
-    /**
-     * @var bool
-     */
-    public $dryRun;
-
-    /**
-     * @var string
-     */
-    public $resolver;
-
-    /**
      * @Required()
      */
     public $payload;
+
+    /**
+     * @var string
+     */
+    public $node;
 
     /**
      * @var string
@@ -63,9 +43,9 @@ class Mutation
     public $deprecationReason;
 
     /**
-     * @var bool
+     * @var string
      */
-    public $namespace = true;
+    public $resolver;
 
     /**
      * @var array

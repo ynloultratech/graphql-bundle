@@ -22,6 +22,8 @@ use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
  */
 class Nodes extends AbstractResolver
 {
+    protected $fetchBy = 'id';
+
     /**
      * @param ID[]|mixed[] $ids
      *
@@ -37,7 +39,6 @@ class Nodes extends AbstractResolver
         $expectedResultsOrder = [];
 
         if (current($ids) instanceof ID) {
-            $searchField = 'id';
             foreach ($ids as $id) {
                 $types[$id->getNodeType()][] = $id->getDatabaseId();
                 $expectedResultsOrder[md5($id->getNodeType().$id->getDatabaseId())] = null;
@@ -62,7 +63,6 @@ class Nodes extends AbstractResolver
                 throw new \RuntimeException(sprintf('Can`t resolve the field `%s` inside type `%s`', $arg->getName(), $type));
             }
 
-            $searchField = $field->getOriginName();
             $types[$type] = $ids;
             foreach ($ids as $identifier) {
                 $expectedResultsOrder[md5($type.$identifier)] = null;
@@ -75,7 +75,7 @@ class Nodes extends AbstractResolver
                     //TODO: improve this to find all nodes in the same Repo with only one query, NOTE: the order and empty results are very IMPORTANT!
                     //The list of given id should match with the list of results including non-found nodes
                     $entity = $this->getContext()->getEndpoint()->getClassForType($type);
-                    $result = $this->getManager()->getRepository($entity)->findOneBy([$searchField => $searchValue]);
+                    $result = $this->getManager()->getRepository($entity)->findOneBy([$this->fetchBy => $searchValue]);
                     $expectedResultsOrder[md5($type.$searchValue)] = $result;
                 }
             }

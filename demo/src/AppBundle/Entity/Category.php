@@ -23,8 +23,7 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  *
  * @GraphQL\ObjectType()
  *
- * @GraphQL\QueryGet()
- * @GraphQL\QueryGetAll()
+ * @GraphQL\CRUDOperations(include={"get","gets", "all"})
  */
 class Category implements NodeInterface
 {

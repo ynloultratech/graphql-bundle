@@ -18,7 +18,7 @@ use Ynlo\GraphQLBundle\Definition\Traits\ObjectDefinitionTrait;
 /**
  * Class ObjectDefinition
  */
-class ObjectDefinition implements ObjectDefinitionInterface
+class ObjectDefinition implements ObjectDefinitionInterface, NodeAwareDefinitionInterface
 {
     use DefinitionTrait;
     use FieldsAwareDefinitionTrait;
@@ -44,5 +44,23 @@ class ObjectDefinition implements ObjectDefinitionInterface
     public function addInterface(string $name)
     {
         $this->interfaces[] = $name;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setNode(?string $node): NodeAwareDefinitionInterface
+    {
+        $this->setClass($node);
+
+        return $this;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getNode(): ?string
+    {
+        return $this->getClass();
     }
 }

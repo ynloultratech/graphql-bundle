@@ -8,16 +8,16 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Definition;
+namespace Ynlo\GraphQLBundle\Demo\AppBundle\Mutation\Comment;
 
-use Ynlo\GraphQLBundle\Definition\Traits\ExecutableDefinitionTrait;
-use Ynlo\GraphQLBundle\Definition\Traits\NodeAwareDefinitionTrait;
+use Ynlo\GraphQLBundle\Annotation as GraphQL;
+use Ynlo\GraphQLBundle\Model\AddNodePayload;
 
 /**
- * Class QueryDefinition
+ * @GraphQL\ObjectType()
+ * @GraphQL\OverrideField(name="node", type="Ynlo\GraphQLBundle\Demo\AppBundle\Model\CommentInterface")
  */
-class QueryDefinition implements ExecutableDefinitionInterface, NodeAwareDefinitionInterface
+class AddCommentPayload extends AddNodePayload
 {
-    use ExecutableDefinitionTrait;
-    use NodeAwareDefinitionTrait;
+
 }

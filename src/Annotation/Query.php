@@ -13,7 +13,7 @@ namespace Ynlo\GraphQLBundle\Annotation;
 /**
  * @Annotation()
  *
- * @Target({"CLASS"})
+ * @Target({"CLASS", "ANNOTATION"})
  */
 final class Query
 {
@@ -21,6 +21,11 @@ final class Query
      * @var string
      */
     public $name;
+
+    /**
+     * @var string
+     */
+    public $node;
 
     /**
      * @var bool
@@ -38,9 +43,14 @@ final class Query
     public $deprecationReason;
 
     /**
-     * @var bool
+     * @var \Ynlo\GraphQLBundle\Annotation\Argument[]
      */
-    public $namespace = true;
+    public $arguments = [];
+
+    /**
+     * @var string
+     */
+    public $resolver;
 
     /**
      * Options used by extensions

@@ -16,7 +16,7 @@ use Ynlo\GraphQLBundle\Mutation\AddNodeMutation;
 use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
 
 /**
- * @GraphQL\Mutation(payload="Ynlo\GraphQLBundle\Model\AddNodePayload")
+ * @GraphQL\Mutation()
  */
 class AddComment extends AddNodeMutation
 {

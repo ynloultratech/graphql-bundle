@@ -15,9 +15,9 @@ use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
-use Ynlo\GraphQLBundle\Definition\MetaAwareInterface;
 use Ynlo\GraphQLBundle\Definition\MutationDefinition;
 use Ynlo\GraphQLBundle\Definition\NamespaceAwareDefinitionInterface;
+use Ynlo\GraphQLBundle\Definition\NodeAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
@@ -49,13 +49,9 @@ class NamespaceDefinitionExtension extends AbstractDefinitionExtension
      */
     public function configure(DefinitionInterface $definition, Endpoint $endpoint, array $config)
     {
-        if (!$definition instanceof NamespaceAwareDefinitionInterface) {
-            return;
-        }
-
         $node = null;
-        if (($this->globalConfig['nodes']['enabled'] ?? false) && $definition instanceof MetaAwareInterface && $definition->hasMeta('node')) {
-            $node = $definition->getMeta('node');
+        if (($this->globalConfig['nodes']['enabled'] ?? false) && $definition instanceof NodeAwareDefinitionInterface && $definition->getNode()) {
+            $node = $definition->getNode();
 
             if (isset($this->globalConfig['nodes']['aliases'][$node])) {
                 $node = $this->globalConfig['nodes']['aliases'][$node];

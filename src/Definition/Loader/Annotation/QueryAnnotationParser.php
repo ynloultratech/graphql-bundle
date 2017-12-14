@@ -11,6 +11,7 @@
 namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation;
 
 use Ynlo\GraphQLBundle\Annotation;
+use Ynlo\GraphQLBundle\Definition\ArgumentAwareInterface;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
@@ -25,11 +26,6 @@ class QueryAnnotationParser implements AnnotationParserInterface
     use AnnotationParserHelper;
 
     /**
-     * @var Endpoint
-     */
-    protected $endpoint;
-
-    /**
      * {@inheritdoc}
      */
     public function supports($annotation): bool
@@ -42,8 +38,6 @@ class QueryAnnotationParser implements AnnotationParserInterface
      */
     public function parse($annotation, \ReflectionClass $refClass, Endpoint $endpoint)
     {
-        $this->endpoint = $endpoint;
-
         /** @var Annotation\Query $annotation */
         $query = new QueryDefinition();
 
@@ -53,39 +47,42 @@ class QueryAnnotationParser implements AnnotationParserInterface
             $query->setName(lcfirst($this->getDefaultName($refClass, $endpoint)));
         }
 
-        if ($endpoint->hasQuery($query->getName())) {
-            $query = $endpoint->getQuery($query->getName());
-        } else {
-            $endpoint->addQuery($query);
+        $endpoint->addQuery($query);
+
+        if ($annotation->node) {
+            $query->setNode($annotation->node);
+            $query->setType($annotation->node);
         }
 
-        $objectDefinition = $this->getObjectDefinition($refClass, $endpoint);
-        if ($objectDefinition) {
-            $query->setType($objectDefinition->getName());
-            $query->setList($annotation->list);
-            $query->setMeta('node', $objectDefinition->getName());
-        } else {
-            $error = sprintf('Does not exist any valid type for class "%s"', $refClass->getName());
-            throw new \RuntimeException($error);
-        }
+        $query->setList($annotation->list);
 
-        $argAnnotations = $this->reader->getClassAnnotations($refClass);
-        foreach ($argAnnotations as $argAnnotation) {
-            if ($argAnnotation instanceof Annotation\Argument) {
-                $arg = new ArgumentDefinition();
-                $arg->setName($argAnnotation->name);
-                $arg->setDescription($argAnnotation->description);
-                $arg->setInternalName($argAnnotation->internalName);
-                $arg->setDefaultValue($argAnnotation->defaultValue);
-                $arg->setType(TypeUtil::normalize($argAnnotation->type));
-                $arg->setList(TypeUtil::isTypeList($argAnnotation->type));
-                $arg->setNonNullList(TypeUtil::isTypeNonNullList($argAnnotation->type));
-                $arg->setNonNull(TypeUtil::isTypeNonNull($argAnnotation->type));
-                $query->addArgument($arg);
+        if (!$annotation->node) {
+            $objectDefinition = $this->getObjectDefinition($refClass, $endpoint);
+            if ($objectDefinition) {
+                $query->setType($objectDefinition->getName());
+                $query->setNode($objectDefinition->getName());
+            } else {
+                $error = sprintf('Does not exist any valid type for class "%s"', $refClass->getName());
+                throw new \RuntimeException($error);
             }
         }
 
-        $query->setResolver($refClass->getName());
+        if ($annotation->arguments) {
+            foreach ($annotation->arguments as $argAnnotation) {
+                if ($argAnnotation instanceof Annotation\Argument) {
+                    $this->resolveArgument($query, $argAnnotation);
+                }
+            }
+        } else {
+            $argAnnotations = $this->reader->getClassAnnotations($refClass);
+            foreach ($argAnnotations as $argAnnotation) {
+                if ($argAnnotation instanceof Annotation\Argument) {
+                    $this->resolveArgument($query, $argAnnotation);
+                }
+            }
+        }
+
+        $query->setResolver($annotation->resolver ?? $refClass->getName());
         $query->setDeprecationReason($annotation->deprecationReason);
         $query->setDescription($annotation->description);
 
@@ -96,5 +93,23 @@ class QueryAnnotationParser implements AnnotationParserInterface
         foreach ($annotation->options as $option => $value) {
             $query->setMeta($option, $value);
         }
+    }
+
+    /**
+     * @param ArgumentAwareInterface $argumentAware
+     * @param object                 $argAnnotation
+     */
+    public function resolveArgument(ArgumentAwareInterface $argumentAware, $argAnnotation)
+    {
+        $arg = new ArgumentDefinition();
+        $arg->setName($argAnnotation->name);
+        $arg->setDescription($argAnnotation->description);
+        $arg->setInternalName($argAnnotation->internalName);
+        $arg->setDefaultValue($argAnnotation->defaultValue);
+        $arg->setType(TypeUtil::normalize($argAnnotation->type));
+        $arg->setList(TypeUtil::isTypeList($argAnnotation->type));
+        $arg->setNonNullList(TypeUtil::isTypeNonNullList($argAnnotation->type));
+        $arg->setNonNull(TypeUtil::isTypeNonNull($argAnnotation->type));
+        $argumentAware->addArgument($arg);
     }
 }

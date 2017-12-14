@@ -98,7 +98,7 @@ class TaggedServices
                 list($priority1) = $tagSpecification1;
                 list($priority2) = $tagSpecification2;
 
-                return version_compare($priority2, $priority1);
+                return version_compare($priority2 + 250, $priority1 + 250);
             }
         );
 

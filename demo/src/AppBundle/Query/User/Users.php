@@ -8,27 +8,16 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Annotation;
+namespace Ynlo\GraphQLBundle\Demo\AppBundle\Query\User;
+
+use Ynlo\GraphQLBundle\Annotation as GraphQL;
+use Ynlo\GraphQLBundle\Query\Node\Nodes;
 
 /**
- * @Annotation()
- *
- * @Target({"CLASS"})
+ * @GraphQL\Query(list=true)
+ * @GraphQL\Argument(name="logins", type="[string!]", internalName="ids")
  */
-class MutationAdd extends Mutation
+class Users extends Nodes
 {
-    /**
-     * @var string
-     */
-    public $name;
-
-    /**
-     * @var string
-     */
-    public $resolver;
-
-    /**
-     * @var string
-     */
-    public $payload;
+    protected $fetchBy = 'username';
 }

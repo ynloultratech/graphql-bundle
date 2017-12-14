@@ -26,12 +26,7 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  * @UniqueEntity(fields={"username"}, message="The username <b>{{ value }}</b> is already taken")
  *
  * @GraphQL\ObjectType()
- *
- * @GraphQL\QueryGet(fetchBy="login")
- * @GraphQL\QueryGetAll()
- * @GraphQL\MutationAdd(dryRun=true)
- * @GraphQL\MutationUpdate()
- * @GraphQL\MutationDelete()
+ * @GraphQL\CRUDOperations(exclude={"get", "gets"})
  */
 class User implements NodeInterface, TimestampableInterface
 {

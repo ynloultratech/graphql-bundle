@@ -11,7 +11,6 @@
 namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation\FieldDecorator;
 
 use Doctrine\DBAL\Types\Type as DoctrineType;
-use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Embedded;
 use Doctrine\ORM\Mapping\Id;
@@ -100,10 +99,6 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
 
             if ($definition->isList() && $pagination) {
                 $definition->setMeta('pagination', $pagination);
-            }
-
-            if ($targetNode) {
-                $definition->setMeta('node', $targetNode);
             }
         }
     }
