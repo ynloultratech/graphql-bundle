@@ -220,7 +220,23 @@ class CRUDAnnotationParser implements AnnotationParserInterface
             $mutation->payload = $payload->getName();
         }
         $mutation->node = $mutation->node ?? $definition->getName();
-        $mutation->options = array_merge(['form' => ['type' => true]], $mutation->options);
+
+        if ($endpoint->hasTypeForClass($mutation->node)) {
+            $mutation->node = $endpoint->getTypeForClass($mutation->node);
+        }
+
+        $formType = true;
+        $options = [];
+        $generalForm = ClassUtils::applyNamingConvention($bundleNamespace, 'Form\Input', $mutation->node, $mutation->node, 'Input');
+        $specificForm = ClassUtils::applyNamingConvention($bundleNamespace, 'Form\Input', $mutation->node, $mutation->name, 'Input');
+        if (class_exists($specificForm)) {
+            $formType = $specificForm;
+        } elseif (class_exists($generalForm)) {
+            $formType = $generalForm;
+            $options['operation'] = $mutation->name;
+        }
+
+        $mutation->options = array_merge(['form' => ['type' => $formType, 'options' => $options]], $mutation->options);
         $resolverReflection = new \ReflectionClass(AddNodeMutation::class);
 
         $resolver = ClassUtils::applyNamingConvention($bundleNamespace, 'Mutation', $definition->getName(), $mutation->name);
@@ -255,7 +271,23 @@ class CRUDAnnotationParser implements AnnotationParserInterface
             $mutation->payload = $payload->getName();
         }
         $mutation->node = $mutation->node ?? $definition->getName();
-        $mutation->options = array_merge(['form' => ['type' => true]], $mutation->options);
+
+        if ($endpoint->hasTypeForClass($mutation->node)) {
+            $mutation->node = $endpoint->getTypeForClass($mutation->node);
+        }
+
+        $formType = true;
+        $options = [];
+        $generalForm = ClassUtils::applyNamingConvention($bundleNamespace, 'Form\Input', $mutation->node, $mutation->node, 'Input');
+        $specificForm = ClassUtils::applyNamingConvention($bundleNamespace, 'Form\Input', $mutation->node, $mutation->name, 'Input');
+        if (class_exists($specificForm)) {
+            $formType = $specificForm;
+        } elseif (class_exists($generalForm)) {
+            $formType = $generalForm;
+            $options['operation'] = $mutation->name;
+        }
+
+        $mutation->options = array_merge(['form' => ['type' => $formType, 'options' => $options]], $mutation->options);
         $resolverReflection = new \ReflectionClass(UpdateNodeMutation::class);
 
         $resolver = ClassUtils::applyNamingConvention($bundleNamespace, 'Mutation', $definition->getName(), $mutation->name);
