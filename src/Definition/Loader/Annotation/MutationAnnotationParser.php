@@ -14,6 +14,7 @@ use Symfony\Component\Form\FormFactory;
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\MutationDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\Util\ClassUtils;
 
 /**
  * Parse mutation annotation to fetch definitions
@@ -21,7 +22,6 @@ use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 class MutationAnnotationParser extends QueryAnnotationParser
 {
     use AnnotationReaderAwareTrait;
-    use AnnotationParserHelper;
 
     /**
      * @var FormFactory
@@ -78,7 +78,7 @@ class MutationAnnotationParser extends QueryAnnotationParser
         if ($annotation->name) {
             $mutation->setName($annotation->name);
         } else {
-            $mutation->setName(lcfirst($this->getDefaultName($refClass, $endpoint)));
+            $mutation->setName(lcfirst(ClassUtils::getDefaultName($refClass->getName())));
         }
 
         $endpoint->addMutation($mutation);

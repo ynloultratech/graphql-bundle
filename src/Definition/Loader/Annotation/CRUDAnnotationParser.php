@@ -34,7 +34,6 @@ use Ynlo\GraphQLBundle\Util\ClassUtils;
 class CRUDAnnotationParser implements AnnotationParserInterface
 {
     use AnnotationReaderAwareTrait;
-    use AnnotationParserHelper;
 
     /**
      * @var QueryAnnotationParser

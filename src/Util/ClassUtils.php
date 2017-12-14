@@ -51,4 +51,37 @@ class ClassUtils
     {
         return sprintf('%s\%s\%s\%s%s', $namespace, $path, $node, ucfirst($name), $suffix);
     }
+
+    /**
+     * Get default object name based in given class using naming convention
+     *
+     * @param string $class
+     *
+     * @return string
+     */
+    public static function getDefaultName(string $class): string
+    {
+        preg_match('/\w+$/', $class, $matches);
+
+        return $matches[0] ?? '';
+    }
+
+    /**
+     * Get object type using naming convention
+     * if Query is placed under User\AllUsers namespace, then "User" is the object type
+     *
+     * Mutation\User\UpdateUser -> User
+     * Query\User\Users -> User
+     * Form\Input\User\AddUserInput -> User
+     *
+     * @param string $class
+     *
+     * @return string
+     */
+    public static function getNodeFromClass(string $class): string
+    {
+        preg_match('/(\w+)(\\\\w+)?\\\\(\w+)$/', $class, $matches);
+
+        return $matches[1];
+    }
 }

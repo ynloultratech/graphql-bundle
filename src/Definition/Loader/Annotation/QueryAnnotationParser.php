@@ -15,6 +15,7 @@ use Ynlo\GraphQLBundle\Definition\ArgumentAwareInterface;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\Util\ClassUtils;
 use Ynlo\GraphQLBundle\Util\TypeUtil;
 
 /**
@@ -23,7 +24,6 @@ use Ynlo\GraphQLBundle\Util\TypeUtil;
 class QueryAnnotationParser implements AnnotationParserInterface
 {
     use AnnotationReaderAwareTrait;
-    use AnnotationParserHelper;
 
     /**
      * {@inheritdoc}
@@ -44,7 +44,7 @@ class QueryAnnotationParser implements AnnotationParserInterface
         if ($annotation->name) {
             $query->setName($annotation->name);
         } else {
-            $query->setName(lcfirst($this->getDefaultName($refClass, $endpoint)));
+            $query->setName(lcfirst(ClassUtils::getDefaultName($refClass->getName())));
         }
 
         $endpoint->addQuery($query);
@@ -57,7 +57,11 @@ class QueryAnnotationParser implements AnnotationParserInterface
         $query->setList($annotation->list);
 
         if (!$annotation->node) {
-            $objectDefinition = $this->getObjectDefinition($refClass, $endpoint);
+            $nodeType = ClassUtils::getNodeFromClass($refClass->getName());
+            $objectDefinition = null;
+            if ($nodeType && $endpoint->hasType($nodeType)) {
+                $objectDefinition = $endpoint->getType($nodeType);
+            }
             if ($objectDefinition) {
                 $query->setType($objectDefinition->getName());
                 $query->setNode($objectDefinition->getName());
