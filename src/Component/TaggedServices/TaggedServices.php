@@ -12,7 +12,6 @@
 namespace Ynlo\GraphQLBundle\Component\TaggedServices;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Ynlo\GraphQLBundle\Definition\Loader\Annotation\FieldDecorator\FieldDefinitionDecoratorInterface;
 
 /**
  * Class TaggedServices
