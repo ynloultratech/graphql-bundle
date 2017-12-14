@@ -94,33 +94,13 @@ class CRUDAnnotationParser implements AnnotationParserInterface
         $bundleNamespace = ClassUtils::relatedBundleNamespace($refClass->getName());
 
         //All query
-        if (in_array('all', $annotation->include)) {
-            if ($annotation->all) {
-                $query = $annotation->all;
+        if (in_array('list', $annotation->include)) {
+            if ($annotation->list) {
+                $query = $annotation->list;
             } else {
                 $query = new Annotation\Query();
             }
-            $this->createAllOperation($definition, $query, $endpoint, $bundleNamespace);
-        }
-
-        //Get query
-        if (in_array('get', $annotation->include)) {
-            if ($annotation->get) {
-                $query = $annotation->get;
-            } else {
-                $query = new Annotation\Query();
-            }
-            $this->createGetOperation($definition, $query, $endpoint, $bundleNamespace);
-        }
-
-        //Gets query
-        if (in_array('gets', $annotation->include)) {
-            if ($annotation->gets) {
-                $query = $annotation->gets;
-            } else {
-                $query = new Annotation\Query();
-            }
-            $this->createGetsOperation($definition, $query, $endpoint, $bundleNamespace);
+            $this->createListOperation($definition, $query, $endpoint, $bundleNamespace);
         }
 
         //Add mutation
@@ -201,9 +181,9 @@ class CRUDAnnotationParser implements AnnotationParserInterface
      * @param Endpoint                  $endpoint
      * @param string                    $bundleNamespace
      */
-    protected function createAllOperation(ObjectDefinitionInterface $definition, Annotation\Query $query, Endpoint $endpoint, $bundleNamespace)
+    protected function createListOperation(ObjectDefinitionInterface $definition, Annotation\Query $query, Endpoint $endpoint, $bundleNamespace)
     {
-        $query->name = $query->name ?? 'all'.Inflector::pluralize(ucfirst($definition->getName()));
+        $query->name = $query->name ?? Inflector::pluralize(lcfirst($definition->getName()));
         $query->node = $query->node ?? $definition->getName();
         $query->options = array_merge(['pagination' => true], $query->options);
         $resolverReflection = new \ReflectionClass(AllNodesWithPagination::class);

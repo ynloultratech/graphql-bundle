@@ -18,17 +18,7 @@ class CRUDOperations
     /**
      * @var \Ynlo\GraphQLBundle\Annotation\Query
      */
-    public $get;
-
-    /**
-     * @var \Ynlo\GraphQLBundle\Annotation\Query
-     */
-    public $gets;
-
-    /**
-     * @var \Ynlo\GraphQLBundle\Annotation\Query
-     */
-    public $all;
+    public $list;
 
     /**
      * @var \Ynlo\GraphQLBundle\Annotation\Mutation
@@ -50,7 +40,7 @@ class CRUDOperations
      *
      * @var array
      */
-    public $include = ['get', 'gets', 'all', 'add', 'update', 'delete'];
+    public $include = ['list', 'add', 'update', 'delete'];
 
     /**
      * Operations to exclude
