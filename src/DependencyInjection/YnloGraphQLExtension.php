@@ -36,6 +36,7 @@ class YnloGraphQLExtension extends Extension
         $container->setParameter('graphql.config', $config);
         if (isset($config['definitions']['extensions'])) {
             foreach ($config['definitions']['extensions'] as $extension => $config) {
+                $config = isset($config['enabled']) && $config['enabled'] ? $config : [];
                 $container->setParameter('graphql.extension_config.'.$extension, $config ?? []);
             }
         }
