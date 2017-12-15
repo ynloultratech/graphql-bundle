@@ -86,7 +86,7 @@ GraphQL;
         $query = <<<'GraphQL'
 query {
     posts {
-        posts(first: 5, orderBy: {field: "title", direction: "ASC"}){
+        posts(first: 5, orderBy: {field: "title", direction: ASC}){
             edges {
                 node {
                     title

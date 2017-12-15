@@ -31,11 +31,11 @@ class CategoryTest extends ApiTestCase
         $query = <<<'GraphQL'
 query {
     categories {
-        categories (first: 5, orderBy: {field: "name", direction: "ASC"}){
+        categories (first: 5, orderBy: {field: "name", direction: ASC}){
             edges {
                 node {
                     name
-                    posts (first: 2, orderBy: {field:"title", direction: "ASC"}) {
+                    posts (first: 2, orderBy: {field:"title", direction: ASC}) {
                         edges {
                             node {
                                 title

@@ -82,7 +82,7 @@ GraphQL;
         $query = <<<'GraphQL'
 query {
     users{
-        users(first:3, orderBy: {field:"login", direction: "DESC"}){
+        users(first:3, orderBy: {field:"login", direction: DESC}){
             totalCount
             pageInfo {
                 endCursor
@@ -128,7 +128,7 @@ GraphQL;
         $query = <<<'GraphQL'
 query ($cursor: String){
     users{
-        users(first:3, orderBy: {field:"login", direction: "ASC"}, after: $cursor){
+        users(first:3, orderBy: {field:"login", direction: ASC}, after: $cursor){
             totalCount
             pageInfo {
                 endCursor
@@ -175,7 +175,7 @@ GraphQL;
         $query = <<<'GraphQL'
 query ($cursor: String){
     users{
-        users(first:3, orderBy: {field:"login", direction: "ASC"}, before: $cursor){
+        users(first:3, orderBy: {field:"login", direction: ASC}, before: $cursor){
             totalCount
             pageInfo {
                 endCursor
@@ -222,7 +222,7 @@ GraphQL;
         $query = <<<'GraphQL'
 query ($cursor: String){
     users{
-        users(last:3, orderBy: {field:"login", direction: "ASC"}, after: $cursor){
+        users(last:3, orderBy: {field:"login", direction: ASC}, after: $cursor){
             totalCount
             pageInfo {
                 endCursor
@@ -269,7 +269,7 @@ GraphQL;
         $query = <<<'GraphQL'
 query ($cursor: String){
     users{
-        users(last:3, orderBy: {field:"login", direction: "ASC"}, before: $cursor){
+        users(last:3, orderBy: {field:"login", direction: ASC}, before: $cursor){
             totalCount
             pageInfo {
                 endCursor

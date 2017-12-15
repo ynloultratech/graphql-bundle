@@ -11,6 +11,7 @@
 namespace Ynlo\GraphQLBundle\Model;
 
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
+use Ynlo\GraphQLBundle\Type\OrderDirectionType;
 
 /**
  * @GraphQL\InputObjectType()
@@ -27,9 +28,9 @@ class OrderBy
     /**
      * @var string
      *
-     * @GraphQL\Field(type="string")
+     * @GraphQL\Field(type="Ynlo\GraphQLBundle\Type\OrderDirectionType")
      */
-    protected $direction = 'ASC';
+    protected $direction = OrderDirectionType::ASC;
 
     /**
      * @return string
