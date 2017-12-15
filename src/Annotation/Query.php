@@ -28,11 +28,6 @@ final class Query
     public $type;
 
     /**
-     * @var bool
-     */
-    public $list = false;
-
-    /**
      * @var string
      */
     public $description;
