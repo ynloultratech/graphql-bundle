@@ -10,6 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Annotation;
 
+use Doctrine\Common\Annotations\Annotation\Enum;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 
 /**
@@ -30,6 +31,8 @@ final class ObjectType
     public $description;
 
     /**
+     * @Enum({"ALL", "NONE"})
+     *
      * @var string
      */
     public $exclusionPolicy = ObjectDefinitionInterface::EXCLUDE_NONE;
