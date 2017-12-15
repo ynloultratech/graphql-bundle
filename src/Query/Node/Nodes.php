@@ -17,7 +17,7 @@ use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
 
 /**
- * @GraphQL\Query(list=true)
+ * @GraphQL\Query(type="[]")
  * @GraphQL\Argument(name="ids", type="[ID!]!")
  */
 class Nodes extends AbstractResolver

@@ -143,7 +143,7 @@ class CRUDAnnotationParser implements AnnotationParserInterface
     protected function createGetsOperation(ObjectDefinitionInterface $definition, Annotation\Query $query, Endpoint $endpoint, $bundleNamespace)
     {
         $query->name = $query->name ?? Inflector::pluralize(lcfirst($definition->getName()));
-        $query->node = $query->node ?? $definition->getName();
+        $query->type = $query->type ?? $definition->getName();
         $query->list = true;
         $resolverReflection = new \ReflectionClass(Nodes::class);
 
@@ -164,7 +164,7 @@ class CRUDAnnotationParser implements AnnotationParserInterface
     protected function createGetOperation(ObjectDefinitionInterface $definition, Annotation\Query $query, Endpoint $endpoint, $bundleNamespace)
     {
         $query->name = $query->name ?? Inflector::singularize(lcfirst($definition->getName()));
-        $query->node = $query->node ?? $definition->getName();
+        $query->type = $query->type ?? $definition->getName();
         $resolverReflection = new \ReflectionClass(Node::class);
 
         $resolver = ClassUtils::applyNamingConvention($bundleNamespace, 'Query', $definition->getName(), $query->name);
@@ -184,7 +184,7 @@ class CRUDAnnotationParser implements AnnotationParserInterface
     protected function createListOperation(ObjectDefinitionInterface $definition, Annotation\Query $query, Endpoint $endpoint, $bundleNamespace)
     {
         $query->name = $query->name ?? Inflector::pluralize(lcfirst($definition->getName()));
-        $query->node = $query->node ?? $definition->getName();
+        $query->type = $query->type ?? $definition->getName();
         $query->options = array_merge(['pagination' => true], $query->options);
         $resolverReflection = new \ReflectionClass(AllNodesWithPagination::class);
 

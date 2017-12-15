@@ -24,7 +24,7 @@ final class TypeUtil
      */
     public static function isTypeList($type): bool
     {
-        return (bool) preg_match('/^\[([\\\\\w]+)!?\]!?$/', $type);
+        return (bool) preg_match('/^\[([\\\\\w]*)!?\]!?$/', $type);
     }
 
     /**
@@ -34,7 +34,7 @@ final class TypeUtil
      */
     public static function isTypeNonNullList($type): bool
     {
-        return (bool) preg_match('/^\[([\\\\\w]+)!\]!?$/', $type);
+        return (bool) preg_match('/^\[([\\\\\w]*)!\]!?$/', $type);
     }
 
     /**
@@ -54,7 +54,7 @@ final class TypeUtil
      */
     public static function normalize($type)
     {
-        if (preg_match('/^\[?([\\\\\w]+)!?\]?!?$/', $type, $matches)) {
+        if (preg_match('/^\[?([\\\\\w]*)!?\]?!?$/', $type, $matches)) {
             $type = $matches[1];
         }
 

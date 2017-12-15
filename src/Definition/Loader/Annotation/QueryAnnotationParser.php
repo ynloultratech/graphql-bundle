@@ -49,14 +49,16 @@ class QueryAnnotationParser implements AnnotationParserInterface
 
         $endpoint->addQuery($query);
 
-        if ($annotation->node) {
-            $query->setNode($annotation->node);
-            $query->setType($annotation->node);
+        if ($annotation->type) {
+            $query->setNode(TypeUtil::normalize($annotation->type));
+            $query->setType(TypeUtil::normalize($annotation->type));
         }
 
-        $query->setList($annotation->list);
+        $query->setList(TypeUtil::isTypeList($annotation->type));
+        $query->setNonNull(TypeUtil::isTypeNonNull($annotation->type));
+        $query->setNonNullList(TypeUtil::isTypeNonNullList($annotation->type));
 
-        if (!$annotation->node) {
+        if (!$query->getType()) {
             $nodeType = ClassUtils::getNodeFromClass($refClass->getName());
             $objectDefinition = null;
             if ($nodeType && $endpoint->hasType($nodeType)) {

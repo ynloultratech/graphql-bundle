@@ -25,7 +25,7 @@ final class Query
     /**
      * @var string
      */
-    public $node;
+    public $type;
 
     /**
      * @var bool

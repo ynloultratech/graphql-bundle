@@ -14,7 +14,7 @@ use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Query\Node\Nodes;
 
 /**
- * @GraphQL\Query(list=true)
+ * @GraphQL\Query(type="[]")
  * @GraphQL\Argument(name="logins", type="[string!]", internalName="ids" )
  */
 class ByLogin extends Nodes
