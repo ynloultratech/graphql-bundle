@@ -13,7 +13,7 @@ namespace Ynlo\GraphQLBundle\Type;
 use Doctrine\Common\Util\ClassUtils;
 use GraphQL\Type\Definition\InterfaceType;
 use GraphQL\Type\Definition\Type;
-use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
+use Ynlo\GraphQLBundle\Definition\InterfaceDefinitionHas;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 
 /**
@@ -22,7 +22,7 @@ use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 abstract class AbstractInterfaceType extends InterfaceType
 {
     /**
-     * @var InterfaceDefinition
+     * @var InterfaceDefinitionHas
      */
     protected $definition;
 
@@ -34,10 +34,10 @@ abstract class AbstractInterfaceType extends InterfaceType
     /**
      * AbstractInterfaceType constructor.
      *
-     * @param Endpoint            $endpoint
-     * @param InterfaceDefinition $definition
+     * @param Endpoint               $endpoint
+     * @param InterfaceDefinitionHas $definition
      */
-    public function __construct(Endpoint $endpoint, InterfaceDefinition $definition)
+    public function __construct(Endpoint $endpoint, InterfaceDefinitionHas $definition)
     {
         $this->definition = $definition;
         $this->endpoint = $endpoint;

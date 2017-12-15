@@ -14,7 +14,7 @@ use GraphQL\Type\Definition\Type;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
-use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
+use Ynlo\GraphQLBundle\Definition\InterfaceDefinitionHas;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 
@@ -123,7 +123,7 @@ class Types
                 {
 
                 };
-            } elseif ($definition instanceof InterfaceDefinition) {
+            } elseif ($definition instanceof InterfaceDefinitionHas) {
                 $type = new class(self::$endpoint, $definition) extends AbstractInterfaceType
                 {
 

@@ -17,10 +17,10 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Ynlo\GraphQLBundle\Definition\HasExtensionsInterface;
 use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\NodeAwareDefinitionInterface;
-use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Extension\ExtensionInterface;
@@ -146,7 +146,7 @@ class ResolverExecutor implements ContainerAwareInterface
                 $resolver->setContext($resolveContext);
             }
 
-            if ($resolver instanceof ExtensionsAwareInterface && $nodeDefinition instanceof ObjectDefinition) {
+            if ($resolver instanceof ExtensionsAwareInterface && $nodeDefinition instanceof HasExtensionsInterface) {
                 $resolver->setExtensions($this->resolveObjectExtensions($nodeDefinition));
             }
 
@@ -160,11 +160,11 @@ class ResolverExecutor implements ContainerAwareInterface
     }
 
     /**
-     * @param ObjectDefinition $objectDefinition
+     * @param HasExtensionsInterface $objectDefinition
      *
      * @return ExtensionInterface[]
      */
-    protected function resolveObjectExtensions(ObjectDefinition $objectDefinition): array
+    protected function resolveObjectExtensions(HasExtensionsInterface $objectDefinition): array
     {
         $extensions = [];
         foreach ($objectDefinition->getExtensions() as $extensionDefinition) {

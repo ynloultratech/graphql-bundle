@@ -11,7 +11,7 @@
 namespace Ynlo\GraphQLBundle\Definition\Registry;
 
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
-use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
+use Ynlo\GraphQLBundle\Definition\InterfaceDefinitionHas;
 use Ynlo\GraphQLBundle\Definition\MutationDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
@@ -32,7 +32,7 @@ class Endpoint
     protected $typeMap = [];
 
     /**
-     * @var InterfaceDefinition[]
+     * @var InterfaceDefinitionHas[]
      */
     protected $interfaces = [];
 
@@ -100,7 +100,7 @@ class Endpoint
      * Helper method to avoid in runtime
      * recurring all types to get only interfaces
      *
-     * @return InterfaceDefinition[]
+     * @return InterfaceDefinitionHas[]
      */
     public function allInterfaces(): array
     {
@@ -294,7 +294,7 @@ class Endpoint
         }
         $this->types[$type->getName()] = $type;
 
-        if ($type instanceof InterfaceDefinition) {
+        if ($type instanceof InterfaceDefinitionHas) {
             $this->interfaces[$type->getName()] = $type;
         }
 

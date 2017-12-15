@@ -12,18 +12,20 @@ namespace Ynlo\GraphQLBundle\Definition;
 
 use Ynlo\GraphQLBundle\Definition\Traits\ClassAwareDefinitionTrait;
 use Ynlo\GraphQLBundle\Definition\Traits\DefinitionTrait;
+use Ynlo\GraphQLBundle\Definition\Traits\ExtensionsAwareTrait;
 use Ynlo\GraphQLBundle\Definition\Traits\FieldsAwareDefinitionTrait;
 use Ynlo\GraphQLBundle\Definition\Traits\ObjectDefinitionTrait;
 
 /**
- * Class InterfaceDefinition
+ * Class InterfaceDefinitionHas
  */
-class InterfaceDefinition implements ObjectDefinitionInterface
+class InterfaceDefinitionHas implements ObjectDefinitionInterface, HasExtensionsInterface
 {
     use DefinitionTrait;
     use FieldsAwareDefinitionTrait;
     use ClassAwareDefinitionTrait;
     use ObjectDefinitionTrait;
+    use ExtensionsAwareTrait;
 
     /**
      * @var string[]
