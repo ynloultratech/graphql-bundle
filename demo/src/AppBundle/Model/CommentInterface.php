@@ -18,7 +18,7 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  * @GraphQL\InterfaceType()
  * @GraphQL\CRUDOperations(include={"delete"})
  */
-interface CommentInterface extends NodeInterface
+interface CommentInterface extends NodeInterface, HasAuthorInterface, TimestampableInterface
 {
     /**
      * @return User
@@ -30,7 +30,7 @@ interface CommentInterface extends NodeInterface
     /**
      * @param User $author
      */
-    public function setAuthor(User $author);
+    public function setAuthor(User $author): HasAuthorInterface;
 
     /**
      * @return CommentableInterface

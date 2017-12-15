@@ -20,6 +20,7 @@ use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Model\CommentableInterface;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Model\CommentableTrait;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Model\CommentInterface;
+use Ynlo\GraphQLBundle\Demo\AppBundle\Model\HasAuthorInterface;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Model\TimestampableInterface;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Model\TimestampableTrait;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Type\PostStatusType;
@@ -36,7 +37,7 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  * @GraphQL\ObjectType()
  * @GraphQL\CRUDOperations()
  */
-class Post implements NodeInterface, CommentableInterface, TimestampableInterface
+class Post implements NodeInterface, CommentableInterface, TimestampableInterface, HasAuthorInterface
 {
     use TimestampableTrait;
     use CommentableTrait;
@@ -134,11 +135,13 @@ class Post implements NodeInterface, CommentableInterface, TimestampableInterfac
     }
 
     /**
-     * @param User $author
+     * {@inheritdoc}
      */
-    public function setAuthor(User $author)
+    public function setAuthor(User $author): HasAuthorInterface
     {
         $this->author = $author;
+
+        return $this;
     }
 
     /**

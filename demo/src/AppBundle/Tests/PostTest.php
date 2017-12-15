@@ -34,7 +34,6 @@ class PostTest extends ApiTestCase
                     'title' => $title = $faker->sentence(),
                     'body' => $body = $faker->paragraph,
                     'status' => self::literalValue(PostStatusType::PUBLISH),
-                    'author' => self::encodeID('User', 1),
                     'categories' => [
                         self::encodeID('Category', 1),
                         self::encodeID('Category', 2),

@@ -523,6 +523,7 @@ class UserTest extends ApiTestCase
                 ],
             ]
         );
+
         self::assertResponseCodeIsOK();
         /** @var Post $post */
         foreach ($user1->getPosts() as $index => $post) {

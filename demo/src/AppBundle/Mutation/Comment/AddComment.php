@@ -10,10 +10,10 @@
 
 namespace Ynlo\GraphQLBundle\Demo\AppBundle\Mutation\Comment;
 
+use Symfony\Component\Form\FormEvent;
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Model\CommentableInterface;
 use Ynlo\GraphQLBundle\Mutation\AddNode;
-use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
 
 /**
  * @GraphQL\Mutation()
@@ -23,23 +23,21 @@ class AddComment extends AddNode
     /**
      * {@inheritdoc}
      */
-    protected function onSubmit($inputSource, &$normData)
+    public function onSubmit(FormEvent $event)
     {
         /** @var CommentableInterface $commentable */
-        $commentable = $normData['commentable'];
+        $commentable = $event->getData()['commentable'];
         $comment = $commentable->createComment();
-        $comment->setAuthor($normData['author']);
-        $comment->setBody($normData['body']);
-
-        $normData = $comment;
+        $comment->setBody($event->getData()['body']);
+        $event->setData($comment);
     }
 
-    /**
-     * {@inheritdoc}
-     */
-    protected function postValidation($data, ConstraintViolationList $violations)
-    {
-        $otherViolations = $this->getValidator()->validate($data);
-        $violations->addViolationList($otherViolations);
-    }
+    //    /**
+    //     * {@inheritdoc}
+    //     */
+    //    protected function postValidation($data, ConstraintViolationList $violations)
+    //    {
+    //        $otherViolations = $this->getValidator()->validate($data);
+    //        $violations->addViolationList($otherViolations);
+    //    }
 }

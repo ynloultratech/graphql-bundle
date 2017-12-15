@@ -29,8 +29,7 @@ class AddPostInput extends AbstractType
             ->add('title')
             ->add('body')
             ->add('status')
-            ->add('categories')
-            ->add('author');
+            ->add('categories');
     }
 
     /**

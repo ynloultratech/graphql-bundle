@@ -27,11 +27,10 @@ class AddCommentInput extends AbstractType
     {
         $builder
             ->add(
-                'commentableId',
+                'commentable',
                 IDType::class,
                 [
                     'constraints' => [new NotBlank()],
-                    'property_path' => '[commentable]',
                 ]
             )
             ->add(
@@ -39,14 +38,6 @@ class AddCommentInput extends AbstractType
                 null,
                 [
                     'constraints' => [new NotBlank()],
-                ]
-            )
-            ->add(
-                'authorId',
-                IDType::class,
-                [
-                    'constraints' => [new NotBlank()],
-                    'property_path' => '[author]',
                 ]
             );
     }

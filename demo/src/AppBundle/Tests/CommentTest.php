@@ -29,14 +29,12 @@ class CommentTest extends ApiTestCase
 
         /** @var Post $post */
         $post = self::getFixtureReference('post1');
-        $user = self::getFixtureReference('admin');
 
         self::mutation(
             'comments.add',
             [
                 'input' => [
-                    'commentableId' => $commentableId = self::encodeID('Post', $post->getId()),
-                    'authorId' => $authorId = self::encodeID('User', $user->getId()),
+                    'commentable' => $commentableId = self::encodeID('Post', $post->getId()),
                     'body' => $comment = $faker->sentence,
                     'clientMutationId' => (string) $clientMutationId = mt_rand(),
                 ],

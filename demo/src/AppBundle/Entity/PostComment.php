@@ -18,7 +18,7 @@ use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Model\CommentableInterface;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Model\CommentableTrait;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Model\CommentInterface;
-use Ynlo\GraphQLBundle\Demo\AppBundle\Model\TimestampableInterface;
+use Ynlo\GraphQLBundle\Demo\AppBundle\Model\HasAuthorInterface;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Model\TimestampableTrait;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 
@@ -31,7 +31,10 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  * @UniqueEntity(fields={"post", "author", "body"}, message="Duplicate comment", errorPath="body")
  * @UniqueEntity(fields={"parentComment", "author", "body"}, message="Duplicate comment")
  */
-class PostComment implements NodeInterface, CommentInterface, CommentableInterface, TimestampableInterface
+class PostComment implements
+    NodeInterface,
+    CommentInterface,
+    CommentableInterface
 {
     use TimestampableTrait;
     use CommentableTrait;
@@ -100,7 +103,7 @@ class PostComment implements NodeInterface, CommentInterface, CommentableInterfa
     }
 
     /**
-     * @return User
+     * {@inheritDoc}
      */
     public function getAuthor(): User
     {
@@ -108,11 +111,13 @@ class PostComment implements NodeInterface, CommentInterface, CommentableInterfa
     }
 
     /**
-     * @param User $author
+     * {@inheritDoc}
      */
-    public function setAuthor(?User $author)
+    public function setAuthor(?User $author): HasAuthorInterface
     {
         $this->author = $author;
+
+        return $this;
     }
 
     /**
