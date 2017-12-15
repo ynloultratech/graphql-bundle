@@ -15,13 +15,15 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Ynlo\GraphQLBundle\Extension\ExtensionInterface;
+use Ynlo\GraphQLBundle\Extension\ExtensionsAwareInterface;
 
 /**
  * AbstractResolver is a simple implementation of a Resolver.
  *
  * It provides methods to common features needed in resolvers.
  */
-abstract class AbstractResolver implements ContainerAwareInterface
+abstract class AbstractResolver implements ExtensionsAwareInterface, ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
@@ -29,6 +31,19 @@ abstract class AbstractResolver implements ContainerAwareInterface
      * @var ResolverContext
      */
     protected $context;
+
+    /**
+     * @var ExtensionInterface[]
+     */
+    protected $extensions = [];
+
+    /**
+     * {@inheritDoc}
+     */
+    public function setExtensions($extensions)
+    {
+        $this->extensions = $extensions;
+    }
 
     /**
      * @return ResolverContext

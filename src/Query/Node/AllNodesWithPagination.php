@@ -51,7 +51,7 @@ class AllNodesWithPagination extends AllNodes
         }
 
         $this->configureQuery($qb);
-        foreach ($this->container->get(ExtensionManager::class)->getExtensions() as $extension) {
+        foreach ($this->extensions as $extension) {
             $extension->configureQuery($qb, $this, $this->context);
         }
 

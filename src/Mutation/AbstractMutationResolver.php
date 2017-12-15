@@ -10,7 +10,10 @@
 
 namespace Ynlo\GraphQLBundle\Mutation;
 
+use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Form\FormBuilderInterface;
+use Symfony\Component\Form\FormEvent;
+use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Validator\ConstraintViolation as SymfonyConstraintViolation;
 use Ynlo\GraphQLBundle\Form\DataTransformer\DataWithIdToNodeTransformer;
@@ -22,7 +25,7 @@ use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
  * Base class for mutations
  * Implement the method "process()" and "returnPayload()" is enough in many scenarios
  */
-abstract class AbstractMutationResolver extends AbstractResolver
+abstract class AbstractMutationResolver extends AbstractResolver implements EventSubscriberInterface
 {
     /**
      * @param array $input
@@ -35,10 +38,10 @@ abstract class AbstractMutationResolver extends AbstractResolver
 
         $form = null;
         if ($formBuilder) {
+            $formBuilder->addEventSubscriber($this);
             $form = $formBuilder->getForm();
         }
 
-        $this->preValidate($input);
         if ($form) {
             $form->submit($input, false);
             $data = $form->getData();
@@ -46,13 +49,10 @@ abstract class AbstractMutationResolver extends AbstractResolver
             $data = $input;
         }
 
-        $this->onSubmit($input, $data);
-
         $violations = new ConstraintViolationList();
         if ($form) {
             $this->extractFormErrors($form, $violations);
         }
-        $this->postValidation($data, $violations);
 
         $dryRun = $input['dryRun'] ?? false;
 
@@ -62,7 +62,6 @@ abstract class AbstractMutationResolver extends AbstractResolver
             if ((!$form && !$violations->count())
                 || ($form->isSubmitted() && $form->isValid() && !$violations->count())
             ) {
-
                 $this->process($data);
             }
         }
@@ -71,12 +70,86 @@ abstract class AbstractMutationResolver extends AbstractResolver
     }
 
     /**
+     * {@inheritdoc}
+     */
+    public static function getSubscribedEvents()
+    {
+        return [
+            FormEvents::PRE_SET_DATA => 'preSetData',
+            FormEvents::POST_SET_DATA => 'postSetData',
+            FormEvents::PRE_SUBMIT => 'preSubmit',
+            FormEvents::SUBMIT => 'onSubmit',
+            FormEvents::POST_SUBMIT => 'postSubmit',
+        ];
+    }
+
+    /**
+     * @see http://api.symfony.com/4.0/Symfony/Component/Form/FormEvents.html
+     *
+     * @param FormEvent $event
+     */
+    public function preSetData(FormEvent $event)
+    {
+        foreach ($this->extensions as $extension) {
+            $extension->preSetData($event);
+        }
+    }
+
+    /**
+     * @see http://api.symfony.com/4.0/Symfony/Component/Form/FormEvents.html
+     *
+     * @param FormEvent $event
+     */
+    public function postSetData(FormEvent $event)
+    {
+        foreach ($this->extensions as $extension) {
+            $extension->postSetData($event);
+        }
+    }
+
+    /**
+     * @see http://api.symfony.com/4.0/Symfony/Component/Form/FormEvents.html
+     *
+     * @param FormEvent $event
+     */
+    public function preSubmit(FormEvent $event)
+    {
+        foreach ($this->extensions as $extension) {
+            $extension->preSubmit($event);
+        }
+    }
+
+    /**
+     * @see http://api.symfony.com/4.0/Symfony/Component/Form/FormEvents.html
+     *
+     * @param FormEvent $event
+     */
+    public function onSubmit(FormEvent $event)
+    {
+        foreach ($this->extensions as $extension) {
+            $extension->onSubmit($event);
+        }
+    }
+
+    /**
+     * @see http://api.symfony.com/4.0/Symfony/Component/Form/FormEvents.html
+     *
+     * @param FormEvent $event
+     */
+    public function postSubmit(FormEvent $event)
+    {
+        foreach ($this->extensions as $extension) {
+            $extension->postSubmit($event);
+        }
+    }
+
+    /**
      * Actions to process
      * the result processed data is given to payload
      *
      * @param mixed $data
      */
-    abstract protected function process(&$data);
+    abstract public function process(&$data);
 
     /**
      * The payload object or array matching the GraphQL definition
@@ -87,14 +160,15 @@ abstract class AbstractMutationResolver extends AbstractResolver
      *
      * @return mixed
      */
-    abstract protected function returnPayload($data, ConstraintViolationList $violations, $inputSource);
+    abstract public function returnPayload($data, ConstraintViolationList $violations, $inputSource);
 
     /**
      * @param mixed $data
+     * @param bool  $disableValidation
      *
      * @return FormBuilderInterface|null
      */
-    protected function createDefinitionForm($data): ?FormBuilderInterface
+    public function createDefinitionForm($data, $disableValidation = false): ?FormBuilderInterface
     {
         if (!$this->context->getDefinition()->hasMeta('form')) {
             return null;
@@ -112,6 +186,11 @@ abstract class AbstractMutationResolver extends AbstractResolver
         ];
 
         $options = array_merge($options, $formConfig['options'] ?? []);
+
+        if ($disableValidation) {
+            $options['validation_groups'] = false;
+        }
+
         $form = $this->createFormBuilder($formType, $data, $options);
         $viewTransformer = new DataWithIdToNodeTransformer($this->getManager(), $this->context->getEndpoint());
         $form->addViewTransformer($viewTransformer);
@@ -124,7 +203,7 @@ abstract class AbstractMutationResolver extends AbstractResolver
      * @param ConstraintViolationList $violations
      * @param null|string             $parentName
      */
-    protected function extractFormErrors(FormInterface $form, ConstraintViolationList $violations, ?string $parentName = null)
+    public function extractFormErrors(FormInterface $form, ConstraintViolationList $violations, ?string $parentName = null)
     {
         $errors = $form->getErrors();
         foreach ($errors as $error) {
@@ -166,38 +245,5 @@ abstract class AbstractMutationResolver extends AbstractResolver
                 $this->extractFormErrors($child, $violations, $parentName);
             }
         }
-    }
-
-    /**
-     * Can use this method to verify if submitted data is valid
-     * otherwise can trow a error
-     *
-     * @param mixed $inputSource contain the original submitted input data
-     * @param mixed $normData    contains the processed and normalized data by the form
-     */
-    protected function onSubmit($inputSource, &$normData)
-    {
-        //override in child
-    }
-
-    /**
-     * Can do something before validate the submitted data
-     *
-     * @param mixed $data
-     */
-    protected function preValidate(&$data)
-    {
-        //override in child
-    }
-
-    /**
-     * Can use this to add your custom validations errors
-     *
-     * @param mixed                   $data
-     * @param ConstraintViolationList $violations
-     */
-    protected function postValidation($data, ConstraintViolationList $violations)
-    {
-        //override in child
     }
 }

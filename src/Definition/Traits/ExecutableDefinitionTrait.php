@@ -19,6 +19,7 @@ trait ExecutableDefinitionTrait
     use ArgumentAwareTrait;
     use DeprecateTrait;
     use TypeAwareDefinitionTrait;
+    use NodeAwareDefinitionTrait;
 
     protected $resolver;
 

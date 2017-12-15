@@ -19,7 +19,7 @@ use Ynlo\GraphQLBundle\Component\TaggedServices\TagSpecification;
 class ExtensionManager
 {
     /**
-     * @var GraphQLExtensionInterface[]
+     * @var ExtensionInterface[]
      */
     protected $extensions;
 
@@ -44,7 +44,7 @@ class ExtensionManager
     }
 
     /**
-     * @return array|GraphQLExtensionInterface[]
+     * @return array|ExtensionInterface[]
      */
     public function getExtensions()
     {
@@ -57,7 +57,7 @@ class ExtensionManager
         /** @var TagSpecification $extensions */
         $taggedServices = $this->taggedServices->findTaggedServices('graphql.extension');
         foreach ($taggedServices as $tagSpecification) {
-            /** @var GraphQLExtensionInterface $extension */
+            /** @var ExtensionInterface $extension */
             $extension = $tagSpecification->getService();
             $this->extensions[] = $extension;
         }

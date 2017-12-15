@@ -19,8 +19,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
+use Ynlo\GraphQLBundle\Definition\NodeAwareDefinitionInterface;
+use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\Extension\ExtensionInterface;
+use Ynlo\GraphQLBundle\Extension\ExtensionsAwareInterface;
 use Ynlo\GraphQLBundle\Model\ID;
 
 /**
@@ -119,11 +123,19 @@ class ResolverExecutor implements ContainerAwareInterface
             $resolveContext->setEndpoint($this->endpoint);
             $resolveContext->setResolveInfo($resolveInfo);
 
-            $type = $this->executableDefinition->getType();
-            if ($this->executableDefinition->hasMeta('node')) {
-                $type = $this->executableDefinition->getMeta('node');
+            $type = null;
+            if ($this->executableDefinition instanceof NodeAwareDefinitionInterface && $this->executableDefinition->getNode()) {
+                $type = $this->executableDefinition->getNode();
             }
 
+            if (!$type && $this->executableDefinition->hasMeta('node')) {
+                $type = $this->executableDefinition->getMeta('node');
+            }
+            if (!$type) {
+                $type = $this->executableDefinition->getType();
+            }
+
+            $nodeDefinition = null;
             if ($this->endpoint->hasType($type)) {
                 if ($nodeDefinition = $this->endpoint->getType($type)) {
                     $resolveContext->setNodeDefinition($nodeDefinition);
@@ -134,6 +146,10 @@ class ResolverExecutor implements ContainerAwareInterface
                 $resolver->setContext($resolveContext);
             }
 
+            if ($resolver instanceof ExtensionsAwareInterface && $nodeDefinition instanceof ObjectDefinition) {
+                $resolver->setExtensions($this->resolveObjectExtensions($nodeDefinition));
+            }
+
             $params = $this->prepareMethodParameters($refMethod, $args);
 
             return $refMethod->invokeArgs($resolver, $params);
@@ -141,6 +157,41 @@ class ResolverExecutor implements ContainerAwareInterface
 
         $error = sprintf('The resolver "%s" for executableDefinition "%s" is not a valid resolver. Resolvers should have a method "__invoke(...)"', $resolverName, $this->executableDefinition->getName());
         throw new \RuntimeException($error);
+    }
+
+    /**
+     * @param ObjectDefinition $objectDefinition
+     *
+     * @return ExtensionInterface[]
+     */
+    protected function resolveObjectExtensions(ObjectDefinition $objectDefinition): array
+    {
+        $extensions = [];
+        foreach ($objectDefinition->getExtensions() as $extensionDefinition) {
+            $extensionClass = $extensionDefinition->getClass();
+            if ($this->container->has($extensionClass)) {
+                $extensionInstance = $this->container->get($extensionClass);
+            } else {
+                $extensionInstance = new $extensionClass();
+                if ($extensionInstance instanceof ContainerAwareInterface) {
+                    $extensionInstance->setContainer($this->container);
+                }
+            }
+            $extensions[] = [$extensionDefinition->getPriority(), $extensionInstance];
+        }
+
+        //sort by priority
+        usort(
+            $extensions,
+            function ($extension1, $extension2) {
+                list($priority1) = $extension1;
+                list($priority2) = $extension2;
+
+                return version_compare($priority2 + 250, $priority1 + 250);
+            }
+        );
+
+        return array_column($extensions, 1);
     }
 
     /**

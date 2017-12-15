@@ -10,6 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Mutation;
 
+use Symfony\Component\Form\FormEvent;
 use Ynlo\GraphQLBundle\Error\NodeNotFoundException;
 use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
@@ -24,28 +25,28 @@ class UpdateNode extends AbstractMutationResolver
     /**
      * {@inheritdoc}
      */
-    protected function process(&$data)
+    public function process(&$data)
     {
         $this->preUpdate($data);
-        foreach ($this->container->get(ExtensionManager::class)->getExtensions() as $extension) {
+        foreach ($this->extensions as $extension) {
             $extension->preUpdate($data, $this, $this->context);
         }
 
         $this->getManager()->flush();
 
         $this->postUpdate($data);
-        foreach ($this->container->get(ExtensionManager::class)->getExtensions() as $extension) {
+        foreach ($this->extensions as $extension) {
             $extension->postUpdate($data, $this, $this->context);
         }
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    protected function onSubmit($inputSource, &$normData)
+    public function onSubmit(FormEvent $event)
     {
-        if ($normData instanceof NodeInterface && $normData->getId()) {
-            return;
+        if ($event->getData() instanceof NodeInterface && $event->getData()->getId()) {
+            parent::onSubmit($event);
         }
 
         throw new NodeNotFoundException();
@@ -54,7 +55,7 @@ class UpdateNode extends AbstractMutationResolver
     /**
      * {@inheritdoc}
      */
-    protected function returnPayload($data, ConstraintViolationList $violations, $inputSource)
+    public function returnPayload($data, ConstraintViolationList $violations, $inputSource)
     {
         if ($violations->count()) {
             $data = null;

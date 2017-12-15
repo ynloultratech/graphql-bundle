@@ -11,6 +11,7 @@
 namespace Ynlo\GraphQLBundle\Extension;
 
 use Doctrine\ORM\QueryBuilder;
+use Symfony\Component\Form\FormEvent;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Resolver\ResolverContext;
 use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
@@ -18,14 +19,62 @@ use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
 /**
  * Base extension for all GraphQL extensions
  */
-abstract class AbstractGraphQLExtension implements GraphQLExtensionInterface
+abstract class AbstractExtension implements ExtensionInterface
 {
+    /**
+     * {@inheritdoc}
+     */
+    public function getPriority(): int
+    {
+        return 0;
+    }
+
     /**
      * {@inheritdoc}
      */
     public function configureQuery(QueryBuilder $queryBuilder, $resolver, ResolverContext $context)
     {
         // TODO: Implement configureQuery() method.
+    }
+
+    /**
+     *{@inheritDoc}
+     */
+    public function preSetData(FormEvent $event)
+    {
+        // TODO: Implement preSetData() method.
+    }
+
+    /**
+     *{@inheritDoc}
+     */
+    public function postSetData(FormEvent $event)
+    {
+        // TODO: Implement postSetData() method.
+    }
+
+    /**
+     *{@inheritDoc}
+     */
+    public function preSubmit(FormEvent $event)
+    {
+        // TODO: Implement preSubmit() method.
+    }
+
+    /**
+     *{@inheritDoc}
+     */
+    public function onSubmit(FormEvent $event)
+    {
+        // TODO: Implement onSubmit() method.
+    }
+
+    /**
+     *{@inheritDoc}
+     */
+    public function postSubmit(FormEvent $event)
+    {
+        // TODO: Implement postSubmit() method.
     }
 
     /**

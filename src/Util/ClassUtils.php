@@ -47,8 +47,12 @@ class ClassUtils
      *
      * @return string
      */
-    public static function applyNamingConvention(string $namespace, string $path, string $node, string $name, ?string $suffix = null)
+    public static function applyNamingConvention(string $namespace, string $path, ?string $node, string $name, ?string $suffix = null)
     {
+        if (null === $node) {
+            return sprintf('%s\%s\%s%s', $namespace, $path, ucfirst($name), $suffix);
+        }
+
         return sprintf('%s\%s\%s\%s%s', $namespace, $path, $node, ucfirst($name), $suffix);
     }
 

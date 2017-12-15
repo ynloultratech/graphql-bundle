@@ -23,10 +23,10 @@ class AddNode extends AbstractMutationResolver
     /**
      * {@inheritdoc}
      */
-    protected function process(&$data)
+    public function process(&$data)
     {
         $this->prePersist($data);
-        foreach ($this->container->get(ExtensionManager::class)->getExtensions() as $extension) {
+        foreach ($this->extensions as $extension) {
             $extension->prePersist($data, $this, $this->context);
         }
 
@@ -34,7 +34,7 @@ class AddNode extends AbstractMutationResolver
         $this->getManager()->flush();
 
         $this->postPersist($data);
-        foreach ($this->container->get(ExtensionManager::class)->getExtensions() as $extension) {
+        foreach ($this->extensions as $extension) {
             $extension->postPersist($data, $this, $this->context);
         }
     }
@@ -42,7 +42,7 @@ class AddNode extends AbstractMutationResolver
     /**
      * {@inheritdoc}
      */
-    protected function returnPayload($data, ConstraintViolationList $violations, $inputSource)
+    public function returnPayload($data, ConstraintViolationList $violations, $inputSource)
     {
         if ($violations->count()) {
             $data = null;

@@ -11,15 +11,23 @@
 namespace Ynlo\GraphQLBundle\Extension;
 
 use Doctrine\ORM\QueryBuilder;
+use Symfony\Component\Form\FormEvent;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Resolver\ResolverContext;
-use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
 
 /**
- * GraphQLExtensionInterface
+ * ExtensionInterface
  */
-interface GraphQLExtensionInterface
+interface ExtensionInterface
 {
+    /**
+     * Extension priority
+     * should return a valued between -250 - 250
+     *
+     * @return int
+     */
+    public function getPriority(): int;
+
     /**
      * Configure the query builder to filter records or add a complex logic
      *
@@ -30,23 +38,39 @@ interface GraphQLExtensionInterface
     public function configureQuery(QueryBuilder $queryBuilder, $resolver, ResolverContext $context);
 
     /**
-     * @param array           $data
-     * @param mixed           $resolver
-     * @param ResolverContext $context
+     * @see http://api.symfony.com/4.0/Symfony/Component/Form/FormEvents.html
      *
-     * @return mixed
+     * @param FormEvent $event
      */
-    public function preValidate(&$data, $resolver, ResolverContext $context);
+    public function preSetData(FormEvent $event);
 
     /**
-     * Can use this to add your custom validations errors
+     * @see http://api.symfony.com/4.0/Symfony/Component/Form/FormEvents.html
      *
-     * @param mixed                   $data
-     * @param ConstraintViolationList $violations
-     * @param mixed                   $resolver
-     * @param ResolverContext         $context
+     * @param FormEvent $event
      */
-    public function postValidation($data, ConstraintViolationList $violations, $resolver, ResolverContext $context);
+    public function postSetData(FormEvent $event);
+
+    /**
+     * @see http://api.symfony.com/4.0/Symfony/Component/Form/FormEvents.html
+     *
+     * @param FormEvent $event
+     */
+    public function preSubmit(FormEvent $event);
+
+    /**
+     * @see http://api.symfony.com/4.0/Symfony/Component/Form/FormEvents.html
+     *
+     * @param FormEvent $event
+     */
+    public function onSubmit(FormEvent $event);
+
+    /**
+     * @see http://api.symfony.com/4.0/Symfony/Component/Form/FormEvents.html
+     *
+     * @param FormEvent $event
+     */
+    public function postSubmit(FormEvent $event);
 
     /**
      * @param NodeInterface   $node

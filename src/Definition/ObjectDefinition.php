@@ -28,6 +28,11 @@ class ObjectDefinition implements ObjectDefinitionInterface, NodeAwareDefinition
     /**
      * @var string[]
      */
+    protected $extensions = [];
+
+    /**
+     * @var InterfaceExtensionDefinition[]
+     */
     protected $interfaces = [];
 
     /**
@@ -62,5 +67,23 @@ class ObjectDefinition implements ObjectDefinitionInterface, NodeAwareDefinition
     public function getNode(): ?string
     {
         return $this->getClass();
+    }
+
+
+    /**
+     * @return InterfaceExtensionDefinition[]
+     */
+    public function getExtensions(): array
+    {
+        return $this->extensions;
+    }
+
+    /**
+     * @param string $class
+     * @param int    $priority
+     */
+    public function addExtension($class, $priority = 0)
+    {
+        $this->extensions[$class] = new InterfaceExtensionDefinition($class, $priority);
     }
 }

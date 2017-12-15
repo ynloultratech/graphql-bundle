@@ -172,6 +172,7 @@ class NamespaceDefinitionExtension extends AbstractDefinitionExtension
         $field->setArguments($definition->getArguments());
         $field->setList($definition->isList());
         $field->setMetas($definition->getMetas());
+        $field->setNode($definition->getNode());
         $fieldsAwareDefinition->addField($field);
     }
 

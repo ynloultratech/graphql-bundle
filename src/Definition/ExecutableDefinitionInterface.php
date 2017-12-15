@@ -14,7 +14,8 @@ interface ExecutableDefinitionInterface extends
     DefinitionInterface,
     TypeAwareDefinitionInterface,
     ArgumentAwareInterface,
-    DeprecateInterface
+    DeprecateInterface,
+    NodeAwareDefinitionInterface
 {
     /**
      * {@inheritDoc}

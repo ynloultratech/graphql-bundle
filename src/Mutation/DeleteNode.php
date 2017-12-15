@@ -10,8 +10,8 @@
 
 namespace Ynlo\GraphQLBundle\Mutation;
 
+use Symfony\Component\Form\FormEvent;
 use Ynlo\GraphQLBundle\Error\NodeNotFoundException;
-use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Model\DeleteNodePayload;
 use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
@@ -25,10 +25,10 @@ class DeleteNode extends AbstractMutationResolver
     /**
      * {@inheritdoc}
      */
-    protected function process(&$data)
+    public function process(&$data)
     {
         $this->preDelete($data);
-        foreach ($this->container->get(ExtensionManager::class)->getExtensions() as $extension) {
+        foreach ($this->extensions as $extension) {
             $extension->preDelete($data, $this, $this->context);
         }
 
@@ -36,7 +36,7 @@ class DeleteNode extends AbstractMutationResolver
         $this->getManager()->flush();
 
         $this->postDelete($data);
-        foreach ($this->container->get(ExtensionManager::class)->getExtensions() as $extension) {
+        foreach ($this->extensions as $extension) {
             $extension->postDelete($data, $this, $this->context);
         }
     }
@@ -44,7 +44,7 @@ class DeleteNode extends AbstractMutationResolver
     /**
      * {@inheritdoc}
      */
-    protected function returnPayload($data, ConstraintViolationList $violations, $inputSource)
+    public function returnPayload($data, ConstraintViolationList $violations, $inputSource)
     {
         return new DeleteNodePayload(
             $inputSource['id'] ? ID::createFromString($inputSource['id']) : null,
@@ -53,12 +53,12 @@ class DeleteNode extends AbstractMutationResolver
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
-    protected function onSubmit($inputSource, &$normData)
+    public function onSubmit(FormEvent $event)
     {
-        if ($normData instanceof NodeInterface && $normData->getId()) {
-            return;
+        if ($event->getData() instanceof NodeInterface && $event->getData()->getId()) {
+            parent::onSubmit($event);
         }
 
         throw new NodeNotFoundException();

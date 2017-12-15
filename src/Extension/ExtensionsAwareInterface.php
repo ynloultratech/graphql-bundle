@@ -8,15 +8,16 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Definition;
-
-use Ynlo\GraphQLBundle\Definition\Traits\ExecutableDefinitionTrait;
-use Ynlo\GraphQLBundle\Definition\Traits\NodeAwareDefinitionTrait;
+namespace Ynlo\GraphQLBundle\Extension;
 
 /**
- * Class QueryDefinition
+ * Every resolver using this interface will be automatically injected
+ * with all available interfaces to current node
  */
-class QueryDefinition implements ExecutableDefinitionInterface
+interface ExtensionsAwareInterface
 {
-    use ExecutableDefinitionTrait;
+    /**
+     * @param ExtensionInterface[] $extensions
+     */
+    public function setExtensions($extensions);
 }
