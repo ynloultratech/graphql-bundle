@@ -28,7 +28,7 @@ class CategoryTest extends ApiTestCase
         /** @var Category[] $records */
         $records = self::getRepository(Category::class)->findBy([], ['name' => 'ASC'], 3);
         self::query(
-            'categories.all',
+            'categories.categories',
             ['first' => 5, 'orderBy' => ['field' => 'name', 'direction' => 'ASC']],
             [
                 'edges' => [
@@ -49,7 +49,7 @@ class CategoryTest extends ApiTestCase
             ]
         );
         foreach ($records as $index => $category) {
-            self::assertJsonPathEquals($category->getName(), "data.categories.all.edges[$index].node.name");
+            self::assertJsonPathEquals($category->getName(), "data.categories.categories.edges[$index].node.name");
             /** @var Post[] $posts */
             $posts = self::getRepository(Post::class)
                          ->createQueryBuilder('o')
@@ -61,7 +61,7 @@ class CategoryTest extends ApiTestCase
                          ->getResult();
 
             foreach ($posts as $indexPost => $post) {
-                self::assertJsonPathEquals($post->getTitle(), "data.categories.all.edges[$index].node.posts.edges[$indexPost].node.title");
+                self::assertJsonPathEquals($post->getTitle(), "data.categories.categories.edges[$index].node.posts.edges[$indexPost].node.title");
             }
         }
     }
@@ -94,17 +94,19 @@ class CategoryTest extends ApiTestCase
         }
 
         self::query(
-            'categories.categories',
+            'nodes',
             ['ids' => [self::encodeID('Category', $category1->getId()), self::encodeID('Category', $category2->getId())]],
             [
-                'id',
-                'name',
-                'postsByStatus' => [
-                    ['first' => 100, 'status' => self::literalValue(PostStatusType::PUBLISH)],
-                    [
-                        'edges' => [
-                            'node' => [
-                                'status',
+                '... on Category' => [
+                    'id',
+                    'name',
+                    'postsByStatus' => [
+                        ['first' => 100, 'status' => self::literalValue(PostStatusType::PUBLISH)],
+                        [
+                            'edges' => [
+                                'node' => [
+                                    'status',
+                                ],
                             ],
                         ],
                     ],
@@ -112,14 +114,14 @@ class CategoryTest extends ApiTestCase
             ]
         );
 
-        $resultCategory1 = self::getJsonPathValue('data.categories.categories[0]');
-        $resultCategory2 = self::getJsonPathValue('data.categories.categories[1]');
+        $resultCategory1 = self::getJsonPathValue('data.nodes[0]');
+        $resultCategory2 = self::getJsonPathValue('data.nodes[1]');
 
         self::assertEquals($category1->getName(), $resultCategory1['name']);
         self::assertEquals($category2->getName(), $resultCategory2['name']);
 
-        $postsInCategory1 = self::getJsonPathValue('data.categories.categories[0].postsByStatus.edges[*].node');
-        $postsInCategory2 = self::getJsonPathValue('data.categories.categories[1].postsByStatus.edges[*].node');
+        $postsInCategory1 = self::getJsonPathValue('data.nodes[0].postsByStatus.edges[*].node');
+        $postsInCategory2 = self::getJsonPathValue('data.nodes[1].postsByStatus.edges[*].node');
 
         self::assertEquals($publish1, $postsInCategory1);
         self::assertEquals($publish2, $postsInCategory2);

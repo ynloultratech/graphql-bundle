@@ -15,9 +15,9 @@ use Ynlo\GraphQLBundle\Query\Node\Nodes;
 
 /**
  * @GraphQL\Query(list=true)
- * @GraphQL\Argument(name="logins", type="[string!]", internalName="ids")
+ * @GraphQL\Argument(name="logins", type="[string!]", internalName="ids" )
  */
-class Users extends Nodes
+class ByLogin extends Nodes
 {
     protected $fetchBy = 'username';
 }

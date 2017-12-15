@@ -26,7 +26,7 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  * @UniqueEntity(fields={"username"}, message="The username <b>{{ value }}</b> is already taken")
  *
  * @GraphQL\ObjectType()
- * @GraphQL\CRUDOperations(exclude={"get", "gets"})
+ * @GraphQL\CRUDOperations()
  */
 class User implements NodeInterface, TimestampableInterface
 {
@@ -135,6 +135,17 @@ class User implements NodeInterface, TimestampableInterface
     public function isAdmin(): bool
     {
         return $this->getType() === self::TYPE_ADMIN;
+    }
+
+    /**
+     * @return bool
+     *
+     * @GraphQL\Field(type="bool")
+     * @GraphQL\Argument(name="type", type="string!")
+     */
+    public function is($type): bool
+    {
+        return $this->getType() === $type;
     }
 
     /**

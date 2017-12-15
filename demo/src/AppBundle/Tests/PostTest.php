@@ -78,7 +78,7 @@ class PostTest extends ApiTestCase
         /** @var Post[] $records */
         $records = self::getRepository(Post::class)->findBy([], ['title' => 'ASC'], 3);
         self::query(
-            'posts.all',
+            'posts.posts',
             ['first' => 5, 'orderBy' => ['field' => 'title', 'direction' => 'ASC']],
             [
                 'edges' => [
@@ -93,8 +93,8 @@ class PostTest extends ApiTestCase
         );
 
         foreach ($records as $index => $post) {
-            self::assertJsonPathEquals($post->getTitle(), "data.posts.all.edges[$index].node.title");
-            self::assertJsonPathEquals($post->getCategories()->first()->getName(), "data.posts.all.edges[$index].node.categories[0].name");
+            self::assertJsonPathEquals($post->getTitle(), "data.posts.posts.edges[$index].node.title");
+            self::assertJsonPathEquals($post->getCategories()->first()->getName(), "data.posts.posts.edges[$index].node.categories[0].name");
         }
     }
 }

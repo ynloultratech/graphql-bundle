@@ -12,13 +12,13 @@ namespace Ynlo\GraphQLBundle\Demo\AppBundle\Mutation\Comment;
 
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Model\CommentableInterface;
-use Ynlo\GraphQLBundle\Mutation\AddNodeMutation;
+use Ynlo\GraphQLBundle\Mutation\AddNode;
 use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
 
 /**
  * @GraphQL\Mutation()
  */
-class AddComment extends AddNodeMutation
+class AddComment extends AddNode
 {
     /**
      * {@inheritdoc}

@@ -12,9 +12,6 @@ namespace Ynlo\GraphQLBundle\Demo\AppBundle\Type;
 
 use GraphQL\Type\Definition\EnumType;
 
-/**
- * PostStatusType
- */
 class PostStatusType extends EnumType
 {
     public const DRAFT = 'DRAFT';
