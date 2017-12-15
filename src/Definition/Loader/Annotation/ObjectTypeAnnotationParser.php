@@ -214,9 +214,6 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
         foreach ($props as $prop) {
             if ($this->isExposed($objectDefinition, $prop)) {
                 $field = new FieldDefinition();
-                $field->setOriginName($prop->name);
-                $field->setOriginType(\get_class($prop));
-
                 foreach ($fieldDecorators as $fieldDecorator) {
                     $fieldDecorator->decorateFieldDefinition($prop, $field, $objectDefinition);
                 }
@@ -226,6 +223,9 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
                 } else {
                     $objectDefinition->addField($field);
                 }
+
+                $field->setOriginName($prop->name);
+                $field->setOriginType(\get_class($prop));
 
                 //resolve field arguments
                 if ($prop instanceof \ReflectionMethod) {
