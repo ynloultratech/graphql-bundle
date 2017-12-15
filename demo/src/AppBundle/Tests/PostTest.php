@@ -27,32 +27,38 @@ class PostTest extends ApiTestCase
     public function testAddPost()
     {
         $faker = Factory::create();
-        self::mutation(
-            'posts.add',
+
+        $mutation = <<<'GraphQL'
+mutation ($input: AddPostInput!){
+    posts {
+        add(input: $input){
+            node {
+                title
+                body
+                status
+                categories {
+                    name
+                }
+            }
+            clientMutationId
+        }
+    }
+}
+GraphQL;
+
+        self::send(
+            $mutation,
             [
                 'input' => [
                     'title' => $title = $faker->sentence(),
                     'body' => $body = $faker->paragraph,
-                    'status' => self::literalValue(PostStatusType::PUBLISH),
+                    'status' => PostStatusType::PUBLISH,
                     'categories' => [
                         self::encodeID('Category', 1),
                         self::encodeID('Category', 2),
                     ],
                     'clientMutationId' => (string) $clientMutationId = mt_rand(),
                 ],
-            ],
-            [
-                'node' => [
-                    '... on Post' => [
-                        'title',
-                        'body',
-                        'status',
-                        'categories' => [
-                            'name',
-                        ],
-                    ],
-                ],
-                'clientMutationId',
             ]
         );
 
@@ -76,20 +82,24 @@ class PostTest extends ApiTestCase
     {
         /** @var Post[] $records */
         $records = self::getRepository(Post::class)->findBy([], ['title' => 'ASC'], 3);
-        self::query(
-            'posts.posts',
-            ['first' => 5, 'orderBy' => ['field' => 'title', 'direction' => 'ASC']],
-            [
-                'edges' => [
-                    'node' => [
-                        'title',
-                        'categories' => [
-                            'name',
-                        ],
-                    ],
-                ],
-            ]
-        );
+
+        $query = <<<'GraphQL'
+query {
+    posts {
+        posts(first: 5, orderBy: {field: "title", direction: "ASC"}){
+            edges {
+                node {
+                    title
+                    categories {
+                        name
+                    }
+                }
+            }
+        }
+    }
+}
+GraphQL;
+        self::send($query);
 
         foreach ($records as $index => $post) {
             self::assertJsonPathEquals($post->getTitle(), "data.posts.posts.edges[$index].node.title");

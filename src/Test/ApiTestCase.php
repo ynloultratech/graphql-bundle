@@ -11,6 +11,7 @@
 
 namespace Ynlo\GraphQLBundle\Test;
 
+use PHPUnit\Util\Blacklist;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 
@@ -34,6 +35,21 @@ class ApiTestCase extends WebTestCase
      * @var bool
      */
     protected $cleanup = true;
+
+    /**
+     * Constructs a test case with the given name.
+     *
+     * @param string $name
+     * @param array  $data
+     * @param string $dataName
+     */
+    public function __construct($name = null, array $data = [], $dataName = '')
+    {
+        parent::__construct($name, $data, $dataName);
+
+        Blacklist::$blacklistedClassNames['Ynlo\GraphQLBundle\Test\ApiTestCase'] = 1;
+    }
+
 
     /**
      * {@inheritdoc}
@@ -80,3 +96,4 @@ class ApiTestCase extends WebTestCase
         return self::$client ?? self::createClient();
     }
 }
+

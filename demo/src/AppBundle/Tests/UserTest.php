@@ -24,31 +24,34 @@ class UserTest extends ApiTestCase
      */
     public function testUserList()
     {
-        self::query(
-            'users.users',
-            ['first' => 5],
-            [
-                'totalCount',
-                'pageInfo' => [
-                    'endCursor',
-                    'startCursor',
-                    'hasPreviousPage',
-                    'hasNextPage',
-                ],
-                'edges' => [
-                    'node' => [
-                        'id',
-                        'login',
-                        'profile' => [
-                            'phone',
-                            'address' => [
-                                'zipCode',
-                            ],
-                        ],
-                    ],
-                ],
-            ]
-        );
+        $query = <<<'GraphQL'
+query {
+    users{
+        users(first:5){
+            totalCount
+            pageInfo {
+                endCursor
+                startCursor
+                hasPreviousPage
+                hasNextPage
+            }
+            edges {
+                node {
+                    id
+                    login
+                    profile {
+                        phone
+                        address {
+                            zipCode
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+GraphQL;
+        self::send($query);
 
         self::assertResponseCodeIsOK();
         self::assertJsonPathEquals('Y3Vyc29yOjA=', 'data.users.users.pageInfo.startCursor');
@@ -75,31 +78,35 @@ class UserTest extends ApiTestCase
     public function testUserListWithOrder()
     {
         $records = self::getRepository(User::class)->findBy([], ['username' => 'DESC'], 3);
-        self::query(
-            'users.users',
-            ['first' => 3, 'orderBy' => ['field' => 'login', 'direction' => 'DESC']],
-            [
-                'totalCount',
-                'pageInfo' => [
-                    'endCursor',
-                    'startCursor',
-                    'hasPreviousPage',
-                    'hasNextPage',
-                ],
-                'edges' => [
-                    'node' => [
-                        'id',
-                        'login',
-                        'profile' => [
-                            'phone',
-                            'address' => [
-                                'zipCode',
-                            ],
-                        ],
-                    ],
-                ],
-            ]
-        );
+
+        $query = <<<'GraphQL'
+query {
+    users{
+        users(first:3, orderBy: {field:"login", direction: "DESC"}){
+            totalCount
+            pageInfo {
+                endCursor
+                startCursor
+                hasPreviousPage
+                hasNextPage
+            }
+            edges {
+                node {
+                    id
+                    login
+                    profile {
+                        phone
+                        address {
+                            zipCode
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+GraphQL;
+        self::send($query);
 
         self::assertJsonPathEquals('Y3Vyc29yOjA=', 'data.users.users.pageInfo.startCursor');
         self::assertJsonPathEquals('Y3Vyc29yOjI=', 'data.users.users.pageInfo.endCursor');
@@ -118,32 +125,34 @@ class UserTest extends ApiTestCase
     public function testUserListPaginationFirstAfter()
     {
         $records = self::getRepository(User::class)->findBy([], ['username' => 'ASC'], 3, 3);
-
-        self::query(
-            'users.users',
-            ['first' => 3, 'orderBy' => ['field' => 'login', 'direction' => 'ASC'], 'after' => base64_encode('cursor:2')],
-            [
-                'totalCount',
-                'pageInfo' => [
-                    'endCursor',
-                    'startCursor',
-                    'hasPreviousPage',
-                    'hasNextPage',
-                ],
-                'edges' => [
-                    'node' => [
-                        'id',
-                        'login',
-                        'profile' => [
-                            'phone',
-                            'address' => [
-                                'zipCode',
-                            ],
-                        ],
-                    ],
-                ],
-            ]
-        );
+        $query = <<<'GraphQL'
+query ($cursor: String){
+    users{
+        users(first:3, orderBy: {field:"login", direction: "ASC"}, after: $cursor){
+            totalCount
+            pageInfo {
+                endCursor
+                startCursor
+                hasPreviousPage
+                hasNextPage
+            }
+            edges {
+                node {
+                    id
+                    login
+                    profile {
+                        phone
+                        address {
+                            zipCode
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+GraphQL;
+        self::send($query, ['cursor' => base64_encode('cursor:2')]);
 
         self::assertJsonPathEquals(base64_encode('cursor:3'), 'data.users.users.pageInfo.startCursor');
         self::assertJsonPathEquals(base64_encode('cursor:5'), 'data.users.users.pageInfo.endCursor');
@@ -163,31 +172,34 @@ class UserTest extends ApiTestCase
     {
         $records = self::getRepository(User::class)->findBy([], ['username' => 'ASC'], 3, 0);
 
-        self::query(
-            'users.users',
-            ['first' => 3, 'orderBy' => ['field' => 'login', 'direction' => 'ASC'], 'before' => base64_encode('cursor:7')],
-            [
-                'totalCount',
-                'pageInfo' => [
-                    'endCursor',
-                    'startCursor',
-                    'hasPreviousPage',
-                    'hasNextPage',
-                ],
-                'edges' => [
-                    'node' => [
-                        'id',
-                        'login',
-                        'profile' => [
-                            'phone',
-                            'address' => [
-                                'zipCode',
-                            ],
-                        ],
-                    ],
-                ],
-            ]
-        );
+        $query = <<<'GraphQL'
+query ($cursor: String){
+    users{
+        users(first:3, orderBy: {field:"login", direction: "ASC"}, before: $cursor){
+            totalCount
+            pageInfo {
+                endCursor
+                startCursor
+                hasPreviousPage
+                hasNextPage
+            }
+            edges {
+                node {
+                    id
+                    login
+                    profile {
+                        phone
+                        address {
+                            zipCode
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+GraphQL;
+        self::send($query, ['cursor' => base64_encode('cursor:7')]);
 
         self::assertJsonPathEquals(base64_encode('cursor:0'), 'data.users.users.pageInfo.startCursor');
         self::assertJsonPathEquals(base64_encode('cursor:2'), 'data.users.users.pageInfo.endCursor');
@@ -207,31 +219,34 @@ class UserTest extends ApiTestCase
     {
         $records = self::getRepository(User::class)->findBy([], ['username' => 'ASC'], 3, 8);
 
-        self::query(
-            'users.users',
-            ['last' => 3, 'orderBy' => ['field' => 'login', 'direction' => 'ASC'], 'after' => base64_encode('cursor:5')],
-            [
-                'totalCount',
-                'pageInfo' => [
-                    'endCursor',
-                    'startCursor',
-                    'hasPreviousPage',
-                    'hasNextPage',
-                ],
-                'edges' => [
-                    'node' => [
-                        'id',
-                        'login',
-                        'profile' => [
-                            'phone',
-                            'address' => [
-                                'zipCode',
-                            ],
-                        ],
-                    ],
-                ],
-            ]
-        );
+        $query = <<<'GraphQL'
+query ($cursor: String){
+    users{
+        users(last:3, orderBy: {field:"login", direction: "ASC"}, after: $cursor){
+            totalCount
+            pageInfo {
+                endCursor
+                startCursor
+                hasPreviousPage
+                hasNextPage
+            }
+            edges {
+                node {
+                    id
+                    login
+                    profile {
+                        phone
+                        address {
+                            zipCode
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+GraphQL;
+        self::send($query, ['cursor' => base64_encode('cursor:5')]);
 
         self::assertJsonPathEquals(base64_encode('cursor:8'), 'data.users.users.pageInfo.startCursor');
         self::assertJsonPathEquals(base64_encode('cursor:10'), 'data.users.users.pageInfo.endCursor');
@@ -251,31 +266,34 @@ class UserTest extends ApiTestCase
     {
         $records = self::getRepository(User::class)->findBy([], ['username' => 'ASC'], 3, 2);
 
-        self::query(
-            'users.users',
-            ['last' => 3, 'orderBy' => ['field' => 'login', 'direction' => 'ASC'], 'before' => base64_encode('cursor:5')],
-            [
-                'totalCount',
-                'pageInfo' => [
-                    'endCursor',
-                    'startCursor',
-                    'hasPreviousPage',
-                    'hasNextPage',
-                ],
-                'edges' => [
-                    'node' => [
-                        'id',
-                        'login',
-                        'profile' => [
-                            'phone',
-                            'address' => [
-                                'zipCode',
-                            ],
-                        ],
-                    ],
-                ],
-            ]
-        );
+        $query = <<<'GraphQL'
+query ($cursor: String){
+    users{
+        users(last:3, orderBy: {field:"login", direction: "ASC"}, before: $cursor){
+            totalCount
+            pageInfo {
+                endCursor
+                startCursor
+                hasPreviousPage
+                hasNextPage
+            }
+            edges {
+                node {
+                    id
+                    login
+                    profile {
+                        phone
+                        address {
+                            zipCode
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+GraphQL;
+        self::send($query, ['cursor' => base64_encode('cursor:5')]);
 
         self::assertJsonPathEquals(base64_encode('cursor:2'), 'data.users.users.pageInfo.startCursor');
         self::assertJsonPathEquals(base64_encode('cursor:4'), 'data.users.users.pageInfo.endCursor');
@@ -296,12 +314,20 @@ class UserTest extends ApiTestCase
         /** @var User $user1 */
         $user1 = self::getFixtureReference('user1');
 
-        self::query(
-            'users.byLogin',
-            ['logins' => ['admin', $user1->getUsername()]],
+        $query = <<<'GraphQL'
+query($user1:String!){
+    users {
+        byLogin(logins: ["admin", $user1]){
+            id
+            login
+        }
+    }
+}
+GraphQL;
+        self::send(
+            $query,
             [
-                'id',
-                'login',
+                'user1' => $user1->getUsername(),
             ]
         );
 
@@ -309,13 +335,20 @@ class UserTest extends ApiTestCase
         self::assertJsonPathEquals('admin', 'data.users.byLogin[0].login');
         self::assertJsonPathEquals($user1->getUsername(), 'data.users.byLogin[1].login');
 
-        //The order of logins should be equal to response
-        self::query(
-            'users.byLogin',
-            ['logins' => [$user1->getUsername(), 'admin']],
+        $query = <<<'GraphQL'
+query($user1:String!){
+    users {
+        byLogin(logins: [$user1, "admin"]){
+            id
+            login
+        }
+    }
+}
+GraphQL;
+        self::send(
+            $query,
             [
-                'id',
-                'login',
+                'user1' => $user1->getUsername(),
             ]
         );
 
@@ -329,8 +362,25 @@ class UserTest extends ApiTestCase
      */
     public function testAddUser()
     {
-        self::mutation(
-            'users.add',
+        $mutation = <<<'GraphQL'
+mutation($input: AddUserInput!){
+    users {
+        add(input: $input ) {
+            node {
+                id
+                login
+                profile {
+                    email
+                }
+            }
+            clientMutationId
+        }
+    }
+}
+GraphQL;
+
+        self::send(
+            $mutation,
             [
                 'input' => [
                     'login' => $login = 'graphql',
@@ -339,18 +389,6 @@ class UserTest extends ApiTestCase
                     ],
                     'clientMutationId' => (string) $clientMutationId = mt_rand(),
                 ],
-            ],
-            [
-                'node' => [
-                    '... on User' => [
-                        'id',
-                        'login',
-                        'profile' => [
-                            'email',
-                        ],
-                    ],
-                ],
-                'clientMutationId',
             ]
         );
 
@@ -374,8 +412,29 @@ class UserTest extends ApiTestCase
      */
     public function testAddUserValidation()
     {
-        self::mutation(
-            'users.add',
+        $mutation = <<<'GraphQL'
+mutation($input: AddUserInput!){
+    users {
+        add(input: $input ) {
+            node {
+                id
+                login
+                profile {
+                    email
+                }
+            }
+            clientMutationId
+            constraintViolations {
+                message
+                propertyPath
+            }
+        }
+    }
+}
+GraphQL;
+
+        self::send(
+            $mutation,
             [
                 'input' => [
                     'login' => '',
@@ -383,22 +442,6 @@ class UserTest extends ApiTestCase
                         'email' => 'sssss',
                     ],
                     'clientMutationId' => (string) $clientMutationId = mt_rand(),
-                ],
-            ],
-            [
-                'node' => [
-                    '... on User' => [
-                        'id',
-                        'login',
-                        'profile' => [
-                            'email',
-                        ],
-                    ],
-                ],
-                'clientMutationId',
-                'constraintViolations' => [
-                    'message',
-                    'propertyPath',
                 ],
             ]
         );
@@ -424,30 +467,37 @@ class UserTest extends ApiTestCase
         self::assertRepositoryContains(User::class, ['username' => $user1->getUsername()]);
         self::assertRepositoryNotContains(User::class, ['username' => $newLogin]);
 
-        self::mutation(
-            'users.update',
+        $mutation = <<<'GraphQL'
+mutation($input: UpdateUserInput!){
+    users {
+        update(input: $input ) {
+            node {
+                id
+                login
+                profile {
+                    email
+                }
+            }
+            clientMutationId
+            constraintViolations {
+                message
+                propertyPath
+            }
+        }
+    }
+}
+GraphQL;
+
+        self::send(
+            $mutation,
             [
                 'input' => [
-                    'id' => $id = self::encodeID('User', $user1->getId()),
+                    'id' => $id = self::encodeID('User', $user1),
                     'login' => $newLogin,
                     'profile' => [
                         'email' => $email = 'test@example.com',
                     ],
                     'clientMutationId' => (string) $clientMutationId = mt_rand(),
-                ],
-            ],
-            [
-                'node' => [
-                    '... on User' => [
-                        'id',
-                        'login',
-                        'profile' => [
-                            'email',
-                        ],
-                    ],
-                ],
-                'constraintViolations' => [
-                    'message',
                 ],
             ]
         );
@@ -469,17 +519,24 @@ class UserTest extends ApiTestCase
         $user1 = self::getFixtureReference('user1');
         self::assertRepositoryContains(User::class, ['username' => $user1->getUsername()]);
 
-        self::mutation(
-            'users.delete',
+        $mutation = <<<'GraphQL'
+mutation($input: DeleteUserInput!){
+    users {
+        delete(input: $input ) {
+            id
+            clientMutationId
+        }
+    }
+}
+GraphQL;
+
+        self::send(
+            $mutation,
             [
                 'input' => [
                     'id' => $id = self::encodeID('User', $user1->getId()),
                     'clientMutationId' => (string) $clientMutationId = mt_rand(),
                 ],
-            ],
-            [
-                'id',
-                'clientMutationId',
             ]
         );
 
@@ -496,31 +553,36 @@ class UserTest extends ApiTestCase
     {
         /** @var User $user1 */
         $user1 = self::getFixtureReference('user1');
-        self::query(
-            'node',
-            ['id' => self::encodeID('User', $user1->getId())],
+
+        $query = <<<'GraphQL'
+query($id: ID!){
+    node(id: $id) {
+        ... on User {
+            id
+            login
+            posts(first: 10){
+                totalCount
+                pageInfo {
+                    endCursor
+                    startCursor
+                    hasPreviousPage
+                    hasNextPage
+                }
+                edges {
+                    node {
+                        title
+                    }
+                }
+            }
+        }
+    }
+}
+GraphQL;
+
+        self::send(
+            $query,
             [
-                '... on User' => [
-                    'id',
-                    'login',
-                    'posts' => [
-                        ['first' => 10],
-                        [
-                            'totalCount',
-                            'pageInfo' => [
-                                'endCursor',
-                                'startCursor',
-                                'hasPreviousPage',
-                                'hasNextPage',
-                            ],
-                            'edges' => [
-                                'node' => [
-                                    'title',
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
+                'id' => self::encodeID('User', $user1),
             ]
         );
 

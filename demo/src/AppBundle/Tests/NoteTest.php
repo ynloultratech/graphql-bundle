@@ -25,19 +25,20 @@ class NoteTest extends ApiTestCase
     {
         /** @var Post $post */
         $post = self::getFixtureReference('post1');
-        $id = self::encodeID('Post', $post->getId());
 
-        self::query(
-            'node',
-            ['id' => $id],
-            [
-                'id',
-                '... on Post' => [
-                    'title',
-                    'body',
-                ],
-            ]
-        );
+        $query = <<<'GraphQL'
+query($id: ID!){
+    node(id: $id) {
+        id
+        ... on Post {
+            title
+            body
+        }
+    }
+}
+GraphQL;
+        self::send($query, ['id' => $id = self::encodeID('Post', $post)]);
+
         self::assertResponseCodeIsOK();
         self::assertJsonPathEquals($id, 'data.node.id');
         self::assertJsonPathEquals($post->getTitle(), 'data.node.title');
@@ -51,27 +52,30 @@ class NoteTest extends ApiTestCase
     {
         /** @var Post $post1 */
         $post1 = self::getFixtureReference('post1');
-        $id1 = self::encodeID('Post', $post1->getId());
+        $id1 = self::encodeID('Post', $post1);
 
         /** @var Post $post1 */
         $post2 = self::getFixtureReference('post2');
-        $id2 = self::encodeID('Post', $post2->getId());
+        $id2 = self::encodeID('Post', $post2);
 
         /** @var Post $post3 */
         $post3 = self::getFixtureReference('post3');
-        $id3 = self::encodeID('Post', $post3->getId());
+        $id3 = self::encodeID('Post', $post3);
 
-        self::query(
-            'nodes',
-            ['ids' => [$id1, $id3, $id2]],
-            [
-                'id',
-                '... on Post' => [
-                    'title',
-                    'body',
-                ],
-            ]
-        );
+        $query = <<<'GraphQL'
+query($ids: [ID!]!){
+    nodes(ids: $ids) {
+        id
+        ... on Post {
+            title
+            body
+        }
+    }
+}
+GraphQL;
+
+        self::send($query, ['ids' => [$id1, $id3, $id2]]);
+
         self::assertResponseCodeIsOK();
         self::assertJsonPathEquals($id1, 'data.nodes[0].id');
         self::assertJsonPathEquals($post1->getTitle(), 'data.nodes[0].title');

@@ -27,27 +27,29 @@ class CategoryTest extends ApiTestCase
     {
         /** @var Category[] $records */
         $records = self::getRepository(Category::class)->findBy([], ['name' => 'ASC'], 3);
-        self::query(
-            'categories.categories',
-            ['first' => 5, 'orderBy' => ['field' => 'name', 'direction' => 'ASC']],
-            [
-                'edges' => [
-                    'node' => [
-                        'name',
-                        'posts' => [
-                            ['first' => 2, 'orderBy' => ['field' => 'title', 'direction' => 'ASC']],
-                            [
-                                'edges' => [
-                                    'node' => [
-                                        'title',
-                                    ],
-                                ],
-                            ],
-                        ],
-                    ],
-                ],
-            ]
-        );
+
+        $query = <<<'GraphQL'
+query {
+    categories {
+        categories (first: 5, orderBy: {field: "name", direction: "ASC"}){
+            edges {
+                node {
+                    name
+                    posts (first: 2, orderBy: {field:"title", direction: "ASC"}) {
+                        edges {
+                            node {
+                                title
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+GraphQL;
+        self::send($query);
+
         foreach ($records as $index => $category) {
             self::assertJsonPathEquals($category->getName(), "data.categories.categories.edges[$index].node.name");
             /** @var Post[] $posts */
@@ -93,23 +95,29 @@ class CategoryTest extends ApiTestCase
             }
         }
 
-        self::query(
-            'nodes',
-            ['ids' => [self::encodeID('Category', $category1->getId()), self::encodeID('Category', $category2->getId())]],
+        $query = <<<'GraphQL'
+query($ids: [ID!]!) {
+    nodes (ids: $ids) {
+       ... on Category {
+            id
+            name
+            postsByStatus (first: 100, status: PUBLISH){
+                edges {
+                    node {
+                        status
+                    }
+                }
+            }
+       }
+    }
+}
+GraphQL;
+        self::send(
+            $query,
             [
-                '... on Category' => [
-                    'id',
-                    'name',
-                    'postsByStatus' => [
-                        ['first' => 100, 'status' => self::literalValue(PostStatusType::PUBLISH)],
-                        [
-                            'edges' => [
-                                'node' => [
-                                    'status',
-                                ],
-                            ],
-                        ],
-                    ],
+                'ids' => [
+                    self::encodeID('Category', $category1),
+                    self::encodeID('Category', $category2),
                 ],
             ]
         );

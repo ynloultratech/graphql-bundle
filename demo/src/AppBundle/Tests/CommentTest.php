@@ -30,31 +30,36 @@ class CommentTest extends ApiTestCase
         /** @var Post $post */
         $post = self::getFixtureReference('post1');
 
-        self::mutation(
-            'comments.add',
+        $mutation = <<<'GraphQL'
+mutation($input: AddCommentInput!){
+    comments {
+        add (input: $input) {
+            node {
+                id
+                body
+                commentable {
+                    ... on Post {
+                        title
+                    }
+                }
+            }
+            clientMutationId
+            constraintViolations {
+                message
+                propertyPath
+            }
+        }
+    }
+}
+GraphQL;
+
+        self::send(
+            $mutation,
             [
                 'input' => [
-                    'commentable' => $commentableId = self::encodeID('Post', $post->getId()),
+                    'commentable' => $commentableId = self::encodeID('Post', $post),
                     'body' => $comment = $faker->sentence,
                     'clientMutationId' => (string) $clientMutationId = mt_rand(),
-                ],
-            ],
-            [
-                'node' => [
-                    'id',
-                    '... on PostComment' => [
-                        'body',
-                        'commentable' => [
-                            '... on Post' => [
-                                'title',
-                            ],
-                        ],
-                    ],
-                ],
-                'clientMutationId',
-                'constraintViolations' => [
-                    'message',
-                    'propertyPath',
                 ],
             ]
         );
@@ -74,17 +79,24 @@ class CommentTest extends ApiTestCase
     {
         $id = $this->testAddComment();
 
-        self::mutation(
-            'comments.delete',
+        $mutation = <<<'GraphQL'
+mutation($input: DeleteCommentInput!){
+    comments {
+        delete (input: $input) {
+            id
+            clientMutationId
+        }
+    }
+}
+GraphQL;
+
+        self::send(
+            $mutation,
             [
                 'input' => [
                     'id' => $id,
                     'clientMutationId' => (string) $clientMutationId = mt_rand(),
                 ],
-            ],
-            [
-                'id',
-                'clientMutationId',
             ]
         );
 
