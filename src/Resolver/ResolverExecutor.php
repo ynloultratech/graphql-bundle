@@ -182,6 +182,7 @@ class ResolverExecutor implements ContainerAwareInterface
         }
 
         $normalizedArguments['args'] = $normalizedArguments;
+        $normalizedArguments['root'] = $this->root;
         $indexedArguments = $this->resolveMethodArguments($refMethod, $normalizedArguments);
         ksort($indexedArguments);
 
