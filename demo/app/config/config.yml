@@ -50,3 +50,8 @@ twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
 
+graphql:
+    definitions:
+        extensions:
+            namespaces: true
+
