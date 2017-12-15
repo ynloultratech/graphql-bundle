@@ -45,11 +45,9 @@ class UpdateNode extends AbstractMutationResolver
      */
     public function onSubmit(FormEvent $event)
     {
-        if ($event->getData() instanceof NodeInterface && $event->getData()->getId()) {
-            parent::onSubmit($event);
+        if (!$event->getData() instanceof NodeInterface || !$event->getData()->getId()) {
+            throw new NodeNotFoundException();
         }
-
-        throw new NodeNotFoundException();
     }
 
     /**
