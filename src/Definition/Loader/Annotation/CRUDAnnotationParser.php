@@ -140,47 +140,6 @@ class CRUDAnnotationParser implements AnnotationParserInterface
      * @param Endpoint                  $endpoint
      * @param string                    $bundleNamespace
      */
-    protected function createGetsOperation(ObjectDefinitionInterface $definition, Annotation\Query $query, Endpoint $endpoint, $bundleNamespace)
-    {
-        $query->name = $query->name ?? Inflector::pluralize(lcfirst($definition->getName()));
-        $query->type = $query->type ?? $definition->getName();
-        $query->list = true;
-        $resolverReflection = new \ReflectionClass(Nodes::class);
-
-        $resolver = ClassUtils::applyNamingConvention($bundleNamespace, 'Query', $definition->getName(), $query->name);
-        if (class_exists($resolver)) {
-            $query->resolver = $resolver;
-        }
-
-        $this->queryParser->parse($query, $resolverReflection, $endpoint);
-    }
-
-    /**
-     * @param ObjectDefinitionInterface $definition
-     * @param Annotation\Query          $query
-     * @param Endpoint                  $endpoint
-     * @param string                    $bundleNamespace
-     */
-    protected function createGetOperation(ObjectDefinitionInterface $definition, Annotation\Query $query, Endpoint $endpoint, $bundleNamespace)
-    {
-        $query->name = $query->name ?? Inflector::singularize(lcfirst($definition->getName()));
-        $query->type = $query->type ?? $definition->getName();
-        $resolverReflection = new \ReflectionClass(Node::class);
-
-        $resolver = ClassUtils::applyNamingConvention($bundleNamespace, 'Query', $definition->getName(), $query->name);
-        if (class_exists($resolver)) {
-            $query->resolver = $resolver;
-        }
-
-        $this->queryParser->parse($query, $resolverReflection, $endpoint);
-    }
-
-    /**
-     * @param ObjectDefinitionInterface $definition
-     * @param Annotation\Query          $query
-     * @param Endpoint                  $endpoint
-     * @param string                    $bundleNamespace
-     */
     protected function createListOperation(ObjectDefinitionInterface $definition, Annotation\Query $query, Endpoint $endpoint, $bundleNamespace)
     {
         $query->name = $query->name ?? Inflector::pluralize(lcfirst($definition->getName()));
