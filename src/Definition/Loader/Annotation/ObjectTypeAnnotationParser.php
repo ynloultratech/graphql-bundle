@@ -108,11 +108,15 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
         $interfaceDefinitions = $this->extractInterfaceDefinitions($refClass);
         foreach ($interfaceDefinitions as $interfaceDefinition) {
             $implementor->addInterface($interfaceDefinition->getName());
-            $interfaceDefinition->addImplementor($implementor->getName());
-            $this->copyFieldsFromInterface($interfaceDefinition, $implementor);
+
             if (!$endpoint->hasType($interfaceDefinition->getName())) {
                 $endpoint->addType($interfaceDefinition);
+            } else {
+                $interfaceDefinition = $endpoint->getType($interfaceDefinition->getName());
             }
+
+            $interfaceDefinition->addImplementor($implementor->getName());
+            $this->copyFieldsFromInterface($interfaceDefinition, $implementor);
         }
 
         //support interface inheritance
