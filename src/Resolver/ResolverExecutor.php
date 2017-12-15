@@ -119,13 +119,15 @@ class ResolverExecutor implements ContainerAwareInterface
             $resolveContext->setEndpoint($this->endpoint);
             $resolveContext->setResolveInfo($resolveInfo);
 
-            $nodeType = $this->executableDefinition->getType();
+            $type = $this->executableDefinition->getType();
             if ($this->executableDefinition->hasMeta('node')) {
-                $nodeType = $this->executableDefinition->getMeta('node');
+                $type = $this->executableDefinition->getMeta('node');
             }
 
-            if ($nodeDefinition = $this->endpoint->getType($nodeType)) {
-                $resolveContext->setNodeDefinition($nodeDefinition);
+            if ($this->endpoint->hasType($type)) {
+                if ($nodeDefinition = $this->endpoint->getType($type)) {
+                    $resolveContext->setNodeDefinition($nodeDefinition);
+                }
             }
 
             if ($resolver instanceof AbstractResolver) {
