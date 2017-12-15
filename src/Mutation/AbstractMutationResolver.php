@@ -39,6 +39,19 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
         $form = null;
         if ($formBuilder) {
             $formBuilder->addEventSubscriber($this);
+
+            $extensionExecutor = function ($method) {
+                return function (FormEvent $event) use ($method) {
+                    foreach ($this->extensions as $extension) {
+                        return call_user_func_array([$extension, $method], [$event]);
+                    }
+                };
+            };
+
+            foreach (self::getSubscribedEvents() as $event => $method) {
+                $formBuilder->addEventListener($event, $extensionExecutor($method));
+            }
+
             $form = $formBuilder->getForm();
         }
 
@@ -90,9 +103,6 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
      */
     public function preSetData(FormEvent $event)
     {
-        foreach ($this->extensions as $extension) {
-            $extension->preSetData($event);
-        }
     }
 
     /**
@@ -102,9 +112,6 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
      */
     public function postSetData(FormEvent $event)
     {
-        foreach ($this->extensions as $extension) {
-            $extension->postSetData($event);
-        }
     }
 
     /**
@@ -114,9 +121,6 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
      */
     public function preSubmit(FormEvent $event)
     {
-        foreach ($this->extensions as $extension) {
-            $extension->preSubmit($event);
-        }
     }
 
     /**
@@ -126,9 +130,6 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
      */
     public function onSubmit(FormEvent $event)
     {
-        foreach ($this->extensions as $extension) {
-            $extension->onSubmit($event);
-        }
     }
 
     /**
@@ -138,9 +139,6 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
      */
     public function postSubmit(FormEvent $event)
     {
-        foreach ($this->extensions as $extension) {
-            $extension->postSubmit($event);
-        }
     }
 
     /**
