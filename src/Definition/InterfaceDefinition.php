@@ -17,9 +17,9 @@ use Ynlo\GraphQLBundle\Definition\Traits\FieldsAwareDefinitionTrait;
 use Ynlo\GraphQLBundle\Definition\Traits\ObjectDefinitionTrait;
 
 /**
- * Class InterfaceDefinitionHas
+ * Class InterfaceDefinition
  */
-class InterfaceDefinitionHas implements ObjectDefinitionInterface, HasExtensionsInterface
+class InterfaceDefinition implements ObjectDefinitionInterface, HasExtensionsInterface
 {
     use DefinitionTrait;
     use FieldsAwareDefinitionTrait;

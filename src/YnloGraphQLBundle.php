@@ -14,7 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServicesCompilerPass;
 use Ynlo\GraphQLBundle\DependencyInjection\YnloGraphQLExtension;
-use Ynlo\GraphQLBundle\Type\TypeAutoLoader;
+use Ynlo\GraphQLBundle\Type\Loader\TypeAutoLoader;
 
 /**
  * Class YnloGraphQLBundle

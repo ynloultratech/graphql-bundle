@@ -8,39 +8,37 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Type;
+namespace Ynlo\GraphQLBundle\Type\Definition;
 
 use Doctrine\Common\Util\ClassUtils;
 use GraphQL\Type\Definition\InterfaceType;
 use GraphQL\Type\Definition\Type;
-use Ynlo\GraphQLBundle\Definition\InterfaceDefinitionHas;
-use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
+use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 
 /**
- * Class AbstractInterfaceType
+ * Class InterfaceDefinitionType
  */
-abstract class AbstractInterfaceType extends InterfaceType
+class InterfaceDefinitionType extends InterfaceType implements EndpointAwareInterface, ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+    use EndpointAwareTrait;
+
     /**
-     * @var InterfaceDefinitionHas
+     * @var InterfaceDefinition
      */
     protected $definition;
 
     /**
-     * @var Endpoint
-     */
-    protected $endpoint;
-
-    /**
-     * AbstractInterfaceType constructor.
+     * InterfaceDefinitionType constructor.
      *
-     * @param Endpoint               $endpoint
-     * @param InterfaceDefinitionHas $definition
+     * @param InterfaceDefinition $definition
      */
-    public function __construct(Endpoint $endpoint, InterfaceDefinitionHas $definition)
+    public function __construct(InterfaceDefinition $definition)
     {
         $this->definition = $definition;
-        $this->endpoint = $endpoint;
 
         parent::__construct(
             [
@@ -54,7 +52,7 @@ abstract class AbstractInterfaceType extends InterfaceType
                         $implementorDef = $this->endpoint->getType($implementor);
                         //ClassUtils::getClass is required to avoid proxies
                         if ($implementorDef->getClass() === ClassUtils::getClass($value)) {
-                            return Types::get($implementorDef->getName());
+                            return TypeRegistry::get($implementorDef->getName());
                         }
                     }
 
@@ -71,7 +69,7 @@ abstract class AbstractInterfaceType extends InterfaceType
     {
         $fields = [];
         foreach ($this->definition->getFields() as $fieldDefinition) {
-            $type = Types::get($fieldDefinition->getType());
+            $type = TypeRegistry::get($fieldDefinition->getType());
 
             if ($fieldDefinition->isList()) {
                 if ($fieldDefinition->isNonNullList()) {

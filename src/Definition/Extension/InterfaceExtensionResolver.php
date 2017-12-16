@@ -13,7 +13,7 @@ namespace Ynlo\GraphQLBundle\Definition\Extension;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\HasExtensionsInterface;
-use Ynlo\GraphQLBundle\Definition\InterfaceDefinitionHas;
+use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Extension\ExtensionInterface;
 use Ynlo\GraphQLBundle\Util\ClassUtils;
@@ -49,7 +49,7 @@ class InterfaceExtensionResolver extends AbstractDefinitionExtension
      */
     public function configure(DefinitionInterface $definition, Endpoint $endpoint, array $config)
     {
-        if (!$definition instanceof InterfaceDefinitionHas || !$definition->getImplementors()) {
+        if (!$definition instanceof InterfaceDefinition || !$definition->getImplementors()) {
             return;
         }
 

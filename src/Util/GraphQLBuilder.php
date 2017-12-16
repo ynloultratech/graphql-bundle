@@ -12,7 +12,7 @@ namespace Ynlo\GraphQLBundle\Util;
 
 use GraphQL\Type\Definition\Type;
 use Ynlo\GraphQLBundle\Definition\ArgumentAwareInterface;
-use Ynlo\GraphQLBundle\Type\Types;
+use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 
 /**
  * GraphQLBuilder
@@ -30,7 +30,7 @@ class GraphQLBuilder
         foreach ($argumentAware->getArguments() as $argDefinition) {
             $arg = [];
             $arg['description'] = $argDefinition->getDescription();
-            $argType = Types::get($argDefinition->getType());
+            $argType = TypeRegistry::get($argDefinition->getType());
 
             if ($argDefinition->isList()) {
                 if ($argDefinition->isNonNullList()) {

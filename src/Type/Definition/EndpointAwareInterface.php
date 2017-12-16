@@ -8,25 +8,19 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Type;
+namespace Ynlo\GraphQLBundle\Type\Definition;
 
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 
 /**
- * Trait EndpointAwareTrait
+ * Interface EndpointAwareInterface
  */
-trait EndpointAwareTrait
+interface EndpointAwareInterface
 {
     /**
-     * @var Endpoint
-     */
-    public $endpoint;
-
-    /**
      * @param Endpoint $endpoint
+     *
+     * @return mixed
      */
-    public function setEndpoint(Endpoint $endpoint)
-    {
-        $this->endpoint = $endpoint;
-    }
+    public function setEndpoint(Endpoint $endpoint);
 }

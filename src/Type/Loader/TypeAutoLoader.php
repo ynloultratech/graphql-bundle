@@ -8,12 +8,13 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Type;
+namespace Ynlo\GraphQLBundle\Type\Loader;
 
 use GraphQL\Type\Definition\Type;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Finder\Finder;
+use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 
 /**
  * Class TypeAutoLoader
@@ -56,8 +57,11 @@ class TypeAutoLoader implements ContainerAwareInterface
 
                     if (class_exists($fullyClassName)) {
                         $ref = new \ReflectionClass($fullyClassName);
-                        if ($ref->isSubclassOf(Type::class) && $ref->isInstantiable()) {
-                            Types::addTypeMapping($name, $fullyClassName);
+                        if ($ref->isSubclassOf(Type::class)
+                            && $ref->isInstantiable()
+                            && !$ref->getConstructor()->getNumberOfRequiredParameters()
+                        ) {
+                            TypeRegistry::addTypeMapping($name, $fullyClassName);
                         }
                     }
                 }

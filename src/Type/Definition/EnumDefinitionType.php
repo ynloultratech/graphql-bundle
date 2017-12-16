@@ -10,13 +10,13 @@
 
 namespace Ynlo\GraphQLBundle\Type;
 
-use GraphQL\Type\Definition\EnumType as BaseEnumType;
+use GraphQL\Type\Definition\EnumType;
 use Ynlo\GraphQLBundle\Definition\EnumDefinition;
 
 /**
- * Class AbstractObjectType
+ * Class EnumDefinitionType
  */
-abstract class EnumType extends BaseEnumType
+class EnumDefinitionType extends EnumType
 {
     /**
      * @param EnumDefinition $definition

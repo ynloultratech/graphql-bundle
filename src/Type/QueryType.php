@@ -16,6 +16,9 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Resolver\ResolverExecutor;
+use Ynlo\GraphQLBundle\Type\Definition\EndpointAwareInterface;
+use Ynlo\GraphQLBundle\Type\Definition\EndpointAwareTrait;
+use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 use Ynlo\GraphQLBundle\Util\GraphQLBuilder;
 
 /**
@@ -56,7 +59,7 @@ class QueryType extends ObjectType implements
      */
     protected function getQueryConfig(QueryDefinition $query): array
     {
-        $config['type'] = Types::get($query->getType());
+        $config['type'] = TypeRegistry::get($query->getType());
         if ($query->isList()) {
             $config['type'] = Type::listOf($config['type']);
         }

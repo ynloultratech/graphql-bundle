@@ -8,21 +8,26 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Type;
+namespace Ynlo\GraphQLBundle\Type\Registry;
 
 use GraphQL\Type\Definition\Type;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Ynlo\GraphQLBundle\Definition\EnumDefinition;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
-use Ynlo\GraphQLBundle\Definition\InterfaceDefinitionHas;
+use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\Type\Definition\EndpointAwareInterface;
+use Ynlo\GraphQLBundle\Type\Definition\InputObjectDefinitionType;
+use Ynlo\GraphQLBundle\Type\Definition\InterfaceDefinitionType;
+use Ynlo\GraphQLBundle\Type\Definition\ObjectDefinitionType;
+use Ynlo\GraphQLBundle\Type\EnumDefinitionType;
 
 /**
  * Class Types
  */
-class Types
+class TypeRegistry
 {
     /**
      * @var Endpoint
@@ -114,28 +119,21 @@ class Types
         //create using definition endpoint
         if (self::$endpoint && self::$endpoint->hasType($name)) {
             $definition = self::$endpoint->getType($name);
+
             if ($definition instanceof ObjectDefinition) {
-                $type = new class($definition) extends AbstractObjectType
-                {
+                $type = new ObjectDefinitionType($definition);
+            }
 
-                };
-            } elseif ($definition instanceof InputObjectDefinition) {
-                $type = new class($definition) extends AbstractInputObjectType
-                {
+            if ($definition instanceof InputObjectDefinition) {
+                $type = new InputObjectDefinitionType($definition);
+            }
 
-                };
-            } elseif ($definition instanceof InterfaceDefinitionHas) {
-                $type = new class(self::$endpoint, $definition) extends AbstractInterfaceType
-                {
-
-                };
+            if ($definition instanceof InterfaceDefinition) {
+                $type = new InterfaceDefinitionType($definition);
             }
 
             if ($definition instanceof EnumDefinition) {
-                $type = new class($definition) extends EnumType
-                {
-
-                };
+                $type = new EnumDefinitionType($definition);
             }
 
             if ($type instanceof ContainerAwareInterface) {

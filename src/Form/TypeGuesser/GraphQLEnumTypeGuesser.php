@@ -19,7 +19,7 @@ use Symfony\Component\Form\Guess\Guess;
 use Symfony\Component\Form\Guess\TypeGuess;
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Form\Type\GraphQLType;
-use Ynlo\GraphQLBundle\Type\Types;
+use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 use Ynlo\GraphQLBundle\Util\TypeUtil;
 
 /**
@@ -65,7 +65,7 @@ class GraphQLEnumTypeGuesser extends DoctrineOrmTypeGuesser
             /** @var Annotation\Field $annotation */
             $annotation = $this->reader->getPropertyAnnotation($refClass->getProperty($property), Annotation\Field::class);
 
-            if ($annotation && $annotation->type && $type = Types::get($annotation->type)) {
+            if ($annotation && $annotation->type && $type = TypeRegistry::get($annotation->type)) {
                 if ($type instanceof EnumType) {
                     return new TypeGuess(GraphQLType::class, ['graphql_type' => $annotation->type], Guess::VERY_HIGH_CONFIDENCE);
                 }

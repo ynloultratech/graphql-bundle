@@ -18,12 +18,12 @@ use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\ImplementorInterface;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
-use Ynlo\GraphQLBundle\Definition\InterfaceDefinitionHas;
+use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\Loader\Annotation\FieldDecorator\FieldDefinitionDecoratorInterface;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
-use Ynlo\GraphQLBundle\Type\EndpointAwareInterface;
+use Ynlo\GraphQLBundle\Type\Definition\EndpointAwareInterface;
 use Ynlo\GraphQLBundle\Util\TypeUtil;
 
 /**
@@ -130,7 +130,7 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
                 foreach ($parentDefinitions as $parentDefinition) {
                     if ($endpoint->hasType($parentDefinition->getName())) {
                         $existentParentDefinition = $endpoint->getType($parentDefinition->getName());
-                        if ($existentParentDefinition instanceof InterfaceDefinitionHas) {
+                        if ($existentParentDefinition instanceof InterfaceDefinition) {
                             $existentParentDefinition->addImplementor($interfaceDefinition->getName());
                         }
                     }
@@ -142,7 +142,7 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
     /**
      * @param \ReflectionClass $refClass
      *
-     * @return InterfaceDefinitionHas[]
+     * @return InterfaceDefinition[]
      */
     protected function extractInterfaceDefinitions(\ReflectionClass $refClass)
     {
@@ -156,7 +156,7 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
             );
 
             if ($intAnnot) {
-                $intDef = new InterfaceDefinitionHas();
+                $intDef = new InterfaceDefinition();
                 $intDef->setName($intAnnot->name);
                 $intDef->setClass($intRef->getName());
                 $intDef->setDescription($intAnnot->description);
@@ -187,10 +187,10 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
     /**
      * Copy all fields from interface to given object implementor
      *
-     * @param InterfaceDefinitionHas         $intDef
+     * @param InterfaceDefinition            $intDef
      * @param FieldsAwareDefinitionInterface $fieldsAwareDefinition
      */
-    protected function copyFieldsFromInterface(InterfaceDefinitionHas $intDef, FieldsAwareDefinitionInterface $fieldsAwareDefinition)
+    protected function copyFieldsFromInterface(InterfaceDefinition $intDef, FieldsAwareDefinitionInterface $fieldsAwareDefinition)
     {
         foreach ($intDef->getFields() as $field) {
             if (!$fieldsAwareDefinition->hasField($field->getName())) {

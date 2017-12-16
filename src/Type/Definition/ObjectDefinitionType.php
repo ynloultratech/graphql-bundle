@@ -8,7 +8,7 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Type;
+namespace Ynlo\GraphQLBundle\Type\Definition;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
@@ -17,12 +17,13 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Resolver\ObjectFieldResolver;
+use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 use Ynlo\GraphQLBundle\Util\GraphQLBuilder;
 
 /**
- * Class AbstractObjectType
+ * Class ObjectDefinitionType
  */
-abstract class AbstractObjectType extends ObjectType implements
+class ObjectDefinitionType extends ObjectType implements
     ContainerAwareInterface,
     EndpointAwareInterface
 {
@@ -70,7 +71,7 @@ abstract class AbstractObjectType extends ObjectType implements
     {
         $fields = [];
         foreach ($this->definition->getFields() as $fieldDefinition) {
-            $type = Types::get($fieldDefinition->getType());
+            $type = TypeRegistry::get($fieldDefinition->getType());
 
             if ($fieldDefinition->isList()) {
                 if ($fieldDefinition->isNonNullList()) {
@@ -101,7 +102,7 @@ abstract class AbstractObjectType extends ObjectType implements
     {
         $interfaces = [];
         foreach ($this->definition->getInterfaces() as $interface) {
-            $interfaces[] = Types::get($interface);
+            $interfaces[] = TypeRegistry::get($interface);
         }
 
         return $interfaces;

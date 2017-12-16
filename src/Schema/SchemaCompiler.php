@@ -15,7 +15,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
-use Ynlo\GraphQLBundle\Type\Types;
+use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 
 /**
  * GraphQL Schema compiler
@@ -52,31 +52,31 @@ class SchemaCompiler implements ContainerAwareInterface
     public function compile(): Schema
     {
         $this->endpoint = $this->registry->getEndpoint();
-        Types::setUp($this->container, $this->endpoint);
+        TypeRegistry::setUp($this->container, $this->endpoint);
 
         //automatically create all interface implementors
         //to avoid empty interfaces
         foreach ($this->endpoint->allInterfaces() as $type) {
             foreach ($type->getImplementors() as $implementor) {
-                if (!Types::has($implementor)) {
-                    Types::create($implementor);
+                if (!TypeRegistry::has($implementor)) {
+                    TypeRegistry::create($implementor);
                 }
             }
         }
 
         $config = [
-            'types' => Types::all(),
+            'types' => TypeRegistry::all(),
             'typeLoader' => function ($name) {
-                return Types::get($name);
+                return TypeRegistry::get($name);
             },
         ];
 
         if ($this->endpoint->allQueries()) {
-            $config['query'] = Types::get('Query');
+            $config['query'] = TypeRegistry::get('Query');
         }
 
         if ($this->endpoint->allMutations()) {
-            $config['mutation'] = Types::get('Mutation');
+            $config['mutation'] = TypeRegistry::get('Mutation');
         }
 
         if (isset($config['query']) || isset($config['mutation'])) {

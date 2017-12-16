@@ -21,8 +21,8 @@ use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Model\ID;
-use Ynlo\GraphQLBundle\Type\EndpointAwareInterface;
-use Ynlo\GraphQLBundle\Type\EndpointAwareTrait;
+use Ynlo\GraphQLBundle\Type\Definition\EndpointAwareInterface;
+use Ynlo\GraphQLBundle\Type\Definition\EndpointAwareTrait;
 
 /**
  * Default resolver for all object fields

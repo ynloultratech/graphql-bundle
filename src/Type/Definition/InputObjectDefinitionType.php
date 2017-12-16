@@ -8,7 +8,7 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Type;
+namespace Ynlo\GraphQLBundle\Type\Definition;
 
 use GraphQL\Type\Definition\InputObjectType;
 use GraphQL\Type\Definition\ObjectType;
@@ -18,11 +18,12 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Resolver\ObjectFieldResolver;
+use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 
 /**
- * Class AbstractInputObjectType
+ * Class InputObjectDefinitionType
  */
-abstract class AbstractInputObjectType extends InputObjectType implements
+class InputObjectDefinitionType extends InputObjectType implements
     ContainerAwareInterface,
     EndpointAwareInterface
 {
@@ -64,9 +65,9 @@ abstract class AbstractInputObjectType extends InputObjectType implements
     {
         $fields = [];
         foreach ($this->definition->getFields() as $fieldDefinition) {
-            $type = Types::get($fieldDefinition->getType());
+            $type = TypeRegistry::get($fieldDefinition->getType());
             if ($type instanceof ObjectType) {
-                $type = Types::get($fieldDefinition->getType());
+                $type = TypeRegistry::get($fieldDefinition->getType());
             }
 
             if ($fieldDefinition->isList()) {
