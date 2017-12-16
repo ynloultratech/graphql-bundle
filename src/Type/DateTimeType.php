@@ -10,7 +10,10 @@
 
 namespace Ynlo\GraphQLBundle\Type;
 
+use GraphQL\Error\Error;
+use GraphQL\Language\AST\StringValueNode;
 use GraphQL\Type\Definition\ScalarType;
+use GraphQL\Utils;
 
 /**
  * Class DateTimeType
@@ -23,7 +26,7 @@ class DateTimeType extends ScalarType
     public function __construct(array $config = [])
     {
         $this->name = 'DateTime';
-        $this->description = 'An ISO-8601 encoded UTC date string.';
+        $this->description = 'An ISO-8601 encoded UTC date string. Example: `1985-06-18T18:05:00-05:00`';
 
         parent::__construct($config);
     }
@@ -51,26 +54,35 @@ class DateTimeType extends ScalarType
      * @param mixed $value
      *
      * @return mixed
+     *
+     * @throws Error
      */
     public function parseValue($value)
     {
-        return \DateTime::createFromFormat('c', $value);
+        $date = \DateTime::createFromFormat(DATE_ATOM, $value);
+        if (!$date) {
+            throw new Error(sprintf("Cannot represent following value as date: %s", Utils::printSafeJson($value)));
+        }
+
+        return $date;
     }
 
     /**
-     * Parses an externally provided literal value (hardcoded in GraphQL query) to use as an input.
-     *
-     * E.g.
-     * {
-     *   user(email: "user@example.com")
-     * }
-     *
      * @param \GraphQL\Language\AST\Node $valueNode
      *
      * @return string
+     *
+     * @throws Error
      */
     public function parseLiteral($valueNode)
     {
-        return '';
+        if (!$valueNode instanceof StringValueNode) {
+            throw new Error(sprintf('Query error: Can only parse strings got: %s', $valueNode->kind), [$valueNode]);
+        }
+        if (!$date = \DateTime::createFromFormat('c', $valueNode->value)) {
+            throw new Error("Not a valid date", [$valueNode]);
+        }
+
+        return $valueNode->value;
     }
 }

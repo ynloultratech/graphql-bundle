@@ -12,7 +12,6 @@ namespace Ynlo\GraphQLBundle\Resolver;
 
 use Doctrine\Common\Util\ClassUtils;
 use GraphQL\Type\Definition\ResolveInfo;
-use GraphQL\Type\Definition\Type;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -26,6 +25,7 @@ use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Extension\ExtensionInterface;
 use Ynlo\GraphQLBundle\Extension\ExtensionsAwareInterface;
 use Ynlo\GraphQLBundle\Model\ID;
+use Ynlo\GraphQLBundle\Type\Types;
 
 /**
  * This resolver act as a middleware between the executableDefinition and final resolvers.
@@ -282,7 +282,7 @@ class ResolverExecutor implements ContainerAwareInterface
      */
     protected function normalizeValue($value, string $type)
     {
-        if (Type::ID === $type) {
+        if (Types::ID === $type) {
             if (\is_array($value)) {
                 $idsArray = [];
                 foreach ($value as $id) {

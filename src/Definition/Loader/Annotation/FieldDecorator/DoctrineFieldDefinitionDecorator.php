@@ -18,10 +18,10 @@ use Doctrine\ORM\Mapping\ManyToMany;
 use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
-use GraphQL\Type\Definition\Type;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\Loader\Annotation\AnnotationReaderAwareTrait;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
+use Ynlo\GraphQLBundle\Type\Types;
 use Ynlo\GraphQLBundle\Util\TypeUtil;
 
 /**
@@ -56,7 +56,7 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
 
             /** @var Id $id */
             if ($column = $this->reader->getPropertyAnnotation($field, Id::class)) {
-                $definition->setType(Type::ID);
+                $definition->setType(Types::ID);
                 $definition->setNonNull(true);
             }
 
@@ -113,20 +113,20 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
     {
         switch ($type) {
             case DoctrineType::BOOLEAN:
-                $type = Type::BOOLEAN;
+                $type = Types::BOOLEAN;
                 break;
             case DoctrineType::DECIMAL:
             case DoctrineType::FLOAT:
-                $type = Type::FLOAT;
+                $type = Types::FLOAT;
                 break;
             case DoctrineType::INTEGER:
             case DoctrineType::BIGINT:
             case DoctrineType::SMALLINT:
-                $type = Type::INT;
+                $type = Types::INT;
                 break;
             case DoctrineType::STRING:
             case DoctrineType::TEXT:
-                $type = Type::STRING;
+                $type = Types::STRING;
                 break;
             case DoctrineType::DATE:
             case DoctrineType::DATETIME:

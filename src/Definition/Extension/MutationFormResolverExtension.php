@@ -10,7 +10,6 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Extension;
 
-use GraphQL\Type\Definition\Type;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
@@ -27,6 +26,7 @@ use Ynlo\GraphQLBundle\Definition\NodeAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Form\Type\GraphQLType;
 use Ynlo\GraphQLBundle\Form\Type\IDType;
+use Ynlo\GraphQLBundle\Type\Types;
 use Ynlo\GraphQLBundle\Util\ClassUtils;
 
 /**
@@ -144,7 +144,7 @@ class MutationFormResolverExtension extends AbstractDefinitionExtension
             if ($config['client_mutation_id']) {
                 $clientMutationId = new FieldDefinition();
                 $clientMutationId->setName('clientMutationId');
-                $clientMutationId->setType(Type::STRING);
+                $clientMutationId->setType(Types::STRING);
                 $clientMutationId->setDescription('A unique identifier for the client performing the mutation.');
                 $inputObject->prependField($clientMutationId);
             }
@@ -207,23 +207,23 @@ class MutationFormResolverExtension extends AbstractDefinitionExtension
             if ($form->getConfig()->hasOption('multiple') && $form->getConfig()->getOption('multiple')) {
                 $field->setList(true);
             }
-            $type = Type::ID;
+            $type = Types::ID;
         }
 
         if (is_a($form->getConfig()->getType()->getInnerType(), TextType::class, true)) {
-            $type = Type::STRING;
+            $type = Types::STRING;
         }
 
         if (is_a($form->getConfig()->getType()->getInnerType(), EmailType::class, true)) {
-            $type = Type::STRING;
+            $type = Types::STRING;
         }
 
         if (is_a($form->getConfig()->getType()->getInnerType(), CheckboxType::class, true)) {
-            $type = Type::BOOLEAN;
+            $type = Types::BOOLEAN;
         }
 
         if (is_a($form->getConfig()->getType()->getInnerType(), IntegerType::class, true)) {
-            $type = Type::INT;
+            $type = Types::INT;
         }
 
         if (!$type) {

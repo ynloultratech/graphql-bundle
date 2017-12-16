@@ -12,7 +12,7 @@ namespace Ynlo\GraphQLBundle\Resolver;
 
 use Doctrine\Common\Collections\Collection;
 use GraphQL\Type\Definition\ResolveInfo;
-use GraphQL\Type\Definition\Type;
+use Ynlo\GraphQLBundle\Type\Types;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -90,7 +90,7 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
             $value = $accessor->getValue($root, $originName);
         }
 
-        if (null !== $value && Type::ID === $fieldDefinition->getType()) {
+        if (null !== $value && Types::ID === $fieldDefinition->getType()) {
             //ID are formed with base64 representation of the Types and real database ID
             //in order to create a unique and global identifier for each resource
             //@see https://facebook.github.io/relay/docs/graphql-object-identification.html

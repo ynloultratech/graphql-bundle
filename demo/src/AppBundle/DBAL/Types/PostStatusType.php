@@ -18,6 +18,7 @@ use Ynlo\GraphQLBundle\Doctrine\DBAL\Types\AbstractEnumType;
 class PostStatusType extends AbstractEnumType
 {
     public const PUBLISH = 'PUBLISH';
+    public const FUTURE = 'FUTURE';
     public const DRAFT = 'DRAFT';
     public const PENDING = 'PENDING';
     public const TRASH = 'TRASH';
@@ -27,6 +28,7 @@ class PostStatusType extends AbstractEnumType
 
     protected static $choices = [
         self::PUBLISH => 'Publish',
+        self::FUTURE => 'Ftuture',
         self::DRAFT => 'Draft',
         self::PENDING => 'Pending',
         self::TRASH => 'Trash',
@@ -35,6 +37,7 @@ class PostStatusType extends AbstractEnumType
 
     protected static $descriptions = [
         self::PUBLISH => 'Viewable by everyone.',
+        self::FUTURE => 'Scheduled to be published in a future date.',
         self::DRAFT => 'Incomplete post viewable by anyone with proper user role.',
         self::PENDING => 'Awaiting a user with permissions tu publish.',
         self::TRASH => 'Posts in the Trash are assigned the trash status.',

@@ -11,7 +11,7 @@
 namespace Ynlo\GraphQLBundle\Util;
 
 use Doctrine\Common\Util\Inflector;
-use GraphQL\Type\Definition\Type;
+use Ynlo\GraphQLBundle\Type\Types;
 
 /**
  * Util to work with GraphQL types
@@ -62,21 +62,21 @@ final class TypeUtil
         switch ($type) {
             case 'bool':
             case 'boolean':
-                $type = Type::BOOLEAN;
+                $type = Types::BOOLEAN;
                 break;
             case 'decimal':
             case 'float':
-                $type = Type::FLOAT;
+                $type = Types::FLOAT;
                 break;
             case 'int':
             case 'integer':
-                $type = Type::INT;
+                $type = Types::INT;
                 break;
             case 'string':
-                $type = Type::STRING;
+                $type = Types::STRING;
                 break;
             case 'id':
-                $type = Type::ID;
+                $type = Types::ID;
                 break;
             case 'datetime':
             case 'date_time':

@@ -11,7 +11,6 @@
 namespace Ynlo\GraphQLBundle\Demo\AppBundle\Tests;
 
 use Faker\Factory;
-use Ynlo\GraphQLBundle\Demo\AppBundle\DBAL\Types\PostStatusType;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Category;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Post;
 use Ynlo\GraphQLBundle\Test\ApiTestCase;
@@ -73,6 +72,64 @@ GraphQL;
 
         $category2 = self::getRepository(Category::class)->find(2);
         self::assertJsonPathEquals($category2->getName(), 'data.posts.add.node.categories[1].name');
+    }
+
+    /**
+     * testAddPost
+     */
+    public function testAddPostWithAFutureDate()
+    {
+        $faker = Factory::create();
+
+        $mutation = <<<'GraphQL'
+mutation ($input: AddPostInput!){
+    posts {
+        add(input: $input){
+            node {
+                title
+                body
+                status
+                futurePublishDate
+                categories {
+                    name
+                }
+            }
+            clientMutationId
+        }
+    }
+}
+GraphQL;
+
+        self::send(
+            $mutation,
+            [
+                'input' => [
+                    'title' => $title = $faker->sentence(),
+                    'body' => $body = $faker->paragraph,
+                    'status' => 'FUTURE',
+                    'futurePublishDate' => $date = '1985-06-18T18:05:00-05:00',
+                    'categories' => [
+                        self::encodeID('Category', 1),
+                        self::encodeID('Category', 2),
+                    ],
+                    'clientMutationId' => (string) $clientMutationId = mt_rand(),
+                ],
+            ]
+        );
+
+        self::assertRepositoryContains(
+            Post::class,
+            [
+                'title' => $title,
+                'body' => $body,
+                'futurePublishDate' => date_create_from_format(DATE_ATOM, $date),
+            ]
+        );
+        self::assertJsonPathEquals($title, 'data.posts.add.node.title');
+        self::assertJsonPathEquals($body, 'data.posts.add.node.body');
+        self::assertJsonPathEquals('FUTURE', 'data.posts.add.node.status');
+        self::assertJsonPathEquals($date, 'data.posts.add.node.futurePublishDate');
+        self::assertJsonPathEquals($clientMutationId, 'data.posts.add.clientMutationId');
     }
 
     /**

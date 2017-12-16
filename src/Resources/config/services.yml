@@ -106,6 +106,15 @@ services:
     enum_type_guesser:
         alias: Ynlo\GraphQLBundle\Form\TypeGuesser\GraphQLEnumTypeGuesser
 
+    Ynlo\GraphQLBundle\Form\TypeGuesser\DoctrineOrmTypeGuesser:
+            arguments: ['@doctrine']
+            tags:
+               - { name: 'form.type_guesser'}
+
+    # this alias is required to override Fresh\DoctrineEnumBundle\Form\EnumTypeGuesser
+    form.type_guesser.doctrine:
+         alias: Ynlo\GraphQLBundle\Form\TypeGuesser\DoctrineOrmTypeGuesser
+
     Ynlo\GraphQLBundle\Form\Type\IDType:
         arguments: ['@Doctrine\ORM\EntityManagerInterface', '@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry']
         tags: [form.type]

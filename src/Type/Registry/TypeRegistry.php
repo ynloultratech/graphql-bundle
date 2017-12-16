@@ -23,6 +23,7 @@ use Ynlo\GraphQLBundle\Type\Definition\InputObjectDefinitionType;
 use Ynlo\GraphQLBundle\Type\Definition\InterfaceDefinitionType;
 use Ynlo\GraphQLBundle\Type\Definition\ObjectDefinitionType;
 use Ynlo\GraphQLBundle\Type\EnumDefinitionType;
+use Ynlo\GraphQLBundle\Type\Types;
 
 /**
  * Class Types
@@ -204,23 +205,23 @@ class TypeRegistry
     private static function getInternalType($name): ?Type
     {
         switch ($name) {
-            case Type::STRING:
+            case Types::STRING:
             case 'string':
                 return Type::string();
-            case Type::BOOLEAN:
+            case Types::BOOLEAN:
             case 'boolean':
             case 'bool':
                 return Type::boolean();
-            case Type::INT:
+            case Types::INT:
             case 'int':
             case 'integer':
                 return Type::int();
-            case Type::FLOAT:
+            case Types::FLOAT:
             case 'float':
             case 'decimal':
             case 'double':
                 return Type::float();
-            case Type::ID:
+            case Types::ID:
             case 'id':
             case 'ID':
                 return Type::id();

@@ -8,42 +8,47 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Demo\AppBundle\Form\Input\Post;
+namespace Ynlo\GraphQLBundle\Form\Type;
 
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Post;
 
 /**
- * AddPostInput
+ * DateTimeType
  */
-class AddPostInput extends AbstractType
+class DateTimeType extends AbstractType
 {
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $builder
-            ->add('title')
-            ->add('body')
-            ->add('status')
-            ->add('futurePublishDate')
-            ->add('categories');
+        $transformer = new CallbackTransformer(
+            function ($value) {
+            },
+            function ($value) {
+            }
+        );
+        $builder->addModelTransformer($transformer);
+        $builder->addViewTransformer($transformer);
     }
 
     /**
-     * {@inheritdoc}
+     * {@inheritDoc}
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        parent::configureOptions($resolver);
+        $resolver->setDefault('graphql_type', 'DateTime');
+    }
 
-        $resolver->setDefaults(
-            [
-                'data_class' => Post::class,
-            ]
-        );
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getParent()
+    {
+        return GraphQLType::class;
     }
 }

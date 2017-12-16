@@ -82,8 +82,18 @@ class Post implements NodeInterface, CommentableInterface, TimestampableInterfac
      * @var string
      *
      * @ORM\Column(name="status", type="post_status")
+     *
+     * @Assert\Expression(expression="!this.isFuturePublish() or this.getFuturePublishDate()",
+     *     message="A future publish post require a date to publish")
      */
     protected $status;
+
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="future_publish_date", type="datetime", nullable=true)
+     */
+    protected $futurePublishDate;
 
     /**
      * @var string
@@ -172,6 +182,54 @@ class Post implements NodeInterface, CommentableInterface, TimestampableInterfac
     public function getStatus(): string
     {
         return $this->status;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPublish()
+    {
+        return $this->getStatus() === PostStatusType::PUBLISH;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isDraft()
+    {
+        return $this->getStatus() === PostStatusType::DRAFT;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isPending()
+    {
+        return $this->getStatus() === PostStatusType::PENDING;
+    }
+
+    /**
+     * @return bool
+     */
+    public function isFuturePublish()
+    {
+        return $this->getStatus() === PostStatusType::FUTURE;
+    }
+
+    /**
+     * @return \DateTime
+     */
+    public function getFuturePublishDate(): ?\DateTime
+    {
+        return $this->futurePublishDate;
+    }
+
+    /**
+     * @param \DateTime $futurePublishDate
+     */
+    public function setFuturePublishDate(\DateTime $futurePublishDate)
+    {
+        $this->futurePublishDate = $futurePublishDate;
     }
 
     /**
