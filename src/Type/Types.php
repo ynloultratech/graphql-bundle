@@ -33,4 +33,14 @@ final class Types
     {
         return sprintf('[%s]', $type);
     }
+
+    /**
+     * @param string $type
+     *
+     * @return string
+     */
+    public static function nonNull(string $type): string
+    {
+        return sprintf('%s!', $type);
+    }
 }
