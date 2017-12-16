@@ -112,7 +112,7 @@ class GraphQLEnumTypeGuesser extends DoctrineOrmTypeGuesser
 
         // Get the choices from the fully qualified class name
         $parameters = [
-            'graphql_type' => TypeUtil::normalizeName($fieldType),
+            'graphql_type' => TypeUtil::normalize($fieldType),
         ];
 
         return new TypeGuess(GraphQLType::class, $parameters, Guess::VERY_HIGH_CONFIDENCE);

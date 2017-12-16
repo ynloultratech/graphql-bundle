@@ -50,9 +50,10 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
 
             /** @var Column $column */
             if ($column = $this->reader->getPropertyAnnotation($field, Column::class)) {
-                $type = $this->getNormalizedType($column->type);
+                $type = $this->getGraphQLType($column->type);
                 $definition->setType(TypeUtil::normalize($type));
                 $definition->setList(TypeUtil::isTypeList($type));
+                $definition->setNonNullList(TypeUtil::isTypeNonNullList($type));
                 $definition->setNonNull(!$column->nullable);
             }
 
@@ -111,7 +112,7 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
      *
      * @return string
      */
-    protected function getNormalizedType(?string $type):?string
+    protected function getGraphQLType(?string $type):?string
     {
         switch ($type) {
             case DoctrineType::BOOLEAN:
@@ -132,7 +133,7 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
                 break;
             case DoctrineType::SIMPLE_ARRAY:
             case DoctrineType::JSON_ARRAY:
-                $type = Types::listOf(Types::STRING);
+                $type = Types::nonNull(Types::listOf(Types::STRING));
                 break;
             case DoctrineType::DATE:
             case DoctrineType::DATETIME:
@@ -140,6 +141,6 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
                 break;
         }
 
-        return TypeUtil::normalizeName($type);
+        return $type;
     }
 }

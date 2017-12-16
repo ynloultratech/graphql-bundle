@@ -85,16 +85,6 @@ final class TypeUtil
                 break;
         }
 
-        return $type;
-    }
-
-    /**
-     * @param string $name
-     *
-     * @return string
-     */
-    public static function normalizeName($name)
-    {
-        return Inflector::classify($name);
+        return Inflector::classify($type);
     }
 }
