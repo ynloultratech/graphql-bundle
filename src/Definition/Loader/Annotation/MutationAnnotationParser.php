@@ -118,11 +118,8 @@ class MutationAnnotationParser extends QueryAnnotationParser
         if ($annotation->node) {
             $mutation->setNode($annotation->node);
         } else {
-            //try resolve a related node using naming convention
-            //the related node name is always the last folder containing the mutation inside ...Bundle\Mutation
-            preg_match('/Bundle\\\\Mutation([\\\\\w]+)?\\\\(\w+)\\\\\w+$/', $refClass->getName(), $matches);
-            if (isset($matches[2]) && $endpoint->hasType($matches[2])) {
-                $mutation->setNode($matches[2]);
+            if ($node = ClassUtils::getNodeFromClass($refClass->getName())) {
+                $mutation->setNode($node);
             }
         }
 
