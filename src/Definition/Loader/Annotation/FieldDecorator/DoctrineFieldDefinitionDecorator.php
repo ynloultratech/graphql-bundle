@@ -131,6 +131,7 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
                 $type = Types::STRING;
                 break;
             case DoctrineType::SIMPLE_ARRAY:
+            case DoctrineType::JSON_ARRAY:
                 $type = Types::listOf(Types::STRING);
                 break;
             case DoctrineType::DATE:

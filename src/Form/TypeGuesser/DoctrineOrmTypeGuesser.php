@@ -84,6 +84,7 @@ class DoctrineOrmTypeGuesser extends BaseDoctrineOrmTypeGuesser
             case Type::STRING:
                 return new TypeGuess(TextType::class, [], Guess::MEDIUM_CONFIDENCE);
             case Type::SIMPLE_ARRAY:
+            case Type::JSON_ARRAY:
                 return new TypeGuess(GraphQLType::class, ['graphql_type' => Types::listOf(Types::STRING) ], Guess::MEDIUM_CONFIDENCE);
             case Type::TEXT:
                 return new TypeGuess(TextareaType::class, [], Guess::MEDIUM_CONFIDENCE);
