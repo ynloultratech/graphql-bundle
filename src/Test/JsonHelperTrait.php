@@ -87,6 +87,22 @@ trait JsonHelperTrait
     }
 
     /**
+     * @param string $path
+     */
+    protected static function assertJsonPathFalse($path)
+    {
+        self::assertFalse(self::getJsonPathValue($path));
+    }
+
+    /**
+     * @param string $path
+     */
+    protected static function assertJsonPathTrue($path)
+    {
+        self::assertTrue(self::getJsonPathValue($path));
+    }
+
+    /**
      * @param mixed  $expected
      * @param string $path
      */

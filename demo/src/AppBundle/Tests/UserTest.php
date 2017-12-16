@@ -464,7 +464,7 @@ GraphQL;
 
         /** @var User $user1 */
         $user1 = self::getFixtureReference('user1');
-        self::assertRepositoryContains(User::class, ['username' => $user1->getUsername()]);
+        self::assertRepositoryContains(User::class, ['username' => $user1->getUsername(), 'enabled' => true]);
         self::assertRepositoryNotContains(User::class, ['username' => $newLogin]);
 
         $mutation = <<<'GraphQL'
@@ -474,6 +474,7 @@ mutation($input: UpdateUserInput!){
             node {
                 id
                 login
+                enabled
                 profile {
                     email
                 }
@@ -494,6 +495,7 @@ GraphQL;
                 'input' => [
                     'id' => $id = self::encodeID('User', $user1),
                     'login' => $newLogin,
+                    'enabled' => false,
                     'profile' => [
                         'email' => $email = 'test@example.com',
                     ],
@@ -503,11 +505,12 @@ GraphQL;
         );
 
         self::assertResponseCodeIsOK();
-        self::assertRepositoryContains(User::class, ['username' => $newLogin]);
+        self::assertRepositoryContains(User::class, ['username' => $newLogin, 'enabled' => false]);
         $loginInResponse = self::getJsonPathValue('data.users.update.node.login');
         self::assertEquals($newLogin, $loginInResponse);
 
         self::assertJsonPathEquals($email, 'data.users.update.node.profile.email');
+        self::assertJsonPathFalse('data.users.update.node.enabled');
     }
 
     /**
