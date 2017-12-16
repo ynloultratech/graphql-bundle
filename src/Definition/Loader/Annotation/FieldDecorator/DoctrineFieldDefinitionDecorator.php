@@ -50,7 +50,9 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
 
             /** @var Column $column */
             if ($column = $this->reader->getPropertyAnnotation($field, Column::class)) {
-                $definition->setType($this->getNormalizedType($column->type));
+                $type = $this->getNormalizedType($column->type);
+                $definition->setType(TypeUtil::normalize($type));
+                $definition->setList(TypeUtil::isTypeList($type));
                 $definition->setNonNull(!$column->nullable);
             }
 
@@ -127,6 +129,9 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
             case DoctrineType::STRING:
             case DoctrineType::TEXT:
                 $type = Types::STRING;
+                break;
+            case DoctrineType::SIMPLE_ARRAY:
+                $type = Types::listOf(Types::STRING);
                 break;
             case DoctrineType::DATE:
             case DoctrineType::DATETIME:

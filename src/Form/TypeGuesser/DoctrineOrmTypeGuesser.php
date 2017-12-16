@@ -25,6 +25,7 @@ use Symfony\Component\Form\Extension\Core\Type\TimeType;
 use Symfony\Component\Form\Guess\Guess;
 use Symfony\Component\Form\Guess\TypeGuess;
 use Ynlo\GraphQLBundle\Form\Type\GraphQLType;
+use Ynlo\GraphQLBundle\Type\Types;
 
 /**
  * DoctrineOrmTypeGuesser
@@ -82,6 +83,8 @@ class DoctrineOrmTypeGuesser extends BaseDoctrineOrmTypeGuesser
                 return new TypeGuess(IntegerType::class, [], Guess::MEDIUM_CONFIDENCE);
             case Type::STRING:
                 return new TypeGuess(TextType::class, [], Guess::MEDIUM_CONFIDENCE);
+            case Type::SIMPLE_ARRAY:
+                return new TypeGuess(GraphQLType::class, ['graphql_type' => Types::listOf(Types::STRING) ], Guess::MEDIUM_CONFIDENCE);
             case Type::TEXT:
                 return new TypeGuess(TextareaType::class, [], Guess::MEDIUM_CONFIDENCE);
             default:

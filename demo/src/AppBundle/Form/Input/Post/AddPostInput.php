@@ -30,6 +30,7 @@ class AddPostInput extends AbstractType
             ->add('body')
             ->add('status')
             ->add('futurePublishDate')
+            ->add('tags')
             ->add('categories');
     }
 

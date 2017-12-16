@@ -23,4 +23,14 @@ final class Types
     public const BOOLEAN = GraphQLType::BOOLEAN;
     public const FLOAT = GraphQLType::FLOAT;
     public const DATE_TIME = 'DateTime';
+
+    /**
+     * @param string $type
+     *
+     * @return string
+     */
+    public static function listOf(string $type): string
+    {
+        return sprintf('[%s]', $type);
+    }
 }

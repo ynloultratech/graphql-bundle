@@ -28,6 +28,7 @@ use Ynlo\GraphQLBundle\Form\Type\GraphQLType;
 use Ynlo\GraphQLBundle\Form\Type\IDType;
 use Ynlo\GraphQLBundle\Type\Types;
 use Ynlo\GraphQLBundle\Util\ClassUtils;
+use Ynlo\GraphQLBundle\Util\TypeUtil;
 
 /**
  * MutationFormResolverExtension
@@ -197,10 +198,14 @@ class MutationFormResolverExtension extends AbstractDefinitionExtension
         $resolver = $form->getConfig()->getType()->getOptionsResolver();
         if ($resolver->hasDefault('graphql_type')) {
             $type = $resolver->resolve([])['graphql_type'];
+            $field->setList(TypeUtil::isTypeList($type));
+            $type = TypeUtil::normalize($type);
         }
 
         if (is_a($form->getConfig()->getType()->getInnerType(), GraphQLType::class, true)) {
             $type = $form->getConfig()->getOptions()['graphql_type'];
+            $field->setList(TypeUtil::isTypeList($type));
+            $type = TypeUtil::normalize($type);
         }
 
         if (is_a($form->getConfig()->getType()->getInnerType(), IDType::class, true)) {

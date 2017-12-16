@@ -69,6 +69,13 @@ class Post implements NodeInterface, CommentableInterface, TimestampableInterfac
     protected $author;
 
     /**
+     * @var string[]
+     *
+     * @ORM\Column(name="tags", type="simple_array", nullable=true)
+     */
+    protected $tags = [];
+
+    /**
      * @var Collection
      *
      * @ORM\ManyToMany(targetEntity="Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Category", inversedBy="posts")
@@ -174,6 +181,31 @@ class Post implements NodeInterface, CommentableInterface, TimestampableInterfac
     public function setSlug(string $slug)
     {
         $this->slug = $slug;
+    }
+
+    /**
+     * @return \string[]
+     */
+    public function getTags(): array
+    {
+        return $this->tags;
+    }
+
+    /**
+     * @param \string[] $tags
+     */
+    public function setTags(array $tags)
+    {
+        $this->tags = $tags;
+    }
+
+    /**
+     * @param string $tag
+     */
+    public function addTag(string $tag)
+    {
+        $this->tags[] = $tag;
+        $this->tags = array_unique($this->tags);
     }
 
     /**

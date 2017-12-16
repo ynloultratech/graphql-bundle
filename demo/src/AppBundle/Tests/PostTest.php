@@ -35,6 +35,7 @@ mutation ($input: AddPostInput!){
                 title
                 body
                 status
+                tags
                 categories {
                     name
                 }
@@ -52,6 +53,7 @@ GraphQL;
                     'title' => $title = $faker->sentence(),
                     'body' => $body = $faker->paragraph,
                     'status' => 'PUBLISHED',
+                    'tags' => $tags = $faker->words(3),
                     'categories' => [
                         self::encodeID('Category', 1),
                         self::encodeID('Category', 2),
@@ -66,6 +68,7 @@ GraphQL;
         self::assertJsonPathEquals($body, 'data.posts.add.node.body');
         self::assertJsonPathEquals('PUBLISHED', 'data.posts.add.node.status');
         self::assertJsonPathEquals($clientMutationId, 'data.posts.add.clientMutationId');
+        self::assertJsonPathEquals($tags, 'data.posts.add.node.tags');
 
         $category1 = self::getRepository(Category::class)->find(1);
         self::assertJsonPathEquals($category1->getName(), 'data.posts.add.node.categories[0].name');
@@ -147,6 +150,7 @@ query {
             edges {
                 node {
                     title
+                    tags
                     categories {
                         name
                     }
@@ -161,6 +165,7 @@ GraphQL;
         foreach ($records as $index => $post) {
             self::assertJsonPathEquals($post->getTitle(), "data.posts.posts.edges[$index].node.title");
             self::assertJsonPathEquals($post->getCategories()->first()->getName(), "data.posts.posts.edges[$index].node.categories[0].name");
+            self::assertJsonPathEquals($post->getTags(), "data.posts.posts.edges[$index].node.tags");
         }
     }
 }

@@ -103,6 +103,7 @@ class Fixtures extends Fixture
             $post->setTitle($this->faker->sentence(\random_int(3, 10)));
             $post->setBody($this->faker->paragraph(\random_int(3, 10)));
             $post->setAuthor($author);
+            $post->setTags($this->faker->words(\random_int(0, 4)));
 
             $cat = \random_int(1, 5);
             $post->getCategories()->add($this->getReference('category'.$cat));
