@@ -74,6 +74,8 @@ class DefinitionRegistry
      */
     public function getEndpoint(): Endpoint
     {
+        //TODO: save endpoint with definitions serialized in cache for production
+
         if (self::$endpoint) {
             return self::$endpoint;
         }
