@@ -68,15 +68,36 @@ trait GraphQLHelperTrait
     }
 
     /**
-     * debugQuery
+     * Print helpful debug information
      */
-    protected static function debugQuery()
+    protected static function debugInfo()
     {
         if (self::$query) {
-            print_r(self::$query['query'] ?? null);
-            print_r("\n\nvariables:\n");
-            print_r(json_encode(self::$query['variables'] ?? [],JSON_PRETTY_PRINT));
+            $query = self::$query['query'] ?? null;
+
+            $type = 'QUERY';
+            if (preg_match('/^\s*mutation/', $query)) {
+                $type = 'MUTATION';
+            }
+
+            $variables = self::$query['variables'] ?? null;
+
+            print_r("\n\n-------------- GraphQL $type ----------------\n\n");
+            print_r($query ?? null);
             print_r("\n\n");
+            print_r("------------------- VARIABLES-----------------------\n\n");
+            print_r(json_encode($variables, JSON_PRETTY_PRINT));
+            print_r("\n\n");
+            print_r("-------------------- RESPONSE ----------------------\n\n");
+            $content = self::getClient()->getResponse()->getContent();
+            $json = @json_decode($content, true);
+            if ($json) {
+                print_r(json_encode($json, JSON_PRETTY_PRINT));
+            } else {
+                print_r($content);
+            }
+            print_r("\n\n");
+            print_r("-----------------------------------------------------\n\n");
         }
     }
 }

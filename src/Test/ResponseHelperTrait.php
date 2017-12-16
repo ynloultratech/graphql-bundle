@@ -49,18 +49,4 @@ trait ResponseHelperTrait
     {
         return self::getClient()->getResponse();
     }
-
-    /**
-     * dumpResponse
-     */
-    protected static function dumpResponse()
-    {
-        $content = self::getClient()->getResponse()->getContent();
-        $json = @json_decode($content, true);
-        if ($json) {
-            print_r($json);
-        } else {
-            print_r($content);
-        }
-    }
 }
