@@ -41,3 +41,34 @@ Options:
 - **options**: Options are used by [Definitions Extensions](definitions-extensions.md) to provide extra features
  
 Read [arguments documentation](arguments.md) to read about add arguments to queries and mutations.
+
+## Query Response
+
+The response of each query should match with the exposed type in the GraphQL schema. 
+If your query expose a `User` type as query result then must return this type of object in the return statement in the resolver.
+
+````
+namespace AppBundle\Query\User;
+
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Ynlo\GraphQLBundle\Annotation as GraphQL;
+use AppBundle\Entity\User;
+
+/**
+ * @GraphQL\Query()
+ * @GraphQL\Argument(name="username", type="String!")
+ */
+class GetUserByUsername implements ContainerAwareInterface
+{
+    use ContainerAwareTrait;
+
+    public function __invoke($username)
+    {
+        return $this->container
+            ->get('doctrine')
+            ->getRepository(User::class)
+            ->findOneBy(['username' => $username]);
+    }
+}
+````
