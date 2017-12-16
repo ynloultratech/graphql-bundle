@@ -10,6 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Util;
 
+use Doctrine\Common\Util\Inflector;
 use GraphQL\Type\Definition\Type;
 
 /**
@@ -85,5 +86,15 @@ final class TypeUtil
         }
 
         return $type;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return string
+     */
+    public static function normalizeName($name)
+    {
+        return Inflector::classify($name);
     }
 }

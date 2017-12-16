@@ -23,6 +23,7 @@ class ApiDemoKernel extends Kernel
             new Doctrine\Bundle\DoctrineBundle\DoctrineBundle(),
             new Symfony\Bundle\WebServerBundle\WebServerBundle(),
             new Doctrine\Bundle\FixturesBundle\DoctrineFixturesBundle(),
+            new Fresh\DoctrineEnumBundle\FreshDoctrineEnumBundle(),
 
             new Ynlo\GraphQLBundle\YnloGraphQLBundle(),
             new Ynlo\GraphQLBundle\Demo\AppBundle\AppBundle(),

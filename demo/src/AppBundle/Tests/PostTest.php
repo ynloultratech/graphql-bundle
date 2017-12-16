@@ -11,9 +11,9 @@
 namespace Ynlo\GraphQLBundle\Demo\AppBundle\Tests;
 
 use Faker\Factory;
+use Ynlo\GraphQLBundle\Demo\AppBundle\DBAL\Types\PostStatusType;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Category;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Post;
-use Ynlo\GraphQLBundle\Demo\AppBundle\Type\PostStatusType;
 use Ynlo\GraphQLBundle\Test\ApiTestCase;
 
 /**
@@ -52,7 +52,7 @@ GraphQL;
                 'input' => [
                     'title' => $title = $faker->sentence(),
                     'body' => $body = $faker->paragraph,
-                    'status' => PostStatusType::PUBLISH,
+                    'status' => 'PUBLISHED',
                     'categories' => [
                         self::encodeID('Category', 1),
                         self::encodeID('Category', 2),
@@ -65,7 +65,7 @@ GraphQL;
         self::assertRepositoryContains(Post::class, ['title' => $title, 'body' => $body]);
         self::assertJsonPathEquals($title, 'data.posts.add.node.title');
         self::assertJsonPathEquals($body, 'data.posts.add.node.body');
-        self::assertJsonPathEquals(PostStatusType::PUBLISH, 'data.posts.add.node.status');
+        self::assertJsonPathEquals('PUBLISHED', 'data.posts.add.node.status');
         self::assertJsonPathEquals($clientMutationId, 'data.posts.add.clientMutationId');
 
         $category1 = self::getRepository(Category::class)->find(1);

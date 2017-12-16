@@ -10,9 +10,9 @@
 
 namespace Ynlo\GraphQLBundle\Demo\AppBundle\Tests;
 
+use Ynlo\GraphQLBundle\Demo\AppBundle\DBAL\Types\PostStatusType;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Category;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Post;
-use Ynlo\GraphQLBundle\Demo\AppBundle\Type\PostStatusType;
 use Ynlo\GraphQLBundle\Test\ApiTestCase;
 
 /**
@@ -83,7 +83,7 @@ GraphQL;
         $publish1 = [];
         foreach ($category1->getPosts() as $post) {
             if ($post->getStatus() === PostStatusType::PUBLISH) {
-                $publish1[] = ['status' => $post->getStatus()];
+                $publish1[] = ['status' => 'PUBLISHED'];
             }
         }
 
@@ -91,7 +91,7 @@ GraphQL;
         $publish2 = [];
         foreach ($category2->getPosts() as $post) {
             if ($post->getStatus() === PostStatusType::PUBLISH) {
-                $publish2[] = ['status' => $post->getStatus()];
+                $publish2[] = ['status' => 'PUBLISHED'];
             }
         }
 
@@ -101,7 +101,7 @@ query($ids: [ID!]!) {
        ... on Category {
             id
             name
-            postsByStatus (first: 100, status: PUBLISH){
+            postsByStatus (first: 100, status: PUBLISHED){
                 edges {
                     node {
                         status

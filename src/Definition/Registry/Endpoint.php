@@ -10,10 +10,10 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Registry;
 
+use Ynlo\GraphQLBundle\Definition\ClassAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinitionHas;
 use Ynlo\GraphQLBundle\Definition\MutationDefinition;
-use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 
 /**
@@ -22,7 +22,7 @@ use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 class Endpoint
 {
     /**
-     * @var ObjectDefinitionInterface[]
+     * @var DefinitionInterface[]
      */
     protected $types = [];
 
@@ -47,7 +47,7 @@ class Endpoint
     protected $queries = [];
 
     /**
-     * @return ObjectDefinitionInterface[]
+     * @return DefinitionInterface[]
      */
     public function allTypes(): array
     {
@@ -124,7 +124,7 @@ class Endpoint
     }
 
     /**
-     * @param ObjectDefinitionInterface[] $types
+     * @param DefinitionInterface[] $types
      */
     public function setTypes(array $types)
     {
@@ -225,7 +225,7 @@ class Endpoint
     /**
      * @param string $name
      *
-     * @return ObjectDefinitionInterface
+     * @return DefinitionInterface
      *
      * @throws \UnexpectedValueException
      */
@@ -283,11 +283,11 @@ class Endpoint
     }
 
     /**
-     * @param ObjectDefinitionInterface $type
+     * @param DefinitionInterface $type
      *
      * @return Endpoint
      */
-    public function addType(ObjectDefinitionInterface $type): Endpoint
+    public function addType(DefinitionInterface $type): Endpoint
     {
         if ($this->hasType($type->getName())) {
             throw new \RuntimeException(sprintf('Duplicate definition for type with name "%s"', $type->getName()));
@@ -298,8 +298,13 @@ class Endpoint
             $this->interfaces[$type->getName()] = $type;
         }
 
-        if ($type->getClass()) {
-            $this->typeMap[$type->getName()] = $type->getClass();
+        if ($type instanceof ClassAwareDefinitionInterface) {
+            if ($type->getClass()) {
+                $class = $type->getClass();
+                //all classes are saved without \ at the beginning
+                $class = preg_replace('/^\\\\/', null, $class);
+                $this->typeMap[$type->getName()] = $class;
+            }
         }
 
         return $this;

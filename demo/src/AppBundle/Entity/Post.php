@@ -17,13 +17,13 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
+use Ynlo\GraphQLBundle\Demo\AppBundle\DBAL\Types\PostStatusType;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Model\CommentableInterface;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Model\CommentableTrait;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Model\CommentInterface;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Model\HasAuthorInterface;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Model\TimestampableInterface;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Model\TimestampableTrait;
-use Ynlo\GraphQLBundle\Demo\AppBundle\Type\PostStatusType;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 
 /**
@@ -81,9 +81,7 @@ class Post implements NodeInterface, CommentableInterface, TimestampableInterfac
     /**
      * @var string
      *
-     * @ORM\Column(name="status", type="string")
-     *
-     * @GraphQL\Field(type="Ynlo\GraphQLBundle\Demo\AppBundle\Type\PostStatusType")
+     * @ORM\Column(name="status", type="post_status")
      */
     protected $status;
 

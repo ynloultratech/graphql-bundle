@@ -40,6 +40,8 @@ doctrine:
             default:
                 driver:   pdo_sqlite
                 path:     '%kernel.root_dir%/demo.db'
+        types:
+            post_status: \Ynlo\GraphQLBundle\Demo\AppBundle\DBAL\Types\PostStatusType
     orm:
         auto_generate_proxy_classes: "%kernel.debug%"
         naming_strategy: doctrine.orm.naming_strategy.underscore

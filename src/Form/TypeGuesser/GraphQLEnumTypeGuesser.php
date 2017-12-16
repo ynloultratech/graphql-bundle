@@ -11,18 +11,21 @@
 namespace Ynlo\GraphQLBundle\Form\TypeGuesser;
 
 use Doctrine\Common\Annotations\Reader;
+use Fresh\DoctrineEnumBundle\DBAL\Types\AbstractEnumType;
 use GraphQL\Type\Definition\EnumType;
-use Symfony\Component\Form\FormTypeGuesserInterface;
+use Symfony\Bridge\Doctrine\Form\DoctrineOrmTypeGuesser;
+use Symfony\Bridge\Doctrine\ManagerRegistry;
 use Symfony\Component\Form\Guess\Guess;
 use Symfony\Component\Form\Guess\TypeGuess;
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Form\Type\GraphQLType;
 use Ynlo\GraphQLBundle\Type\Types;
+use Ynlo\GraphQLBundle\Util\TypeUtil;
 
 /**
  * Class GraphQLTypeGuesser
  */
-class GraphQLEnumTypeGuesser implements FormTypeGuesserInterface
+class GraphQLEnumTypeGuesser extends DoctrineOrmTypeGuesser
 {
     /**
      * @var Reader
@@ -30,11 +33,26 @@ class GraphQLEnumTypeGuesser implements FormTypeGuesserInterface
     protected $reader;
 
     /**
-     * @param Reader $reader
+     * @var AbstractEnumType[]
      */
-    public function __construct(Reader $reader)
+    protected $registeredEnumTypes = [];
+
+    /**
+     * GraphQLEnumTypeGuesser constructor.
+     *
+     * @param Reader          $reader
+     * @param ManagerRegistry $registry
+     * @param array           $registeredTypes
+     */
+    public function __construct(Reader $reader, ManagerRegistry $registry, array $registeredTypes)
     {
+        parent::__construct($registry);
+
         $this->reader = $reader;
+
+        foreach ($registeredTypes as $type => $details) {
+            $this->registeredEnumTypes[$type] = $details['class'];
+        }
     }
 
     /**
@@ -53,26 +71,50 @@ class GraphQLEnumTypeGuesser implements FormTypeGuesserInterface
                 }
             }
         }
+
+        //resolve types for DoctrineEnumBundle
+        return $this->resolveDoctrineEnumBundleType($class, $property);
     }
 
     /**
-     * {@inheritdoc}
+     * @param string $class
+     * @param string $property
+     *
+     * @return TypeGuess|null
      */
-    public function guessRequired($class, $property)
+    protected function resolveDoctrineEnumBundleType($class, $property):?TypeGuess
     {
-    }
+        if (!class_exists('\Fresh\DoctrineEnumBundle\DBAL\Types\AbstractEnumType')) {
+            return null;
+        }
 
-    /**
-     * {@inheritdoc}
-     */
-    public function guessMaxLength($class, $property)
-    {
-    }
+        $classMetadata = $this->getMetadata($class);
 
-    /**
-     * {@inheritdoc}
-     */
-    public function guessPattern($class, $property)
-    {
+        // If no metadata for this class - can't guess anything
+        if (!$classMetadata) {
+            return null;
+        }
+
+        /** @var \Doctrine\ORM\Mapping\ClassMetadataInfo $metadata */
+        list($metadata) = $classMetadata;
+        $fieldType = $metadata->getTypeOfField($property);
+
+        // This is not one of the registered ENUM types
+        if (!isset($this->registeredEnumTypes[$fieldType])) {
+            return null;
+        }
+
+        $registeredEnumTypeFQCN = $this->registeredEnumTypes[$fieldType];
+
+        if (!is_subclass_of($registeredEnumTypeFQCN, '\Fresh\DoctrineEnumBundle\DBAL\Types\AbstractEnumType', true)) {
+            return null;
+        }
+
+        // Get the choices from the fully qualified class name
+        $parameters = [
+            'graphql_type' => TypeUtil::normalizeName($fieldType),
+        ];
+
+        return new TypeGuess(GraphQLType::class, $parameters, Guess::VERY_HIGH_CONFIDENCE);
     }
 }

@@ -13,11 +13,11 @@ namespace Ynlo\GraphQLBundle\Demo\AppBundle\DataFixtures\ORM;
 use Doctrine\Bundle\FixturesBundle\Fixture;
 use Doctrine\Common\Persistence\ObjectManager;
 use Faker\Factory;
+use Ynlo\GraphQLBundle\Demo\AppBundle\DBAL\Types\PostStatusType;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Category;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Post;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\PostComment;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\User;
-use Ynlo\GraphQLBundle\Demo\AppBundle\Type\PostStatusType;
 
 /**
  * Class Fixtures

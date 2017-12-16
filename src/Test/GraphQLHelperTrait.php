@@ -72,6 +72,11 @@ trait GraphQLHelperTrait
      */
     protected static function debugQuery()
     {
-        print_r(self::$query);
+        if (self::$query) {
+            print_r(self::$query['query'] ?? null);
+            print_r("\n\nvariables:\n");
+            print_r(json_encode(self::$query['variables'] ?? [],JSON_PRETTY_PRINT));
+            print_r("\n\n");
+        }
     }
 }

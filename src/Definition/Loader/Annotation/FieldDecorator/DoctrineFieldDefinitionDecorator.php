@@ -22,6 +22,7 @@ use GraphQL\Type\Definition\Type;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\Loader\Annotation\AnnotationReaderAwareTrait;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
+use Ynlo\GraphQLBundle\Util\TypeUtil;
 
 /**
  * Decorate a field definition using doctrine annotations
@@ -133,6 +134,6 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
                 break;
         }
 
-        return $type;
+        return TypeUtil::normalizeName($type);
     }
 }

@@ -13,6 +13,7 @@ namespace Ynlo\GraphQLBundle\Type;
 use GraphQL\Type\Definition\Type;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Ynlo\GraphQLBundle\Definition\EnumDefinition;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinitionHas;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
@@ -125,6 +126,13 @@ class Types
                 };
             } elseif ($definition instanceof InterfaceDefinitionHas) {
                 $type = new class(self::$endpoint, $definition) extends AbstractInterfaceType
+                {
+
+                };
+            }
+
+            if ($definition instanceof EnumDefinition) {
+                $type = new class($definition) extends EnumType
                 {
 
                 };

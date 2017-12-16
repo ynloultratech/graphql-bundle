@@ -19,6 +19,7 @@ use Ynlo\GraphQLBundle\Component\TaggedServices\TagSpecification;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Extension\DefinitionExtensionInterface;
 use Ynlo\GraphQLBundle\Definition\Extension\DefinitionExtensionManager;
+use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Loader\DefinitionLoaderInterface;
 use Ynlo\GraphQLBundle\Definition\MetaAwareInterface;
 
@@ -103,10 +104,12 @@ class DefinitionRegistry
         foreach ($this->extensionManager->getExtensions() as $extension) {
             foreach ($endpoint->allTypes() as $type) {
                 $this->configureDefinition($extension, $type, $endpoint);
-                foreach ($type->getFields() as $field) {
-                    $this->configureDefinition($extension, $field, $endpoint);
-                    foreach ($field->getArguments() as $argument) {
-                        $this->configureDefinition($extension, $argument, $endpoint);
+                if ($type instanceof FieldsAwareDefinitionInterface) {
+                    foreach ($type->getFields() as $field) {
+                        $this->configureDefinition($extension, $field, $endpoint);
+                        foreach ($field->getArguments() as $argument) {
+                            $this->configureDefinition($extension, $argument, $endpoint);
+                        }
                     }
                 }
             }
