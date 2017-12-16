@@ -67,7 +67,7 @@ class DoctrineOrmTypeGuesser extends BaseDoctrineOrmTypeGuesser
             case Type::DATETIME:
             case Type::DATETIMETZ:
             case 'vardatetime':
-                return new TypeGuess(GraphQLType::class, ['graphql_type' => 'DateTime'], Guess::HIGH_CONFIDENCE);
+                return new TypeGuess(GraphQLType::class, ['graphql_type' => Types::DATETIME], Guess::HIGH_CONFIDENCE);
             case 'dateinterval':
                 return new TypeGuess(DateIntervalType::class, [], Guess::HIGH_CONFIDENCE);
             case Type::DATE:

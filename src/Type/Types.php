@@ -22,7 +22,7 @@ final class Types
     public const INT = GraphQLType::INT;
     public const BOOLEAN = GraphQLType::BOOLEAN;
     public const FLOAT = GraphQLType::FLOAT;
-    public const DATE_TIME = 'DateTime';
+    public const DATETIME = DateTimeType::DATETIME;
 
     /**
      * @param string $type

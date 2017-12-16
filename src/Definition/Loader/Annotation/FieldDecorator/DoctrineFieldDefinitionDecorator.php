@@ -136,7 +136,7 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
                 break;
             case DoctrineType::DATE:
             case DoctrineType::DATETIME:
-                $type = 'DateTime';
+                $type = Types::DATETIME;
                 break;
         }
 

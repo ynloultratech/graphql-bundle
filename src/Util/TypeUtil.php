@@ -81,7 +81,7 @@ final class TypeUtil
             case 'datetime':
             case 'date_time':
             case 'date':
-                $type = 'DateTime';
+                $type = Types::DATETIME;
                 break;
         }
 

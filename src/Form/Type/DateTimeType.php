@@ -14,6 +14,7 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\CallbackTransformer;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Ynlo\GraphQLBundle\Type\Types;
 
 /**
  * DateTimeType
@@ -40,7 +41,7 @@ class DateTimeType extends AbstractType
      */
     public function configureOptions(OptionsResolver $resolver)
     {
-        $resolver->setDefault('graphql_type', 'DateTime');
+        $resolver->setDefault('graphql_type', Types::DATETIME);
     }
 
 

@@ -20,12 +20,14 @@ use GraphQL\Utils;
  */
 class DateTimeType extends ScalarType
 {
+    public const DATETIME = 'DateTime';
+
     /**
      * {@inheritdoc}
      */
     public function __construct(array $config = [])
     {
-        $this->name = 'DateTime';
+        $this->name = self::DATETIME;
         $this->description = 'An ISO-8601 encoded UTC date string. Example: `1985-06-18T18:05:00-05:00`';
 
         parent::__construct($config);
