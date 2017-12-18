@@ -13,7 +13,7 @@
   },
   "endpoints" : [
     {
-      "name": "Default (http://localhost:8080/graphql)",
+      "name": "Default",
       "url": "http://localhost:8000",
       "options" : {
         "headers": {
