@@ -3,5 +3,3 @@
 /demo/var/
 /demo/public/bundles/
 demo.db
-
-/demo/app/config/config.yml
