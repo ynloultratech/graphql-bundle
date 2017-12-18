@@ -17,11 +17,11 @@ protected $username;
  in this case will be resolved automatically.
  
  Options:
- - **type**: The type of the field, read more about [Type System](definitions-type-system.md)
+ - **type**: The type of the field, read more about [Type System](type-system.md)
  - **name**: Name to expose the field, if not set will be automatically resolved.
  - **description**: Field description to expose in the documentation
  - **deprecationReason**: Mark the field as deprecated with the following reason
- - **options**: Options are used by [Definitions Extensions](definitions-extensions.md) to provide extra features
+ - **options**: Options are used by [Definitions Extensions](extensions.md) to provide extra features
  
 
 ## Methods as Fields
@@ -67,7 +67,7 @@ Fields can be properties or methods inside any object,
 but some times you need a more complex logic to resolve the value of the field. 
 To accomplish this is required use field resolvers.
 
-Field resolvers use [naming convention](naming-conventions.md) like other [resolvers](resolvers.md)
+Field resolvers use [naming convention](../naming-conventions.md) like other [resolvers](../resolvers.md)
 and should be created in:
 
 `Query\{Node}\Field\{FieldName}`
@@ -96,5 +96,5 @@ class IsCurrent implements ContainerAwareInterface
 }
 
 ````
-The argument `$root` is automatically injected and contains the current Node. [Read more about arguments](arguments.md)
+The argument `$root` is automatically injected and contains the current Node. [Read more about arguments](../arguments.md)
 

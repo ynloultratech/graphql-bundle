@@ -75,7 +75,7 @@ In the above entity example, **User** is a Node, the user can be fetched individ
 For all this operations is required a **ID** to interact with desired user.
 
 In the other hand the **Profile** is a 
-[GraphQL Object](definitions-object-type.md) but not necessarily a Node. 
+[GraphQL Object](definitions/object-type.md) but not necessarily a Node. 
 Because the relation is **OneToOne** always you can access 
 to the **Profile** using the **User** object `(user.profile)` and update using the same approach.
 

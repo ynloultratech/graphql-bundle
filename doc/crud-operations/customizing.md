@@ -7,9 +7,9 @@ Basic CRUD operations are very helpful, but many times is not enough.
 What happen if you need a custom way to add the record to the database?
 
 In these scenarios you must override the default resolver used to execute the operation.
-To override the resolver create a new one using [naming convention](naming-conventions.md).
+To override the resolver create a new one using [naming convention](../naming-conventions.md).
 
-> GraphQL Bundle works with [Resolvers](resolvers.md) and each resolver 
+> GraphQL Bundle works with [Resolvers](../resolvers.md) and each resolver 
 is responsible for executing one task and only one task.
 
 Mutations Resolvers:
@@ -32,11 +32,11 @@ class AddUser
 
 See the `$input` parameter in the `__invoke` action, 
 the name of each parameter should match with the name of 
-each argument in the GraphQL mutation schema. See [arguments documentation](arguments.md) for more information.
+each argument in the GraphQL mutation schema. See [arguments documentation](../arguments.md) for more information.
 
 The input argument contains the data *(array)* entered by the user in the input argument. 
 At this point you can put your own logic in the resolver to do anything what you need. 
-But in any case you need return the same [Payload](mutations-payload.md) exposed in the GraphQL schema.
+But in any case you need return the same [Payload](../mutations/payload.md) exposed in the GraphQL schema.
 
 For query operations like **list** operation it's similar but using the following convention:
 

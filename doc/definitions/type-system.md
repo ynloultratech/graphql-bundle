@@ -7,10 +7,10 @@ basically about selecting fields on objects.
 
 ## Writing Types
 
-- [Object Type](definitions-object-type.md)
-- [Interface Type](definitions-interface-type.md)
-- [Scalar Type](definitions-scalar-type.md)
-- [ENUM Type](definitions-enum-type.md)
+- [Object Type](object-type.md)
+- [Interface Type](interface-type.md)
+- [Scalar Type](scalar-type.md)
+- [ENUM Type](enum-type.md)
 
 ## Using Types
 

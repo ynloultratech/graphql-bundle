@@ -14,7 +14,7 @@ GraphQLBundle describes several built-in scalar types:
 In addition to built-in scalars, you can define your own scalar types. 
 Typical examples of such types are **Email**, **Date**, **Url**, etc.
 
-Scalar types use [naming convention](naming-conventions.md) and should be created in:
+Scalar types use [naming convention](../naming-conventions.md) and should be created in:
 
 `Type\{Name}Type`
 
@@ -56,7 +56,7 @@ class DateTimeType extends ScalarType
 }
 ````
 > DateTime type is already a internal type of GraphQLBundle,
-see [type system](definitions-type-system.md).
+see [type system](type-system.md).
 
 For more information about create Scalar types read 
 the official documentation of [graphql-php](http://webonyx.github.io/graphql-php/type-system/scalar-types/)

@@ -5,7 +5,7 @@ and the integration of extensions ensure a high level of customization.
 
 ## Extensions for Interfaces
 
-Extensions are designed for [interfaces](definitions-interface-type.md) 
+Extensions are designed for [interfaces](../definitions/interface-type.md) 
 to add extra features for common operations.
 
 For example, imagine you have two entities, a Post and a Comment:
@@ -57,11 +57,11 @@ As you can see, each entity shares the field `author`,
 this field should be populated with the current user 
 every time a `Post` or a `Comment` is created.
 
-For this scenario [override the resolver](crud-operations-customizing.md)
+For this scenario [override the resolver](customizing.md)
 to use `prePersist` is not a good and reusable solution.
 
 First of all you need detect this type of scenarios and take proper actions. For example
-in this case should create a new [interface](definitions-interface-type.md) `HasAuthorInterface`
+in this case should create a new [interface](../definitions/interface-type.md) `HasAuthorInterface`
 
 ````php
 namespace AppBundle\Model;
@@ -105,7 +105,7 @@ Interfaces can be used across unrelated classes to share behaviors.
 Now you are able to create a extension to manage 
 the behavior for any concrete object implementing this interface.
 
-Extensions use [naming convention](naming-conventions.md) and should be created in:
+Extensions use [naming convention](../naming-conventions.md) and should be created in:
 
 `Extension\{InterfaceName}Extension`
 

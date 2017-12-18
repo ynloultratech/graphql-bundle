@@ -84,7 +84,7 @@ class User implements NodeInterface
 ````
 
 Congrats, you have your first GraphQL object ready and you can start using the API now. 
-Read more about creating [object types](definitions-object-type.md).
+Read more about creating [object types](definitions/object-type.md).
 
 #### Using GraphiQL
 

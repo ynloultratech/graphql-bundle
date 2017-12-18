@@ -2,15 +2,15 @@
 
 All types in GraphQL are of two categories: input and output.
 
-- **Output** types (or field types) are: [Scalar](definitions-scalar-type.md), 
-[Enum](definitions-enum-type.md), [Object](definitions-object-type.md), [Interface](definitions-interface-type.md), Union
-- **Input types** (or argument types) are: [Scalar](definitions-scalar-type.md), 
-                                           [Enum](definitions-enum-type.md), InputObject
+- **Output** types (or field types) are: [Scalar](scalar-type.md), 
+[Enum](enum-type.md), [Object](object-type.md), [Interface](interface-type.md), Union
+- **Input types** (or argument types) are: [Scalar](scalar-type.md), 
+                                           [Enum](enum-type.md), InputObject
 
 Obviously, NonNull and List types belong to both categories depending on their inner type.
 
 Input objects are used for mutations or arguments for queries, 
-in case of mutations the GraphQLBundle recommend the use of [Symfony Forms for Mutation Inputs](mutations-input-forms.md) 
+in case of mutations the GraphQLBundle recommend the use of [Symfony Forms for Mutation Inputs](../mutations/input-forms.md) 
 , but if you need in some special case can use input objects too.
 
 ## Defining Input Objects
@@ -24,7 +24,7 @@ To define a input object must use the `@GraphQL\InputObjectType()`
 class OrderBy
 {
 ````
-Fields and others settings are very similar to common [Object Types](definitions-object-type.md)
+Fields and others settings are very similar to common [Object Types](object-type.md)
 
 > By default GraphQLBundle search for input objects in the Model folder and sub-folders of each bundle.
 
@@ -63,4 +63,4 @@ query {
 ````
 
 > In the above example the field `direction` is a `string` 
-but can be a [ENUM](definitions-enum-type.md) with 'ASC' and 'DESC' as values.
+but can be a [ENUM](enum-type.md) with 'ASC' and 'DESC' as values.

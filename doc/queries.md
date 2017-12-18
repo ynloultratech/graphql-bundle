@@ -38,7 +38,7 @@ Options:
 - **arguments**: Query arguments, *only needed when override CRUD operations*
 - **resolver**: Query resolver, *only needed when override CRUD operations*
 - **deprecationReason**: Mark the field as deprecated with the following reason
-- **options**: Options are used by [Definitions Extensions](definitions-extensions.md) to provide extra features
+- **options**: Options are used by [Definitions Extensions](definitions/extensions.md) to provide extra features
  
 Read [arguments documentation](arguments.md) to read about add arguments to queries and mutations.
 

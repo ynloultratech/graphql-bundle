@@ -123,7 +123,7 @@ class AddUserInput extends AbstractType
 ````
 
 > The "required" option is used to set some fields as required in the GraphQL schema, 
-for more powerful validation must use [validations constraints](mutations-input-validation.md) of Symfony Validator.
+for more powerful validation must use [validations constraints](mutations/input-validation.md) of Symfony Validator.
 
 Now you are ready to start adding users to your database using the GraqphQL API.
 
@@ -281,4 +281,4 @@ for example, get a User by username, in this case can create a custom [Query](qu
 ## Customizing
 
 CRUD operations are simple and powerful and you can customize,
- see the [CRUD Customizing documentation](crud-operations-customizing.md)
+ see the [CRUD Customizing documentation](crud-operations/customizing.md)

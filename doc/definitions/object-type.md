@@ -3,7 +3,7 @@
 Object Type is the most frequently 
 used primitive in a typical GraphQL application.
 
-Conceptually Object Type is a collection of [Fields](definitions-fields.md). 
+Conceptually Object Type is a collection of [Fields](fields.md). 
 Each field, in turn, has its own type which allows building complex hierarchies.
 
 ## Defining Objects
@@ -24,7 +24,7 @@ Options:
 - **name**: Name to expose the object, if not set will be automatically resolved.
 - **description**: Object description to expose in the documentation
 - **exclusionPolicy**: Hide or show all fields by default
-- **options**: Options are used by [Definitions Extensions](definitions-extensions.md) to provide extra features
+- **options**: Options are used by [Definitions Extensions](extensions.md) to provide extra features
 
 By default when a object is annotated with `@GraphQL\ObjectType` annotation all properties are exposed. 
 If you need exclude some properties can use the `@GraphQL\Exclude()` annotation.
@@ -62,4 +62,4 @@ protected $username;
 ````
 
 > If the object is a Doctrine Entity mostly all properties are automatically resolved.
-Read more about [fields definitions](definitions-fields.md)
+Read more about [fields definitions](fields.md)
