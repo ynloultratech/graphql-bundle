@@ -12,4 +12,5 @@ echo Preparing...
 ./console doctrine:schema:create -q
 ./console doctrine:schema:update  --force -q
 ./console doctrine:fixtures:load -n -q
+./console assets:install public --symlink
 ./console server:run --docroot=public
