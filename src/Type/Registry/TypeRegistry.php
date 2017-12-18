@@ -19,10 +19,10 @@ use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Type\Definition\EndpointAwareInterface;
+use Ynlo\GraphQLBundle\Type\Definition\EnumDefinitionType;
 use Ynlo\GraphQLBundle\Type\Definition\InputObjectDefinitionType;
 use Ynlo\GraphQLBundle\Type\Definition\InterfaceDefinitionType;
 use Ynlo\GraphQLBundle\Type\Definition\ObjectDefinitionType;
-use Ynlo\GraphQLBundle\Type\EnumDefinitionType;
 use Ynlo\GraphQLBundle\Type\Types;
 
 /**

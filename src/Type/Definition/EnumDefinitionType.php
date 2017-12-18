@@ -8,7 +8,7 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Type;
+namespace Ynlo\GraphQLBundle\Type\Definition;
 
 use GraphQL\Type\Definition\EnumType;
 use Ynlo\GraphQLBundle\Definition\EnumDefinition;
