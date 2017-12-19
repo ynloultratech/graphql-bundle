@@ -20,6 +20,7 @@ use Ynlo\GraphQLBundle\Definition\NodeAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Resolver\EmptyObjectResolver;
 
 /**
@@ -49,8 +50,19 @@ class NamespaceDefinitionExtension extends AbstractDefinitionExtension
     public function configure(DefinitionInterface $definition, Endpoint $endpoint, array $config)
     {
         $node = null;
+        $nodeClass = null;
         if (($this->globalConfig['nodes']['enabled'] ?? false) && $definition instanceof NodeAwareDefinitionInterface && $definition->getNode()) {
             $node = $definition->getNode();
+
+            if (class_exists($node)) {
+                $nodeClass = $node;
+            } else {
+                $nodeClass = $endpoint->getClassForType($node);
+            }
+
+            if (!is_a($nodeClass, NodeInterface::class, true)) {
+                return;
+            }
 
             if (isset($this->globalConfig['nodes']['aliases'][$node])) {
                 $node = $this->globalConfig['nodes']['aliases'][$node];
@@ -63,8 +75,8 @@ class NamespaceDefinitionExtension extends AbstractDefinitionExtension
 
         $bundle = null;
         if ($this->globalConfig['bundles']['enabled'] ?? false) {
-            if ($node) {
-                if ($endpoint->hasType($node) && $nodeClass = $endpoint->getClassForType($node)) {
+            if ($node && $nodeClass) {
+                if ($endpoint->hasType($node) && $nodeClass) {
                     preg_match_all('/\\\\(\w+Bundle)\\\\/', $nodeClass, $matches);
                     if ($matches) {
                         $bundle = current(array_reverse($matches[1]));
