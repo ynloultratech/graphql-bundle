@@ -142,7 +142,7 @@ class CRUDAnnotationParser implements AnnotationParserInterface
      */
     protected function createListOperation(ObjectDefinitionInterface $definition, Annotation\Query $query, Endpoint $endpoint, $bundleNamespace)
     {
-        $query->name = $query->name ?? Inflector::pluralize(lcfirst($definition->getName()));
+        $query->name = $query->name ?? 'all'.Inflector::pluralize(ucfirst($definition->getName()));
         $query->type = $query->type ?? $definition->getName();
         $query->options = array_merge(['pagination' => true], $query->options);
         $resolverReflection = new \ReflectionClass(AllNodesWithPagination::class);

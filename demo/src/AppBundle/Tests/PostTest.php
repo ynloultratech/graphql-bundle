@@ -146,7 +146,7 @@ GraphQL;
         $query = <<<'GraphQL'
 query {
     posts {
-        posts(first: 5, orderBy: {field: "title", direction: ASC}){
+        all(first: 5, orderBy: {field: "title", direction: ASC}){
             edges {
                 node {
                     title
@@ -163,9 +163,9 @@ GraphQL;
         self::send($query);
 
         foreach ($records as $index => $post) {
-            self::assertJsonPathEquals($post->getTitle(), "data.posts.posts.edges[$index].node.title");
-            self::assertJsonPathEquals($post->getCategories()->first()->getName(), "data.posts.posts.edges[$index].node.categories[0].name");
-            self::assertJsonPathEquals($post->getTags(), "data.posts.posts.edges[$index].node.tags");
+            self::assertJsonPathEquals($post->getTitle(), "data.posts.all.edges[$index].node.title");
+            self::assertJsonPathEquals($post->getCategories()->first()->getName(), "data.posts.all.edges[$index].node.categories[0].name");
+            self::assertJsonPathEquals($post->getTags(), "data.posts.all.edges[$index].node.tags");
         }
     }
 }

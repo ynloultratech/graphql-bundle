@@ -31,7 +31,7 @@ class CategoryTest extends ApiTestCase
         $query = <<<'GraphQL'
 query {
     categories {
-        categories (first: 5, orderBy: {field: "name", direction: ASC}){
+        all(first: 5, orderBy: {field: "name", direction: ASC}){
             edges {
                 node {
                     name
@@ -51,7 +51,7 @@ GraphQL;
         self::send($query);
 
         foreach ($records as $index => $category) {
-            self::assertJsonPathEquals($category->getName(), "data.categories.categories.edges[$index].node.name");
+            self::assertJsonPathEquals($category->getName(), "data.categories.all.edges[$index].node.name");
             /** @var Post[] $posts */
             $posts = self::getRepository(Post::class)
                          ->createQueryBuilder('o')
@@ -63,7 +63,7 @@ GraphQL;
                          ->getResult();
 
             foreach ($posts as $indexPost => $post) {
-                self::assertJsonPathEquals($post->getTitle(), "data.categories.categories.edges[$index].node.posts.edges[$indexPost].node.title");
+                self::assertJsonPathEquals($post->getTitle(), "data.categories.all.edges[$index].node.posts.edges[$indexPost].node.title");
             }
         }
     }

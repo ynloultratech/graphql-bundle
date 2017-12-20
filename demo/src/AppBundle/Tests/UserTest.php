@@ -27,7 +27,7 @@ class UserTest extends ApiTestCase
         $query = <<<'GraphQL'
 query {
     users{
-        users(first:5){
+        all(first:5){
             totalCount
             pageInfo {
                 endCursor
@@ -54,21 +54,21 @@ GraphQL;
         self::send($query);
 
         self::assertResponseCodeIsOK();
-        self::assertJsonPathEquals('Y3Vyc29yOjA=', 'data.users.users.pageInfo.startCursor');
-        self::assertJsonPathEquals('Y3Vyc29yOjQ=', 'data.users.users.pageInfo.endCursor');
-        self::assertJsonPathEquals(false, 'data.users.users.pageInfo.hasPreviousPage');
-        self::assertJsonPathEquals(true, 'data.users.users.pageInfo.hasNextPage');
+        self::assertJsonPathEquals('Y3Vyc29yOjA=', 'data.users.all.pageInfo.startCursor');
+        self::assertJsonPathEquals('Y3Vyc29yOjQ=', 'data.users.all.pageInfo.endCursor');
+        self::assertJsonPathEquals(false, 'data.users.all.pageInfo.hasPreviousPage');
+        self::assertJsonPathEquals(true, 'data.users.all.pageInfo.hasNextPage');
 
-        self::assertJsonPathEquals('admin', 'data.users.users.edges[0].node.login');
+        self::assertJsonPathEquals('admin', 'data.users.all.edges[0].node.login');
 
         /** @var User $user1 */
         $user1 = self::getFixtureReference('user1');
 
-        self::assertJsonArraySubset(['admin', $user1->getUsername()], 'data.users.users.edges[*].node.login');
-        self::assertJsonPathEquals($user1->getProfile()->getPhone(), 'data.users.users.edges[1].node.profile.phone');
+        self::assertJsonArraySubset(['admin', $user1->getUsername()], 'data.users.all.edges[*].node.login');
+        self::assertJsonPathEquals($user1->getProfile()->getPhone(), 'data.users.all.edges[1].node.profile.phone');
         self::assertJsonPathEquals(
             $user1->getProfile()->getAddress()->getZipCode(),
-            'data.users.users.edges[1].node.profile.address.zipCode'
+            'data.users.all.edges[1].node.profile.address.zipCode'
         );
     }
 
@@ -82,7 +82,7 @@ GraphQL;
         $query = <<<'GraphQL'
 query {
     users{
-        users(first:3, orderBy: {field:"login", direction: DESC}){
+        all(first:3, orderBy: {field:"login", direction: DESC}){
             totalCount
             pageInfo {
                 endCursor
@@ -108,15 +108,15 @@ query {
 GraphQL;
         self::send($query);
 
-        self::assertJsonPathEquals('Y3Vyc29yOjA=', 'data.users.users.pageInfo.startCursor');
-        self::assertJsonPathEquals('Y3Vyc29yOjI=', 'data.users.users.pageInfo.endCursor');
-        self::assertJsonPathEquals(false, 'data.users.users.pageInfo.hasPreviousPage');
-        self::assertJsonPathEquals(true, 'data.users.users.pageInfo.hasNextPage');
+        self::assertJsonPathEquals('Y3Vyc29yOjA=', 'data.users.all.pageInfo.startCursor');
+        self::assertJsonPathEquals('Y3Vyc29yOjI=', 'data.users.all.pageInfo.endCursor');
+        self::assertJsonPathEquals(false, 'data.users.all.pageInfo.hasPreviousPage');
+        self::assertJsonPathEquals(true, 'data.users.all.pageInfo.hasNextPage');
 
         self::assertResponseCodeIsOK();
-        self::assertJsonPathEquals($records[0]->getUsername(), 'data.users.users.edges[0].node.login');
-        self::assertJsonPathEquals($records[1]->getUsername(), 'data.users.users.edges[1].node.login');
-        self::assertJsonPathEquals($records[2]->getUsername(), 'data.users.users.edges[2].node.login');
+        self::assertJsonPathEquals($records[0]->getUsername(), 'data.users.all.edges[0].node.login');
+        self::assertJsonPathEquals($records[1]->getUsername(), 'data.users.all.edges[1].node.login');
+        self::assertJsonPathEquals($records[2]->getUsername(), 'data.users.all.edges[2].node.login');
     }
 
     /**
@@ -128,7 +128,7 @@ GraphQL;
         $query = <<<'GraphQL'
 query ($cursor: String){
     users{
-        users(first:3, orderBy: {field:"login", direction: ASC}, after: $cursor){
+        all(first:3, orderBy: {field:"login", direction: ASC}, after: $cursor){
             totalCount
             pageInfo {
                 endCursor
@@ -154,15 +154,15 @@ query ($cursor: String){
 GraphQL;
         self::send($query, ['cursor' => base64_encode('cursor:2')]);
 
-        self::assertJsonPathEquals(base64_encode('cursor:3'), 'data.users.users.pageInfo.startCursor');
-        self::assertJsonPathEquals(base64_encode('cursor:5'), 'data.users.users.pageInfo.endCursor');
-        self::assertJsonPathEquals(true, 'data.users.users.pageInfo.hasPreviousPage');
-        self::assertJsonPathEquals(true, 'data.users.users.pageInfo.hasNextPage');
+        self::assertJsonPathEquals(base64_encode('cursor:3'), 'data.users.all.pageInfo.startCursor');
+        self::assertJsonPathEquals(base64_encode('cursor:5'), 'data.users.all.pageInfo.endCursor');
+        self::assertJsonPathEquals(true, 'data.users.all.pageInfo.hasPreviousPage');
+        self::assertJsonPathEquals(true, 'data.users.all.pageInfo.hasNextPage');
 
         self::assertResponseCodeIsOK();
-        self::assertJsonPathEquals($records[0]->getUsername(), 'data.users.users.edges[0].node.login');
-        self::assertJsonPathEquals($records[1]->getUsername(), 'data.users.users.edges[1].node.login');
-        self::assertJsonPathEquals($records[2]->getUsername(), 'data.users.users.edges[2].node.login');
+        self::assertJsonPathEquals($records[0]->getUsername(), 'data.users.all.edges[0].node.login');
+        self::assertJsonPathEquals($records[1]->getUsername(), 'data.users.all.edges[1].node.login');
+        self::assertJsonPathEquals($records[2]->getUsername(), 'data.users.all.edges[2].node.login');
     }
 
     /**
@@ -175,7 +175,7 @@ GraphQL;
         $query = <<<'GraphQL'
 query ($cursor: String){
     users{
-        users(first:3, orderBy: {field:"login", direction: ASC}, before: $cursor){
+        all(first:3, orderBy: {field:"login", direction: ASC}, before: $cursor){
             totalCount
             pageInfo {
                 endCursor
@@ -201,15 +201,15 @@ query ($cursor: String){
 GraphQL;
         self::send($query, ['cursor' => base64_encode('cursor:7')]);
 
-        self::assertJsonPathEquals(base64_encode('cursor:0'), 'data.users.users.pageInfo.startCursor');
-        self::assertJsonPathEquals(base64_encode('cursor:2'), 'data.users.users.pageInfo.endCursor');
-        self::assertJsonPathEquals(false, 'data.users.users.pageInfo.hasPreviousPage');
-        self::assertJsonPathEquals(true, 'data.users.users.pageInfo.hasNextPage');
+        self::assertJsonPathEquals(base64_encode('cursor:0'), 'data.users.all.pageInfo.startCursor');
+        self::assertJsonPathEquals(base64_encode('cursor:2'), 'data.users.all.pageInfo.endCursor');
+        self::assertJsonPathEquals(false, 'data.users.all.pageInfo.hasPreviousPage');
+        self::assertJsonPathEquals(true, 'data.users.all.pageInfo.hasNextPage');
 
         self::assertResponseCodeIsOK();
-        self::assertJsonPathEquals($records[0]->getUsername(), 'data.users.users.edges[0].node.login');
-        self::assertJsonPathEquals($records[1]->getUsername(), 'data.users.users.edges[1].node.login');
-        self::assertJsonPathEquals($records[2]->getUsername(), 'data.users.users.edges[2].node.login');
+        self::assertJsonPathEquals($records[0]->getUsername(), 'data.users.all.edges[0].node.login');
+        self::assertJsonPathEquals($records[1]->getUsername(), 'data.users.all.edges[1].node.login');
+        self::assertJsonPathEquals($records[2]->getUsername(), 'data.users.all.edges[2].node.login');
     }
 
     /**
@@ -222,7 +222,7 @@ GraphQL;
         $query = <<<'GraphQL'
 query ($cursor: String){
     users{
-        users(last:3, orderBy: {field:"login", direction: ASC}, after: $cursor){
+        all(last:3, orderBy: {field:"login", direction: ASC}, after: $cursor){
             totalCount
             pageInfo {
                 endCursor
@@ -248,15 +248,15 @@ query ($cursor: String){
 GraphQL;
         self::send($query, ['cursor' => base64_encode('cursor:5')]);
 
-        self::assertJsonPathEquals(base64_encode('cursor:8'), 'data.users.users.pageInfo.startCursor');
-        self::assertJsonPathEquals(base64_encode('cursor:10'), 'data.users.users.pageInfo.endCursor');
-        self::assertJsonPathEquals(true, 'data.users.users.pageInfo.hasPreviousPage');
-        self::assertJsonPathEquals(false, 'data.users.users.pageInfo.hasNextPage');
+        self::assertJsonPathEquals(base64_encode('cursor:8'), 'data.users.all.pageInfo.startCursor');
+        self::assertJsonPathEquals(base64_encode('cursor:10'), 'data.users.all.pageInfo.endCursor');
+        self::assertJsonPathEquals(true, 'data.users.all.pageInfo.hasPreviousPage');
+        self::assertJsonPathEquals(false, 'data.users.all.pageInfo.hasNextPage');
 
         self::assertResponseCodeIsOK();
-        self::assertJsonPathEquals($records[0]->getUsername(), 'data.users.users.edges[0].node.login');
-        self::assertJsonPathEquals($records[1]->getUsername(), 'data.users.users.edges[1].node.login');
-        self::assertJsonPathEquals($records[2]->getUsername(), 'data.users.users.edges[2].node.login');
+        self::assertJsonPathEquals($records[0]->getUsername(), 'data.users.all.edges[0].node.login');
+        self::assertJsonPathEquals($records[1]->getUsername(), 'data.users.all.edges[1].node.login');
+        self::assertJsonPathEquals($records[2]->getUsername(), 'data.users.all.edges[2].node.login');
     }
 
     /**
@@ -269,7 +269,7 @@ GraphQL;
         $query = <<<'GraphQL'
 query ($cursor: String){
     users{
-        users(last:3, orderBy: {field:"login", direction: ASC}, before: $cursor){
+        all(last:3, orderBy: {field:"login", direction: ASC}, before: $cursor){
             totalCount
             pageInfo {
                 endCursor
@@ -295,15 +295,15 @@ query ($cursor: String){
 GraphQL;
         self::send($query, ['cursor' => base64_encode('cursor:5')]);
 
-        self::assertJsonPathEquals(base64_encode('cursor:2'), 'data.users.users.pageInfo.startCursor');
-        self::assertJsonPathEquals(base64_encode('cursor:4'), 'data.users.users.pageInfo.endCursor');
-        self::assertJsonPathEquals(true, 'data.users.users.pageInfo.hasPreviousPage');
-        self::assertJsonPathEquals(true, 'data.users.users.pageInfo.hasNextPage');
+        self::assertJsonPathEquals(base64_encode('cursor:2'), 'data.users.all.pageInfo.startCursor');
+        self::assertJsonPathEquals(base64_encode('cursor:4'), 'data.users.all.pageInfo.endCursor');
+        self::assertJsonPathEquals(true, 'data.users.all.pageInfo.hasPreviousPage');
+        self::assertJsonPathEquals(true, 'data.users.all.pageInfo.hasNextPage');
 
         self::assertResponseCodeIsOK();
-        self::assertJsonPathEquals($records[0]->getUsername(), 'data.users.users.edges[0].node.login');
-        self::assertJsonPathEquals($records[1]->getUsername(), 'data.users.users.edges[1].node.login');
-        self::assertJsonPathEquals($records[2]->getUsername(), 'data.users.users.edges[2].node.login');
+        self::assertJsonPathEquals($records[0]->getUsername(), 'data.users.all.edges[0].node.login');
+        self::assertJsonPathEquals($records[1]->getUsername(), 'data.users.all.edges[1].node.login');
+        self::assertJsonPathEquals($records[2]->getUsername(), 'data.users.all.edges[2].node.login');
     }
 
     /**
