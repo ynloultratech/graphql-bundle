@@ -19,5 +19,6 @@
 - [Resolvers](resolvers.md)
 - [Arguments](arguments.md)
 - [Global Id](object-identification.md)
+- [Security](security.md)
 - [Configuration](configuration.md)
 - [GraphiQL](graphiql.md)
