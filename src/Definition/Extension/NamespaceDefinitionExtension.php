@@ -77,7 +77,7 @@ class NamespaceDefinitionExtension extends AbstractDefinitionExtension
         if ($this->globalConfig['bundles']['enabled'] ?? false) {
             if ($node && $nodeClass) {
                 if ($endpoint->hasType($node) && $nodeClass) {
-                    preg_match_all('/\\\\(\w+Bundle)\\\\/', $nodeClass, $matches);
+                    preg_match_all('/\\\\?(\w+Bundle)\\\\/', $nodeClass, $matches);
                     if ($matches) {
                         $bundle = current(array_reverse($matches[1]));
                     }
