@@ -1,14 +1,8 @@
-<!--
- *  Copyright (c) Facebook, Inc.
- *  All rights reserved.
- *
- *  This source code is licensed under the license found in the
- *  LICENSE file in the root directory of this source tree.
--->
 <!DOCTYPE html>
 <html>
 <head>
     <style>
+        {% block inline_styles %}
         body {
             height: 100%;
             margin: 0;
@@ -19,43 +13,32 @@
         #graphiql {
             height: 100vh;
         }
+
+        {% endblock %}
     </style>
+    {% block remote_scripts %}
+        <script src="//cdn.jsdelivr.net/es6-promise/4.0.5/es6-promise.auto.min.js"></script>
+        <script src="//cdn.jsdelivr.net/fetch/0.9.0/fetch.min.js"></script>
+        <script src="//cdn.jsdelivr.net/react/15.4.2/react.min.js"></script>
+        <script src="//cdn.jsdelivr.net/react/15.4.2/react-dom.min.js"></script>
+    {% endblock %}
 
-    <!--
-      This GraphiQL example depends on Promise and fetch, which are available in
-      modern browsers, but can be "polyfilled" for older browsers.
-      GraphiQL itself depends on React DOM.
-      If you do not want to rely on a CDN, you can host these files locally or
-      include them directly in your favored resource bunder.
-    -->
-    <script src="//cdn.jsdelivr.net/es6-promise/4.0.5/es6-promise.auto.min.js"></script>
-    <script src="//cdn.jsdelivr.net/fetch/0.9.0/fetch.min.js"></script>
-    <script src="//cdn.jsdelivr.net/react/15.4.2/react.min.js"></script>
-    <script src="//cdn.jsdelivr.net/react/15.4.2/react-dom.min.js"></script>
-
-    <!--
-      These two files can be found in the npm module, however you may wish to
-      copy them directly into your environment, or perhaps include them in your
-      favored resource bundler.
-     -->
-    <link rel="stylesheet" href="{{ asset('bundles/ynlographql/graphiql/graphiql.css') }}"/>
-    <script src="{{ asset('bundles/ynlographql/graphiql/graphiql.min.js') }}"></script>
-
+    {% block graphiql_assets %}
+        <link rel="stylesheet" href="{{ asset('bundles/ynlographql/graphiql/graphiql.css') }}"/>
+        <script src="{{ asset('bundles/ynlographql/graphiql/graphiql.min.js') }}"></script>
+    {% endblock %}
 </head>
 <body>
-<div id="graphiql">Loading...</div>
+{% block graphiql %}
+    <div id="graphiql">
+        {% block loading_content %}
+            Loading...
+        {% endblock %}
+    </div>
+{% endblock %}
 <script>
-
-    /**
-     * This GraphiQL example illustrates how to use some of GraphiQL's props
-     * in order to enable reading and updating the URL parameters, making
-     * link sharing of queries a little bit easier.
-     *
-     * This is only one example of this kind of feature, GraphiQL exposes
-     * various React params to enable interesting integrations.
-     */
-
-        // Parse the search string to get url parameters.
+    {% block build_script %}
+    // Parse the search string to get url parameters.
     var search = window.location.search;
     var parameters = {};
     search.substr(1).split('&').forEach(function (entry) {
@@ -96,29 +79,20 @@
 
     function updateURL() {
         var newSearch = '?' + Object.keys(parameters).filter(function (key) {
-                return Boolean(parameters[key]);
-            }).map(function (key) {
-                return encodeURIComponent(key) + '=' +
-                    encodeURIComponent(parameters[key]);
-            }).join('&');
+            return Boolean(parameters[key]);
+        }).map(function (key) {
+            return encodeURIComponent(key) + '=' +
+                encodeURIComponent(parameters[key]);
+        }).join('&');
         history.replaceState(null, null, newSearch);
     }
 
-
-    // Defines a GraphQL fetcher using the fetch API. You're not required to
-    // use fetch, and could instead implement graphQLFetcher however you like,
-    // as long as it returns a Promise or Observable.
     function graphQLFetcher(graphQLParams) {
-        // This example expects a GraphQL server at the path /graphql.
-        // Change this to point wherever you host your GraphQL server.
         return fetch('{{ url('api_root') }}', {
-            method: 'post',
-            headers: {
-                'Accept': 'application/json',
-                'Content-Type': 'application/json',
-            },
+            method: '{{ method }}',
+            headers: {{ headers|json_encode|raw }},
             body: JSON.stringify(graphQLParams),
-            credentials: 'include',
+            credentials: 'include'
         }).then(function (response) {
             return response.text();
         }).then(function (responseBody) {
@@ -130,10 +104,6 @@
         });
     }
 
-    // Render <GraphiQL /> into the body.
-    // See the README in the top level of this module to learn more about
-    // how you can customize GraphiQL by providing different values or
-    // additional child elements.
     ReactDOM.render(
         React.createElement(GraphiQL, {
             fetcher: graphQLFetcher,
@@ -146,6 +116,7 @@
         }),
         document.getElementById('graphiql')
     );
+    {% endblock %}
 </script>
 </body>
 </html>

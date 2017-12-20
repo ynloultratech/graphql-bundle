@@ -23,6 +23,15 @@ class ExplorerController extends Controller
      */
     public function explorerAction()
     {
-        return $this->render('@YnloGraphQL/explorer.twig');
+        $params = [
+            'url' => $this->generateUrl('api_root'),
+            'method' => 'post',
+            'headers' => [
+                'Accept' => 'application/json',
+                'Content-Type' => 'application/json',
+            ],
+        ];
+
+        return $this->render('@YnloGraphQL/explorer.twig', $params);
     }
 }
