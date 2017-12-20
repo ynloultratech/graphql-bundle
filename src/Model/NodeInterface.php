@@ -22,5 +22,5 @@ interface NodeInterface
      *
      * @return mixed
      */
-    public function getId(): ?Int;
+    public function getId();
 }
