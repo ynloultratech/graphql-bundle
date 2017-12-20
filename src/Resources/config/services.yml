@@ -31,18 +31,6 @@ services:
         tags:
             - { name: 'graphql.definition_annotation_parser', priority: 200}
 
-#    Ynlo\GraphQLBundle\Definition\Loader\Annotation\QueryGetNodeAnnotationParser:
-#        calls:
-#            - [ setReader, ['@annotations.reader']]
-#        tags:
-#            - { name: 'graphql.definition_annotation_parser', priority: 150 }
-#
-#    Ynlo\GraphQLBundle\Definition\Loader\Annotation\QueryGetAllNodesAnnotationParser:
-#        calls:
-#            - [ setReader, ['@annotations.reader']]
-#        tags:
-#            - { name: 'graphql.definition_annotation_parser', priority: 150 }
-
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\QueryAnnotationParser:
         calls:
             - [ setReader, ['@annotations.reader']]
