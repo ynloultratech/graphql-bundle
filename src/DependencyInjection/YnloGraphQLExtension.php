@@ -35,11 +35,13 @@ class YnloGraphQLExtension extends Extension
 
         $container->setParameter('graphql.config', $config);
         if (isset($config['definitions']['extensions'])) {
-            foreach ($config['definitions']['extensions'] as $extension => $config) {
-                $config = isset($config['enabled']) && $config['enabled'] ? $config : [];
-                $container->setParameter('graphql.extension_config.'.$extension, $config ?? []);
+            foreach ($config['definitions']['extensions'] as $extension => $extConfig) {
+                $extConfig = isset($extConfig['enabled']) && $extConfig['enabled'] ? $extConfig : [];
+                $container->setParameter('graphql.extension_config.'.$extension, $extConfig ?? []);
             }
         }
+
+        $container->setParameter('graphql.cors_config', $config['cors'] ?? []);
 
         $configDir = __DIR__.'/../Resources/config';
         $loader = new YamlFileLoader($container, new FileLocator($configDir));

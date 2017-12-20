@@ -28,9 +28,20 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         /** @var NodeBuilder $rootNode */
         $rootNode = $treeBuilder->root('graphql')->addDefaultsIfNotSet()->children();
+        $this->configureCORS($rootNode);
         $this->configureDefinition($rootNode);
 
         return $treeBuilder;
+    }
+
+    protected function configureCORS(NodeBuilder $root)
+    {
+        $cors = $root->arrayNode('cors')->canBeEnabled()->children();
+        $cors->booleanNode('allow_credentials')->defaultTrue();
+        $cors->variableNode('allow_headers')->defaultValue(['Origin', 'Content-Type', 'Accept', 'Authorization']);
+        $cors->integerNode('max_age')->defaultValue(3600);
+        $cors->variableNode('allow_methods')->defaultValue(['POST', 'GET', 'OPTIONS']);
+        $cors->variableNode('allow_origins')->defaultValue(['*']);
     }
 
     protected function configureDefinition(NodeBuilder $root)

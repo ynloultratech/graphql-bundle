@@ -3,6 +3,7 @@ services:
         arguments: [ '@service_container' ]
 
     Ynlo\GraphQLBundle\EventListener\CorsListener:
+        arguments: ['%graphql.cors_config%']
         tags:
           - { name: 'kernel.event_subscriber' }
 

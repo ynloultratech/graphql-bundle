@@ -22,6 +22,25 @@ use Symfony\Component\HttpKernel\HttpKernelInterface;
 class CorsListener implements EventSubscriberInterface
 {
     /**
+     * @var array
+     */
+    protected $config;
+
+    /**
+     * @var boolean
+     */
+    protected $enabled;
+
+    /**
+     * @param array $config
+     */
+    public function __construct($config)
+    {
+        $this->config = $config;
+        $this->enabled = $config['enabled'] ?? false;
+    }
+
+    /**
      * {@inheritDoc}
      */
     public static function getSubscribedEvents()
@@ -41,17 +60,10 @@ class CorsListener implements EventSubscriberInterface
             return;
         }
 
-        if ('OPTIONS' === $event->getRequest()->getRealMethod()) {
-            //TODO: allow some config for origins and methods
+        if ($this->enabled && 'OPTIONS' === $event->getRequest()->getRealMethod()) {
             $response = new Response();
-            $response->headers->set('Access-Control-Allow-Credentials', 'true');
-            $response->headers->set('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
-            $response->headers->set('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept, Authorization');
-            $response->headers->set('Access-Control-Max-Age', 3600);
-            $response->headers->set('Access-Control-Allow-Origin', '*');
+            $this->setHeaders($response);
             $event->setResponse($response);
-
-            return;
         }
     }
 
@@ -60,13 +72,37 @@ class CorsListener implements EventSubscriberInterface
      */
     public function onKernelResponse(FilterResponseEvent $event)
     {
-        //TODO: allow some config for origins and methods
-        $response = $event->getResponse();
-        $response->headers->set('Access-Control-Allow-Credentials', 'true');
-        $response->headers->set('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept, Authorization');
-        $response->headers->set('Access-Control-Allow-Origin', '*');
-        $response->headers->set('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
+        if ($this->enabled) {
+            $response = $event->getResponse();
+            $this->setHeaders($response);
+            $event->setResponse($response);
+        }
+    }
+
+    /**
+     * @param Response $response
+     */
+    protected function setHeaders(Response $response)
+    {
+        $headers = $this->config['allow_headers'] ?? [];
+        if (is_array($headers)) {
+            $headers = implode(', ', $headers);
+        }
+
+        $methods = $this->config['allow_methods'] ?? [];
+        if (is_array($methods)) {
+            $methods = implode(', ', $methods);
+        }
+
+        $origins = $this->config['allow_origins'] ?? [];
+        if (is_array($origins)) {
+            $origins = implode(', ', $origins);
+        }
+
+        $response->headers->set('Access-Control-Allow-Credentials', $this->config['allow_credentials'] ?? false);
+        $response->headers->set('Access-Control-Allow-Headers', $headers);
+        $response->headers->set('Access-Control-Allow-Origin', $origins);
+        $response->headers->set('Access-Control-Allow-Methods', $methods);
         $response->headers->set('Vary', 'Origin');
-        $event->setResponse($response);
     }
 }
