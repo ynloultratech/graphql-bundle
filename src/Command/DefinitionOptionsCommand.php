@@ -25,15 +25,14 @@ use Ynlo\GraphQLBundle\Definition\Extension\DefinitionExtensionManager;
  */
 class DefinitionOptionsCommand extends ContainerAwareCommand
 {
-    protected static $defaultName = 'graphql:definition:options';
-
     /**
      * {@inheritDoc}
      */
     protected function configure()
     {
-        $this->setDescription('Expose all available options for one or all graphql definition extensions');
-        $this->addArgument('extension', InputArgument::OPTIONAL, 'Show only options for given extension');
+        $this->setName('graphql:definition:options')
+             ->setDescription('Expose all available options for one or all graphql definition extensions')
+             ->addArgument('extension', InputArgument::OPTIONAL, 'Show only options for given extension');
     }
 
     /**
