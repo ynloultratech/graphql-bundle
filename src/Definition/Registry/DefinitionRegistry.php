@@ -49,24 +49,17 @@ class DefinitionRegistry
     private $cacheDir;
 
     /**
-     * @var array
-     */
-    private $config = [];
-
-    /**
      * DefinitionRegistry constructor.
      *
      * @param TaggedServices             $taggedServices
      * @param DefinitionExtensionManager $extensionManager
      * @param null|string                $cacheDir
-     * @param array                      $config
      */
-    public function __construct(TaggedServices $taggedServices, DefinitionExtensionManager $extensionManager, ?string $cacheDir = null, $config = [])
+    public function __construct(TaggedServices $taggedServices, DefinitionExtensionManager $extensionManager, ?string $cacheDir = null)
     {
         $this->taggedServices = $taggedServices;
         $this->extensionManager = $extensionManager;
         $this->cacheDir = $cacheDir;
-        $this->config = $config;
     }
 
     /**
@@ -74,25 +67,78 @@ class DefinitionRegistry
      */
     public function getEndpoint(): Endpoint
     {
-        //TODO: save endpoint with definitions serialized in cache for production
-
+        //use first static cache
         if (self::$endpoint) {
             return self::$endpoint;
         }
 
-        $endpoint = self::$endpoint = new Endpoint();
+        $this->loadCache();
+
+        //use file cache
+        if (self::$endpoint) {
+            return self::$endpoint;
+        }
+
+        $this->initialize();
+
+        return self::$endpoint;
+    }
+
+    /**
+     * remove the specification cache
+     */
+    public function clearCache()
+    {
+        @unlink($this->cacheFileName());
+        $this->initialize();
+    }
+
+    /**
+     * Initialize endpoint
+     */
+    protected function initialize()
+    {
+        self::$endpoint = new Endpoint();
 
         $specifications = $this->getTaggedServices('graphql.definition_loader');
         foreach ($specifications as $specification) {
             $resolver = $specification->getService();
             if ($resolver instanceof DefinitionLoaderInterface) {
-                $resolver->loadDefinitions($endpoint);
+                $resolver->loadDefinitions(self::$endpoint);
             }
         }
 
-        $this->compile($endpoint);
+        $this->compile(self::$endpoint);
+        $this->saveCache();
+    }
 
-        return $endpoint;
+    /**
+     * @return string
+     */
+    protected function cacheFileName()
+    {
+        return $this->cacheDir.DIRECTORY_SEPARATOR.'graphql.registry_definitions.meta';
+    }
+
+    /**
+     * Load cache
+     */
+    protected function loadCache()
+    {
+        if (file_exists($this->cacheFileName())) {
+            $content = @file_get_contents($this->cacheFileName());
+            if ($content) {
+                self::$endpoint = unserialize($content);
+            }
+        }
+    }
+
+    /**
+     * Save cache
+     */
+    protected function saveCache()
+    {
+        file_put_contents($this->cacheFileName(), serialize(self::$endpoint));
     }
 
     /**
@@ -100,7 +146,7 @@ class DefinitionRegistry
      *
      * @param Endpoint $endpoint
      */
-    private function compile(Endpoint $endpoint)
+    protected function compile(Endpoint $endpoint)
     {
         //run all extensions for each definition
         foreach ($this->extensionManager->getExtensions() as $extension) {

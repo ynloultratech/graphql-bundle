@@ -198,6 +198,22 @@ class TypeRegistry
     }
 
     /**
+     * @param array $map
+     */
+    public static function setTypeMapping($map)
+    {
+        self::$typesMap = $map;
+    }
+
+    /**
+     * @return array
+     */
+    public static function getTypeMapp()
+    {
+        return self::$typesMap;
+    }
+
+    /**
      * @param string $name
      *
      * @return Type

@@ -15,6 +15,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Ynlo\GraphQLBundle\Cache\DefinitionCacheWarmer;
 use Ynlo\GraphQLBundle\GraphiQL\JWTGraphiQLAuthentication;
 
 /**
@@ -58,6 +59,10 @@ class YnloGraphQLExtension extends Extension
         $configDir = __DIR__.'/../Resources/config';
         $loader = new YamlFileLoader($container, new FileLocator($configDir));
         $loader->load('services.yml');
+
+        if (!$container->getParameter('kernel.debug')) {
+            $container->getDefinition(DefinitionCacheWarmer::class)->clearTag('kernel.event_subscriber');
+        }
     }
 
     /**

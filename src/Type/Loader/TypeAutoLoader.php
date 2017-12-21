@@ -26,18 +26,38 @@ class TypeAutoLoader implements ContainerAwareInterface
     protected static $loaded = false;
 
     /**
+     * @var string
+     */
+    private $cacheDir;
+
+    /**
+     * TypeAutoLoader constructor.
+     *
+     * @param string $cacheDir
+     */
+    public function __construct(string $cacheDir)
+    {
+        $this->cacheDir = $cacheDir;
+    }
+
+    /**
      * Autoload all registered types
      */
     public function autoloadTypes()
     {
+        //loaded and static
         if (self::$loaded) {
+            return;
+        }
+
+        if ($this->loadFromCacheCache()) {
+            self::$loaded = true;
+
             return;
         }
 
         self::$loaded = true;
         $bundles = $this->container->get('kernel')->getBundles();
-
-        //TODO: save in cache for production
 
         foreach ($bundles as $bundle) {
             $path = $bundle->getPath().'/Type';
@@ -67,5 +87,42 @@ class TypeAutoLoader implements ContainerAwareInterface
                 }
             }
         }
+
+        $this->saveCache();
+    }
+
+    /**
+     * @return string
+     */
+    protected function cacheFileName()
+    {
+        return $this->cacheDir.DIRECTORY_SEPARATOR.'graphql.type_map.meta';
+    }
+
+    /**
+     * Load cache
+     *
+     * @return bool on success
+     */
+    protected function loadFromCacheCache(): bool
+    {
+        if (file_exists($this->cacheFileName())) {
+            $content = @file_get_contents($this->cacheFileName());
+            if ($content) {
+                TypeRegistry::setTypeMapping(unserialize($content));
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    /**
+     * Save cache
+     */
+    protected function saveCache()
+    {
+        file_put_contents($this->cacheFileName(), serialize(TypeRegistry::getTypeMapp()));
     }
 }
