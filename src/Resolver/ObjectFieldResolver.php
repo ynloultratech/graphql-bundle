@@ -11,8 +11,9 @@
 namespace Ynlo\GraphQLBundle\Resolver;
 
 use Doctrine\Common\Collections\Collection;
+use Doctrine\Common\Persistence\Proxy;
+use GraphQL\Deferred;
 use GraphQL\Type\Definition\ResolveInfo;
-use Ynlo\GraphQLBundle\Type\Types;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -21,8 +22,10 @@ use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Model\ID;
+use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Type\Definition\EndpointAwareInterface;
 use Ynlo\GraphQLBundle\Type\Definition\EndpointAwareTrait;
+use Ynlo\GraphQLBundle\Type\Types;
 
 /**
  * Default resolver for all object fields
@@ -38,6 +41,11 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
     protected $definition;
 
     /**
+     * @var DeferredBuffer
+     */
+    protected $deferredBuffer;
+
+    /**
      * ObjectFieldResolver constructor.
      *
      * @param ContainerInterface             $container
@@ -49,6 +57,7 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
         $this->definition = $definition;
         $this->container = $container;
         $this->endpoint = $endpoint;
+        $this->deferredBuffer = $container->get(DeferredBuffer::class);
     }
 
     /**
@@ -103,6 +112,18 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
 
         if ($value instanceof Collection) {
             $value = $value->toArray();
+        }
+
+        if ($value instanceof Proxy && $value instanceof NodeInterface && !$value->__isInitialized()) {
+            $this->deferredBuffer->add($value);
+
+            return new Deferred(
+                function () use ($value) {
+                    $this->deferredBuffer->loadBuffer();
+
+                    return $this->deferredBuffer->getLoadedEntity($value);
+                }
+            );
         }
 
         return $value;

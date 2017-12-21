@@ -142,10 +142,12 @@ services:
     Ynlo\GraphQLBundle\GraphiQL\JWTGraphiQLAuthentication:
         arguments: ['@router','@session','%graphql.graphiql_auth_jwt%']
 
-
     Ynlo\GraphQLBundle\Cache\DefinitionCacheWarmer:
         arguments: ['@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry']
         public: false
         tags:
             - { name: 'kernel.cache_warmer', priority: 200 }
             - { name: 'kernel.event_subscriber', priority: 200 }
+
+    Ynlo\GraphQLBundle\Resolver\DeferredBuffer:
+        arguments: ['@doctrine']
