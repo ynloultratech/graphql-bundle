@@ -11,8 +11,10 @@
 namespace Ynlo\GraphQLBundle\Query\Node;
 
 use Doctrine\Common\Util\Inflector;
+use Doctrine\ORM\EntityRepository;
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
+use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
 
@@ -47,6 +49,8 @@ class Nodes extends AbstractResolver
             //when use a different field to fetch,
             //@see QueryGet::fetchBy
             $type = $this->getContext()->getDefinition()->getType();
+
+            /** @var FieldsAwareDefinitionInterface $objectDefinition */
             $objectDefinition = $this->getContext()->getEndpoint()->getType($type);
 
             /** @var ArgumentDefinition $arg */
@@ -71,12 +75,20 @@ class Nodes extends AbstractResolver
 
         foreach ($types as $type => $searchValues) {
             if ($this->getContext()->getEndpoint()->hasType($type)) {
-                foreach ($searchValues as $searchValue) {
-                    //TODO: improve this to find all nodes in the same Repo with only one query, NOTE: the order and empty results are very IMPORTANT!
-                    //The list of given id should match with the list of results including non-found nodes
-                    $entity = $this->getContext()->getEndpoint()->getClassForType($type);
-                    $result = $this->getManager()->getRepository($entity)->findOneBy([$this->fetchBy => $searchValue]);
-                    $expectedResultsOrder[md5($type.$searchValue)] = $result;
+                $entity = $this->getContext()->getEndpoint()->getClassForType($type);
+
+                /** @var EntityRepository $repo */
+                $repo = $this->getManager()->getRepository($entity);
+
+                $findBy = sprintf('o.%s', $this->fetchBy);
+
+                $qb = $repo->createQueryBuilder('o', $findBy);
+                $entities = $qb->where($qb->expr()->in($findBy, $searchValues))
+                               ->getQuery()
+                               ->getResult();
+
+                foreach ($entities as $searchValue => $entity) {
+                    $expectedResultsOrder[md5($type.$searchValue)] = $entity;
                 }
             }
         }
