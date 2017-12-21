@@ -22,3 +22,4 @@
 - [Security](security.md)
 - [Configuration](configuration.md)
 - [GraphiQL](graphiql.md)
+- [Schema](schema.md)
