@@ -137,3 +137,6 @@ services:
     Ynlo\GraphQLBundle\Definition\Extension\ReorderDefinitionsExtension:
             tags:
               - { name: 'graphql.definition_extension', priority: -210}
+
+    Ynlo\GraphQLBundle\GraphiQL\JWTGraphiQLAuthentication:
+        arguments: ['@router','@session','%graphql.graphiql_auth_jwt%']

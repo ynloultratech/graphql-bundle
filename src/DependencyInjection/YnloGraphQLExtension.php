@@ -15,6 +15,7 @@ use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Ynlo\GraphQLBundle\GraphiQL\JWTGraphiQLAuthentication;
 
 /**
  * Class YnloGraphQLExtension
@@ -42,6 +43,17 @@ class YnloGraphQLExtension extends Extension
         }
 
         $container->setParameter('graphql.cors_config', $config['cors'] ?? []);
+        $container->setParameter('graphql.graphiql', $config['graphiql'] ?? []);
+        $container->setParameter('graphql.graphiql_auth_jwt', $config['graphiql']['authentication']['provider']['jwt'] ?? []);
+
+        $graphiQLAuthProvider = null;
+        if ($config['graphiql']['authentication']['provider']['jwt']['enabled'] ?? false) {
+            $graphiQLAuthProvider = JWTGraphiQLAuthentication::class;
+        }
+        if ($config['graphiql']['authentication']['provider']['custom'] ?? false) {
+            $graphiQLAuthProvider = $config['graphiql']['authentication']['provider']['custom'];
+        }
+        $container->setParameter('graphql.graphiql_auth_provider', $graphiQLAuthProvider);
 
         $configDir = __DIR__.'/../Resources/config';
         $loader = new YamlFileLoader($container, new FileLocator($configDir));

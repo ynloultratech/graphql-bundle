@@ -29,9 +29,83 @@ class Configuration implements ConfigurationInterface
         /** @var NodeBuilder $rootNode */
         $rootNode = $treeBuilder->root('graphql')->addDefaultsIfNotSet()->children();
         $this->configureCORS($rootNode);
+        $this->configureGraphiQL($rootNode);
         $this->configureDefinition($rootNode);
 
         return $treeBuilder;
+    }
+
+    protected function configureGraphiQL(NodeBuilder $root)
+    {
+        $graphiql = $root->arrayNode('graphiql')->addDefaultsIfNotSet()->children();
+
+        $graphiql->scalarNode('title')
+                 ->defaultValue('GraphQL API Explorer');
+
+        $graphiql
+            ->scalarNode('data_warning_message')
+            ->defaultValue('Heads up! GraphQL Explorer makes use of your <strong>real</strong>, <strong>live</strong>, <strong>production</strong> data.');
+        $graphiql->booleanNode('data_warning_dismissible')->defaultTrue();
+        $graphiql->enumNode('data_warning_style')->values(['info', 'warning', 'danger'])->defaultValue('danger');
+
+        $graphiql->scalarNode('template')
+                 ->defaultValue('@YnloGraphQL/explorer.twig');
+
+        $authentication = $graphiql->arrayNode('authentication')->addDefaultsIfNotSet()->children();
+        $authentication
+            ->booleanNode('required')
+            ->info(
+                'The API require credentials to make any requests, 
+if this value is FALSE and a provider is specified the authentication is optional.'
+            )
+            ->defaultFalse();
+
+        $authentication->scalarNode('login_message')
+                       ->defaultValue('Start exploring GraphQL API queries using your account’s data now.');
+
+        $authenticationProvider = $authentication->arrayNode('provider')->children();
+
+        $jwt = $authenticationProvider->arrayNode('jwt')->canBeEnabled()->children();
+
+        $jwtLogin = $jwt->arrayNode('login')->children();
+
+        $jwtLogin->scalarNode('url')
+                 ->info('Route name or URI to make the login process to retrieve the token.')
+                 ->isRequired();
+
+        $jwtLogin->scalarNode('username_parameter')
+                 ->defaultValue('username');
+
+        $jwtLogin->scalarNode('password_parameter')
+                 ->defaultValue('password');
+
+        $jwtLogin->enumNode('parameters_in')
+                 ->values(['form', 'query', 'header'])
+                 ->info('How pass parameters to request the token')
+                 ->defaultValue('form');
+
+        $jwtLogin->scalarNode('response_token_path')
+                 ->defaultValue('token')
+                 ->info('Where the token should be located in the response in case of JSON, set null if the response is the token.');
+
+        $jwtRequests = $jwt->arrayNode('requests')->addDefaultsIfNotSet()->children();
+
+        $jwtRequests->enumNode('token_in')
+                    ->values(['query', 'header'])
+                    ->info('Where should be located the token on every request')
+                    ->defaultValue('header');
+
+        $jwtRequests->scalarNode('token_name')
+                    ->defaultValue('Authorization')
+                    ->info('Name of the token in query or header name');
+
+        $jwtRequests->scalarNode('token_template')
+                    ->defaultValue('Bearer {token}')
+                    ->info('Customize how the token should be send,  use the place holder {token} to replace for current token');
+
+        $authenticationProvider->scalarNode('custom')
+                               ->defaultNull()
+                               ->info('Configure custom service to use as authentication provider');
     }
 
     protected function configureCORS(NodeBuilder $root)

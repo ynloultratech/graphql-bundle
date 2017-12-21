@@ -3,120 +3,163 @@
 <head>
     <style>
         {% block inline_styles %}
-        body {
+        html, body {
             height: 100%;
-            margin: 0;
             width: 100%;
-            overflow: hidden;
+        }
+
+        body {
+            display: flex;
+            flex-direction: column;
+            background: #f5f6f8 !important;
+        }
+
+        nav.navbar {
+            flex: 0 0 auto;
+            color: #dfe1e3;
         }
 
         #graphiql {
-            height: 100vh;
+            height: 100%;
+            width: 100%;
+        }
+
+        #login {
+            opacity: 0.95;
+            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 8px 32px rgba(0, 0, 0, 0.12)
         }
 
         {% endblock %}
     </style>
-    {% block remote_scripts %}
-        <script src="//cdn.jsdelivr.net/es6-promise/4.0.5/es6-promise.auto.min.js"></script>
-        <script src="//cdn.jsdelivr.net/fetch/0.9.0/fetch.min.js"></script>
-        <script src="//cdn.jsdelivr.net/react/15.4.2/react.min.js"></script>
-        <script src="//cdn.jsdelivr.net/react/15.4.2/react-dom.min.js"></script>
-    {% endblock %}
 
-    {% block graphiql_assets %}
-        <link rel="stylesheet" href="{{ asset('bundles/ynlographql/graphiql/graphiql.css') }}"/>
-        <script src="{{ asset('bundles/ynlographql/graphiql/graphiql.min.js') }}"></script>
+    {% block bootstrap %}
+        <script src="{{ asset('bundles/ynlographql/js/jquery-3.1.1.slim.min.js') }}"></script>
+        <script src="{{ asset('bundles/ynlographql/tether/js/tether.min.js') }}"></script>
+        <script src="{{ asset('bundles/ynlographql/bootstrap/js/bootstrap.bundle.min.js') }}"></script>
+        <link rel="stylesheet" href="{{ asset('bundles/ynlographql/bootstrap/css/bootstrap-grid.min.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('bundles/ynlographql/bootstrap/css/bootstrap.min.css') }}"/>
     {% endblock %}
 </head>
 <body>
-{% block graphiql %}
-    <div id="graphiql">
-        {% block loading_content %}
-            Loading...
-        {% endblock %}
-    </div>
-{% endblock %}
-<script>
-    {% block build_script %}
-    // Parse the search string to get url parameters.
-    var search = window.location.search;
-    var parameters = {};
-    search.substr(1).split('&').forEach(function (entry) {
-        var eq = entry.indexOf('=');
-        if (eq >= 0) {
-            parameters[decodeURIComponent(entry.slice(0, eq))] =
-                decodeURIComponent(entry.slice(eq + 1));
-        }
-    });
-
-    // if variables was provided, try to format it.
-    if (parameters.variables) {
-        try {
-            parameters.variables =
-                JSON.stringify(JSON.parse(parameters.variables), null, 2);
-        } catch (e) {
-            // Do nothing, we want to display the invalid JSON as a string, rather
-            // than present an error.
-        }
-    }
-
-    // When the query and variables string is edited, update the URL bar so
-    // that it can be easily shared
-    function onEditQuery(newQuery) {
-        parameters.query = newQuery;
-        updateURL();
-    }
-
-    function onEditVariables(newVariables) {
-        parameters.variables = newVariables;
-        updateURL();
-    }
-
-    function onEditOperationName(newOperationName) {
-        parameters.operationName = newOperationName;
-        updateURL();
-    }
-
-    function updateURL() {
-        var newSearch = '?' + Object.keys(parameters).filter(function (key) {
-            return Boolean(parameters[key]);
-        }).map(function (key) {
-            return encodeURIComponent(key) + '=' +
-                encodeURIComponent(parameters[key]);
-        }).join('&');
-        history.replaceState(null, null, newSearch);
-    }
-
-    function graphQLFetcher(graphQLParams) {
-        return fetch('{{ url('api_root') }}', {
-            method: '{{ method }}',
-            headers: {{ headers|json_encode|raw }},
-            body: JSON.stringify(graphQLParams),
-            credentials: 'include'
-        }).then(function (response) {
-            return response.text();
-        }).then(function (responseBody) {
-            try {
-                return JSON.parse(responseBody);
-            } catch (error) {
-                return responseBody;
-            }
-        });
-    }
-
-    ReactDOM.render(
-        React.createElement(GraphiQL, {
-            fetcher: graphQLFetcher,
-            query: parameters.query,
-            variables: parameters.variables,
-            operationName: parameters.operationName,
-            onEditQuery: onEditQuery,
-            onEditVariables: onEditVariables,
-            onEditOperationName: onEditOperationName
-        }),
-        document.getElementById('graphiql')
-    );
+{% if form %}
+    {% form_theme form '@YnloGraphQL/form_themes/bootstrap_4_layout.html.twig' %}
+{% endif %}
+<nav class="navbar navbar-dark bg-dark">
+    <a class="navbar-brand" href="{{ path('api_explore') }}">
+        {{ title }}
+    </a>
+    <ul class="navbar-nav ml-auto">
+        <li class="nav-item">
+            <div class="input-group  justify-content-end">
+                {% if authenticationEnabled %}
+                    {% if not isAuthenticated %}
+                        {% if not authenticationRequired %}
+                            <button class="btn btn-outline-success" data-toggle="modal" data-target="#loginModal">
+                                Login
+                            </button>
+                        {% endif %}
+                    {% else %}
+                        <a href="{{ path('api_explore', {'logout':true}) }}" class="btn btn-danger">
+                            Logout
+                        </a>
+                    {% endif %}
+                {% endif %}
+            </div>
+        </li>
+    </ul>
+</nav>
+{% if isAuthenticated or not authenticationRequired %}
+    {% block data_warning %}
+        <div class="rounded-0 m-0 alert alert-{{ dataWarningStyle }} {% if dataWarningDismissible %}alert-dismissible{% endif %} fade show" role="alert">
+            {{ dataWarningMessage|trans|raw }}
+            {% if dataWarningDismissible %}
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            {% endif %}
+        </div>
     {% endblock %}
-</script>
+    {% block graphiql_frame %}
+        <iframe id="graphiql" src="{{ path('api_explore_graphiql') }}" frameborder="0">
+
+        </iframe>
+    {% endblock %}
+{% else %}
+    {% block login_container %}
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 offset-md-3">
+                    <div id="login" class="jumbotron" style="margin-top: 50px">
+                        {% block before_login_form %}
+                            {% if loginMessage %}
+                                <p class="lead">
+                                    {{ loginMessage|trans|raw }}
+                                </p>
+                                <hr class="my-4">
+                            {% endif %}
+                        {% endblock %}
+                        {% block login_form %}
+                            <form action="{{ path('api_explore') }}" method="post">
+                                {% if form %}
+                                    {{ form_widget(form) }}
+                                {% endif %}
+                                <hr class="my-4">
+                                <button type="submit" class="btn btn-lg btn-block btn-success">Login</button>
+                            </form>
+                        {% endblock %}
+                        {% block after_login_form %}{% endblock %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    {% endblock %}
+{% endif %}
+
+{% if not authenticationRequired %}
+    {% block login_modal %}
+        <div class="modal fade" id="loginModal" tabindex="-1" role="dialog">
+            <div class="modal-dialog" role="document">
+                <form action="{{ path('api_explore') }}" method="post">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            {% block login_modal_header %}
+                                <h5 class="modal-title" id="exampleModalLongTitle">Login</h5>
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            {% endblock %}
+                        </div>
+                        <div class="modal-body">
+                            {% if loginMessage %}
+                                <p class="lead">
+                                    {{ loginMessage|trans|raw }}
+                                </p>
+                                <hr class="my-4">
+                            {% endif %}
+                            {% block login_modal_form %}
+                                {% if form %}
+                                    {{ form_widget(form) }}
+                                {% endif %}
+                            {% endblock %}
+                        </div>
+                        <div class="modal-footer">
+                            {% block login_modal_btns %}
+                                <button type="button" class="btn btn-light" data-dismiss="modal">
+                                    Close
+                                </button>
+                                <button type="submit" class="btn btn-success">Login</button>
+                            {% endblock %}
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% if form and hasAuthenticationError %}
+        <script>
+            $('#loginModal').modal('show');
+        </script>
+        {% endif %}
+    {% endblock %}
+{% endif %}
 </body>
 </html>
