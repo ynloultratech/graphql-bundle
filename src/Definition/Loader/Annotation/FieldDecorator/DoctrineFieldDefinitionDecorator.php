@@ -66,7 +66,6 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
             /** @var OneToOne $oneToOne */
             if ($oneToOne = $this->reader->getPropertyAnnotation($field, OneToOne::class)) {
                 $definition->setType($targetNode = $oneToOne->targetEntity);
-                $definition->setNonNull(true);
             }
 
             /** @var OneToMany $oneToMany */
