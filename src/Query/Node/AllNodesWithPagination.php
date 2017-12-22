@@ -10,10 +10,10 @@
 
 namespace Ynlo\GraphQLBundle\Query\Node;
 
+use Doctrine\ORM\Query\Expr\Orx;
 use Doctrine\ORM\QueryBuilder;
 use GraphQL\Error\Error;
 use Ynlo\GraphQLBundle\Definition\Extension\PaginationDefinitionExtension;
-use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Model\ConnectionInterface;
 use Ynlo\GraphQLBundle\Model\NodeConnection;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
@@ -40,6 +40,7 @@ class AllNodesWithPagination extends AllNodes
         $last = $args['last'] ?? null;
         $before = $args['before'] ?? null;
         $after = $args['after'] ?? null;
+        $search = $args['search'] ?? null;
 
         $this->initialize();
 
@@ -48,6 +49,10 @@ class AllNodesWithPagination extends AllNodes
 
         if ($this->getContext()->getRoot()) {
             $this->applyFilterByParent($qb, $this->getContext()->getRoot());
+        }
+
+        if ($search) {
+            $this->search($qb, $search);
         }
 
         $this->configureQuery($qb);
@@ -100,6 +105,43 @@ class AllNodesWithPagination extends AllNodes
     protected function createPaginator(): DoctrineCursorPaginatorInterface
     {
         return new DoctrineOffsetCursorPaginator();
+    }
+
+    /**
+     * Filter some columns with simple string.
+     *
+     * @param QueryBuilder $qb
+     * @param string       $search string to search
+     */
+    protected function search(QueryBuilder $qb, $search)
+    {
+        //search every word separate
+        $searchArray = explode(' ', $search);
+
+        $alias = $qb->getRootAliases()[0];
+
+        //TODO: allow some config to customize search fields
+        $em = $this->getManager();
+        $metadata = $em->getClassMetadata($this->entity);
+        $searchFields = $metadata->getFieldNames();
+
+        if (count($searchFields) > 0) {
+            $meta = $qb->getEntityManager()->getClassMetadata($qb->getRootEntities()[0]);
+            foreach ($searchArray as $q) {
+                $q = trim(rtrim($q));
+                $id = md5($q);
+                $orx = new Orx();
+                foreach ($searchFields as $field) {
+                    if (strpos($field, '.') !== false && !isset($meta->embeddedClasses[explode('.', $field)[0]])) {
+                        $orx->add("$field LIKE :search_$id");
+                    } else { //append current alias
+                        $orx->add("$alias.$field LIKE :search_$id");
+                    }
+                }
+                $qb->andWhere($orx);
+                $qb->setParameter("search_$id", "%$q%");
+            }
+        }
     }
 
     /**

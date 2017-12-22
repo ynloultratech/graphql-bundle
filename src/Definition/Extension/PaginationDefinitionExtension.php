@@ -109,6 +109,13 @@ class PaginationDefinitionExtension extends AbstractDefinitionExtension
             return;
         }
 
+        $search = new ArgumentDefinition();
+        $search->setName('search');
+        $search->setType('string');
+        $search->setNonNull(false);
+        $search->setDescription('Search in current list by given string');
+        $definition->addArgument($search);
+
         $first = new ArgumentDefinition();
         $first->setName('first');
         $first->setType('int');
