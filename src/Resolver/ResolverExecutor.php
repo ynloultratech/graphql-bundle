@@ -282,11 +282,13 @@ class ResolverExecutor implements ContainerAwareInterface
      */
     protected function normalizeValue($value, string $type)
     {
-        if (Types::ID === $type) {
+        if (Types::ID === $type && $value) {
             if (\is_array($value)) {
                 $idsArray = [];
                 foreach ($value as $id) {
-                    $idsArray[] = ID::createFromString($id);
+                    if ($id) {
+                        $idsArray[] = ID::createFromString($id);
+                    }
                 }
                 $value = $idsArray;
             } else {

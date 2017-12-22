@@ -15,8 +15,11 @@ use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
+use Ynlo\GraphQLBundle\Definition\EnumDefinition;
 use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
+use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
+use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
@@ -220,5 +223,55 @@ class PaginationDefinitionExtension extends AbstractDefinitionExtension
         if (!$definition->getResolver()) {
             $definition->setResolver(AllNodesWithPagination::class);
         }
+
+        //TODO: add some config to customize filter
+        $this->addFilters($definition, $target, $endpoint);
+    }
+
+    /**
+     * @param ExecutableDefinitionInterface $definition
+     * @param string                        $targetType
+     * @param Endpoint                      $endpoint
+     */
+    public function addFilters(ExecutableDefinitionInterface $definition, $targetType, Endpoint $endpoint)
+    {
+        $filters = new InputObjectDefinition();
+        $filters->setName(ucfirst($definition->getName()).'Filter');
+        if ($endpoint->hasType($filters->getName())) {
+            return;
+        }
+
+        $endpoint->add($filters);
+
+        $object = $endpoint->getType($targetType);
+        if ($object instanceof FieldsAwareDefinitionInterface) {
+            foreach ($object->getFields() as $field) {
+                if ('id' === $field->getName()
+                    || !$field->getOriginName()
+                    || \ReflectionProperty::class !== $field->getOriginType()) {
+                    continue;
+                }
+
+                $filter = new FieldDefinition();
+                $filter->setName($field->getName());
+                $type = $field->getType();
+                if ($endpoint->hasType($type)) {
+                    $typeDefinition = $endpoint->getType($type);
+                    if (!$typeDefinition instanceof EnumDefinition) {
+                        $type = 'ID';
+                    }
+                    $filter->setList(true);
+                }
+                $filter->setType($type);
+                $filters->addField($filter);
+            }
+        }
+
+        $search = new ArgumentDefinition();
+        $search->setName('filters');
+        $search->setType($filters->getName());
+        $search->setDescription('Filter the list by given filters');
+        $search->setNonNull(false);
+        $definition->addArgument($search);
     }
 }

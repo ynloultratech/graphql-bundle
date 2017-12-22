@@ -15,6 +15,7 @@ use Doctrine\ORM\QueryBuilder;
 use GraphQL\Error\Error;
 use Ynlo\GraphQLBundle\Definition\Extension\PaginationDefinitionExtension;
 use Ynlo\GraphQLBundle\Model\ConnectionInterface;
+use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Model\NodeConnection;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Pagination\DoctrineCursorPaginatorInterface;
@@ -41,6 +42,7 @@ class AllNodesWithPagination extends AllNodes
         $before = $args['before'] ?? null;
         $after = $args['after'] ?? null;
         $search = $args['search'] ?? null;
+        $filters = $args['filters'] ?? null;
 
         $this->initialize();
 
@@ -53,6 +55,10 @@ class AllNodesWithPagination extends AllNodes
 
         if ($search) {
             $this->search($qb, $search);
+        }
+
+        if ($filters) {
+            $this->applyFilters($qb, $filters);
         }
 
         $this->configureQuery($qb);
@@ -105,6 +111,43 @@ class AllNodesWithPagination extends AllNodes
     protected function createPaginator(): DoctrineCursorPaginatorInterface
     {
         return new DoctrineOffsetCursorPaginator();
+    }
+
+    /**
+     * Apply advanced filters
+     *
+     * @param QueryBuilder $qb
+     * @param array        $filters string to search
+     */
+    protected function applyFilters(QueryBuilder $qb, $filters)
+    {
+        $definition = $this->objectDefinition;
+        foreach ($filters as $field => $value) {
+            if ($definition->hasField($field)) {
+                $prop = $definition->getField($field)->getOriginName();
+                if ($prop) {
+                    $entityField = sprintf('%s.%s', $this->queryAlias, $prop);
+                    if (is_array($value)) {
+                        foreach ($value as &$val) {
+                            if ($val instanceof ID) {
+                                $val = (int) $val->getDatabaseId();
+                            }
+                        }
+                        if (empty($value)) {
+                            $qb->andWhere($qb->expr()->isNull($entityField));
+                        } else {
+                            $qb->andWhere($qb->expr()->in($entityField, $value));
+                        }
+                    } else {
+                        if (null === $value) {
+                            $qb->andWhere($qb->expr()->isNull($entityField));
+                        } else {
+                            $qb->andWhere($qb->expr()->eq($entityField, $value));
+                        }
+                    }
+                }
+            }
+        }
     }
 
     /**
