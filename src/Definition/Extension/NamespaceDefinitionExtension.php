@@ -143,6 +143,10 @@ class NamespaceDefinitionExtension extends AbstractDefinitionExtension
             }
 
             if ($nodeName = $namespace['node'] ?? null) {
+                if ($endpoint->hasTypeForClass($nodeName)) {
+                    $nodeName = $endpoint->getTypeForClass($nodeName);
+                }
+
                 $name = Inflector::pluralize(lcfirst($nodeName));
 
                 $querySuffix = $this->globalConfig['nodes']['query_suffix'] ?? 'Query';
