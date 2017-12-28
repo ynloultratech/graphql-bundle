@@ -11,6 +11,7 @@
 namespace Ynlo\GraphQLBundle\Definition\Extension;
 
 use Doctrine\Common\Util\Inflector;
+use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
@@ -45,12 +46,28 @@ class NamespaceDefinitionExtension extends AbstractDefinitionExtension
     }
 
     /**
+     * {@inheritDoc}
+     */
+    public function buildConfig(ArrayNodeDefinition $root)
+    {
+        $root
+            ->info('Enable/Disable namespace for queries and mutations')
+            ->canBeDisabled()
+            ->children();
+    }
+
+    /**
      * {@inheritdoc}
      */
     public function configure(DefinitionInterface $definition, Endpoint $endpoint, array $config)
     {
         $node = null;
         $nodeClass = null;
+
+        if (!($config['enabled'] ?? true)) {
+            return;
+        }
+
         if (($this->globalConfig['nodes']['enabled'] ?? false) && $definition instanceof NodeAwareDefinitionInterface && $definition->getNode()) {
             $node = $definition->getNode();
 
