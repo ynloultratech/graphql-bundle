@@ -195,7 +195,11 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
     {
         foreach ($intDef->getFields() as $field) {
             if (!$fieldsAwareDefinition->hasField($field->getName())) {
-                $fieldsAwareDefinition->addField(clone $field);
+                $newField = clone $field;
+                $newField->addInheritedFrom($intDef->getName());
+                $fieldsAwareDefinition->addField($newField);
+            } else {
+                $fieldsAwareDefinition->getField($field->getName())->addInheritedFrom($intDef->getName());
             }
         }
     }
@@ -379,6 +383,19 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
             $exposed = false;
         } elseif (!$exposed && $this->getFieldAnnotation($prop, Annotation\Expose::class)) {
             $exposed = true;
+        }
+
+        if (!$exposed) {
+            //verify if the field belong to a interface
+            //in this case is always exposed
+            $inheritedInterfaceFields = [];
+            foreach ($definition->getFields() as $field) {
+                if ($field->getInheritedFrom()) {
+                    $inheritedInterfaceFields[] = lcfirst(preg_replace('/^(get|set|has|is)/', null, $field->getOriginName()));
+                }
+            }
+
+            $exposed = \in_array($prop->name, $inheritedInterfaceFields, true);
         }
 
         return $exposed;

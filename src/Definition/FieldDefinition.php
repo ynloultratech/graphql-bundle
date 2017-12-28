@@ -30,6 +30,11 @@ class FieldDefinition implements ExecutableDefinitionInterface
     protected $originType;
 
     /**
+     * @var string[]
+     */
+    protected $inheritedFrom = [];
+
+    /**
      * @return mixed
      */
     public function getOriginName()
@@ -59,5 +64,23 @@ class FieldDefinition implements ExecutableDefinitionInterface
     public function setOriginType($originType)
     {
         $this->originType = $originType;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getInheritedFrom(): array
+    {
+        return $this->inheritedFrom;
+    }
+
+    /**
+     * @param string $inheritedFrom
+     */
+    public function addInheritedFrom(string $inheritedFrom): void
+    {
+        if (!in_array($inheritedFrom, $this->inheritedFrom)) {
+            $this->inheritedFrom[] = $inheritedFrom;
+        }
     }
 }
