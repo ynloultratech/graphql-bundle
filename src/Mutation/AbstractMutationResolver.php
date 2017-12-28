@@ -179,9 +179,13 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
         }
 
         $options = [
-            'csrf_protection' => false,
             'allow_extra_fields' => true,
         ];
+
+        if ($this->container->hasParameter('form.type_extension.csrf.enabled')
+            && $this->container->getParameter('form.type_extension.csrf.enabled')) {
+            $options['csrf_protection'] = false;
+        }
 
         $options = array_merge($options, $formConfig['options'] ?? []);
 
