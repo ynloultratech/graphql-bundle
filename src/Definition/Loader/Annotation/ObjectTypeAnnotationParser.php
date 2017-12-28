@@ -23,6 +23,7 @@ use Ynlo\GraphQLBundle\Definition\Loader\Annotation\FieldDecorator\FieldDefiniti
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\Resolver\FieldExpressionResolver;
 use Ynlo\GraphQLBundle\Type\Definition\EndpointAwareInterface;
 use Ynlo\GraphQLBundle\Util\TypeUtil;
 
@@ -273,6 +274,37 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
                 } else {
                     $error = sprintf(
                         'The object definition "%s" does not have any field called "%s" in any of its parents definitions.',
+                        $objectDefinition->getName(),
+                        $annotation->name
+                    );
+                    throw new \InvalidArgumentException($error);
+                }
+            }
+        }
+
+        //load virtual fields
+        $annotations = $this->reader->getClassAnnotations($refClass);
+        foreach ($annotations as $annotation) {
+            if ($annotation instanceof Annotation\VirtualField) {
+                if (!$objectDefinition->hasField($annotation->name)) {
+                    $fieldDefinition = new FieldDefinition();
+                    $fieldDefinition->setName($annotation->name);
+                    $fieldDefinition->setDescription($annotation->description);
+                    $fieldDefinition->setDeprecationReason($annotation->deprecationReason);
+                    $fieldDefinition->setType(TypeUtil::normalize($annotation->type));
+                    $fieldDefinition->setNonNull(TypeUtil::isTypeNonNull($annotation->type));
+                    $fieldDefinition->setNonNullList(TypeUtil::isTypeNonNullList($annotation->type));
+                    $fieldDefinition->setList(TypeUtil::isTypeList($annotation->type));
+                    $fieldDefinition->setMeta('expression', $annotation->expression);
+                    $fieldDefinition->setResolver(FieldExpressionResolver::class);
+                    $objectDefinition->addField($fieldDefinition);
+                } else {
+                    $fieldDefinition = $objectDefinition->getField($annotation->name);
+                    if ($fieldDefinition->getResolver() === FieldExpressionResolver::class) {
+                        continue;
+                    }
+                    $error = sprintf(
+                        'The object definition "%s" already has a field called "%s".',
                         $objectDefinition->getName(),
                         $annotation->name
                     );

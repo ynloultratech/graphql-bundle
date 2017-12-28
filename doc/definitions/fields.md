@@ -98,3 +98,10 @@ class IsCurrent implements ContainerAwareInterface
 ````
 The argument `$root` is automatically injected and contains the current Node. [Read more about arguments](../arguments.md)
 
+## Override Field
+
+@TODO
+
+## Virtual Field
+
+@TODO
