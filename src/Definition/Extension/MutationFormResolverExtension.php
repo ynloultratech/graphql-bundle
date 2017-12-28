@@ -14,6 +14,7 @@ use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormFactory;
 use Symfony\Component\Form\FormInterface;
@@ -216,6 +217,10 @@ class MutationFormResolverExtension extends AbstractDefinitionExtension
         }
 
         if (is_a($form->getConfig()->getType()->getInnerType(), TextType::class, true)) {
+            $type = Types::STRING;
+        }
+
+        if (is_a($form->getConfig()->getType()->getInnerType(), TextareaType::class, true)) {
             $type = Types::STRING;
         }
 
