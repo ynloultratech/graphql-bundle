@@ -12,6 +12,7 @@ namespace Ynlo\GraphQLBundle\Definition\Extension;
 
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
@@ -180,6 +181,15 @@ class MutationFormResolverExtension extends AbstractDefinitionExtension
                 $child = $this->createFormInputObject($endpoint, $formField, $childName);
                 $endpoint->addType($child);
                 $field->setType($child->getName());
+            } elseif (is_a($formField->getConfig()->getType()->getInnerType(), CollectionType::class)) {
+                $childName = $name.ucfirst($formField->getName());
+                $childFormType = $formField->getConfig()->getOptions()['entry_type'];
+                $childFormOptions = $formField->getConfig()->getOptions()['entry_options'];
+                $childForm = $this->formFactory->create($childFormType, null, $childFormOptions ?? []);
+                $child = $this->createFormInputObject($endpoint, $childForm, $childName);
+                $field->setType($child->getName());
+                $field->setList(true);
+                $endpoint->add($child);
             } else {
                 $this->resolveFormFieldDefinition($field, $formField);
             }
