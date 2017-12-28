@@ -270,6 +270,13 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
                     if ($annotation->alias) {
                         $fieldDefinition->setName($annotation->alias);
                     }
+                } else {
+                    $error = sprintf(
+                        'The object definition "%s" does not have any field called "%s" in any of its parents definitions.',
+                        $objectDefinition->getName(),
+                        $annotation->name
+                    );
+                    throw new \InvalidArgumentException($error);
                 }
             }
         }
