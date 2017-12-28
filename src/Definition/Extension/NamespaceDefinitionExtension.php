@@ -152,9 +152,11 @@ class NamespaceDefinitionExtension extends AbstractDefinitionExtension
             $parent = null;
             $namespace = $definition->getMeta('namespace');
             if ($bundle = $namespace['bundle'] ?? null) {
-                $bundleSuffix = $this->globalConfig['bundles']['suffix'] ?? 'Bundle';
+                $bundleQuerySuffix = $this->globalConfig['bundle']['query_suffix'] ?? 'BundleQuery';
+                $bundleMutationSuffix = $this->globalConfig['bundle']['mutation_suffix'] ?? 'BundleMutation';
+
                 $name = lcfirst($bundle);
-                $typeName = ucfirst($name).$bundleSuffix;
+                $typeName = ucfirst($name).(($definition instanceof MutationDefinition) ? $bundleMutationSuffix : $bundleQuerySuffix);
                 $root = $this->createRootNamespace(get_class($definition), $name, $typeName, $endpoint);
                 $parent = $endpoint->getType($root->getType());
             }

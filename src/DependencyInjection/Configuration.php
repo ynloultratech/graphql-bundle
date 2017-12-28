@@ -151,9 +151,13 @@ On large schemas is  helpful to keep schemas grouped by bundle and node'
                               ->addDefaultsIfNotSet()
                               ->children();
 
-        $bundles->scalarNode('suffix')
-                ->info('The following suffix will be used for bundle groups')
-                ->defaultValue('Bundle');
+        $bundles->scalarNode('query_suffix')
+                ->info('The following suffix will be used for bundle query groups')
+                ->defaultValue('BundleQuery');
+
+        $bundles->scalarNode('mutation_suffix')
+                ->info('The following suffix will be used for bundle mutation groups')
+                ->defaultValue('BundleMutation');
 
         $bundles->variableNode('ignore')
                 ->info('The following bundles will be ignore for grouping, all definitions will be placed in the root query or mutation')
