@@ -162,11 +162,10 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
 
     /**
      * @param mixed $data
-     * @param bool  $disableValidation
      *
      * @return FormBuilderInterface|null
      */
-    public function createDefinitionForm($data, $disableValidation = false): ?FormBuilderInterface
+    public function createDefinitionForm($data): ?FormBuilderInterface
     {
         if (!$this->context->getDefinition()->hasMeta('form')) {
             return null;
@@ -189,10 +188,6 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
 
         $options = array_merge($options, $formConfig['options'] ?? []);
 
-        if ($disableValidation) {
-            $options['validation_groups'] = false;
-        }
-
         $form = $this->createFormBuilder($formType, $data, $options);
         $viewTransformer = new DataWithIdToNodeTransformer($this->getManager(), $this->context->getEndpoint());
         $form->addViewTransformer($viewTransformer);
@@ -207,19 +202,9 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
      */
     public function extractFormErrors(FormInterface $form, ConstraintViolationList $violations, ?string $parentName = null)
     {
-        $errors = $form->getErrors();
+        $errors = $form->getErrors(true);
         foreach ($errors as $error) {
             $violation = new ConstraintViolation();
-
-            $path = null;
-            if ($form->getParent()) {
-                $path = $form->getName();
-            }
-            if ($parentName) {
-                $path = $parentName.'.'.$form->getName();
-            }
-
-            $violation->setPropertyPath($path);
             $violation->setMessage($error->getMessage());
             $violation->setMessageTemplate($error->getMessageTemplate());
             foreach ($error->getMessageParameters() as $key => $value) {
@@ -231,21 +216,56 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
                 $violation->setCode($cause->getCode());
                 $violation->setInvalidValue($cause->getInvalidValue());
                 $violation->setPlural($cause->getPlural());
+
+                $path = $this->publicPropertyPath($form, $cause->getPropertyPath());
+                if ($path) {
+                    $violation->setPropertyPath($path);
+                }
             }
 
             $violations->addViolation($violation);
         }
-        if ($form->all()) {
-            foreach ($form->all() as $child) {
-                $parentName = $form->getName();
+    }
 
-                //avoid set the name of the form
-                if ($form->getName() === $parentName && !$form->getParent()) {
-                    $parentName = null;
+    /**
+     * Convert internal validation property path to the public one,
+     * required when use `property_path` in the form
+     *
+     * @param FormInterface $form
+     * @param string        $path
+     *
+     * @return string
+     */
+    private function publicPropertyPath(FormInterface $form, $path)
+    {
+        if (strpos($path, '.') !== false) {
+            $pathArray = explode('.', $path);
+        } else {
+            $pathArray = [$path];
+        }
+        if ($pathArray[0] === 'data') {
+            array_shift($pathArray);
+        }
+
+        $contextForm = $form;
+        foreach ($pathArray as &$propName) {
+            $index = null;
+            if (preg_match('/(\w+)(\[\d+\])$/', $propName, $matches)) {
+                list(, $propName, $index) = $matches;
+            }
+            if (!$contextForm->has($propName)) {
+                foreach ($contextForm->all() as $child) {
+                    if ($child->getConfig()->getOption('property_path') === $propName) {
+                        $propName = $child->getName();
+                    }
                 }
-
-                $this->extractFormErrors($child, $violations, $parentName);
+            }
+            if ($index) {
+                $propName = sprintf('%s%s', $propName, $index);
             }
         }
+        unset($propName);
+
+        return implode('.', $pathArray);
     }
 }
