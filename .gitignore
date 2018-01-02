@@ -3,3 +3,4 @@
 /demo/var/
 /demo/public/bundles/
 demo.db
+composer.lock
