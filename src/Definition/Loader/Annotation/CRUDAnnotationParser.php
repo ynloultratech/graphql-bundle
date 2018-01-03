@@ -24,8 +24,6 @@ use Ynlo\GraphQLBundle\Mutation\AddNode;
 use Ynlo\GraphQLBundle\Mutation\DeleteNode;
 use Ynlo\GraphQLBundle\Mutation\UpdateNode;
 use Ynlo\GraphQLBundle\Query\Node\AllNodesWithPagination;
-use Ynlo\GraphQLBundle\Query\Node\Node;
-use Ynlo\GraphQLBundle\Query\Node\Nodes;
 use Ynlo\GraphQLBundle\Util\ClassUtils;
 
 /**
@@ -71,11 +69,11 @@ class CRUDAnnotationParser implements AnnotationParserInterface
     public function parse($annotation, \ReflectionClass $refClass, Endpoint $endpoint)
     {
         if (!$endpoint->hasTypeForClass($refClass->getName())) {
-            throw new \Exception(sprintf('Can`t apply CRUD operations to "%s", CRUD operations can only be applied to valid GraphQL object types.', $refClass->getName()));
+            throw new \RuntimeException(sprintf('Can`t apply CRUD operations to "%s", CRUD operations can only be applied to valid GraphQL object types.', $refClass->getName()));
         }
 
         if (!$refClass->implementsInterface(NodeInterface::class)) {
-            throw new \Exception(
+            throw new \RuntimeException(
                 sprintf(
                     'Can`t apply CRUD operations to "%s", CRUD operations can only be applied to nodes.
              You are implementing NodeInterface in this class?',
@@ -94,7 +92,7 @@ class CRUDAnnotationParser implements AnnotationParserInterface
         $bundleNamespace = ClassUtils::relatedBundleNamespace($refClass->getName());
 
         //All query
-        if (in_array('list', $annotation->include)) {
+        if (\in_array('list', $annotation->include, true)) {
             if ($annotation->list) {
                 $query = $annotation->list;
             } else {
@@ -104,7 +102,7 @@ class CRUDAnnotationParser implements AnnotationParserInterface
         }
 
         //Add mutation
-        if (in_array('add', $annotation->include)) {
+        if (\in_array('add', $annotation->include, true)) {
             if ($annotation->add) {
                 $mutation = $annotation->add;
             } else {
@@ -114,7 +112,7 @@ class CRUDAnnotationParser implements AnnotationParserInterface
         }
 
         //Update mutation
-        if (in_array('update', $annotation->include)) {
+        if (\in_array('update', $annotation->include, true)) {
             if ($annotation->update) {
                 $mutation = $annotation->update;
             } else {
@@ -124,7 +122,7 @@ class CRUDAnnotationParser implements AnnotationParserInterface
         }
 
         //Delete mutation
-        if (in_array('delete', $annotation->include)) {
+        if (\in_array('delete', $annotation->include, true)) {
             if ($annotation->delete) {
                 $mutation = $annotation->delete;
             } else {
@@ -145,13 +143,12 @@ class CRUDAnnotationParser implements AnnotationParserInterface
         $query->name = $query->name ?? 'all'.Inflector::pluralize(ucfirst($definition->getName()));
         $query->type = $query->type ?? $definition->getName();
         $query->options = array_merge(['pagination' => true], $query->options);
-        $resolverReflection = new \ReflectionClass(AllNodesWithPagination::class);
-
         $resolver = ClassUtils::applyNamingConvention($bundleNamespace, 'Query', $definition->getName(), $query->name);
         if (class_exists($resolver)) {
             $query->resolver = $resolver;
         }
 
+        $resolverReflection = new \ReflectionClass(AllNodesWithPagination::class);
         $this->queryParser->parse($query, $resolverReflection, $endpoint);
     }
 

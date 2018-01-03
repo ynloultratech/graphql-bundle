@@ -77,7 +77,7 @@ class TypeRegistry
         //convert FQN into type,
         //allowing the use of FQN for GraphQL scalar types
         if (class_exists($name) || interface_exists($name)) {
-            if (in_array($name, self::$typesMap)) {
+            if (\in_array($name, self::$typesMap, true)) {
                 $name = array_flip(self::$typesMap)[$name];
             } elseif (self::$endpoint->hasTypeForClass($name)) {
                 $name = self::$endpoint->getTypeForClass($name);
@@ -178,7 +178,7 @@ class TypeRegistry
         //convert FQN into type,
         //allowing the use of FQN for GraphQL scalar types
         if (class_exists($name) || interface_exists($name)) {
-            if (in_array($name, self::$typesMap)) {
+            if (\in_array($name, self::$typesMap, true)) {
                 $name = array_flip(self::$typesMap)[$name];
             }
         }

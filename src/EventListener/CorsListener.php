@@ -31,10 +31,7 @@ class CorsListener implements EventSubscriberInterface
      */
     protected $enabled;
 
-    /**
-     * @param array $config
-     */
-    public function __construct($config)
+    public function __construct(array $config)
     {
         $this->config = $config;
         $this->enabled = $config['enabled'] ?? false;
@@ -85,17 +82,17 @@ class CorsListener implements EventSubscriberInterface
     protected function setHeaders(Response $response)
     {
         $headers = $this->config['allow_headers'] ?? [];
-        if (is_array($headers)) {
+        if (\is_array($headers)) {
             $headers = implode(', ', $headers);
         }
 
         $methods = $this->config['allow_methods'] ?? [];
-        if (is_array($methods)) {
+        if (\is_array($methods)) {
             $methods = implode(', ', $methods);
         }
 
         $origins = $this->config['allow_origins'] ?? [];
-        if (is_array($origins)) {
+        if (\is_array($origins)) {
             $origins = implode(', ', $origins);
         }
 

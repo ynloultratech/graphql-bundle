@@ -58,7 +58,7 @@ class IDToNodeTransformer implements DataTransformerInterface
             return $node;
         }
 
-        if (is_array($node) || $node instanceof \Traversable) {
+        if (\is_array($node) || $node instanceof \Traversable) {
             $ids = [];
             foreach ($node as $n) {
                 $ids[] = $this->transform($n);
@@ -83,11 +83,11 @@ class IDToNodeTransformer implements DataTransformerInterface
      */
     public function reverseTransform($globalId)
     {
-        if (!$globalId || is_object($globalId)) {
+        if (!$globalId || \is_object($globalId)) {
             return $globalId;
         }
 
-        if (is_array($globalId)) {
+        if (\is_array($globalId)) {
             $nodes = [];
             foreach ($globalId as $id) {
                 $nodes[] = $this->reverseTransform($id);
