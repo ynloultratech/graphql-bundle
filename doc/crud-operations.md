@@ -45,7 +45,7 @@ or [Relay Specification](https://facebook.github.io/relay/graphql/connections.ht
 
 The add operation is a [mutation](https://facebook.github.io/relay/graphql/mutations.htm) to add new nodes of current type.
 
-To enable this operation must set **"add"** to the list of operations included in the `CRUDOperations` annotation.
+To enable this operation must add `MutationAdd` annotation.
 
 ````php
 use Doctrine\ORM\Mapping as ORM;
@@ -56,7 +56,8 @@ use Ynlo\GraphQLBundle\Annotation as GraphQL;
  * @ORM\Table()
  *
  * @GraphQL\ObjectType()
- * @GraphQL\CRUDOperations(include={"list", "add"})
+ * @GraphQL\QueryList()
+ * @GraphQL\MutationAdd()
  */
 class User
 {
