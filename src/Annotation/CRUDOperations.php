@@ -12,6 +12,8 @@ namespace Ynlo\GraphQLBundle\Annotation;
 
 /**
  * @Annotation()
+ *
+ * @deprecated use QueryList, MutationAdd, MutationUpdate, MutationDelete annotations instead.
  */
 class CRUDOperations
 {

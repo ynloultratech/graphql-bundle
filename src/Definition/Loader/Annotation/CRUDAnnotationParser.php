@@ -28,6 +28,8 @@ use Ynlo\GraphQLBundle\Util\ClassUtils;
 
 /**
  * CRUDAnnotationParser
+ *
+ * @deprecated in favor of QueryList, MutationAdd, MutationUpdate, MutationDelete parsers
  */
 class CRUDAnnotationParser implements AnnotationParserInterface
 {
