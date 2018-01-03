@@ -55,6 +55,12 @@ services:
         tags:
             - { name: 'graphql.definition_annotation_parser', priority: 100 }
 
+    Ynlo\GraphQLBundle\Definition\Loader\Annotation\QueryListAnnotationParser:
+        calls:
+            - [ setReader, ['@annotations.reader']]
+        tags:
+            - { name: 'graphql.definition_annotation_parser', priority: 100 }
+
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\MutationAnnotationParser:
         arguments: ['@form.factory']
         calls:
@@ -63,7 +69,9 @@ services:
             - { name: 'graphql.definition_annotation_parser', priority: 100 }
 
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\CRUDAnnotationParser:
-        arguments: ['@Ynlo\GraphQLBundle\Definition\Loader\Annotation\QueryAnnotationParser','@Ynlo\GraphQLBundle\Definition\Loader\Annotation\MutationAnnotationParser']
+        arguments:
+            - '@Ynlo\GraphQLBundle\Definition\Loader\Annotation\QueryAnnotationParser'
+            - '@Ynlo\GraphQLBundle\Definition\Loader\Annotation\MutationAnnotationParser'
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
@@ -123,7 +131,9 @@ services:
          alias: Ynlo\GraphQLBundle\Form\TypeGuesser\DoctrineOrmTypeGuesser
 
     Ynlo\GraphQLBundle\Form\Type\IDType:
-        arguments: ['@Doctrine\ORM\EntityManagerInterface', '@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry']
+        arguments:
+            - '@Doctrine\ORM\EntityManagerInterface'
+            - '@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry'
         tags: [form.type]
 
     Ynlo\GraphQLBundle\Definition\Extension\DefinitionExtensionManager:
