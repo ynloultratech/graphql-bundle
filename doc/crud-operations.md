@@ -156,8 +156,7 @@ Variables:
 ## UPDATE
 
 The **update** operation is similar to the **add** operation, 
-to enable this operation must set **"update"** to 
-the list of operations included in the `CRUDOperations` annotation.
+to enable this operation must add `MutationUpdate` annotation.
 
 Like **add** operation the **update** require a form to enter the data to modify.
  
@@ -244,8 +243,7 @@ because the form will be configured with the name of the operation executed.
 ## DELETE
  
 The delete operation is simply, 
-the only that you need is set **"delete"** to the list 
-of operations included in the `CRUDOperations` annotation.
+the only that you need is add `MutationDelete` annotation.
  
  ````php
  /**
@@ -253,24 +251,14 @@ of operations included in the `CRUDOperations` annotation.
   * @ORM\Table()
   *
   * @GraphQL\ObjectType()
-  * @GraphQL\CRUDOperations(include={"list", "add", "update", "delete"})
+  * @GraphQL\QueryList()
+  * @GraphQL\MutationAdd()
+  * @GraphQL\MutationUpdate()
+  * @GraphQL\MutationDelete()
   */
  class User implements NodeInterface
  {
  ````
- 
-## Excluding Operations
- 
-By default the use of `@GraphQL\CRUDOperations()` include all 
-operations to the node where the annotation is used.
- 
-You can include all operations that you need using the `include` option:
- 
-`@GraphQL\CRUDOperations(include={"list", "add", "update"})`
- 
-or exclude those that you don't need:
-
-`@GraphQL\CRUDOperations(exclude={"delete"})`
 
 ## Where are GET operation?
 

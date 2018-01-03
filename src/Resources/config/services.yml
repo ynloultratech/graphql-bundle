@@ -82,6 +82,13 @@ services:
         tags:
             - { name: 'graphql.definition_annotation_parser', priority: 100 }
 
+    Ynlo\GraphQLBundle\Definition\Loader\Annotation\MutationDeleteAnnotationParser:
+        arguments: ['@form.factory']
+        calls:
+            - [ setReader, ['@annotations.reader']]
+        tags:
+            - { name: 'graphql.definition_annotation_parser', priority: 100 }
+
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\CRUDAnnotationParser:
         arguments:
             - '@Ynlo\GraphQLBundle\Definition\Loader\Annotation\QueryAnnotationParser'

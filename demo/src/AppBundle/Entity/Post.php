@@ -35,7 +35,10 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  * @ORM\HasLifecycleCallbacks()
  *
  * @GraphQL\ObjectType()
- * @GraphQL\CRUDOperations()
+ * @GraphQL\QueryList()
+ * @GraphQL\MutationAdd()
+ * @GraphQL\MutationUpdate()
+ * @GraphQL\MutationDelete()
  */
 class Post implements NodeInterface, CommentableInterface, TimestampableInterface, HasAuthorInterface
 {
