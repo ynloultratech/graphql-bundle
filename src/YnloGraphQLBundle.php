@@ -13,6 +13,7 @@ namespace Ynlo\GraphQLBundle;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServicesCompilerPass;
+use Ynlo\GraphQLBundle\DependencyInjection\Compiler\ControllerPass;
 use Ynlo\GraphQLBundle\DependencyInjection\YnloGraphQLExtension;
 use Ynlo\GraphQLBundle\Type\Loader\TypeAutoLoader;
 
@@ -35,6 +36,7 @@ class YnloGraphQLBundle extends Bundle
     public function build(ContainerBuilder $container)
     {
         $container->addCompilerPass(new TaggedServicesCompilerPass());
+        $container->addCompilerPass(new ControllerPass());
     }
 
     /**

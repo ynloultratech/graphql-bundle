@@ -10,7 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Controller;
 
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -18,32 +18,32 @@ use Ynlo\GraphQLBundle\GraphiQL\AuthenticationFailedException;
 use Ynlo\GraphQLBundle\GraphiQL\GraphiQLAuthenticationProviderInterface;
 use Ynlo\GraphQLBundle\GraphiQL\GraphiQLRequest;
 
-/**
- * Class ExplorerController
- */
-class ExplorerController extends Controller
+class ExplorerController extends AbstractController
 {
-    /**
-     * @param Request $request
-     *
-     * @return Response
-     */
-    public function explorerAction(Request $request)
+    private $config;
+    private $provider;
+
+    public function __construct(array $config, GraphiQLAuthenticationProviderInterface $provider = null)
+    {
+        $this->config = $config;
+        $this->provider = $provider;
+    }
+
+    public function explorerAction(Request $request): Response
     {
         $form = null;
         $authenticationError = null;
         $isAuthenticated = false;
-        $config = $this->getParameter('graphql.graphiql');
 
-        if ($provider = $this->getAuthenticationProvider()) {
-            if ($provider->requireUserData()) {
+        if ($this->provider) {
+            if ($this->provider->requireUserData()) {
                 $builder = $this->createFormBuilder();
-                $provider->buildUserForm($builder);
+                $this->provider->buildUserForm($builder);
                 $form = $builder->getForm();
             }
 
             if ($request->get('logout')) {
-                $provider->logout();
+                $this->provider->logout();
 
                 return $this->redirectToRoute('api_explore');
             }
@@ -53,9 +53,9 @@ class ExplorerController extends Controller
 
             try {
                 if ($form && $form->isSubmitted() && $form->isValid()) {
-                    $provider->login($form);
+                    $this->provider->login($form);
                 } elseif (!$form) {
-                    $provider->login();
+                    $this->provider->login();
                 }
             } catch (AuthenticationFailedException $exception) {
                 if ($form) {
@@ -65,34 +65,24 @@ class ExplorerController extends Controller
                 }
             }
 
-            $isAuthenticated = $provider->isAuthenticated();
-        } else {
-            if ($config['authentication']['required']) {
-                throw new \RuntimeException('Configure a valid provider to use GraphiQL with authentication');
-            }
+            $isAuthenticated = $this->provider->isAuthenticated();
         }
 
-        return $this->render(
-            $config['template'],
-            [
-                'form' => $form ? $form->createView() : null,
-                'isAuthenticated' => $isAuthenticated,
-                'title' => $config['title'],
-                'authenticationEnabled' => (bool) $provider,
-                'authenticationRequired' => $config['authentication']['required'],
-                'authenticationError' => $authenticationError,
-                'hasAuthenticationError' => $authenticationError || ($form && $form->getErrors(true)->count()),
-                'loginMessage' => $config['authentication']['login_message'],
-                'dataWarningMessage' => $config['data_warning_message'],
-                'dataWarningDismissible' => $config['data_warning_dismissible'],
-                'dataWarningStyle' => $config['data_warning_style'],
-            ]
-        );
+        return $this->render($this->config['template'], [
+            'form' => $form ? $form->createView() : null,
+            'isAuthenticated' => $isAuthenticated,
+            'title' => $this->config['title'],
+            'authenticationEnabled' => (bool) $this->provider,
+            'authenticationRequired' => $this->config['authentication']['required'],
+            'authenticationError' => $authenticationError,
+            'hasAuthenticationError' => $authenticationError || ($form && $form->getErrors(true)->count()),
+            'loginMessage' => $this->config['authentication']['login_message'],
+            'dataWarningMessage' => $this->config['data_warning_message'],
+            'dataWarningDismissible' => $this->config['data_warning_dismissible'],
+            'dataWarningStyle' => $this->config['data_warning_style'],
+        ]);
     }
 
-    /**
-     * @return Response
-     */
     public function graphiQLAction()
     {
         $request = new GraphiQLRequest(
@@ -103,30 +93,14 @@ class ExplorerController extends Controller
                 'Content-Type' => 'application/json',
             ]
         );
-        if ($provider = $this->getAuthenticationProvider()) {
-            $provider->prepareRequest($request);
+        if ($this->provider) {
+            $this->provider->prepareRequest($request);
         }
 
-        $params = [
+        return $this->render('@YnloGraphQL/graphiql.twig', [
             'url' => $request->getUrl(),
             'method' => 'post',
             'headers' => $request->getHeaders(),
-        ];
-
-        return $this->render('@YnloGraphQL/graphiql.twig', $params);
-    }
-
-    /**
-     * @return GraphiQLAuthenticationProviderInterface|object|null
-     */
-    protected function getAuthenticationProvider()
-    {
-        $providerName = $this->getParameter('graphql.graphiql_auth_provider');
-
-        if ($providerName) {
-            return $this->get($providerName);
-        }
-
-        return null;
+        ]);
     }
 }

@@ -11,20 +11,21 @@
 namespace Ynlo\GraphQLBundle\Controller;
 
 use GraphQL\Utils\SchemaPrinter;
-use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use Ynlo\GraphQLBundle\Schema\SchemaCompiler;
 
-/**
- * Class SchemaController
- */
-class SchemaController extends Controller
+class SchemaController
 {
-    /**
-     * @return Response
-     */
-    public function schemaAction(): Response
+    private $compiler;
+
+    public function __construct(SchemaCompiler $compiler)
     {
-        $schema = $this->get('Ynlo\GraphQLBundle\Schema\SchemaCompiler')->compile();
+        $this->compiler = $compiler;
+    }
+
+    public function __invoke(): Response
+    {
+        $schema = $this->compiler->compile();
 
         return new Response(SchemaPrinter::doPrint($schema));
     }
