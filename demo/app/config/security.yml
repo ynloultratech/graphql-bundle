@@ -13,7 +13,7 @@ security:
             memory: ~
 
     firewalls:
-       public:
-              methods: [HEAD]
-              pattern: ^/v\d+
-              security: false
+        public:
+            methods: [HEAD]
+            pattern: ^/v\d+
+            security: false
