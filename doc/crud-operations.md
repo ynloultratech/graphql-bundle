@@ -4,9 +4,9 @@ GraphQLBundle come with a basic but powerful CRUD operations to manage nodes.
 
 ## LIST
 
-The **list** operation is used to fetch multiple nodes from database
+The **list** operation is used to fetch multiple nodes from database.
 
-To enable this operation must add the `CRUDOperations` annotation to the entity with **"list"** included.
+To enable this operation must add the `QueryList` annotation to the entity.
 
 ````php
 use Doctrine\ORM\Mapping as ORM;
@@ -17,13 +17,13 @@ use Ynlo\GraphQLBundle\Annotation as GraphQL;
  * @ORM\Table()
  *
  * @GraphQL\ObjectType()
- * @GraphQL\CRUDOperations(include={"list"})
+ * @GraphQL\QueryList()
  */
 class User
 {
 ....
 ````
-Now yo can view a new available query in the GraphiQL explorer to request a paginated list of users.
+Now you can view a new available query in the GraphiQL explorer to request a paginated list of users.
 
 ###### Example Query:
 ````graphql
