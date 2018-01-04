@@ -17,6 +17,7 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Ynlo\GraphQLBundle\Component\AutoWire\AutoWire;
 use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\HasExtensionsInterface;
@@ -105,7 +106,7 @@ class ResolverExecutor implements ContainerAwareInterface
             $refClass = new \ReflectionClass($resolverName);
 
             /** @var callable $resolver */
-            $resolver = $refClass->newInstance();
+            $resolver = $this->container->get(AutoWire::class)->createInstance($refClass->getName());
             if ($resolver instanceof ContainerAwareInterface) {
                 $resolver->setContainer($this->container);
             }
