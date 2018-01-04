@@ -4,9 +4,9 @@ GraphQLBundle come with a basic but powerful CRUD operations to manage nodes.
 
 ## LIST
 
-The **list** operation is used to fetch multiple nodes from database
+The **list** operation is used to fetch multiple nodes from database.
 
-To enable this operation must add the `CRUDOperations` annotation to the entity with **"list"** included.
+To enable this operation must add the `QueryList` annotation to the entity.
 
 ````php
 use Doctrine\ORM\Mapping as ORM;
@@ -17,13 +17,13 @@ use Ynlo\GraphQLBundle\Annotation as GraphQL;
  * @ORM\Table()
  *
  * @GraphQL\ObjectType()
- * @GraphQL\CRUDOperations(include={"list"})
+ * @GraphQL\QueryList()
  */
 class User
 {
 ....
 ````
-Now yo can view a new available query in the GraphiQL explorer to request a paginated list of users.
+Now you can view a new available query in the GraphiQL explorer to request a paginated list of users.
 
 ###### Example Query:
 ````graphql
@@ -45,7 +45,7 @@ or [Relay Specification](https://facebook.github.io/relay/graphql/connections.ht
 
 The add operation is a [mutation](https://facebook.github.io/relay/graphql/mutations.htm) to add new nodes of current type.
 
-To enable this operation must set **"add"** to the list of operations included in the `CRUDOperations` annotation.
+To enable this operation must add `MutationAdd` annotation.
 
 ````php
 use Doctrine\ORM\Mapping as ORM;
@@ -56,7 +56,8 @@ use Ynlo\GraphQLBundle\Annotation as GraphQL;
  * @ORM\Table()
  *
  * @GraphQL\ObjectType()
- * @GraphQL\CRUDOperations(include={"list", "add"})
+ * @GraphQL\QueryList()
+ * @GraphQL\MutationAdd()
  */
 class User
 {
@@ -155,8 +156,7 @@ Variables:
 ## UPDATE
 
 The **update** operation is similar to the **add** operation, 
-to enable this operation must set **"update"** to 
-the list of operations included in the `CRUDOperations` annotation.
+to enable this operation must add `MutationUpdate` annotation.
 
 Like **add** operation the **update** require a form to enter the data to modify.
  
@@ -243,8 +243,7 @@ because the form will be configured with the name of the operation executed.
 ## DELETE
  
 The delete operation is simply, 
-the only that you need is set **"delete"** to the list 
-of operations included in the `CRUDOperations` annotation.
+the only that you need is add `MutationDelete` annotation.
  
  ````php
  /**
@@ -252,24 +251,14 @@ of operations included in the `CRUDOperations` annotation.
   * @ORM\Table()
   *
   * @GraphQL\ObjectType()
-  * @GraphQL\CRUDOperations(include={"list", "add", "update", "delete"})
+  * @GraphQL\QueryList()
+  * @GraphQL\MutationAdd()
+  * @GraphQL\MutationUpdate()
+  * @GraphQL\MutationDelete()
   */
  class User implements NodeInterface
  {
  ````
- 
-## Excluding Operations
- 
-By default the use of `@GraphQL\CRUDOperations()` include all 
-operations to the node where the annotation is used.
- 
-You can include all operations that you need using the `include` option:
- 
-`@GraphQL\CRUDOperations(include={"list", "add", "update"})`
- 
-or exclude those that you don't need:
-
-`@GraphQL\CRUDOperations(exclude={"delete"})`
 
 ## Where are GET operation?
 

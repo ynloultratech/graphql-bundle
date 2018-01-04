@@ -1,4 +1,5 @@
 <?php
+
 /*******************************************************************************
  *  This file is part of the GraphQL Bundle package.
  *
@@ -10,44 +11,47 @@
 
 namespace Ynlo\GraphQLBundle\Annotation;
 
+use Doctrine\Common\Annotations\Annotation\Required;
+
 /**
  * @Annotation()
  *
- * @deprecated use QueryList, MutationAdd, MutationUpdate, MutationDelete annotations instead.
+ * @Target({"CLASS"})
  */
-class CRUDOperations
+class MutationUpdate
 {
     /**
-     * @var \Ynlo\GraphQLBundle\Annotation\Query
+     * @var string
      */
-    public $list;
+    public $name;
 
     /**
-     * @var \Ynlo\GraphQLBundle\Annotation\Mutation
+     * @Required()
      */
-    public $add;
+    public $payload;
 
     /**
-     * @var \Ynlo\GraphQLBundle\Annotation\Mutation
+     * @var string
      */
-    public $update;
+    public $node;
 
     /**
-     * @var \Ynlo\GraphQLBundle\Annotation\Mutation
+     * @var string
      */
-    public $delete;
+    public $description;
 
     /**
-     * Operations to include
-     *
+     * @var string
+     */
+    public $deprecationReason;
+
+    /**
+     * @var string
+     */
+    public $resolver;
+
+    /**
      * @var array
      */
-    public $include = ['list', 'add', 'update', 'delete'];
-
-    /**
-     * Operations to exclude
-     *
-     * @var array
-     */
-    public $exclude = [];
+    public $options = [];
 }

@@ -22,8 +22,7 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  * @ORM\Table()
  *
  * @GraphQL\ObjectType()
- *
- * @GraphQL\CRUDOperations(include={"list"})
+ * @GraphQL\QueryList()
  */
 class Category implements NodeInterface
 {
