@@ -102,20 +102,14 @@ configuration but you can customize this configuration to meet your needs.
 
 For example to add a description and use a different name to the default users list:
 
-````php
+```php
 /**
  * @ORM\Entity()
  * @ORM\Table()
  *
  * @GraphQL\ObjectType()
- * @GraphQL\CRUDOperations(
- *     list=@GraphQL\Query(name="allUsers", description="Get list of users")
- * )
+ * @GraphQL\QueryList(name="allUsers", description="Get list of users")
  */
 class User implements NodeInterface
 {
-````
-
-You need use the `@GraphQL\Query` annotation in the 
-**list** property of `@GraphQL\CRUDOperations` to override any default configuration for **list** operation. 
-In the same way can use `@GraphQL\Mutation` to override the configuration for **add**, **update** and **delete**.
+```

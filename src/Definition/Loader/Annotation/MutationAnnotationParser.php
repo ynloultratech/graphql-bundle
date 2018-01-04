@@ -21,21 +21,8 @@ use Ynlo\GraphQLBundle\Util\ClassUtils;
  */
 class MutationAnnotationParser extends QueryAnnotationParser
 {
-    use AnnotationReaderAwareTrait;
-
-    /**
-     * @var FormFactory
-     */
     protected $formFactory;
 
-    /**
-     * @var Endpoint
-     */
-    protected $endpoint;
-
-    /**
-     * @param FormFactory $formFactory
-     */
     public function __construct(FormFactory $formFactory)
     {
         $this->formFactory = $formFactory;
@@ -62,7 +49,7 @@ class MutationAnnotationParser extends QueryAnnotationParser
             mutations can only be applied to classes inside "...Bundle\Mutation\..."',
                 $refClass->getName()
             );
-            throw new \Exception($error);
+            throw new \RuntimeException($error);
         }
 
         if (!$refClass->hasMethod('__invoke') && !$annotation->resolver) {
@@ -70,7 +57,7 @@ class MutationAnnotationParser extends QueryAnnotationParser
                 'The class "%s" should have a method "__invoke" to process the mutation.',
                 $refClass->getName()
             );
-            throw new \Exception($error);
+            throw new \RuntimeException($error);
         }
 
         $mutation = new MutationDefinition();
@@ -91,7 +78,7 @@ class MutationAnnotationParser extends QueryAnnotationParser
                         'The payload "%s" exist but does not exist a valid GraphQL type, is missing ObjectType annotation?',
                         $annotation->payload
                     );
-                    throw new \Exception($error);
+                    throw new \RuntimeException($error);
                 }
             }
         }
@@ -105,7 +92,7 @@ class MutationAnnotationParser extends QueryAnnotationParser
                 $mutation->getName(),
                 $refClass->getName()
             );
-            throw new \Exception($error);
+            throw new \RuntimeException($error);
         }
 
         $argAnnotations = $this->reader->getClassAnnotations($refClass);

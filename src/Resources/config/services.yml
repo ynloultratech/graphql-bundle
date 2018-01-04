@@ -1,19 +1,36 @@
 services:
+    Ynlo\GraphQLBundle\Controller\GraphQLEndpointController:
+        arguments:
+            - '@Ynlo\GraphQLBundle\Schema\SchemaCompiler'
+            - '%kernel.debug%'
+            - '@?logger'
+
+    Ynlo\GraphQLBundle\Controller\ExplorerController:
+        arguments:
+            - '%graphql.graphiql%'
+            - ~ # <--- configured in ControllerPass --->
+
+    Ynlo\GraphQLBundle\Controller\SchemaController:
+        arguments: ['@Ynlo\GraphQLBundle\Schema\SchemaCompiler']
+
     Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices:
         arguments: [ '@service_container' ]
 
     Ynlo\GraphQLBundle\EventListener\CorsListener:
         arguments: ['%graphql.cors_config%']
         tags:
-          - { name: 'kernel.event_subscriber' }
+            - { name: 'kernel.event_subscriber' }
 
     Ynlo\GraphQLBundle\Schema\SchemaCompiler:
         arguments: ['@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry']
         calls:
-          - [ setContainer, ['@service_container']]
+            - [ setContainer, ['@service_container']]
 
     Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry:
-        arguments: ['@Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices', '@Ynlo\GraphQLBundle\Definition\Extension\DefinitionExtensionManager', '%kernel.cache_dir%']
+        arguments:
+            - '@Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices'
+            - '@Ynlo\GraphQLBundle\Definition\Extension\DefinitionExtensionManager'
+            - '%kernel.cache_dir%'
 
     Ynlo\GraphQLBundle\Definition\Loader\AnnotationLoader:
         arguments: ['@service_container']
@@ -38,6 +55,12 @@ services:
         tags:
             - { name: 'graphql.definition_annotation_parser', priority: 100 }
 
+    Ynlo\GraphQLBundle\Definition\Loader\Annotation\QueryListAnnotationParser:
+        calls:
+            - [ setReader, ['@annotations.reader']]
+        tags:
+            - { name: 'graphql.definition_annotation_parser', priority: 100 }
+
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\MutationAnnotationParser:
         arguments: ['@form.factory']
         calls:
@@ -45,8 +68,31 @@ services:
         tags:
             - { name: 'graphql.definition_annotation_parser', priority: 100 }
 
+    Ynlo\GraphQLBundle\Definition\Loader\Annotation\MutationAddAnnotationParser:
+        arguments: ['@form.factory']
+        calls:
+            - [ setReader, ['@annotations.reader']]
+        tags:
+            - { name: 'graphql.definition_annotation_parser', priority: 100 }
+
+    Ynlo\GraphQLBundle\Definition\Loader\Annotation\MutationUpdateAnnotationParser:
+        arguments: ['@form.factory']
+        calls:
+            - [ setReader, ['@annotations.reader']]
+        tags:
+            - { name: 'graphql.definition_annotation_parser', priority: 100 }
+
+    Ynlo\GraphQLBundle\Definition\Loader\Annotation\MutationDeleteAnnotationParser:
+        arguments: ['@form.factory']
+        calls:
+            - [ setReader, ['@annotations.reader']]
+        tags:
+            - { name: 'graphql.definition_annotation_parser', priority: 100 }
+
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\CRUDAnnotationParser:
-        arguments: ['@Ynlo\GraphQLBundle\Definition\Loader\Annotation\QueryAnnotationParser','@Ynlo\GraphQLBundle\Definition\Loader\Annotation\MutationAnnotationParser']
+        arguments:
+            - '@Ynlo\GraphQLBundle\Definition\Loader\Annotation\QueryAnnotationParser'
+            - '@Ynlo\GraphQLBundle\Definition\Loader\Annotation\MutationAnnotationParser'
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:
@@ -80,33 +126,35 @@ services:
     Ynlo\GraphQLBundle\Type\Loader\TypeAutoLoader:
         arguments: ['%kernel.cache_dir%']
         calls:
-          - [ setContainer, ['@service_container']]
+            - [ setContainer, ['@service_container']]
 
     Ynlo\GraphQLBundle\Form\TypeGuesser\GraphQLIDTypeGuesser:
         arguments: ['@annotations.reader']
         tags:
-           - { name: 'form.type_guesser' }
+            - { name: 'form.type_guesser' }
 
     Ynlo\GraphQLBundle\Form\TypeGuesser\GraphQLEnumTypeGuesser:
         arguments: ['@annotations.reader', '@doctrine', "%doctrine.dbal.connection_factory.types%"]
         tags:
-           - { name: 'form.type_guesser', priority: 10}
+            - { name: 'form.type_guesser', priority: 10}
 
     # this alias is required to override Fresh\DoctrineEnumBundle\Form\EnumTypeGuesser
     enum_type_guesser:
         alias: Ynlo\GraphQLBundle\Form\TypeGuesser\GraphQLEnumTypeGuesser
 
     Ynlo\GraphQLBundle\Form\TypeGuesser\DoctrineOrmTypeGuesser:
-            arguments: ['@doctrine']
-            tags:
-               - { name: 'form.type_guesser'}
+        arguments: ['@doctrine']
+        tags:
+            - { name: 'form.type_guesser'}
 
     # this alias is required to override Fresh\DoctrineEnumBundle\Form\EnumTypeGuesser
     form.type_guesser.doctrine:
          alias: Ynlo\GraphQLBundle\Form\TypeGuesser\DoctrineOrmTypeGuesser
 
     Ynlo\GraphQLBundle\Form\Type\IDType:
-        arguments: ['@Doctrine\ORM\EntityManagerInterface', '@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry']
+        arguments:
+            - '@Doctrine\ORM\EntityManagerInterface'
+            - '@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry'
         tags: [form.type]
 
     Ynlo\GraphQLBundle\Definition\Extension\DefinitionExtensionManager:
@@ -118,26 +166,26 @@ services:
     Ynlo\GraphQLBundle\Definition\Extension\PaginationDefinitionExtension:
         arguments: ['@annotations.reader','%graphql.extension_config.pagination%']
         tags:
-          - { name: 'graphql.definition_extension'}
+            - { name: 'graphql.definition_extension'}
 
     Ynlo\GraphQLBundle\Definition\Extension\MutationFormResolverExtension:
         arguments: ['@form.factory']
         tags:
-          - { name: 'graphql.definition_extension'}
+            - { name: 'graphql.definition_extension'}
 
     Ynlo\GraphQLBundle\Definition\Extension\InterfaceExtensionResolver:
         arguments: ['@service_container']
         tags:
-          - { name: 'graphql.definition_extension'}
+            - { name: 'graphql.definition_extension'}
 
     Ynlo\GraphQLBundle\Definition\Extension\NamespaceDefinitionExtension:
         arguments: ['%graphql.extension_config.namespaces%']
         tags:
-          - { name: 'graphql.definition_extension', priority: -200}
+            - { name: 'graphql.definition_extension', priority: -200}
 
     Ynlo\GraphQLBundle\Definition\Extension\ReorderDefinitionsExtension:
-            tags:
-              - { name: 'graphql.definition_extension', priority: -210}
+        tags:
+            - { name: 'graphql.definition_extension', priority: -210}
 
     Ynlo\GraphQLBundle\GraphiQL\JWTGraphiQLAuthentication:
         arguments: ['@router','@session','%graphql.graphiql_auth_jwt%']
