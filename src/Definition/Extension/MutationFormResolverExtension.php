@@ -186,10 +186,18 @@ class MutationFormResolverExtension extends AbstractDefinitionExtension
                 $childFormType = $formField->getConfig()->getOptions()['entry_type'];
                 $childFormOptions = $formField->getConfig()->getOptions()['entry_options'];
                 $childForm = $this->formFactory->create($childFormType, null, $childFormOptions ?? []);
-                $child = $this->createFormInputObject($endpoint, $childForm, $childName);
-                $field->setType($child->getName());
-                $field->setList(true);
-                $endpoint->add($child);
+                $childForm->setParent($form);
+                try {
+                    //resolve type if is a valid scalar type or predefined type
+                    $this->resolveFormFieldDefinition($field, $childForm);
+                    $field->setList(true);
+                } catch (\InvalidArgumentException $exception) {
+                    //on exception, try build a child form for this collection
+                    $child = $this->createFormInputObject($endpoint, $childForm, $childName);
+                    $field->setType($child->getName());
+                    $field->setList(true);
+                    $endpoint->add($child);
+                }
             } else {
                 $this->resolveFormFieldDefinition($field, $formField);
             }
