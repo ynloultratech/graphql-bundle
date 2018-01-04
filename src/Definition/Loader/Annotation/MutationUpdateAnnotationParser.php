@@ -35,11 +35,11 @@ class MutationUpdateAnnotationParser extends MutationAnnotationParser
     public function parse($annotation, \ReflectionClass $refClass, Endpoint $endpoint)
     {
         if (!$endpoint->hasTypeForClass($refClass->getName())) {
-            throw new \RuntimeException(sprintf('Can\'t apply CRUD operations to "%s", CRUD operations can only be applied to valid GraphQL object types.', $refClass->getName()));
+            throw new \RuntimeException(sprintf('Can\'t apply Update operation to "%s", CRUD operations can only be applied to valid GraphQL object types.', $refClass->getName()));
         }
 
         if (!$refClass->implementsInterface(NodeInterface::class)) {
-            throw new \RuntimeException(sprintf('Can\'t apply CRUD operations to "%s", CRUD operations can only be applied to nodes. You are implementing NodeInterface in this class?', $refClass->getName()));
+            throw new \RuntimeException(sprintf('Can\'t apply Update operation to "%s", CRUD operations can only be applied to nodes. You are implementing NodeInterface in this class?', $refClass->getName()));
         }
 
         $definition = $endpoint->getType($endpoint->getTypeForClass($refClass->getName()));
