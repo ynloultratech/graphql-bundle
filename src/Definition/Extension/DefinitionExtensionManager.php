@@ -50,7 +50,6 @@ class DefinitionExtensionManager
     {
         if ($this->loaded) {
             return $this->extensions;
-
         }
         $this->extensions = [];
 

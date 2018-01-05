@@ -182,7 +182,6 @@ class NamespaceDefinitionExtension extends AbstractDefinitionExtension
                 //remove node suffix on namespaced definitions
                 $definition->setName(preg_replace(sprintf("/(\w+)%s$/", $nodeName), '$1', $definition->getName()));
                 $definition->setName(preg_replace(sprintf("/(\w+)%s$/", Inflector::pluralize($nodeName)), '$1', $definition->getName()));
-
             }
 
             if ($root && $parent) {

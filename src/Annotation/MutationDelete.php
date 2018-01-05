@@ -18,7 +18,7 @@ use Doctrine\Common\Annotations\Annotation\Required;
  *
  * @Target({"CLASS"})
  */
-class MutationDelete
+final class MutationDelete
 {
     /**
      * @var string

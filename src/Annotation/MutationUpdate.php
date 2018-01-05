@@ -18,7 +18,7 @@ use Doctrine\Common\Annotations\Annotation\Required;
  *
  * @Target({"CLASS"})
  */
-class MutationUpdate
+final class MutationUpdate
 {
     /**
      * @var string
