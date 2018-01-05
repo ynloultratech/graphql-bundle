@@ -11,33 +11,20 @@
 namespace Ynlo\GraphQLBundle\Type\Loader;
 
 use GraphQL\Type\Definition\Type;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
-use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Finder\Finder;
 use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 
-/**
- * Class TypeAutoLoader
- */
-class TypeAutoLoader implements ContainerAwareInterface
+class TypeAutoLoader
 {
-    use ContainerAwareTrait;
-
     protected static $loaded = false;
 
-    /**
-     * @var string
-     */
     private $cacheDir;
+    private $bundles;
 
-    /**
-     * TypeAutoLoader constructor.
-     *
-     * @param string $cacheDir
-     */
-    public function __construct(string $cacheDir)
+    public function __construct(string $cacheDir, array $bundles)
     {
         $this->cacheDir = $cacheDir;
+        $this->bundles = $bundles;
     }
 
     /**
@@ -57,14 +44,13 @@ class TypeAutoLoader implements ContainerAwareInterface
         }
 
         self::$loaded = true;
-        $bundles = $this->container->get('kernel')->getBundles();
 
-        foreach ($bundles as $bundle) {
-            $path = $bundle->getPath().'/Type';
+        foreach ($this->bundles as $bundle) {
+            $path = $bundle['path'].'/Type';
             if (file_exists($path)) {
                 $finder = new Finder();
                 foreach ($finder->in($path)->name('/Type.php$/')->getIterator() as $file) {
-                    $namespace = $bundle->getNamespace();
+                    $namespace = $bundle['namespace'];
                     $className = preg_replace('/.php$/', null, $file->getFilename());
                     $name = preg_replace('/Type$/', null, $className);
 

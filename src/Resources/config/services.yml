@@ -124,9 +124,7 @@ services:
             - { name: 'graphql.field_definition_decorator' }
 
     Ynlo\GraphQLBundle\Type\Loader\TypeAutoLoader:
-        arguments: ['%kernel.cache_dir%']
-        calls:
-            - [ setContainer, ['@service_container']]
+        arguments: ['%kernel.cache_dir%', '%kernel.bundles_metadata%']
 
     Ynlo\GraphQLBundle\Form\TypeGuesser\GraphQLIDTypeGuesser:
         arguments: ['@annotations.reader']
