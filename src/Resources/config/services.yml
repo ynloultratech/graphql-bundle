@@ -16,6 +16,10 @@ services:
     Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices:
         arguments: [ '@service_container' ]
 
+    Ynlo\GraphQLBundle\Component\AutoWire\AutoWire:
+        calls:
+            - [ setContainer, ['@service_container']]
+
     Ynlo\GraphQLBundle\EventListener\CorsListener:
         arguments: ['%graphql.cors_config%']
         tags:

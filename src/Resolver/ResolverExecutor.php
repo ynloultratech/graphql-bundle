@@ -11,15 +11,18 @@
 namespace Ynlo\GraphQLBundle\Resolver;
 
 use Doctrine\Common\Util\ClassUtils;
+use Doctrine\ORM\EntityManager;
 use GraphQL\Type\Definition\ResolveInfo;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
-use Ynlo\GraphQLBundle\Definition\HasExtensionsInterface;
+use Ynlo\GraphQLBundle\Component\AutoWire\AutoWire;
 use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
+use Ynlo\GraphQLBundle\Definition\HasExtensionsInterface;
 use Ynlo\GraphQLBundle\Definition\NodeAwareDefinitionInterface;
+use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Extension\ExtensionInterface;
@@ -103,7 +106,7 @@ class ResolverExecutor implements ContainerAwareInterface
             $refClass = new \ReflectionClass($resolverName);
 
             /** @var callable $resolver */
-            $resolver = $refClass->newInstance();
+            $resolver = $this->container->get(AutoWire::class)->createInstance($refClass->getName());
             if ($resolver instanceof ContainerAwareInterface) {
                 $resolver->setContainer($this->container);
             }
@@ -231,13 +234,46 @@ class ResolverExecutor implements ContainerAwareInterface
                 $normalizedArguments[$argument->getInternalName()] = $normalizedValue;
             }
         }
-
+        $this->applyArgumentsNamingConventions($normalizedArguments);
         $normalizedArguments['args'] = $normalizedArguments;
         $normalizedArguments['root'] = $this->root;
         $indexedArguments = $this->resolveMethodArguments($refMethod, $normalizedArguments);
         ksort($indexedArguments);
 
         return $indexedArguments;
+    }
+
+    /**
+     * Apply some conventions to given arguments
+     *
+     * @param array $args
+     */
+    protected function applyArgumentsNamingConventions(&$args)
+    {
+        //any parameter with suffix Id of type ID automatically will be created other parameter with the real object
+        //e.g. productId => ID() produce other parameter: product => Product()
+        //
+        // Usage:
+        //  * ...
+        //  * @GraphQL\Argument(name="productId", type="ID!")
+        //  */
+        //  public function someMethod(Product $product){
+        //      //...
+        //  }
+        //
+        foreach ($args as $name => $value) {
+            if ($value instanceof ID && preg_match('/Id$/', $name)) {
+                $objectParamName = preg_replace('/Id$/', null, $name);
+                if (!isset($args[$objectParamName])) {
+                    $definition = $this->endpoint->getType($value->getNodeType());
+                    if ($definition instanceof ObjectDefinition && $definition->getClass()) {
+                        /** @var EntityManager $em */
+                        $em = $this->container->get('doctrine')->getManager();
+                        $args[$objectParamName] = $em->getRepository($definition->getClass())->find($value->getDatabaseId());
+                    }
+                }
+            }
+        }
     }
 
     /**
