@@ -49,7 +49,7 @@ class DefinitionOptionsCommand extends ContainerAwareCommand
 
         $dumped = false;
         foreach ($extensions as $extension) {
-            if ($filterBy && $extension->getName() != $filterBy) {
+            if ($filterBy && $extension->getName() !== $filterBy) {
                 continue;
             }
             $config = $this->createConfig($extension);

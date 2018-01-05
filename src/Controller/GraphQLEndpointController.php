@@ -12,6 +12,7 @@ namespace Ynlo\GraphQLBundle\Controller;
 
 use GraphQL\Error\Debug;
 use GraphQL\GraphQL;
+use GraphQL\Validator\Rules;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -42,13 +43,21 @@ class GraphQLEndpointController
 
         $input = json_decode($request->getContent(), true);
         $query = $input['query'];
+        $context = null;
         $variableValues = $input['variables'] ?? null;
         $operationName = $input['operationName'] ?? null;
+        $validationRules = array_merge(
+            GraphQL::getStandardValidationRules(),
+            [
+                //new Rules\QueryComplexity(100),
+                //new Rules\QueryDepth(10),
+                //new Rules\DisableIntrospection()
+            ]
+        );
 
         try {
             $schema->assertValid();
-            $context = null;
-            $result = GraphQL::executeQuery($schema, $query, $context, null, $variableValues, $operationName);
+            $result = GraphQL::executeQuery($schema, $query, null, $context, $variableValues, $operationName, null, $validationRules);
 
             $debug = false;
             if ($this->debug) {
