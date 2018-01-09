@@ -55,7 +55,7 @@ twig:
 graphql:
     security:
         validation_rules:
-            query_complexity: 101
+            query_complexity: 200
     definitions:
         extensions:
             namespaces: true
