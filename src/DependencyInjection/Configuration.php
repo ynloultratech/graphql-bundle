@@ -217,12 +217,12 @@ Can be used to group multiple nodes or publish a node with a different group nam
             ->children();
         $validationRulesNode
             ->integerNode('query_complexity')
-            ->info('Query complexity score before execution.')
+            ->info('Query complexity score before execution. (Recommended >= 200)')
             ->min(0)
             ->defaultValue(QueryComplexity::DISABLED);
         $validationRulesNode
             ->integerNode('query_depth')
-            ->info('Max depth of the query.')
+            ->info('Max depth of the query. (Recommended >= 11)')
             ->min(0)
             ->defaultValue(QueryDepth::DISABLED);
         $validationRulesNode
