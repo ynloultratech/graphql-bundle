@@ -17,6 +17,7 @@ use Ynlo\GraphQLBundle\Query\Node\AllNodesWithPagination;
 /**
  * @GraphQL\Field(
  *     type="[Post]",
+ *     complexity="children_complexity * first",
  *     options={
  *          "pagination": {
  *              "parent_field": "categories",
