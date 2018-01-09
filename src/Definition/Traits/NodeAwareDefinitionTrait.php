@@ -25,7 +25,7 @@ trait NodeAwareDefinitionTrait
     /**
      * @return mixed
      */
-    public function getNode():?string
+    public function getNode(): ?string
     {
         return $this->node;
     }
