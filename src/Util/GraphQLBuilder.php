@@ -54,7 +54,7 @@ class GraphQLBuilder
 
         if (is_numeric($complexity)) {
             return function ($childrenComplexity) use ($complexity) {
-                return $childrenComplexity * $complexity;
+                return $childrenComplexity + $complexity;
             };
         }
 
