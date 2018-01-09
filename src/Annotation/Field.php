@@ -36,6 +36,11 @@ final class Field
     public $deprecationReason;
 
     /**
+     * @var string
+     */
+    public $complexity;
+
+    /**
      * @var array
      */
     public $options = [];

@@ -11,6 +11,8 @@
 
 namespace Ynlo\GraphQLBundle\DependencyInjection;
 
+use GraphQL\Validator\Rules\QueryComplexity;
+use GraphQL\Validator\Rules\QueryDepth;
 use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
@@ -31,6 +33,7 @@ class Configuration implements ConfigurationInterface
         $this->configureCORS($rootNode);
         $this->configureGraphiQL($rootNode);
         $this->configureDefinition($rootNode);
+        $this->configureSecurity($rootNode);
 
         return $treeBuilder;
     }
@@ -199,5 +202,31 @@ Can be used to group multiple nodes or publish a node with a different group nam
               ->example('InvoiceItem: Invoice')
               ->useAttributeAsKey('name')
               ->prototype('scalar');
+    }
+
+    private function configureSecurity(NodeBuilder $rootNode)
+    {
+        $securityNode = $rootNode
+            ->arrayNode('security')
+            ->canBeEnabled()
+            ->children();
+
+        $validationRulesNode = $securityNode
+            ->arrayNode('validation_rules')
+            ->addDefaultsIfNotSet()
+            ->children();
+        $validationRulesNode
+            ->integerNode('query_complexity')
+            ->info('Query complexity score before execution. (Recommended >= 200)')
+            ->min(0)
+            ->defaultValue(QueryComplexity::DISABLED);
+        $validationRulesNode
+            ->integerNode('query_depth')
+            ->info('Max depth of the query. (Recommended >= 11)')
+            ->min(0)
+            ->defaultValue(QueryDepth::DISABLED);
+        $validationRulesNode
+            ->booleanNode('disable_introspection')
+            ->defaultFalse();
     }
 }

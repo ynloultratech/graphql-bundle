@@ -8,3 +8,8 @@ framework:
     profiler:
         collect: false
 
+graphql:
+    security:
+        validation_rules:
+            query_complexity: 303
+

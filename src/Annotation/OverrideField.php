@@ -47,6 +47,11 @@ final class OverrideField
     public $deprecationReason;
 
     /**
+     * @var string
+     */
+    public $complexity;
+
+    /**
      * Ignore this field
      *
      * @var bool

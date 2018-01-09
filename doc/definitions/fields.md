@@ -19,9 +19,15 @@ protected $username;
  Options:
  - **type**: The type of the field, read more about [Type System](type-system.md)
  - **name**: Name to expose the field, if not set will be automatically resolved.
- - **description**: Field description to expose in the documentation
- - **deprecationReason**: Mark the field as deprecated with the following reason
- - **options**: Options are used by [Definitions Extensions](extensions.md) to provide extra features
+ - **description**: Field description to expose in the documentation.
+ - **deprecationReason**: Mark the field as deprecated with the following reason.
+ - **complexity**: Customize field score complexity (**default** `children_complexity + 1`).
+     Accepted values:
+      * **numeric**: The field score will be calculated as `children_complexity + n`. 
+      * **callable**: Custom static function (as string syntax) that accepts `$childrenComplexity` and `$args` 
+      as arguments and it must return an integer value (score).
+      * **expression**: Custom expression language. Context variables: `children_complexity` and the exposed in `$args`. 
+ - **options**: Options are used by [Definitions Extensions](extensions.md) to provide extra features.
  
 
 ## Methods as Fields

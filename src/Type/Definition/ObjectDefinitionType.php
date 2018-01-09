@@ -20,9 +20,6 @@ use Ynlo\GraphQLBundle\Resolver\ObjectFieldResolver;
 use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 use Ynlo\GraphQLBundle\Util\GraphQLBuilder;
 
-/**
- * Class ObjectDefinitionType
- */
 class ObjectDefinitionType extends ObjectType implements
     ContainerAwareInterface,
     EndpointAwareInterface
@@ -30,14 +27,8 @@ class ObjectDefinitionType extends ObjectType implements
     use ContainerAwareTrait;
     use EndpointAwareTrait;
 
-    /**
-     * @var ObjectDefinition
-     */
     protected $definition;
 
-    /**
-     * @param ObjectDefinition $definition
-     */
     public function __construct(ObjectDefinition $definition)
     {
         $this->definition = $definition;
@@ -64,10 +55,7 @@ class ObjectDefinitionType extends ObjectType implements
         );
     }
 
-    /**
-     * @return array
-     */
-    private function resolveFields()
+    private function resolveFields(): array
     {
         $fields = [];
         foreach ($this->definition->getFields() as $fieldDefinition) {
@@ -89,16 +77,14 @@ class ObjectDefinitionType extends ObjectType implements
                 'description' => $fieldDefinition->getDescription(),
                 'deprecationReason' => $fieldDefinition->getDeprecationReason(),
                 'args' => GraphQLBuilder::buildArguments($fieldDefinition),
+                'complexity' => GraphQLBuilder::buildComplexityFn($fieldDefinition->getComplexity()),
             ];
         }
 
         return $fields;
     }
 
-    /**
-     * @return array
-     */
-    private function resolveInterfaces()
+    private function resolveInterfaces(): array
     {
         $interfaces = [];
         foreach ($this->definition->getInterfaces() as $interface) {

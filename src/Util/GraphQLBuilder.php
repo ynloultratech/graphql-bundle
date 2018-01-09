@@ -11,20 +11,13 @@
 namespace Ynlo\GraphQLBundle\Util;
 
 use GraphQL\Type\Definition\Type;
+use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Ynlo\GraphQLBundle\Definition\ArgumentAwareInterface;
 use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 
-/**
- * GraphQLBuilder
- */
 class GraphQLBuilder
 {
-    /**
-     * @param ArgumentAwareInterface $argumentAware
-     *
-     * @return array
-     */
-    public static function buildArguments(ArgumentAwareInterface $argumentAware)
+    public static function buildArguments(ArgumentAwareInterface $argumentAware): array
     {
         $args = [];
         foreach ($argumentAware->getArguments() as $argDefinition) {
@@ -51,5 +44,29 @@ class GraphQLBuilder
         }
 
         return $args;
+    }
+
+    public static function buildComplexityFn(?string $complexity): ?callable
+    {
+        if (null === $complexity) {
+            return null;
+        }
+
+        if (is_numeric($complexity)) {
+            return function ($childrenComplexity) use ($complexity) {
+                return $childrenComplexity + $complexity;
+            };
+        }
+
+        // support only static string callable func
+        if (\is_string($complexity) && \is_callable($complexity)) {
+            return $complexity;
+        }
+
+        $el = new ExpressionLanguage();
+
+        return function ($childrenComplexity, $args) use ($el, $complexity) {
+            return $el->evaluate($complexity, array_merge($args, ['children_complexity' => $childrenComplexity]));
+        };
     }
 }

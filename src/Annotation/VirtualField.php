@@ -51,6 +51,11 @@ final class VirtualField
     public $deprecationReason;
 
     /**
+     * @var string
+     */
+    public $complexity;
+
+    /**
      * @var array
      */
     public $options = [];

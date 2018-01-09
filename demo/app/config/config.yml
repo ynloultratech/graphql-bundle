@@ -53,6 +53,9 @@ twig:
     strict_variables: "%kernel.debug%"
 
 graphql:
+    security:
+        validation_rules:
+            query_complexity: 200
     definitions:
         extensions:
             namespaces: true

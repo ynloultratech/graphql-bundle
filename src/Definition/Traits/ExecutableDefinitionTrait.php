@@ -21,12 +21,20 @@ trait ExecutableDefinitionTrait
     use TypeAwareDefinitionTrait;
     use NodeAwareDefinitionTrait;
 
+    /**
+     * @var string
+     */
     protected $resolver;
+
+    /**
+     * @var string
+     */
+    protected $complexity;
 
     /**
      * @return null|string
      */
-    public function getResolver():?string
+    public function getResolver(): ?string
     {
         return $this->resolver;
     }
@@ -39,6 +47,18 @@ trait ExecutableDefinitionTrait
     public function setResolver(?string $resolver)
     {
         $this->resolver = $resolver;
+
+        return $this;
+    }
+
+    public function getComplexity(): ?string
+    {
+        return $this->complexity;
+    }
+
+    public function setComplexity(?string $complexity): self
+    {
+        $this->complexity = $complexity;
 
         return $this;
     }

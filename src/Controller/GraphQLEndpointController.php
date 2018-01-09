@@ -1,4 +1,5 @@
 <?php
+
 /*******************************************************************************
  *  This file is part of the GraphQL Bundle package.
  *
@@ -12,6 +13,8 @@ namespace Ynlo\GraphQLBundle\Controller;
 
 use GraphQL\Error\Debug;
 use GraphQL\GraphQL;
+use GraphQL\Validator\DocumentValidator;
+use GraphQL\Validator\Rules;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -38,23 +41,24 @@ class GraphQLEndpointController
             throw new HttpException(Response::HTTP_BAD_REQUEST, 'The method should be POST to talk with GraphQL API');
         }
 
-        $schema = $this->compiler->compile();
-
         $input = json_decode($request->getContent(), true);
         $query = $input['query'];
+        $context = null;
         $variableValues = $input['variables'] ?? null;
         $operationName = $input['operationName'] ?? null;
+        // this will override global validation rules for this request
+        $validationRules = null;
 
         try {
+            $schema = $this->compiler->compile();
             $schema->assertValid();
-            $context = null;
-            $result = GraphQL::executeQuery($schema, $query, $context, null, $variableValues, $operationName);
+
+            $result = GraphQL::executeQuery($schema, $query, null, $context, $variableValues, $operationName, null, $validationRules);
 
             $debug = false;
             if ($this->debug) {
                 $debug = Debug::INCLUDE_DEBUG_MESSAGE | Debug::INCLUDE_TRACE;
             }
-
             $output = $result->toArray($debug);
             $statusCode = Response::HTTP_OK;
 
@@ -75,5 +79,20 @@ class GraphQLEndpointController
         }
 
         return JsonResponse::create($output, $statusCode);
+    }
+
+    public function addGlobalValidationRules(array $validationRules): void
+    {
+        $rules = [];
+        if (!empty($validationRules['query_complexity'])) {
+            $rules[] = new Rules\QueryComplexity($validationRules['query_complexity']);
+        }
+        if (!empty($validationRules['query_depth'])) {
+            $rules[] = new Rules\QueryDepth($validationRules['query_depth']);
+        }
+        if (!empty($validationRules['disable_introspection'])) {
+            $rules[] = new Rules\DisableIntrospection();
+        }
+        array_map([DocumentValidator::class, 'addRule'], $rules);
     }
 }

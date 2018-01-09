@@ -259,15 +259,18 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
             if ($annotation instanceof Annotation\OverrideField) {
                 if ($objectDefinition->hasField($annotation->name)) {
                     $fieldDefinition = $objectDefinition->getField($annotation->name);
-                    if ($annotation->hidden === true) {
+                    if (true === $annotation->hidden) {
                         $objectDefinition->removeField($annotation->name);
                         continue;
                     }
                     if ($annotation->description) {
                         $fieldDefinition->setDescription($annotation->description);
                     }
-                    if ($annotation->deprecationReason || $annotation->deprecationReason === false) {
+                    if ($annotation->deprecationReason || false === $annotation->deprecationReason) {
                         $fieldDefinition->setDeprecationReason($annotation->deprecationReason);
+                    }
+                    if ($annotation->complexity) {
+                        $fieldDefinition->setComplexity($annotation->complexity);
                     }
                     if ($annotation->type) {
                         $fieldDefinition->setType($annotation->type);
@@ -301,6 +304,7 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
                     $fieldDefinition->setList(TypeUtil::isTypeList($annotation->type));
                     $fieldDefinition->setMeta('expression', $annotation->expression);
                     $fieldDefinition->setResolver(FieldExpressionResolver::class);
+                    $fieldDefinition->setComplexity($annotation->complexity);
                     $objectDefinition->addField($fieldDefinition);
                 } else {
                     $fieldDefinition = $objectDefinition->getField($annotation->name);

@@ -46,6 +46,7 @@ class YnloGraphQLExtension extends Extension
         $container->setParameter('graphql.cors_config', $config['cors'] ?? []);
         $container->setParameter('graphql.graphiql', $config['graphiql'] ?? []);
         $container->setParameter('graphql.graphiql_auth_jwt', $config['graphiql']['authentication']['provider']['jwt'] ?? []);
+        $container->setParameter('graphql.security.validation_rules', $config['security']['validation_rules'] ?? []);
 
         $graphiQLAuthProvider = null;
         if ($config['graphiql']['authentication']['provider']['jwt']['enabled'] ?? false) {

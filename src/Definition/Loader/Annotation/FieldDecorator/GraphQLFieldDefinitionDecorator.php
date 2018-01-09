@@ -32,23 +32,27 @@ class GraphQLFieldDefinitionDecorator implements FieldDefinitionDecoratorInterfa
             throw new \InvalidArgumentException('Invalid argument, expected reflection of property or method');
         }
 
-        if (($name = $this->resolveFieldName($field)) && null !== $name) {
+        if (null !== $name = $this->resolveFieldName($field)) {
             $definition->setName($name);
         }
 
-        if (($type = $this->resolveFieldType($field)) && null !== $type) {
+        if (null !== $type = $this->resolveFieldType($field)) {
             $definition->setType($this->resolveFieldType($field));
             $definition->setList($this->resolveFieldIsList($field));
             $definition->setNonNull($this->resolveFieldNonNull($field));
             $definition->setNonNullList($this->resolveFieldNonNullList($field));
         }
 
-        if (($description = $this->resolveFieldDescription($field)) && null !== $description) {
+        if (null !== $description = $this->resolveFieldDescription($field)) {
             $definition->setDescription($description);
         }
 
-        if (($deprecationReason = $this->resolveFieldDeprecationReason($field)) && null !== $deprecationReason) {
+        if (null !== $deprecationReason = $this->resolveFieldDeprecationReason($field)) {
             $definition->setDeprecationReason($deprecationReason);
+        }
+
+        if (null !== $complexity = $this->resolveFieldComplexity($field)) {
+            $definition->setComplexity($complexity);
         }
     }
 
@@ -94,6 +98,21 @@ class GraphQLFieldDefinitionDecorator implements FieldDefinitionDecoratorInterfa
         /** @var Annotation\Field $annotation */
         if ($annotation = $this->getFieldAnnotation($prop, Annotation\Field::class)) {
             return $annotation->deprecationReason;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param \ReflectionMethod|\ReflectionProperty $prop
+     *
+     * @return string|null
+     */
+    protected function resolveFieldComplexity($prop): ?string
+    {
+        /** @var Annotation\Field $annotation */
+        if ($annotation = $this->getFieldAnnotation($prop, Annotation\Field::class)) {
+            return $annotation->complexity;
         }
 
         return null;
