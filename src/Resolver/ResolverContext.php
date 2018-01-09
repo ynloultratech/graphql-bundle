@@ -93,6 +93,14 @@ class ResolverContext
     }
 
     /**
+     * @return mixed
+     */
+    public function getArg(string $name)
+    {
+        return $this->args[$name];
+    }
+
+    /**
      * @param array $args
      */
     public function setArgs(array $args)

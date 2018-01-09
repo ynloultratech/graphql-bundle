@@ -15,7 +15,15 @@ use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Query\Node\AllNodesWithPagination;
 
 /**
- * @GraphQL\Field(type="[Post]", options={"pagination": {"parent_field": "categories", "parent_relation": "MANY_TO_MANY"} })
+ * @GraphQL\Field(
+ *     type="[Post]",
+ *     options={
+ *          "pagination": {
+ *              "parent_field": "categories",
+ *              "parent_relation": "MANY_TO_MANY"
+ *          }
+ *     }
+ * )
  * @GraphQL\Argument(name="status", type="Ynlo\GraphQLBundle\Demo\AppBundle\DBAL\Types\PostStatusType!")
  */
 class PostsByStatus extends AllNodesWithPagination
@@ -25,7 +33,7 @@ class PostsByStatus extends AllNodesWithPagination
      */
     public function configureQuery(QueryBuilder $qb)
     {
-        $status = $this->context->getArgs()['status'];
+        $status = $this->context->getArg('status');
         $qb->andWhere('o.status = :status')
            ->setParameter('status', $status);
     }
