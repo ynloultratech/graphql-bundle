@@ -68,6 +68,7 @@ class StandaloneFieldParser extends QueryAnnotationParser
         $field->setDeprecationReason($annotation->deprecationReason);
         $field->setDescription($annotation->description);
         $field->setComplexity($annotation->complexity);
+        $field->setMaxConcurrentUsage($annotation->maxConcurrentUsage);
 
         foreach ($annotation->options as $option => $value) {
             $field->setMeta($option, $value);

@@ -76,9 +76,6 @@ GraphQL;
         /** @var Category $category1 */
         $category1 = self::getFixtureReference('category1');
 
-        /** @var Category $category2 */
-        $category2 = self::getFixtureReference('category2');
-
         /** @var Post $post */
         $publish1 = [];
         foreach ($category1->getPosts() as $post) {
@@ -87,13 +84,49 @@ GraphQL;
             }
         }
 
-        /** @var Post $post */
-        $publish2 = [];
-        foreach ($category2->getPosts() as $post) {
-            if ($post->getStatus() === PostStatusType::PUBLISH) {
-                $publish2[] = ['status' => 'PUBLISHED'];
+        $query = <<<'GraphQL'
+query($id: ID!) {
+    node (id: $id) {
+       ... on Category {
+            id
+            name
+            postsByStatus (first: 100, status: PUBLISHED){
+                edges {
+                    node {
+                        status
+                    }
+                }
             }
-        }
+       }
+    }
+}
+GraphQL;
+        self::send(
+            $query,
+            [
+                'id' =>  self::encodeID('Category', $category1),
+            ]
+        );
+
+        $resultCategory1 = self::getJsonPathValue('data.node');
+
+        self::assertEquals($category1->getName(), $resultCategory1['name']);
+
+        $postsInCategory1 = self::getJsonPathValue('data.node.postsByStatus.edges[*].node');
+
+        self::assertEquals($publish1, $postsInCategory1);
+    }
+
+    /**
+     * testGetCategoryPostsByStatus
+     */
+    public function testGetCategoryPostsByStatusVerifyMaxConcurrentUsage()
+    {
+        /** @var Category $category1 */
+        $category1 = self::getFixtureReference('category1');
+
+        /** @var Category $category2 */
+        $category2 = self::getFixtureReference('category2');
 
         $query = <<<'GraphQL'
 query($ids: [ID!]!) {
@@ -122,16 +155,6 @@ GraphQL;
             ]
         );
 
-        $resultCategory1 = self::getJsonPathValue('data.nodes[0]');
-        $resultCategory2 = self::getJsonPathValue('data.nodes[1]');
-
-        self::assertEquals($category1->getName(), $resultCategory1['name']);
-        self::assertEquals($category2->getName(), $resultCategory2['name']);
-
-        $postsInCategory1 = self::getJsonPathValue('data.nodes[0].postsByStatus.edges[*].node');
-        $postsInCategory2 = self::getJsonPathValue('data.nodes[1].postsByStatus.edges[*].node');
-
-        self::assertEquals($publish1, $postsInCategory1);
-        self::assertEquals($publish2, $postsInCategory2);
+       self::assertJsonPathEquals('The field "postsByStatus" can be fetched only once per query. This field can`t be used in a list.', 'errors[0].message');
     }
 }

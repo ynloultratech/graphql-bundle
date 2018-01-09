@@ -26,7 +26,8 @@ protected $username;
       * **numeric**: The field score will be calculated as `children_complexity + n`. 
       * **callable**: Custom static function (as string syntax) that accepts `$childrenComplexity` and `$args` 
       as arguments and it must return an integer value (score).
-      * **expression**: Custom expression language. Context variables: `children_complexity` and the exposed in `$args`. 
+      * **expression**: Custom expression language. Context variables: `children_complexity` and the exposed in `$args`.
+ - **maxConcurrentUsage**: *default: 0* How many times a field can be fetched in a query. Disabled by default. (see below) 
  - **options**: Options are used by [Definitions Extensions](extensions.md) to provide extra features.
  
 
@@ -103,6 +104,74 @@ class IsCurrent implements ContainerAwareInterface
 
 ````
 The argument `$root` is automatically injected and contains the current Node. [Read more about arguments](../arguments.md)
+
+## Max Concurrent Usage
+
+Usage of field resolvers allow complex fields with any custom logic. 
+With this scenario, sometimes is not a good idea allow to API consumers to request 
+these complex fields more than **n** times per query.
+
+Imagine a `User` object with a field called `hasValidEmail` 
+*(this field execute a complex logic like DNS verification and other tasks)*.
+
+````php
+/**
+ * @GraphQL\Field(type="bool")
+ */
+class hasValidEmail
+{
+    /**
+     * @inheritDoc
+     */
+    public function __invoke(User $root)
+    {
+        $email = $root->getEmail();
+        //check dns etc...
+    }
+}
+````
+Now, requesting this field in a query:
+````
+users {
+    id
+    username
+    hasValidEmail
+}
+````
+The usage of this field in a list has a high performance impact in the API, 
+for each user in results, our system must execute all the field logic, including dns check etc.
+
+To avoid this can set the `maxConcurrentUsage` of the field to **1**:
+
+````php
+ /**
+  * @GraphQL\Field(type="bool", maxConcurrentUsage=1)
+  */
+ class hasValidEmail
+````
+With this change API consumers only can request this field on specific users *(1 time per query)*
+
+```
+node(id: 'VXNlcjox') {
+    id
+    username
+    hasValidEmail
+}
+````
+> This option restrict API consumers to use some 
+fields only on specific amount of records or one record, to avoid performance issues.
+
+Now the following query will trow a error:
+
+````
+users {
+    id
+    username
+    hasValidEmail
+}
+````
+
+**The field \"hasValidEmail\" can be fetched only once per query. This field can`t be used in a list.**
 
 ## Override Field
 

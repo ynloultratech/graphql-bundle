@@ -54,6 +54,10 @@ class GraphQLFieldDefinitionDecorator implements FieldDefinitionDecoratorInterfa
         if (null !== $complexity = $this->resolveFieldComplexity($field)) {
             $definition->setComplexity($complexity);
         }
+
+        if ($maxConcurrentUsage = $this->resolveFieldMaxConcurrentUsage($field)) {
+            $definition->setMaxConcurrentUsage($maxConcurrentUsage);
+        }
     }
 
     /**
@@ -116,6 +120,21 @@ class GraphQLFieldDefinitionDecorator implements FieldDefinitionDecoratorInterfa
         }
 
         return null;
+    }
+
+    /**
+     * @param \ReflectionMethod|\ReflectionProperty $prop
+     *
+     * @return string|null
+     */
+    protected function resolveFieldMaxConcurrentUsage($prop): ?string
+    {
+        /** @var Annotation\Field $annotation */
+        if ($annotation = $this->getFieldAnnotation($prop, Annotation\Field::class)) {
+            return $annotation->maxConcurrentUsage;
+        }
+
+        return 0;
     }
 
     /**
