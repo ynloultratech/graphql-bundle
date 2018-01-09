@@ -45,7 +45,8 @@ class GraphQLEndpointController
         $context = null;
         $variableValues = $input['variables'] ?? null;
         $operationName = $input['operationName'] ?? null;
-        $validationRules = null; // <-- this will override global validation rules for this request
+        // this will override global validation rules for this request
+        $validationRules = $this->getValidationRules($query);
 
         try {
             $schema = $this->compiler->compile();
@@ -92,5 +93,21 @@ class GraphQLEndpointController
             $rules[] = new Rules\DisableIntrospection();
         }
         array_map([DocumentValidator::class, 'addRule'], $rules);
+    }
+
+    private function getValidationRules(string $query): ?array
+    {
+        $rules = [];
+
+        // disable query complexity limit for introspection query
+        if (0 === strpos($query, 'query IntrospectionQuery {') && null !== DocumentValidator::getRule('QueryComplexity')) {
+            $rules[] = new Rules\QueryComplexity(Rules\QueryComplexity::DISABLED);
+        }
+
+        if (!$rules) {
+            return null;
+        }
+
+        return array_merge(GraphQL::getStandardValidationRules(), $rules);
     }
 }
