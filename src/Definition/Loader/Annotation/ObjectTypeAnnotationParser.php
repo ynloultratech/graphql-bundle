@@ -270,7 +270,7 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
                         $fieldDefinition->setDeprecationReason($annotation->deprecationReason);
                     }
                     if ($annotation->complexity) {
-                        $fieldDefinition->setDeprecationReason($annotation->complexity);
+                        $fieldDefinition->setComplexity($annotation->complexity);
                     }
                     if ($annotation->type) {
                         $fieldDefinition->setType($annotation->type);
