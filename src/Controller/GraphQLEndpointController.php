@@ -1,12 +1,5 @@
 <?php
-/*******************************************************************************
- *  This file is part of the GraphQL Bundle package.
- *
- *  (c) YnloUltratech <support@ynloultratech.com>
- *
- *  For the full copyright and license information, please view the LICENSE
- *  file that was distributed with this source code.
- ******************************************************************************/
+/*introspection*/
 
 namespace Ynlo\GraphQLBundle\Controller;
 
@@ -100,7 +93,7 @@ class GraphQLEndpointController
         $rules = [];
 
         // disable query complexity limit for introspection query
-        if (0 === strpos($query, 'query IntrospectionQuery {') && null !== DocumentValidator::getRule('QueryComplexity')) {
+        if (false !== strpos($query, "query IntrospectionQuery {\n    __schema {") && null !== DocumentValidator::getRule('QueryComplexity')) {
             $rules[] = new Rules\QueryComplexity(Rules\QueryComplexity::DISABLED);
         }
 

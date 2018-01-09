@@ -222,7 +222,7 @@ Can be used to group multiple nodes or publish a node with a different group nam
             ->defaultValue(QueryComplexity::DISABLED);
         $validationRulesNode
             ->integerNode('query_depth')
-            ->info('Max depth of the query introspection.')
+            ->info('Max depth of the query.')
             ->min(0)
             ->defaultValue(QueryDepth::DISABLED);
         $validationRulesNode
