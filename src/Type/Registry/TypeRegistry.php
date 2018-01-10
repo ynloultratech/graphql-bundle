@@ -25,9 +25,6 @@ use Ynlo\GraphQLBundle\Type\Definition\InterfaceDefinitionType;
 use Ynlo\GraphQLBundle\Type\Definition\ObjectDefinitionType;
 use Ynlo\GraphQLBundle\Type\Types;
 
-/**
- * Class Types
- */
 class TypeRegistry
 {
     /**
@@ -50,10 +47,6 @@ class TypeRegistry
      */
     protected static $typesMap = [];
 
-    /**
-     * @param ContainerInterface $container
-     * @param Endpoint           $endpoint
-     */
     public static function setUp(ContainerInterface $container, Endpoint $endpoint)
     {
         self::$container = $container;
@@ -74,8 +67,8 @@ class TypeRegistry
             return $internalType;
         }
 
-        //convert FQN into type,
-        //allowing the use of FQN for GraphQL scalar types
+        //convert FQCN into type,
+        //allowing the use of FQCN for GraphQL scalar types
         if (class_exists($name) || interface_exists($name)) {
             if (\in_array($name, self::$typesMap, true)) {
                 $name = array_flip(self::$typesMap)[$name];
@@ -95,10 +88,7 @@ class TypeRegistry
         throw new \UnexpectedValueException(sprintf('Can`t find a valid type for given type "%s"', $name));
     }
 
-    /**
-     * @param string $name
-     */
-    public static function create($name)
+    public static function create(string $name): void
     {
         $type = null;
 

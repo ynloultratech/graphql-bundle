@@ -26,37 +26,21 @@ class SchemaCompiler implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
 
-    /**
-     * @var DefinitionRegistry
-     */
     protected $registry;
 
-    /**
-     * @var Endpoint
-     */
-    protected $endpoint;
-
-    /**
-     * SchemaCompiler constructor.
-     *
-     * @param DefinitionRegistry $registry
-     */
     public function __construct(DefinitionRegistry $registry)
     {
         $this->registry = $registry;
     }
 
-    /**
-     * @return Schema
-     */
     public function compile(): Schema
     {
-        $this->endpoint = $this->registry->getEndpoint();
-        TypeRegistry::setUp($this->container, $this->endpoint);
+        $endpoint = $this->registry->getEndpoint();
+        TypeRegistry::setUp($this->container, $endpoint);
 
         //automatically create all interface implementors
         //to avoid empty interfaces
-        foreach ($this->endpoint->allInterfaces() as $type) {
+        foreach ($endpoint->allInterfaces() as $type) {
             foreach ($type->getImplementors() as $implementor) {
                 if (!TypeRegistry::has($implementor)) {
                     TypeRegistry::create($implementor);
@@ -71,11 +55,11 @@ class SchemaCompiler implements ContainerAwareInterface
             },
         ];
 
-        if ($this->endpoint->allQueries()) {
+        if ($endpoint->allQueries()) {
             $config['query'] = TypeRegistry::get('Query');
         }
 
-        if ($this->endpoint->allMutations()) {
+        if ($endpoint->allMutations()) {
             $config['mutation'] = TypeRegistry::get('Mutation');
         }
 
