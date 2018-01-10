@@ -52,13 +52,17 @@ class MutationAnnotationParser extends QueryAnnotationParser
             throw new \RuntimeException($error);
         }
 
-        if (!$refClass->hasMethod('__invoke') && !$annotation->resolver) {
+        if (!$annotation->resolver && !$refClass->hasMethod('__invoke')) {
             $error = sprintf(
                 'The class "%s" should have a method "__invoke" to process the mutation.',
                 $refClass->getName()
             );
             throw new \RuntimeException($error);
         }
+
+//        if (!\in_array('ROLE_ADMIN', $annotation->roles, true)) {
+//            return;
+//        }
 
         $mutation = new MutationDefinition();
 

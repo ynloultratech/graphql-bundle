@@ -50,5 +50,10 @@ class Mutation
     /**
      * @var array
      */
+    public $roles = [];
+
+    /**
+     * @var array
+     */
     public $options = [];
 }

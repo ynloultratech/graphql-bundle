@@ -53,5 +53,10 @@ final class MutationUpdate
     /**
      * @var array
      */
+    public $roles = [];
+
+    /**
+     * @var array
+     */
     public $options = [];
 }
