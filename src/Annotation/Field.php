@@ -41,6 +41,11 @@ final class Field
     public $complexity;
 
     /**
+     * @var int
+     */
+    public $maxConcurrentUsage = 0;
+
+    /**
      * @var array
      */
     public $options = [];

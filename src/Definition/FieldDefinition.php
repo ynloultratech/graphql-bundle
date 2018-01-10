@@ -30,6 +30,11 @@ class FieldDefinition implements ExecutableDefinitionInterface
     protected $originType;
 
     /**
+     * @var int
+     */
+    protected $maxConcurrentUsage = 0;
+
+    /**
      * @var string[]
      */
     protected $inheritedFrom = [];
@@ -82,5 +87,21 @@ class FieldDefinition implements ExecutableDefinitionInterface
         if (!in_array($inheritedFrom, $this->inheritedFrom)) {
             $this->inheritedFrom[] = $inheritedFrom;
         }
+    }
+
+    /**
+     * @return int
+     */
+    public function getMaxConcurrentUsage(): int
+    {
+        return $this->maxConcurrentUsage;
+    }
+
+    /**
+     * @param int $maxConcurrentUsage
+     */
+    public function setMaxConcurrentUsage(int $maxConcurrentUsage): void
+    {
+        $this->maxConcurrentUsage = $maxConcurrentUsage;
     }
 }
