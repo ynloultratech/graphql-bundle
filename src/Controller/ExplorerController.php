@@ -29,7 +29,7 @@ class ExplorerController extends AbstractController
         $this->provider = $provider;
     }
 
-    public function explorerAction(Request $request): Response
+    public function explorer(Request $request): Response
     {
         $form = null;
         $authenticationError = null;
@@ -83,7 +83,7 @@ class ExplorerController extends AbstractController
         ]);
     }
 
-    public function graphiQLAction()
+    public function graphiQL()
     {
         $request = new GraphiQLRequest(
             $this->generateUrl('api_root'),

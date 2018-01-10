@@ -1,7 +1,7 @@
 api_root:
-    path:      /
-    defaults:  { _controller: Ynlo\GraphQLBundle\Controller\GraphQLEndpointController }
+    path: /
+    controller: Ynlo\GraphQLBundle\Controller\GraphQLEndpointController
 
 api_schema:
-    path:      /schema.graphql
-    defaults:  { _controller: Ynlo\GraphQLBundle\Controller\SchemaController }
+    path: /schema.graphql
+    controller: Ynlo\GraphQLBundle\Controller\SchemaController
