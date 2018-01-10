@@ -97,7 +97,7 @@ class ExplorerController extends AbstractController
             $this->provider->prepareRequest($request);
         }
 
-        return $this->render('@YnloGraphQL/graphiql.twig', [
+        return $this->render('@YnloGraphQL/graphiql.html.twig', [
             'url' => $request->getUrl(),
             'method' => 'post',
             'headers' => $request->getHeaders(),

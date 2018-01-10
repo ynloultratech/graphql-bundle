@@ -52,7 +52,7 @@ class Configuration implements ConfigurationInterface
         $graphiql->enumNode('data_warning_style')->values(['info', 'warning', 'danger'])->defaultValue('danger');
 
         $graphiql->scalarNode('template')
-                 ->defaultValue('@YnloGraphQL/explorer.twig');
+                 ->defaultValue('@YnloGraphQL/explorer.html.twig');
 
         $authentication = $graphiql->arrayNode('authentication')->addDefaultsIfNotSet()->children();
         $authentication
