@@ -11,14 +11,10 @@
 namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation;
 
 use Ynlo\GraphQLBundle\Annotation;
-use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
-use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Form\Node\NodeDeleteInput;
-use Ynlo\GraphQLBundle\Model\AddNodePayload;
 use Ynlo\GraphQLBundle\Model\DeleteNodePayload;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
-use Ynlo\GraphQLBundle\Mutation\AddNode;
 use Ynlo\GraphQLBundle\Mutation\DeleteNode;
 use Ynlo\GraphQLBundle\Util\ClassUtils;
 
@@ -29,7 +25,7 @@ class MutationDeleteAnnotationParser extends MutationAnnotationParser
      */
     public function supports($annotation): bool
     {
-        return $annotation instanceof Annotation\MutationAdd;
+        return $annotation instanceof Annotation\MutationDelete;
     }
 
     /**
