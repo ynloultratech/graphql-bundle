@@ -20,22 +20,16 @@ interface CommentableInterface
 {
     /**
      * @GraphQL\Field(type="[Ynlo\GraphQLBundle\Demo\AppBundle\Model\CommentInterface]")
-     *
-     * @return Collection
      */
     public function getComments(): Collection;
 
     /**
-     * @param Collection $comments
-     *
      * @return mixed
      */
     public function setComments(Collection $comments);
 
     /**
      * Each implementor should return the custom implementation
-     *
-     * @return CommentInterface
      */
     public function createComment(): CommentInterface;
 }

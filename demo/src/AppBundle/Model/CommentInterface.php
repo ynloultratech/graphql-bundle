@@ -21,38 +21,23 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
 interface CommentInterface extends NodeInterface, HasAuthorInterface, TimestampableInterface
 {
     /**
-     * @return User
-     *
      * @GraphQL\Field(type="Ynlo\GraphQLBundle\Demo\AppBundle\Entity\User!")
      */
     public function getAuthor(): User;
 
-    /**
-     * @param User $author
-     */
     public function setAuthor(User $author): HasAuthorInterface;
 
     /**
-     * @return CommentableInterface
-     *
      * @GraphQL\Field(type="Ynlo\GraphQLBundle\Demo\AppBundle\Model\CommentableInterface!")
      */
     public function getCommentable(): CommentableInterface;
 
-    /**
-     * @param CommentableInterface $commentable
-     */
     public function setCommentable(CommentableInterface $commentable);
 
     /**
-     * @return string
-     *
      * @GraphQL\Field(type="string!")
      */
     public function getBody(): string;
 
-    /**
-     * @param string $body
-     */
     public function setBody(string $body);
 }
