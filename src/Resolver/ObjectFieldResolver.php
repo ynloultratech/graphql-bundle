@@ -75,7 +75,7 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
      *
      * @return mixed|null|string
      *
-     * @throws Error
+     * @throws \Exception
      */
     public function __invoke($root, array $args, $context, ResolveInfo $info)
     {
@@ -84,7 +84,7 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
         $this->verifyConcurrentUsage($fieldDefinition);
 
         //when use external resolver or use a object method with arguments
-        if ($fieldDefinition->getResolver() || $fieldDefinition->getArguments()) {
+        if (($resolver = $fieldDefinition->getResolver()) || $fieldDefinition->getArguments()) {
             $queryDefinition = new QueryDefinition();
             $queryDefinition->setName($fieldDefinition->getName());
             $queryDefinition->setType($fieldDefinition->getType());
@@ -93,19 +93,17 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
             $queryDefinition->setList($fieldDefinition->isList());
             $queryDefinition->setMetas($fieldDefinition->getMetas());
 
-            if (!$fieldDefinition->getResolver()) {
-                if ($fieldDefinition->getOriginType() === \ReflectionMethod::class) {
-                    $queryDefinition->setResolver($fieldDefinition->getOriginName());
-                }
-            } else {
-                $queryDefinition->setResolver($fieldDefinition->getResolver());
+            if ($resolver) {
+                $queryDefinition->setResolver($resolver);
+            } elseif ($fieldDefinition->getOriginType() === \ReflectionMethod::class) {
+                $queryDefinition->setResolver($fieldDefinition->getOriginName());
             }
 
             $resolver = new ResolverExecutor($this->container, $this->endpoint, $queryDefinition);
             $value = $resolver($root, $args, $context, $info);
         } else {
             $accessor = new PropertyAccessor(true);
-            $originName = $fieldDefinition->getOriginName() ?? $fieldDefinition->getName();
+            $originName = $fieldDefinition->getOriginName() ?: $fieldDefinition->getName();
             $value = $accessor->getValue($root, $originName);
         }
 
