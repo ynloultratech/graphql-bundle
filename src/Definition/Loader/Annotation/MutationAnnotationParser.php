@@ -38,11 +38,11 @@ class MutationAnnotationParser extends QueryAnnotationParser
 
     /**
      * {@inheritdoc}
+     *
+     * @param Annotation\Mutation $annotation
      */
     public function parse($annotation, \ReflectionClass $refClass, Endpoint $endpoint)
     {
-        /** @var Annotation\Mutation $annotation */
-
         if (!preg_match('/Bundle\\\\Mutation\\\\/', $refClass->getName())) {
             $error = sprintf(
                 'Annotation "@Mutation" in the class "%s" is not valid, 
@@ -59,10 +59,6 @@ class MutationAnnotationParser extends QueryAnnotationParser
             );
             throw new \RuntimeException($error);
         }
-
-//        if (!\in_array('ROLE_ADMIN', $annotation->roles, true)) {
-//            return;
-//        }
 
         $mutation = new MutationDefinition();
 
@@ -121,6 +117,10 @@ class MutationAnnotationParser extends QueryAnnotationParser
         //enable form auto-loaded by default
         if (!isset($annotation->options['form'])) {
             $annotation->options['form'] = true;
+        }
+
+        if ($annotation->roles) {
+            $annotation->options['roles'] = (array) $annotation->roles;
         }
 
         foreach ($annotation->options as $option => $value) {
