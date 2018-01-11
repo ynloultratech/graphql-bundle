@@ -27,8 +27,8 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  *
  * @GraphQL\ObjectType()
  * @GraphQL\QueryList()
- * @GraphQL\MutationAdd(roles="ROLE_ADMIN")
- * @GraphQL\MutationUpdate(roles="ROLE_ADMIN")
+ * @GraphQL\MutationAdd(roles={"ROLE_ADMIN"})
+ * @GraphQL\MutationUpdate(roles={"ROLE_ADMIN"})
  * @GraphQL\MutationDelete(roles={"ROLE_ADMIN"})
  */
 class User implements NodeInterface, TimestampableInterface
