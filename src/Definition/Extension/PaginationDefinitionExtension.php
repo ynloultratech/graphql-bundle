@@ -44,13 +44,7 @@ class PaginationDefinitionExtension extends AbstractDefinitionExtension
      */
     protected $limit;
 
-    /**
-     * PaginationDefinitionExtension constructor.
-     *
-     * @param Reader $reader
-     * @param array  $config
-     */
-    public function __construct(Reader $reader, $config = [])
+    public function __construct(Reader $reader, array $config = [])
     {
         $this->reader = $reader;
         $this->limit = $config['limit'] ?? 100;
@@ -59,7 +53,7 @@ class PaginationDefinitionExtension extends AbstractDefinitionExtension
     /**
      * {@inheritDoc}
      */
-    public function buildConfig(ArrayNodeDefinition $root)
+    public function buildConfig(ArrayNodeDefinition $root): void
     {
         $config = $root
             ->info('Enable pagination in queries or sub-fields')
@@ -88,7 +82,7 @@ class PaginationDefinitionExtension extends AbstractDefinitionExtension
             $config = [];
         }
 
-        if (is_array($config) && !isset($config['target'])) {
+        if (\is_array($config) && !isset($config['target'])) {
             $config['target'] = $definition->getType();
         }
 
@@ -102,7 +96,7 @@ class PaginationDefinitionExtension extends AbstractDefinitionExtension
     /**
      * {@inheritdoc}
      */
-    public function configure(DefinitionInterface $definition, Endpoint $endpoint, array $config)
+    public function configure(DefinitionInterface $definition, Endpoint $endpoint, array $config): void
     {
         if (!$config) {
             return;
@@ -228,12 +222,7 @@ class PaginationDefinitionExtension extends AbstractDefinitionExtension
         $this->addFilters($definition, $target, $endpoint);
     }
 
-    /**
-     * @param ExecutableDefinitionInterface $definition
-     * @param string                        $targetType
-     * @param Endpoint                      $endpoint
-     */
-    public function addFilters(ExecutableDefinitionInterface $definition, $targetType, Endpoint $endpoint)
+    public function addFilters(ExecutableDefinitionInterface $definition, string $targetType, Endpoint $endpoint)
     {
         $filters = new InputObjectDefinition();
         $filters->setName(ucfirst($definition->getName()).'Filter');

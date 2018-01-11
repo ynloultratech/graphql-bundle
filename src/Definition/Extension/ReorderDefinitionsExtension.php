@@ -22,7 +22,7 @@ class ReorderDefinitionsExtension extends AbstractDefinitionExtension
     /**
      * {@inheritDoc}
      */
-    public function configureEndpoint(Endpoint $endpoint)
+    public function configureEndpoint(Endpoint $endpoint): void
     {
         $endpoint->setQueries($this->sortQueries($endpoint->allQueries()));
         $endpoint->setMutations($this->sortQueries($endpoint->allMutations()));
@@ -30,10 +30,8 @@ class ReorderDefinitionsExtension extends AbstractDefinitionExtension
 
     /**
      * @param QueryDefinition[]|MutationDefinition[] $queries
-     *
-     * @return array
      */
-    private function sortQueries($queries)
+    private function sortQueries($queries): array
     {
         $sortedQueries = [];
         foreach ($queries as $query) {

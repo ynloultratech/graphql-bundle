@@ -33,19 +33,10 @@ use Ynlo\GraphQLBundle\Type\Types;
 use Ynlo\GraphQLBundle\Util\ClassUtils;
 use Ynlo\GraphQLBundle\Util\TypeUtil;
 
-/**
- * MutationFormResolverExtension
- */
 class MutationFormResolverExtension extends AbstractDefinitionExtension
 {
-    /**
-     * @var FormFactory
-     */
     protected $formFactory;
 
-    /**
-     * @param FormFactory $formFactory
-     */
     public function __construct(FormFactory $formFactory)
     {
         $this->formFactory = $formFactory;
@@ -62,7 +53,7 @@ class MutationFormResolverExtension extends AbstractDefinitionExtension
     /**
      * {@inheritDoc}
      */
-    public function buildConfig(ArrayNodeDefinition $root)
+    public function buildConfig(ArrayNodeDefinition $root): void
     {
         $config = $root
             ->info('Resolve the form to use as input for mutations')
@@ -92,9 +83,9 @@ class MutationFormResolverExtension extends AbstractDefinitionExtension
     /**
      * {@inheritDoc}
      */
-    public function configure(DefinitionInterface $definition, Endpoint $endpoint, array $config)
+    public function configure(DefinitionInterface $definition, Endpoint $endpoint, array $config): void
     {
-        if (!$config || !$config['enabled'] || !$definition instanceof MutationDefinition) {
+        if (!$definition instanceof MutationDefinition || !isset($config['enabled'])) {
             return;
         }
 
@@ -130,7 +121,7 @@ class MutationFormResolverExtension extends AbstractDefinitionExtension
                     $definition->getName(),
                     $formClass
                 );
-                throw new \Exception($error);
+                throw new \RuntimeException($error);
             }
         }
 
@@ -158,14 +149,7 @@ class MutationFormResolverExtension extends AbstractDefinitionExtension
         }
     }
 
-    /**
-     * @param Endpoint      $endpoint
-     * @param FormInterface $form
-     * @param string        $name
-     *
-     * @return InputObjectDefinition
-     */
-    public function createFormInputObject(Endpoint $endpoint, FormInterface $form, $name)
+    public function createFormInputObject(Endpoint $endpoint, FormInterface $form, string $name): InputObjectDefinition
     {
         $inputObject = new InputObjectDefinition();
         $inputObject->setName($name.'Input');
@@ -208,10 +192,6 @@ class MutationFormResolverExtension extends AbstractDefinitionExtension
         return $inputObject;
     }
 
-    /**
-     * @param FieldDefinition $field
-     * @param FormInterface   $form
-     */
     public function resolveFormFieldDefinition(FieldDefinition $field, FormInterface $form)
     {
         $type = null;

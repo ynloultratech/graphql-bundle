@@ -35,7 +35,7 @@ interface DefinitionExtensionInterface
      *
      * @param ArrayNodeDefinition $root
      */
-    public function buildConfig(ArrayNodeDefinition $root);
+    public function buildConfig(ArrayNodeDefinition $root): void;
 
     /**
      * Use this method to normalize/override the configuration just before resolve.
@@ -57,7 +57,7 @@ interface DefinitionExtensionInterface
      * @param Endpoint            $endpoint   endpoint with definitions
      * @param array               $config     resolved config to use
      */
-    public function configure(DefinitionInterface $definition, Endpoint $endpoint, array $config);
+    public function configure(DefinitionInterface $definition, Endpoint $endpoint, array $config): void;
 
     /**
      * After configure all definitions can need configure the endpoints to do some general tasks,
@@ -65,5 +65,5 @@ interface DefinitionExtensionInterface
      *
      * @param Endpoint $endpoint
      */
-    public function configureEndpoint(Endpoint $endpoint);
+    public function configureEndpoint(Endpoint $endpoint): void;
 }

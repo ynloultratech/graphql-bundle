@@ -25,7 +25,7 @@ abstract class AbstractDefinitionExtension implements DefinitionExtensionInterfa
      */
     public function getName(): string
     {
-        $name = get_class($this);
+        $name = \get_class($this);
         preg_match('/(\w+)$/', $name, $matches);
         $name = preg_replace('/Extension$/', null, $matches[1]);
         $name = preg_replace('/Definition$/', null, $name);
@@ -36,7 +36,7 @@ abstract class AbstractDefinitionExtension implements DefinitionExtensionInterfa
     /**
      * {@inheritDoc}
      */
-    public function buildConfig(ArrayNodeDefinition $root)
+    public function buildConfig(ArrayNodeDefinition $root): void
     {
 
     }
@@ -46,7 +46,7 @@ abstract class AbstractDefinitionExtension implements DefinitionExtensionInterfa
      */
     public function normalizeConfig(DefinitionInterface $definition, $config): array
     {
-        if (is_bool($config)) {
+        if (\is_bool($config)) {
             $config = ['enabled' => $config];
         }
 
@@ -56,7 +56,7 @@ abstract class AbstractDefinitionExtension implements DefinitionExtensionInterfa
     /**
      * {@inheritDoc}
      */
-    public function configure(DefinitionInterface $definition, Endpoint $endpoint, array $config)
+    public function configure(DefinitionInterface $definition, Endpoint $endpoint, array $config): void
     {
         // TODO: Implement configure() method.
     }
@@ -64,7 +64,7 @@ abstract class AbstractDefinitionExtension implements DefinitionExtensionInterfa
     /**
      * {@inheritDoc}
      */
-    public function configureEndpoint(Endpoint $endpoint)
+    public function configureEndpoint(Endpoint $endpoint): void
     {
         // TODO: Implement configureEndpoint() method.
     }

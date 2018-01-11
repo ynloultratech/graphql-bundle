@@ -18,19 +18,10 @@ use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Extension\ExtensionInterface;
 use Ynlo\GraphQLBundle\Util\ClassUtils;
 
-/**
- * InterfaceExtensionResolver
- */
 class InterfaceExtensionResolver extends AbstractDefinitionExtension
 {
-    /**
-     * @var ContainerInterface
-     */
     protected $container;
 
-    /**
-     * @param ContainerInterface $container
-     */
     public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
@@ -47,7 +38,7 @@ class InterfaceExtensionResolver extends AbstractDefinitionExtension
     /**
      * {@inheritDoc}
      */
-    public function configure(DefinitionInterface $definition, Endpoint $endpoint, array $config)
+    public function configure(DefinitionInterface $definition, Endpoint $endpoint, array $config): void
     {
         if (!$definition instanceof InterfaceDefinition || !$definition->getImplementors()) {
             return;

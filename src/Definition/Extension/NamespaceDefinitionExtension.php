@@ -30,17 +30,9 @@ use Ynlo\GraphQLBundle\Resolver\EmptyObjectResolver;
  */
 class NamespaceDefinitionExtension extends AbstractDefinitionExtension
 {
-    /**
-     * @var array
-     */
     protected $globalConfig = [];
 
-    /**
-     * PaginationDefinitionExtension constructor.
-     *
-     * @param array $config
-     */
-    public function __construct($config = [])
+    public function __construct(array $config = [])
     {
         $this->globalConfig = $config;
     }
@@ -48,7 +40,7 @@ class NamespaceDefinitionExtension extends AbstractDefinitionExtension
     /**
      * {@inheritDoc}
      */
-    public function buildConfig(ArrayNodeDefinition $root)
+    public function buildConfig(ArrayNodeDefinition $root): void
     {
         $root
             ->info('Enable/Disable namespace for queries and mutations')
@@ -59,7 +51,7 @@ class NamespaceDefinitionExtension extends AbstractDefinitionExtension
     /**
      * {@inheritdoc}
      */
-    public function configure(DefinitionInterface $definition, Endpoint $endpoint, array $config)
+    public function configure(DefinitionInterface $definition, Endpoint $endpoint, array $config): void
     {
         $node = null;
         $nodeClass = null;
@@ -68,7 +60,7 @@ class NamespaceDefinitionExtension extends AbstractDefinitionExtension
             return;
         }
 
-        if (($this->globalConfig['nodes']['enabled'] ?? false) && $definition instanceof NodeAwareDefinitionInterface && $definition->getNode()) {
+        if ($definition instanceof NodeAwareDefinitionInterface && isset($this->globalConfig['nodes']['enabled']) && $definition->getNode()) {
             $node = $definition->getNode();
 
             if (class_exists($node)) {
@@ -85,31 +77,29 @@ class NamespaceDefinitionExtension extends AbstractDefinitionExtension
                 $node = $this->globalConfig['nodes']['aliases'][$node];
             }
 
-            if ($node && in_array($node, $this->globalConfig['nodes']['ignore'])) {
+            if ($node && \in_array($node, $this->globalConfig['nodes']['ignore'], true)) {
                 $node = null;
             }
         }
 
         $bundle = null;
         if ($this->globalConfig['bundles']['enabled'] ?? false) {
-            if ($node && $nodeClass) {
-                if ($endpoint->hasType($node) && $nodeClass) {
-                    preg_match_all('/\\\\?(\w+Bundle)\\\\/', $nodeClass, $matches);
-                    if ($matches) {
-                        $bundle = current(array_reverse($matches[1]));
-                    }
+            if ($node && $nodeClass && $endpoint->hasType($node)) {
+                preg_match_all('/\\\\?(\w+Bundle)\\\\/', $nodeClass, $matches);
+                if ($matches) {
+                    $bundle = current(array_reverse($matches[1]));
+                }
 
-                    if (isset($this->globalConfig['bundles']['aliases'][$bundle])) {
-                        $bundle = $this->globalConfig['bundles']['aliases'][$bundle];
-                    }
+                if (isset($this->globalConfig['bundles']['aliases'][$bundle])) {
+                    $bundle = $this->globalConfig['bundles']['aliases'][$bundle];
+                }
 
-                    if ($bundle && in_array($bundle, $this->globalConfig['bundles']['ignore'])) {
-                        $bundle = null;
-                    }
+                if ($bundle && \in_array($bundle, $this->globalConfig['bundles']['ignore'], true)) {
+                    $bundle = null;
+                }
 
-                    if ($bundle) {
-                        $bundle = preg_replace('/Bundle$/', null, $bundle);
-                    }
+                if ($bundle) {
+                    $bundle = preg_replace('/Bundle$/', null, $bundle);
                 }
             }
         }
@@ -122,7 +112,7 @@ class NamespaceDefinitionExtension extends AbstractDefinitionExtension
     /**
      * {@inheritDoc}
      */
-    public function configureEndpoint(Endpoint $endpoint)
+    public function configureEndpoint(Endpoint $endpoint): void
     {
         $groupByBundle = $this->globalConfig['bundles']['enabled'] ?? false;
         $groupByNode = $this->globalConfig['bundles']['enabled'] ?? false;
@@ -132,13 +122,7 @@ class NamespaceDefinitionExtension extends AbstractDefinitionExtension
         }
     }
 
-    /**
-     * @param array    $definitions
-     * @param Endpoint $endpoint
-     *
-     * @return array
-     */
-    private function namespaceDefinitions($definitions, Endpoint $endpoint)
+    private function namespaceDefinitions(array $definitions, Endpoint $endpoint): array
     {
         $namespacedDefinitions = [];
         /** @var DefinitionInterface $definition */
@@ -157,7 +141,7 @@ class NamespaceDefinitionExtension extends AbstractDefinitionExtension
 
                 $name = lcfirst($bundle);
                 $typeName = ucfirst($name).(($definition instanceof MutationDefinition) ? $bundleMutationSuffix : $bundleQuerySuffix);
-                $root = $this->createRootNamespace(get_class($definition), $name, $typeName, $endpoint);
+                $root = $this->createRootNamespace(\get_class($definition), $name, $typeName, $endpoint);
                 $parent = $endpoint->getType($root->getType());
             }
 
@@ -173,7 +157,7 @@ class NamespaceDefinitionExtension extends AbstractDefinitionExtension
 
                 $typeName = ucfirst($nodeName).(($definition instanceof MutationDefinition) ? $mutationSuffix : $querySuffix);
                 if (!$root) {
-                    $root = $this->createRootNamespace(get_class($definition), $name, $typeName, $endpoint);
+                    $root = $this->createRootNamespace(\get_class($definition), $name, $typeName, $endpoint);
                     $parent = $endpoint->getType($root->getType());
                 } elseif ($parent) {
                     $parent = $this->createChildNamespace($parent, $name, $typeName, $endpoint);
@@ -193,10 +177,6 @@ class NamespaceDefinitionExtension extends AbstractDefinitionExtension
         return $namespacedDefinitions;
     }
 
-    /**
-     * @param FieldsAwareDefinitionInterface $fieldsAwareDefinition
-     * @param ExecutableDefinitionInterface  $definition
-     */
     private function addDefinitionToNamespace(FieldsAwareDefinitionInterface $fieldsAwareDefinition, ExecutableDefinitionInterface $definition)
     {
         $field = new FieldDefinition();
@@ -218,7 +198,7 @@ class NamespaceDefinitionExtension extends AbstractDefinitionExtension
      *
      * @return ObjectDefinition
      */
-    private function createChildNamespace(ObjectDefinitionInterface $parent, $name, $typeName, Endpoint $endpoint): ObjectDefinition
+    private function createChildNamespace(ObjectDefinitionInterface $parent, string $name, string $typeName, Endpoint $endpoint): ObjectDefinition
     {
         $child = new FieldDefinition();
         $child->setName($name);

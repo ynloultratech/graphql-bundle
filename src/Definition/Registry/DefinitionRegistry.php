@@ -112,31 +112,22 @@ class DefinitionRegistry
         $this->saveCache();
     }
 
-    /**
-     * @return string
-     */
-    protected function cacheFileName()
+    protected function cacheFileName(): string
     {
         return $this->cacheDir.DIRECTORY_SEPARATOR.'graphql.registry_definitions.meta';
     }
 
-    /**
-     * Load cache
-     */
-    protected function loadCache()
+    protected function loadCache(): void
     {
         if (file_exists($this->cacheFileName())) {
             $content = @file_get_contents($this->cacheFileName());
             if ($content) {
-                self::$endpoint = unserialize($content);
+                self::$endpoint = unserialize($content, ['allowed_classes' => false]);
             }
         }
     }
 
-    /**
-     * Save cache
-     */
-    protected function saveCache()
+    protected function saveCache(): void
     {
         file_put_contents($this->cacheFileName(), serialize(self::$endpoint));
     }
@@ -146,7 +137,7 @@ class DefinitionRegistry
      *
      * @param Endpoint $endpoint
      */
-    protected function compile(Endpoint $endpoint)
+    protected function compile(Endpoint $endpoint): void
     {
         //run all extensions for each definition
         foreach ($this->extensionManager->getExtensions() as $extension) {

@@ -48,7 +48,7 @@ class Mutation
     public $resolver;
 
     /**
-     * @var array|string
+     * @var array
      */
     public $roles;
 
