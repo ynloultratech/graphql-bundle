@@ -39,14 +39,14 @@ class ResolverExecutor implements ContainerAwareInterface
     use ContainerAwareTrait;
 
     /**
-     * @var ExecutableDefinitionInterface
-     */
-    protected $executableDefinition;
-
-    /**
      * @var Endpoint
      */
     protected $endpoint;
+
+    /**
+     * @var ExecutableDefinitionInterface
+     */
+    protected $executableDefinition;
 
     /**
      * @var mixed
@@ -68,16 +68,11 @@ class ResolverExecutor implements ContainerAwareInterface
      */
     protected $args = [];
 
-    /**
-     * @param ContainerInterface            $container
-     * @param Endpoint                      $endpoint
-     * @param ExecutableDefinitionInterface $executableDefinition
-     */
     public function __construct(ContainerInterface $container, Endpoint $endpoint, ExecutableDefinitionInterface $executableDefinition)
     {
-        $this->executableDefinition = $executableDefinition;
-        $this->endpoint = $endpoint;
         $this->container = $container;
+        $this->endpoint = $endpoint;
+        $this->executableDefinition = $executableDefinition;
     }
 
     /**

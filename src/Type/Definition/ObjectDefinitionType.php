@@ -16,6 +16,7 @@ use GraphQL\Type\Definition\Type;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
+use Ynlo\GraphQLBundle\Resolver\DeferredBuffer;
 use Ynlo\GraphQLBundle\Resolver\ObjectFieldResolver;
 use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 use Ynlo\GraphQLBundle\Util\GraphQLBuilder;
@@ -44,7 +45,7 @@ class ObjectDefinitionType extends ObjectType implements
                     return $this->resolveInterfaces();
                 },
                 'resolveField' => function ($root, array $args, $context, ResolveInfo $resolveInfo) {
-                    $resolver = new ObjectFieldResolver($this->container, $this->endpoint, $this->definition);
+                    $resolver = new ObjectFieldResolver($this->container, $this->endpoint, $this->definition, $this->container->get(DeferredBuffer::class));
 
                     return $resolver($root, $args, $context, $resolveInfo);
                 },

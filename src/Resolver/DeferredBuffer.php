@@ -20,40 +20,22 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  *
  * @see https://secure.phabricator.com/book/phabcontrib/article/n_plus_one/
  *
- * Create a array of pending relations to load and create a only one
+ * Create a array of pending relations to load and create an only one
  * IN(...) query for all entities of the same type
  */
 class DeferredBuffer
 {
-    /**
-     * @var Registry
-     */
-    protected $registry;
-
-    /**
-     * @var array[]
-     */
     private static $deferred = [];
-
-    /**
-     * @var bool
-     */
     private static $loaded = false;
 
-    /**
-     * DeferredBuffer constructor.
-     *
-     * @param Registry $registry
-     */
+    protected $registry;
+
     public function __construct(Registry $registry)
     {
         $this->registry = $registry;
     }
 
-    /**
-     * @param NodeInterface $entity
-     */
-    public function add(NodeInterface $entity)
+    public function add(NodeInterface $entity): void
     {
         $class = ClassUtils::getClass($entity);
         self::$deferred[$class][$entity->getId()] = $entity->getId();
@@ -61,10 +43,6 @@ class DeferredBuffer
 
     /**
      * Return the loaded entity for given not initialized entity
-     *
-     * @param NodeInterface $entity
-     *
-     * @return NodeInterface
      */
     public function getLoadedEntity(NodeInterface $entity): NodeInterface
     {
@@ -80,7 +58,7 @@ class DeferredBuffer
     /**
      * Load buffer of entities
      */
-    public function loadBuffer()
+    public function loadBuffer(): void
     {
         if (self::$loaded) {
             return;

@@ -38,33 +38,19 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
     use EndpointAwareTrait;
 
     /**
-     * @var FieldsAwareDefinitionInterface
-     */
-    protected $definition;
-
-    /**
-     * @var DeferredBuffer
-     */
-    protected $deferredBuffer;
-
-    /**
-     * @var int
+     * @var int[]
      */
     private static $concurrentUsages;
 
-    /**
-     * ObjectFieldResolver constructor.
-     *
-     * @param ContainerInterface             $container
-     * @param Endpoint                       $endpoint
-     * @param FieldsAwareDefinitionInterface $definition
-     */
-    public function __construct(ContainerInterface $container, Endpoint $endpoint, FieldsAwareDefinitionInterface $definition)
+    protected $definition;
+    protected $deferredBuffer;
+
+    public function __construct(ContainerInterface $container, Endpoint $endpoint, FieldsAwareDefinitionInterface $definition, DeferredBuffer $deferredBuffer)
     {
-        $this->definition = $definition;
         $this->container = $container;
         $this->endpoint = $endpoint;
-        $this->deferredBuffer = $container->get(DeferredBuffer::class);
+        $this->definition = $definition;
+        $this->deferredBuffer = $deferredBuffer;
     }
 
     /**
