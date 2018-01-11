@@ -51,9 +51,9 @@ final class MutationUpdate
     public $resolver;
 
     /**
-     * @var array
+     * @var array|string
      */
-    public $roles = [];
+    public $roles;
 
     /**
      * @var array
