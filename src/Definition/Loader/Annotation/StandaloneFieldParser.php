@@ -12,6 +12,7 @@ namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation;
 
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
+use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Util\ClassUtils;
 use Ynlo\GraphQLBundle\Util\TypeUtil;
@@ -33,11 +34,11 @@ class StandaloneFieldParser extends QueryAnnotationParser
 
     /**
      * {@inheritdoc}
+     *
+     * @param Annotation\Field $annotation
      */
     public function parse($annotation, \ReflectionClass $refClass, Endpoint $endpoint)
     {
-        /** @var Annotation\Field $annotation */
-
         $field = new FieldDefinition();
 
         if ($annotation->name) {
@@ -52,6 +53,7 @@ class StandaloneFieldParser extends QueryAnnotationParser
             $error = sprintf('Can`t resolve a valid object type for field "%s"', $refClass->getName());
             throw new \RuntimeException($error);
         }
+        /** @var ObjectDefinitionInterface $objectDefinition */
         $objectDefinition = $endpoint->getType($matches[1]);
         $objectDefinition->addField($field);
 

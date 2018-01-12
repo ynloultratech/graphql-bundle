@@ -213,112 +213,120 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
     protected function resolveFields(\ReflectionClass $refClass, ObjectDefinitionInterface $objectDefinition)
     {
         $props = array_merge($this->getClassProperties($refClass), $this->getClassMethods($refClass));
-
         $fieldDecorators = $this->getFieldDecorators();
-
         foreach ($props as $prop) {
-            if ($this->isExposed($objectDefinition, $prop)) {
-                $field = new FieldDefinition();
-                foreach ($fieldDecorators as $fieldDecorator) {
-                    $fieldDecorator->decorateFieldDefinition($prop, $field, $objectDefinition);
-                }
+            if (!$this->isExposed($objectDefinition, $prop)) {
+                continue;
+            }
 
-                if ($objectDefinition->hasField($field->getName())) {
-                    $field = $objectDefinition->getField($field->getName());
-                } else {
-                    $objectDefinition->addField($field);
-                }
+            $field = new FieldDefinition();
+            foreach ($fieldDecorators as $fieldDecorator) {
+                $fieldDecorator->decorateFieldDefinition($prop, $field, $objectDefinition);
+            }
 
-                $field->setOriginName($prop->name);
-                $field->setOriginType(\get_class($prop));
+            if ($objectDefinition->hasField($field->getName())) {
+                $field = $objectDefinition->getField($field->getName());
+            } else {
+                $objectDefinition->addField($field);
+            }
 
-                //resolve field arguments
-                if ($prop instanceof \ReflectionMethod) {
-                    $argAnnotations = $this->reader->getMethodAnnotations($prop);
-                    foreach ($argAnnotations as $argAnnotation) {
-                        if ($argAnnotation instanceof Annotation\Argument) {
-                            $arg = new ArgumentDefinition();
-                            $arg->setName($argAnnotation->name);
-                            $arg->setDescription($argAnnotation->description);
-                            $arg->setInternalName($argAnnotation->internalName);
-                            $arg->setDefaultValue($argAnnotation->defaultValue);
-                            $arg->setType(TypeUtil::normalize($argAnnotation->type));
-                            $arg->setList(TypeUtil::isTypeList($argAnnotation->type));
-                            $arg->setNonNullList(TypeUtil::isTypeNonNullList($argAnnotation->type));
-                            $arg->setNonNull(TypeUtil::isTypeNonNull($argAnnotation->type));
-                            $field->addArgument($arg);
-                        }
+            $field->setOriginName($prop->name);
+            $field->setOriginType(\get_class($prop));
+
+            //resolve field arguments
+            if ($prop instanceof \ReflectionMethod) {
+                foreach ($this->reader->getMethodAnnotations($prop) as $argAnnotation) {
+                    if (!$argAnnotation instanceof Annotation\Argument) {
+                        continue;
                     }
+
+                    $arg = new ArgumentDefinition();
+                    $arg->setName($argAnnotation->name);
+                    $arg->setDescription($argAnnotation->description);
+                    $arg->setInternalName($argAnnotation->internalName);
+                    $arg->setDefaultValue($argAnnotation->defaultValue);
+                    $arg->setType(TypeUtil::normalize($argAnnotation->type));
+                    $arg->setList(TypeUtil::isTypeList($argAnnotation->type));
+                    $arg->setNonNullList(TypeUtil::isTypeNonNullList($argAnnotation->type));
+                    $arg->setNonNull(TypeUtil::isTypeNonNull($argAnnotation->type));
+                    $field->addArgument($arg);
                 }
             }
         }
 
         //load overrides
-        $annotations = $this->reader->getClassAnnotations($refClass);
-        foreach ($annotations as $annotation) {
-            if ($annotation instanceof Annotation\OverrideField) {
-                if ($objectDefinition->hasField($annotation->name)) {
-                    $fieldDefinition = $objectDefinition->getField($annotation->name);
-                    if (true === $annotation->hidden) {
-                        $objectDefinition->removeField($annotation->name);
-                        continue;
-                    }
-                    if ($annotation->description) {
-                        $fieldDefinition->setDescription($annotation->description);
-                    }
-                    if ($annotation->deprecationReason || false === $annotation->deprecationReason) {
-                        $fieldDefinition->setDeprecationReason($annotation->deprecationReason);
-                    }
-                    if ($annotation->complexity) {
-                        $fieldDefinition->setComplexity($annotation->complexity);
-                    }
-                    if ($annotation->type) {
-                        $fieldDefinition->setType($annotation->type);
-                    }
-                    if ($annotation->alias) {
-                        $fieldDefinition->setName($annotation->alias);
-                    }
-                } else {
-                    $error = sprintf(
-                        'The object definition "%s" does not have any field called "%s" in any of its parents definitions.',
-                        $objectDefinition->getName(),
-                        $annotation->name
-                    );
-                    throw new \InvalidArgumentException($error);
-                }
+        foreach ($this->reader->getClassAnnotations($refClass) as $annotation) {
+            if (!$annotation instanceof Annotation\OverrideField) {
+                continue;
+            }
+
+            if (!$objectDefinition->hasField($annotation->name)) {
+                throw new \InvalidArgumentException(sprintf(
+                    'The object definition "%s" does not have any field called "%s" in any of its parents definitions.',
+                    $objectDefinition->getName(),
+                    $annotation->name
+                ));
+            }
+
+            if (true === $annotation->hidden) {
+                $objectDefinition->removeField($annotation->name);
+
+                continue;
+            }
+
+            $fieldDefinition = $objectDefinition->getField($annotation->name);
+
+            if ($annotation->type) {
+                $fieldDefinition->setType($annotation->type);
+            }
+            if ($annotation->alias) {
+                $fieldDefinition->setName($annotation->alias);
+            }
+            if ($annotation->description) {
+                $fieldDefinition->setDescription($annotation->description);
+            }
+            if ($annotation->deprecationReason || false === $annotation->deprecationReason) {
+                $fieldDefinition->setDeprecationReason($annotation->deprecationReason);
+            }
+            if ($annotation->complexity) {
+                $fieldDefinition->setComplexity($annotation->complexity);
+            }
+            if ($annotation->roles) {
+                $fieldDefinition->setRoles($annotation->roles);
             }
         }
 
         //load virtual fields
-        $annotations = $this->reader->getClassAnnotations($refClass);
-        foreach ($annotations as $annotation) {
-            if ($annotation instanceof Annotation\VirtualField) {
-                if (!$objectDefinition->hasField($annotation->name)) {
-                    $fieldDefinition = new FieldDefinition();
-                    $fieldDefinition->setName($annotation->name);
-                    $fieldDefinition->setDescription($annotation->description);
-                    $fieldDefinition->setDeprecationReason($annotation->deprecationReason);
-                    $fieldDefinition->setType(TypeUtil::normalize($annotation->type));
-                    $fieldDefinition->setNonNull(TypeUtil::isTypeNonNull($annotation->type));
-                    $fieldDefinition->setNonNullList(TypeUtil::isTypeNonNullList($annotation->type));
-                    $fieldDefinition->setList(TypeUtil::isTypeList($annotation->type));
-                    $fieldDefinition->setMeta('expression', $annotation->expression);
-                    $fieldDefinition->setResolver(FieldExpressionResolver::class);
-                    $fieldDefinition->setComplexity($annotation->complexity);
-                    $objectDefinition->addField($fieldDefinition);
-                } else {
-                    $fieldDefinition = $objectDefinition->getField($annotation->name);
-                    if ($fieldDefinition->getResolver() === FieldExpressionResolver::class) {
-                        continue;
-                    }
-                    $error = sprintf(
-                        'The object definition "%s" already has a field called "%s".',
-                        $objectDefinition->getName(),
-                        $annotation->name
-                    );
-                    throw new \InvalidArgumentException($error);
-                }
+        foreach ($this->reader->getClassAnnotations($refClass) as $annotation) {
+            if (!$annotation instanceof Annotation\VirtualField) {
+                continue;
             }
+
+            if ($objectDefinition->hasField($annotation->name)) {
+                if (FieldExpressionResolver::class === $objectDefinition->getField($annotation->name)->getResolver()) {
+                    continue;
+                }
+
+                throw new \InvalidArgumentException(sprintf(
+                    'The object definition "%s" already has a field called "%s".',
+                    $objectDefinition->getName(),
+                    $annotation->name
+                ));
+            }
+
+            $fieldDefinition = new FieldDefinition();
+            $fieldDefinition->setName($annotation->name);
+            $fieldDefinition->setDescription($annotation->description);
+            $fieldDefinition->setDeprecationReason($annotation->deprecationReason);
+            $fieldDefinition->setType(TypeUtil::normalize($annotation->type));
+            $fieldDefinition->setNonNull(TypeUtil::isTypeNonNull($annotation->type));
+            $fieldDefinition->setNonNullList(TypeUtil::isTypeNonNullList($annotation->type));
+            $fieldDefinition->setList(TypeUtil::isTypeList($annotation->type));
+            $fieldDefinition->setMeta('expression', $annotation->expression);
+            $fieldDefinition->setResolver(FieldExpressionResolver::class);
+            $fieldDefinition->setComplexity($annotation->complexity);
+            $fieldDefinition->setRoles((array) $annotation->roles);
+            $objectDefinition->addField($fieldDefinition);
         }
     }
 

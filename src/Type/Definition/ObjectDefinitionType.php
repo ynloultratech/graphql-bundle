@@ -45,7 +45,13 @@ class ObjectDefinitionType extends ObjectType implements
                     return $this->resolveInterfaces();
                 },
                 'resolveField' => function ($root, array $args, $context, ResolveInfo $resolveInfo) {
-                    $resolver = new ObjectFieldResolver($this->container, $this->endpoint, $this->definition, $this->container->get(DeferredBuffer::class));
+                    $resolver = new ObjectFieldResolver(
+                        $this->container,
+                        $this->endpoint,
+                        $this->definition,
+                        $this->container->get(DeferredBuffer::class),
+                        $this->container->get('security.authorization_checker')
+                    );
 
                     return $resolver($root, $args, $context, $resolveInfo);
                 },

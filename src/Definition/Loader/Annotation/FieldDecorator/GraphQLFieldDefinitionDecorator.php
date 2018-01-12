@@ -58,6 +58,10 @@ class GraphQLFieldDefinitionDecorator implements FieldDefinitionDecoratorInterfa
         if ($maxConcurrentUsage = $this->resolveFieldMaxConcurrentUsage($field)) {
             $definition->setMaxConcurrentUsage($maxConcurrentUsage);
         }
+
+        if ($roles = $this->resolveFieldRoles($field)) {
+            $definition->setRoles($roles);
+        }
     }
 
     /**
@@ -135,6 +139,21 @@ class GraphQLFieldDefinitionDecorator implements FieldDefinitionDecoratorInterfa
         }
 
         return 0;
+    }
+
+    /**
+     * @param \ReflectionMethod|\ReflectionProperty $prop
+     *
+     * @return array
+     */
+    private function resolveFieldRoles($prop): array
+    {
+        /** @var Annotation\Field $annotation */
+        if ($annotation = $this->getFieldAnnotation($prop, Annotation\Field::class)) {
+            return (array) $annotation->roles;
+        }
+
+        return [];
     }
 
     /**

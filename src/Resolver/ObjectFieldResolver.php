@@ -19,6 +19,8 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
@@ -40,17 +42,20 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
     /**
      * @var int[]
      */
-    private static $concurrentUsages;
+    private static $concurrentUsages = [];
+    private static $isGrantedCache = [];
 
     protected $definition;
     protected $deferredBuffer;
+    protected $authorizationChecker;
 
-    public function __construct(ContainerInterface $container, Endpoint $endpoint, FieldsAwareDefinitionInterface $definition, DeferredBuffer $deferredBuffer)
+    public function __construct(ContainerInterface $container, Endpoint $endpoint, FieldsAwareDefinitionInterface $definition, DeferredBuffer $deferredBuffer, AuthorizationCheckerInterface $authorizationChecker)
     {
         $this->container = $container;
         $this->endpoint = $endpoint;
         $this->definition = $definition;
         $this->deferredBuffer = $deferredBuffer;
+        $this->authorizationChecker = $authorizationChecker;
     }
 
     /**
@@ -68,12 +73,7 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
         $value = null;
         $fieldDefinition = $this->definition->getField($info->fieldName);
         $this->verifyConcurrentUsage($fieldDefinition);
-
-        if ($fieldDefinition->hasMeta('roles')) {
-            $roles = $fieldDefinition->getMeta('roles');
-
-            //return null; //protecting result data
-        }
+        $this->denyAccessUnlessGranted($fieldDefinition);
 
         //when use external resolver or use a object method with arguments
         if (($resolver = $fieldDefinition->getResolver()) || $fieldDefinition->getArguments()) {
@@ -157,5 +157,32 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
             }
             static::$concurrentUsages[$oid] = $usages + 1;
         }
+    }
+
+    /**
+     * @throws Error
+     */
+    private function denyAccessUnlessGranted(FieldDefinition $fieldDefinition): void
+    {
+        if (($roles = $fieldDefinition->getRoles()) && !$this->isGranted($roles, $fieldDefinition)) {
+            throw new Error(sprintf('Access denied to "%s" field', $fieldDefinition->getName()));
+        }
+    }
+
+    private function isGranted(array $roles, $object = null): bool
+    {
+        $key = md5(json_encode($roles).'/'.spl_object_hash($object));
+
+        if (array_key_exists($key, static::$isGrantedCache)) {
+            return static::$isGrantedCache[$key];
+        }
+
+        try {
+            $isGranted = $this->authorizationChecker->isGranted($roles, $object);
+        } catch (AuthenticationCredentialsNotFoundException $e) {
+            $isGranted = false;
+        }
+
+        return static::$isGrantedCache[$key] = $isGranted;
     }
 }
