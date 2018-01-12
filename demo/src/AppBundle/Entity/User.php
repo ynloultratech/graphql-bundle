@@ -26,10 +26,10 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  * @UniqueEntity(fields={"username"}, message="The username <b>{{ value }}</b> is already taken")
  *
  * @GraphQL\ObjectType()
- * @GraphQL\QueryList(roles={"ROLE_USER"})
- * @GraphQL\MutationAdd(roles={"ROLE_ADMIN"})
- * @GraphQL\MutationUpdate(roles={"ROLE_ADMIN"})
- * @GraphQL\MutationDelete(roles={"ROLE_ADMIN"})
+ * @GraphQL\QueryList()
+ * @GraphQL\MutationAdd()
+ * @GraphQL\MutationUpdate()
+ * @GraphQL\MutationDelete()
  */
 class User implements NodeInterface, TimestampableInterface
 {
@@ -55,7 +55,7 @@ class User implements NodeInterface, TimestampableInterface
      * @Assert\NotBlank()
      * @Assert\Length(min="5")
      *
-     * @GraphQL\Field(name="login", roles={"ROLE_ADMIN"})
+     * @GraphQL\Field(name="login")
      */
     protected $username;
 
