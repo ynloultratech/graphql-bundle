@@ -97,17 +97,11 @@ class AllNodesWithPagination extends AllNodes
         return $connection;
     }
 
-    /**
-     * @return ConnectionInterface
-     */
     protected function createConnection(): ConnectionInterface
     {
         return new NodeConnection();
     }
 
-    /**
-     * @return DoctrineCursorPaginatorInterface
-     */
     protected function createPaginator(): DoctrineCursorPaginatorInterface
     {
         return new DoctrineOffsetCursorPaginator();
@@ -115,48 +109,51 @@ class AllNodesWithPagination extends AllNodes
 
     /**
      * Apply advanced filters
-     *
-     * @param QueryBuilder $qb
-     * @param array        $filters string to search
      */
-    protected function applyFilters(QueryBuilder $qb, $filters)
+    protected function applyFilters(QueryBuilder $qb, array $filters)
     {
         $definition = $this->objectDefinition;
         foreach ($filters as $field => $value) {
-            if ($definition->hasField($field)) {
-                $prop = $definition->getField($field)->getOriginName();
-                if ($prop) {
-                    $entityField = sprintf('%s.%s', $this->queryAlias, $prop);
-                    if (is_array($value)) {
-                        foreach ($value as &$val) {
-                            if ($val instanceof ID) {
-                                $val = (int) $val->getDatabaseId();
-                            }
-                        }
-                        if (empty($value)) {
-                            $qb->andWhere($qb->expr()->isNull($entityField));
-                        } else {
-                            $qb->andWhere($qb->expr()->in($entityField, $value));
-                        }
-                    } else {
-                        if (null === $value) {
-                            $qb->andWhere($qb->expr()->isNull($entityField));
-                        } else {
-                            $qb->andWhere($qb->expr()->eq($entityField, $value));
+            if (!$definition->hasField($field) || !$prop = $definition->getField($field)->getOriginName()) {
+                continue;
+            }
+
+            $entityField = sprintf('%s.%s', $this->queryAlias, $prop);
+
+            switch (gettype($value)) {
+                case 'string':
+                    $qb->andWhere($qb->expr()->eq($entityField, $qb->expr()->literal($value)));
+                    break;
+                case 'integer':
+                case 'double':
+                    $qb->andWhere($qb->expr()->eq($entityField, $value));
+                    break;
+                case 'boolean':
+                    $qb->andWhere($qb->expr()->eq($entityField, (int) $value));
+                    break;
+                case 'array':
+                    foreach ($value as &$val) {
+                        if ($val instanceof ID) {
+                            $val = (int) $val->getDatabaseId();
                         }
                     }
-                }
+                    if (empty($value)) {
+                        $qb->andWhere($qb->expr()->isNull($entityField));
+                    } else {
+                        $qb->andWhere($qb->expr()->in($entityField, $value));
+                    }
+                    break;
+                case 'NULL':
+                    $qb->andWhere($qb->expr()->isNull($entityField));
+                    break;
             }
         }
     }
 
     /**
      * Filter some columns with simple string.
-     *
-     * @param QueryBuilder $qb
-     * @param string       $search string to search
      */
-    protected function search(QueryBuilder $qb, $search)
+    protected function search(QueryBuilder $qb, string $search)
     {
         //search every word separate
         $searchArray = explode(' ', $search);
@@ -187,10 +184,6 @@ class AllNodesWithPagination extends AllNodes
         }
     }
 
-    /**
-     * @param QueryBuilder  $qb
-     * @param NodeInterface $root
-     */
     protected function applyFilterByParent(QueryBuilder $qb, NodeInterface $root)
     {
         $parentField = null;

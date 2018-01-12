@@ -35,10 +35,11 @@ class QueryAnnotationParser implements AnnotationParserInterface
 
     /**
      * {@inheritdoc}
+     *
+     * @param Annotation\Query $annotation
      */
     public function parse($annotation, \ReflectionClass $refClass, Endpoint $endpoint)
     {
-        /** @var Annotation\Query $annotation */
         $query = new QueryDefinition();
 
         if ($annotation->name) {

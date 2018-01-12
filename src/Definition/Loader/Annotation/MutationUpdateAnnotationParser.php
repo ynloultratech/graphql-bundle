@@ -31,6 +31,8 @@ class MutationUpdateAnnotationParser extends MutationAnnotationParser
 
     /**
      * {@inheritdoc}
+     *
+     * @param Annotation\MutationUpdate $annotation
      */
     public function parse($annotation, \ReflectionClass $refClass, Endpoint $endpoint)
     {
@@ -45,7 +47,6 @@ class MutationUpdateAnnotationParser extends MutationAnnotationParser
         $definition = $endpoint->getType($endpoint->getTypeForClass($refClass->getName()));
         $bundleNamespace = ClassUtils::relatedBundleNamespace($refClass->getName());
 
-        /** @var Annotation\MutationUpdate $annotation */
         $annotation->name = $annotation->name ?? 'update'.ucfirst($definition->getName());
         $annotation->payload = $annotation->payload ?? null;
         if (!$annotation->payload) {
