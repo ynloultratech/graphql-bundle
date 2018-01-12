@@ -1,7 +1,7 @@
 # GraphiQL
 
 [GraphiQL](https://github.com/graphql/graphiql) *(A graphical interactive in-browser GraphQL IDE)* ... 
-in other words its a powerful tool to explore your api and interact with them.
+in other words it's a powerful tool to explore your API and interact with them.
 
 GraphQLBundle has a GraphiQL integrated and ready to start using it, 
 the only that you need is add the following route to your `routing.yml`
