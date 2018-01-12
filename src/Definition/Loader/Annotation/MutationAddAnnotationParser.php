@@ -39,7 +39,7 @@ class MutationAddAnnotationParser extends MutationAnnotationParser
         }
 
         if (!$refClass->implementsInterface(NodeInterface::class)) {
-            throw new \RuntimeException(sprintf('Can\'t apply Add operation to "%s", CRUD operations can only be applied to nodes. You are implementing NodeInterface in this class?', $refClass->getName()));
+            throw new \RuntimeException(sprintf('Can\'t apply Add operation to "%s", CRUD operations can only be applied to nodes. You are implementing "%s" in this class?', $refClass->getName(), NodeInterface::class));
         }
 
         $definition = $endpoint->getType($endpoint->getTypeForClass($refClass->getName()));
