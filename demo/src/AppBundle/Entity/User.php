@@ -55,7 +55,7 @@ class User implements NodeInterface, TimestampableInterface
      * @Assert\NotBlank()
      * @Assert\Length(min="5")
      *
-     * @GraphQL\Field(name="login")
+     * @GraphQL\Field(name="login", roles={"ROLE_ADMIN"})
      */
     protected $username;
 
