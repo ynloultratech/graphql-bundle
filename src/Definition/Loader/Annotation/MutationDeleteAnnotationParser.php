@@ -30,6 +30,8 @@ class MutationDeleteAnnotationParser extends MutationAnnotationParser
 
     /**
      * {@inheritdoc}
+     *
+     * @param Annotation\MutationDelete $annotation
      */
     public function parse($annotation, \ReflectionClass $refClass, Endpoint $endpoint)
     {
@@ -44,7 +46,6 @@ class MutationDeleteAnnotationParser extends MutationAnnotationParser
         $definition = $endpoint->getType($endpoint->getTypeForClass($refClass->getName()));
         $bundleNamespace = ClassUtils::relatedBundleNamespace($refClass->getName());
 
-        /** @var Annotation\MutationDelete $annotation */
         $annotation->name = $annotation->name ?? 'delete'.ucfirst($definition->getName());
         $annotation->payload = $annotation->payload ?? null;
         if (!$annotation->payload) {
