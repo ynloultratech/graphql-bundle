@@ -83,6 +83,7 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
             $queryDefinition->setNode($fieldDefinition->getNode());
             $queryDefinition->setArguments($fieldDefinition->getArguments());
             $queryDefinition->setList($fieldDefinition->isList());
+            $queryDefinition->setRoles($fieldDefinition->getRoles());
             $queryDefinition->setMetas($fieldDefinition->getMetas());
 
             if ($resolver) {
