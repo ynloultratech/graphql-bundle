@@ -30,6 +30,8 @@ class QueryListAnnotationParser extends QueryAnnotationParser
 
     /**
      * {@inheritdoc}
+     *
+     * @param Annotation\QueryList $annotation
      */
     public function parse($annotation, \ReflectionClass $refClass, Endpoint $endpoint)
     {
@@ -43,7 +45,6 @@ class QueryListAnnotationParser extends QueryAnnotationParser
 
         $definition = $endpoint->getType($endpoint->getTypeForClass($refClass->getName()));
 
-        /** @var Annotation\QueryList $annotation */
         $annotation->name = $annotation->name ?? 'all'.Inflector::pluralize(ucfirst($definition->getName()));
         $annotation->type = $annotation->type ?? $definition->getName();
         $annotation->options = array_merge(['pagination' => true], $annotation->options);
