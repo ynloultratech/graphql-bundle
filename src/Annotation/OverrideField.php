@@ -52,6 +52,11 @@ final class OverrideField
     public $complexity;
 
     /**
+     * @var array
+     */
+    public $roles = [];
+
+    /**
      * Ignore this field
      *
      * @var bool

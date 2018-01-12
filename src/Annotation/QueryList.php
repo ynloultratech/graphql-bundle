@@ -49,11 +49,9 @@ final class QueryList
     public $resolver;
 
     /**
-     * Options used by extensions
-     *
      * @var array
      */
-    public $options = [];
+    public $roles = [];
 
     /**
      * @var string[]
@@ -64,4 +62,11 @@ final class QueryList
      * @var int
      */
     public $limit;
+
+    /**
+     * Options used by extensions
+     *
+     * @var array
+     */
+    public $options = [];
 }

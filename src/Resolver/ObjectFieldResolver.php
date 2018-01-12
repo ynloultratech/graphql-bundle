@@ -69,6 +69,12 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
         $fieldDefinition = $this->definition->getField($info->fieldName);
         $this->verifyConcurrentUsage($fieldDefinition);
 
+        if ($fieldDefinition->hasMeta('roles')) {
+            $roles = $fieldDefinition->getMeta('roles');
+
+            //return null; //protecting result data
+        }
+
         //when use external resolver or use a object method with arguments
         if (($resolver = $fieldDefinition->getResolver()) || $fieldDefinition->getArguments()) {
             $queryDefinition = new QueryDefinition();

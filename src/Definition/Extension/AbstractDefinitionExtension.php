@@ -15,9 +15,6 @@ use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 
-/**
- * AbstractDefinitionExtension
- */
 abstract class AbstractDefinitionExtension implements DefinitionExtensionInterface
 {
     /**
@@ -38,7 +35,6 @@ abstract class AbstractDefinitionExtension implements DefinitionExtensionInterfa
      */
     public function buildConfig(ArrayNodeDefinition $root): void
     {
-
     }
 
     /**
@@ -58,7 +54,6 @@ abstract class AbstractDefinitionExtension implements DefinitionExtensionInterfa
      */
     public function configure(DefinitionInterface $definition, Endpoint $endpoint, array $config): void
     {
-        // TODO: Implement configure() method.
     }
 
     /**
@@ -66,6 +61,5 @@ abstract class AbstractDefinitionExtension implements DefinitionExtensionInterfa
      */
     public function configureEndpoint(Endpoint $endpoint): void
     {
-        // TODO: Implement configureEndpoint() method.
     }
 }

@@ -58,5 +58,10 @@ final class VirtualField
     /**
      * @var array
      */
+    public $roles = [];
+
+    /**
+     * @var array
+     */
     public $options = [];
 }
