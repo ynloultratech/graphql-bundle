@@ -164,7 +164,7 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
      */
     private function denyAccessUnlessGranted(FieldDefinition $fieldDefinition): void
     {
-        if (($roles = $fieldDefinition->getRoles()) && !$this->isGranted($roles, $fieldDefinition)) {
+        if (($roles = $fieldDefinition->getRoles() ?: $fieldDefinition->getMeta('roles')) && !$this->isGranted($roles, $fieldDefinition)) {
             throw new Error(sprintf('Access denied to "%s" field', $fieldDefinition->getName()));
         }
     }
