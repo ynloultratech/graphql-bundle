@@ -182,6 +182,11 @@ services:
         tags:
             - { name: 'graphql.definition_extension'}
 
+    Ynlo\GraphQLBundle\Definition\Extension\RolesDefinitionExtension:
+        arguments: ['@graphql.security.authorization_checker']
+        tags:
+            - { name: 'graphql.definition_extension', priority: -190}
+
     Ynlo\GraphQLBundle\Definition\Extension\NamespaceDefinitionExtension:
         arguments: ['%graphql.extension_config.namespaces%']
         tags:
@@ -203,3 +208,11 @@ services:
 
     Ynlo\GraphQLBundle\Resolver\DeferredBuffer:
         arguments: ['@doctrine']
+
+    Ynlo\GraphQLBundle\Security\Authorization\AuthorizationCheckerWrapper:
+        arguments: ['@security.authorization_checker']
+        public: false
+
+    graphql.security.authorization_checker:
+        alias: 'Ynlo\GraphQLBundle\Security\Authorization\AuthorizationCheckerWrapper'
+        public: true
