@@ -42,7 +42,7 @@ class AuthorizationCheckerWrapper implements AuthorizationCheckerInterface
         try {
             $isGranted = $this->authorizationChecker->isGranted($attributes, $subject);
         } catch (AuthenticationCredentialsNotFoundException $e) {
-            $isGranted = true;
+            $isGranted = false;
         }
 
         return static::$cache[$key] = $isGranted;

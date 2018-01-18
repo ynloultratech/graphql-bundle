@@ -14,6 +14,7 @@ namespace Ynlo\GraphQLBundle\Definition\Extension;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
+use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 
 class RolesDefinitionExtension extends AbstractDefinitionExtension
@@ -42,6 +43,7 @@ class RolesDefinitionExtension extends AbstractDefinitionExtension
     public function configureEndpoint(Endpoint $endpoint): void
     {
         $endpoint->setQueries($this->secureDefinitions($endpoint->allQueries(), $endpoint));
+        $endpoint->setMutations($this->secureDefinitions($endpoint->allMutations(), $endpoint));
     }
 
     /**
@@ -54,12 +56,20 @@ class RolesDefinitionExtension extends AbstractDefinitionExtension
     {
         $secureDefinitions = [];
         foreach ($definitions as $definition) {
-            if ($roles = $definition->getRoles()) {
-                if ($this->authorizationChecker->isGranted($roles)) {
-                    $secureDefinitions[] = $definition;
+            if (($roles = $definition->getRoles()) && !$this->authorizationChecker->isGranted($roles)) {
+                continue;
+            }
+
+            $secureDefinitions[] = $definition;
+
+            /** @var FieldsAwareDefinitionInterface $type */
+            $type = $endpoint->getType($definition->getType());
+            if ($fields = $type->getFields()) {
+                foreach ($fields as $fieldDefinition) {
+                    if (($roles = $fieldDefinition->getRoles()) && !$this->authorizationChecker->isGranted($roles)) {
+                        $type->removeField($fieldDefinition->getName());
+                    }
                 }
-            } else {
-                $secureDefinitions[] = $definition;
             }
         }
 
