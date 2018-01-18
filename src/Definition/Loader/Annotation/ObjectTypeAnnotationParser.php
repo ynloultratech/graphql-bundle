@@ -147,22 +147,19 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
      */
     protected function extractInterfaceDefinitions(\ReflectionClass $refClass)
     {
-        $int = $refClass->getInterfaces();
+        $interfaces = $refClass->getInterfaces();
         $definitions = [];
-        foreach ($int as $intRef) {
-            /** @var Annotation\InterfaceType $intAnnot */
-            $intAnnot = $this->reader->getClassAnnotation(
-                $intRef,
-                Annotation\InterfaceType::class
-            );
+        foreach ($interfaces as $interfaceRef) {
+            /** @var Annotation\InterfaceType $interfaceAnnotation */
+            $interfaceAnnotation = $this->reader->getClassAnnotation($interfaceRef, Annotation\InterfaceType::class);
 
-            if ($intAnnot) {
+            if ($interfaceAnnotation) {
                 $intDef = new InterfaceDefinition();
-                $intDef->setName($intAnnot->name);
-                $intDef->setClass($intRef->getName());
-                $intDef->setDescription($intAnnot->description);
-                $this->resolveFields($intRef, $intDef);
-                if (!$intDef->getName() && preg_match('/\w+$/', $intRef->getName(), $matches)) {
+                $intDef->setName($interfaceAnnotation->name);
+                $intDef->setClass($interfaceRef->getName());
+                $intDef->setDescription($interfaceAnnotation->description);
+                $this->resolveFields($interfaceRef, $intDef);
+                if (!$intDef->getName() && preg_match('/\w+$/', $interfaceRef->getName(), $matches)) {
                     $intDef->setName(preg_replace('/Interface$/', null, $matches[0]));
                 }
 
