@@ -43,7 +43,6 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
      * @var int[]
      */
     private static $concurrentUsages = [];
-    private static $isGrantedCache = [];
 
     protected $definition;
     protected $deferredBuffer;
@@ -170,25 +169,8 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
             $roles = $fieldDefinition->getRoles();
         }
 
-        if ($roles && !$this->isGranted($roles, $fieldDefinition)) {
+        if ($roles && !$this->authorizationChecker->isGranted($roles, $fieldDefinition)) {
             throw new Error(sprintf('Access denied to "%s" field', $fieldDefinition->getName()));
         }
-    }
-
-    private function isGranted(array $roles, $object = null): bool
-    {
-        $key = md5(json_encode($roles).'/'.spl_object_hash($object));
-
-        if (array_key_exists($key, static::$isGrantedCache)) {
-            return static::$isGrantedCache[$key];
-        }
-
-        try {
-            $isGranted = $this->authorizationChecker->isGranted($roles, $object);
-        } catch (AuthenticationCredentialsNotFoundException $e) {
-            $isGranted = false;
-        }
-
-        return static::$isGrantedCache[$key] = $isGranted;
     }
 }
