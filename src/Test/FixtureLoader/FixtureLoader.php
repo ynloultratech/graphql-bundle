@@ -18,7 +18,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Ynlo\GraphQLBundle\Test\FixtureLoader\Cache\CachedReferenceRepository;
 use Ynlo\GraphQLBundle\Test\FixtureLoader\DataPopulator\CachedORMDataLoader;
 use Ynlo\GraphQLBundle\Test\FixtureLoader\DataPopulator\DataLoaderInterface;
-use Ynlo\GraphQLBundle\Test\FixtureLoader\DataPopulator\ORMDataLoader;
 use Ynlo\GraphQLBundle\Test\FixtureLoader\SchemaUpdater\ORMSQLite;
 use Ynlo\GraphQLBundle\Test\FixtureLoader\SchemaUpdater\SchemaUpdaterInterface;
 
