@@ -27,7 +27,7 @@ class ApiTestCase extends WebTestCase
     use DoctrineORMHelperTrait;
     use GraphQLHelperTrait;
 
-    private static $client;
+    protected static $client;
 
     /**
      * Whether the client should be cleared after each test
@@ -56,7 +56,7 @@ class ApiTestCase extends WebTestCase
      */
     public static function setUpBeforeClass()
     {
-        self::$client = null;
+        static::$client = null;
     }
 
     /**
@@ -64,7 +64,7 @@ class ApiTestCase extends WebTestCase
      */
     public function setUp()
     {
-        self::loadFixtures();
+        static::loadFixtures();
     }
 
     /**
@@ -73,7 +73,7 @@ class ApiTestCase extends WebTestCase
     protected function tearDown()
     {
         if ($this->cleanup) {
-            self::$client = null;
+            static::$client = null;
         }
     }
 
@@ -83,7 +83,7 @@ class ApiTestCase extends WebTestCase
     protected static function createClient(array $options = [], array $server = [])
     {
         $client = parent::createClient($options, $server);
-        self::$client = $client;
+        static::$client = $client;
 
         return $client;
     }
@@ -93,7 +93,7 @@ class ApiTestCase extends WebTestCase
      */
     protected static function getClient(): Client
     {
-        return self::$client ?? static::createClient();
+        return static::$client ?? static::createClient();
     }
 }
 
