@@ -5,3 +5,9 @@ api_root:
 api_schema:
     path: /schema.graphql
     controller: Ynlo\GraphQLBundle\Controller\SchemaController
+    defaults: { _format: graphql }
+
+api_schema_json:
+    path: /schema.json
+    controller: Ynlo\GraphQLBundle\Controller\SchemaController
+    defaults: { _format: json }
