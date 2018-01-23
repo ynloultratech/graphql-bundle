@@ -43,7 +43,7 @@ class ORMSQLite implements SchemaUpdaterInterface
 
         $name = $params['path'] ?? ($params['dbname'] ?? false);
         if (!$name) {
-            throw new \InvalidArgumentException("PaginatedConnection does not contain a 'path' or 'dbname' parameter and cannot be dropped.");
+            throw new \InvalidArgumentException("Connection does not contain a 'path' or 'dbname' parameter and cannot be dropped.");
         }
 
         $om = $registry->getManager();
