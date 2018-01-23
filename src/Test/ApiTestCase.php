@@ -54,7 +54,7 @@ class ApiTestCase extends WebTestCase
     /**
      * {@inheritdoc}
      */
-    public static function setUpBeforeClass()
+    final public static function setUpBeforeClass()
     {
         static::$client = null;
     }
@@ -62,19 +62,37 @@ class ApiTestCase extends WebTestCase
     /**
      * {@inheritdoc}
      */
-    public function setUp()
+    final public function setUp()
     {
         static::loadFixtures();
+        $this->before();
+    }
+
+    /**
+     * This method is called before a test is executed.
+     */
+    public function before()
+    {
+
     }
 
     /**
      * {@inheritdoc}
      */
-    protected function tearDown()
+    final protected function tearDown()
     {
         if ($this->cleanup) {
             static::$client = null;
         }
+        $this->after();
+    }
+
+    /**
+     * This method is called after a test is executed.
+     */
+    public function after()
+    {
+
     }
 
     /**
