@@ -15,9 +15,8 @@ use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Ynlo\GraphQLBundle\Test\FixtureLoader\Cache\CachedReferenceRepository;
-use Ynlo\GraphQLBundle\Test\FixtureLoader\DataPopulator\CachedORMDataLoader;
 use Ynlo\GraphQLBundle\Test\FixtureLoader\DataPopulator\DataLoaderInterface;
+use Ynlo\GraphQLBundle\Test\FixtureLoader\DataPopulator\ORMDataLoader;
 use Ynlo\GraphQLBundle\Test\FixtureLoader\SchemaUpdater\ORMSQLite;
 use Ynlo\GraphQLBundle\Test\FixtureLoader\SchemaUpdater\SchemaUpdaterInterface;
 
@@ -60,7 +59,7 @@ class FixtureLoader
 
         $this->plugins = $plugins;
         $this->plugins[] = new ORMSQLite();
-        $this->plugins[] = new CachedORMDataLoader();
+        $this->plugins[] = new ORMDataLoader();
     }
 
     /**
@@ -85,7 +84,7 @@ class FixtureLoader
 
         $loader = $this->getFixtureLoader($this->container, $classNames);
         $fixtures = $loader->getFixtures();
-        $referenceRepository = new CachedReferenceRepository($this->registry->getManager());
+        $referenceRepository = new ReferenceRepository($this->registry->getManager());
         foreach ($this->plugins as $plugin) {
             if ($plugin instanceof DataLoaderInterface) {
                 if ($plugin->supports($this->registry)) {
