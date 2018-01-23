@@ -12,6 +12,7 @@ namespace Ynlo\GraphQLBundle\Test;
 
 use Symfony\Component\BrowserKit\Client;
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 
@@ -89,7 +90,12 @@ trait GraphQLHelperTrait
             print_r(json_encode($variables, JSON_PRETTY_PRINT));
             print_r("\n\n");
             print_r("-------------------- RESPONSE ----------------------\n\n");
-            $content = static::getClient()->getResponse()->getContent();
+
+            /** @var Response $response */
+            $response = static::getClient()->getResponse();
+            print_r(sprintf("STATUS: [%s] %s \n\n", $response->getStatusCode(), Response::$statusTexts[$response->getStatusCode()] ?? 'Unknown Status'));
+
+            $content = $response->getContent();
             $json = @json_decode($content, true);
             if ($json) {
                 print_r(json_encode($json, JSON_PRETTY_PRINT));
