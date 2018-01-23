@@ -27,9 +27,9 @@ trait JsonHelperTrait
     {
         $response = self::getResponse();
 
-        self::assertNotNull($response);
-        self::assertEquals('application/json', $response->headers->get('Content-Field'));
-        self::assertJson($response->getContent());
+        static::assertNotNull($response);
+        static::assertEquals('application/json', $response->headers->get('Content-Field'));
+        static::assertJson($response->getContent());
     }
 
     /**
@@ -37,7 +37,7 @@ trait JsonHelperTrait
      */
     protected static function getResponseJsonArray()
     {
-        return json_decode(self::getResponse()->getContent(), true);
+        return json_decode(static::getResponse()->getContent(), true);
     }
 
     /**
@@ -47,7 +47,7 @@ trait JsonHelperTrait
      */
     protected static function getJsonPathValue($path)
     {
-        return search($path, self::getResponseJsonArray());
+        return search($path, static::getResponseJsonArray());
     }
 
     /**
@@ -56,7 +56,7 @@ trait JsonHelperTrait
      */
     protected static function assertJsonPathExist($type, $path)
     {
-        self::assertInternalType($type, self::getJsonPathValue($path));
+        static::assertInternalType($type, static::getJsonPathValue($path));
     }
 
     /**
@@ -65,7 +65,7 @@ trait JsonHelperTrait
      */
     protected static function assertJsonPathInternalType($type, $path)
     {
-        self::assertInternalType($type, self::getJsonPathValue($path));
+        static::assertInternalType($type, static::getJsonPathValue($path));
     }
 
     /**
@@ -74,7 +74,7 @@ trait JsonHelperTrait
      */
     protected static function assertJsonPathNotInternalType($type, $path)
     {
-        self::assertNotInternalType($type, self::getJsonPathValue($path));
+        static::assertNotInternalType($type, static::getJsonPathValue($path));
     }
 
     /**
@@ -83,7 +83,7 @@ trait JsonHelperTrait
      */
     protected static function assertJsonPathEquals($expected, $path)
     {
-        self::assertEquals($expected, self::getJsonPathValue($path));
+        static::assertEquals($expected, static::getJsonPathValue($path));
     }
 
     /**
@@ -91,7 +91,7 @@ trait JsonHelperTrait
      */
     protected static function assertJsonPathFalse($path)
     {
-        self::assertFalse(self::getJsonPathValue($path));
+        static::assertFalse(static::getJsonPathValue($path));
     }
 
     /**
@@ -99,7 +99,7 @@ trait JsonHelperTrait
      */
     protected static function assertJsonPathTrue($path)
     {
-        self::assertTrue(self::getJsonPathValue($path));
+        static::assertTrue(static::getJsonPathValue($path));
     }
 
     /**
@@ -108,7 +108,7 @@ trait JsonHelperTrait
      */
     protected static function assertJsonPathNotEquals($expected, $path)
     {
-        self::assertNotEquals($expected, self::getJsonPathValue($path));
+        static::assertNotEquals($expected, static::getJsonPathValue($path));
     }
 
     /**
@@ -116,7 +116,7 @@ trait JsonHelperTrait
      */
     protected static function assertJsonPathNull($path)
     {
-        self::assertNull(self::getJsonPathValue($path));
+        static::assertNull(static::getJsonPathValue($path));
     }
 
     /**
@@ -125,7 +125,7 @@ trait JsonHelperTrait
      */
     protected static function assertJsonArraySubset($expected, $path)
     {
-        self::assertArraySubset($expected, self::getJsonPathValue($path));
+        static::assertArraySubset($expected, static::getJsonPathValue($path));
     }
 
     /**
@@ -133,11 +133,11 @@ trait JsonHelperTrait
      */
     protected static function assertJsonPathMatch($path)
     {
-        $value = self::getJsonPathValue($path);
+        $value = static::getJsonPathValue($path);
         if (\is_array($value)) {
-            self::assertNotEmpty($value);
+            static::assertNotEmpty($value);
         } else {
-            self::assertNotNull($value);
+            static::assertNotNull($value);
         }
     }
 
@@ -146,11 +146,11 @@ trait JsonHelperTrait
      */
     protected static function assertJsonPathNotMatch($path)
     {
-        $value = self::getJsonPathValue($path);
+        $value = static::getJsonPathValue($path);
         if (\is_array($value)) {
-            self::assertEmpty($value);
+            static::assertEmpty($value);
         } else {
-            self::assertNull($value);
+            static::assertNull($value);
         }
     }
 }

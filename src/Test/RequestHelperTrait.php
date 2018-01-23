@@ -24,7 +24,7 @@ trait RequestHelperTrait
      */
     protected static function sendGET($path, array $parameters = [])
     {
-        self::getClient()->request(Request::METHOD_GET, $path, $parameters);
+        static::getClient()->request(Request::METHOD_GET, $path, $parameters);
     }
 
     /**
@@ -33,7 +33,7 @@ trait RequestHelperTrait
      */
     protected static function sendPOST($path, $content)
     {
-        self::getClient()->request(Request::METHOD_POST, $path, [], [], [], $content);
+        static::getClient()->request(Request::METHOD_POST, $path, [], [], [], $content);
     }
 
     /**
@@ -42,7 +42,7 @@ trait RequestHelperTrait
      */
     protected static function sendPUT($path, $content)
     {
-        self::getClient()->request(Request::METHOD_PUT, $path, [], [], [], $content);
+        static::getClient()->request(Request::METHOD_PUT, $path, [], [], [], $content);
     }
 
     /**
@@ -50,6 +50,6 @@ trait RequestHelperTrait
      */
     protected static function sendDELETE($path)
     {
-        self::getClient()->request(Request::METHOD_DELETE, $path);
+        static::getClient()->request(Request::METHOD_DELETE, $path);
     }
 }

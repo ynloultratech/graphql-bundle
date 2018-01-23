@@ -26,7 +26,7 @@ trait DoctrineORMHelperTrait
      */
     public static function getDoctrine(): Registry
     {
-        return self::getClient()->getKernel()->getContainer()->get('doctrine');
+        return static::getClient()->getKernel()->getContainer()->get('doctrine');
     }
 
     /**
@@ -36,7 +36,7 @@ trait DoctrineORMHelperTrait
      */
     public static function getRepository($class): ObjectRepository
     {
-        return self::getDoctrine()->getRepository($class);
+        return static::getDoctrine()->getRepository($class);
     }
 
     /**
@@ -45,7 +45,7 @@ trait DoctrineORMHelperTrait
      */
     public static function assertRepositoryContains($class, $criteria)
     {
-        self::assertNotNull(self::getRepository($class)->findOneBy($criteria));
+        static::assertNotNull(self::getRepository($class)->findOneBy($criteria));
     }
 
     /**
@@ -54,7 +54,7 @@ trait DoctrineORMHelperTrait
      */
     public static function assertRepositoryNotContains($class, $criteria)
     {
-        self::assertNull(self::getRepository($class)->findOneBy($criteria));
+        static::assertNull(self::getRepository($class)->findOneBy($criteria));
     }
 
     /**
@@ -67,6 +67,6 @@ trait DoctrineORMHelperTrait
     {
         $databaseId = ID::createFromString($id)->getDatabaseId();
 
-        return self::getRepository($class)->find($databaseId);
+        return static::getRepository($class)->find($databaseId);
     }
 }

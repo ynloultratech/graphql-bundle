@@ -31,11 +31,11 @@ trait DataFixtureTrait
     public static function loadFixtures($classNames = [])
     {
         /** @var Client $client */
-        $client = self::createClient();
+        $client = static::createClient();
         $container = $client->getContainer();
         if ($container) {
             $fixtureLoader = new FixtureLoader($container, $container->get('doctrine'));
-            self::$referenceRepository = $fixtureLoader->loadFixtures($classNames);
+            static::$referenceRepository = $fixtureLoader->loadFixtures($classNames);
         }
     }
 
@@ -49,7 +49,7 @@ trait DataFixtureTrait
         $reference = self::$referenceRepository->getReference($name);
 
         /** @var EntityManager $em */
-        $em = self::getDoctrine()->getManager();
+        $em = static::getDoctrine()->getManager();
         $em->refresh($reference);
 
         return $reference;

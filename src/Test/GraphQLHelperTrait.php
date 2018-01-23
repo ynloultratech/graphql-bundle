@@ -39,7 +39,7 @@ trait GraphQLHelperTrait
     protected static function send($query, array $variables = [])
     {
         self::$query = ['query' => $query, 'variables' => $variables];
-        self::getClient()->request(Request::METHOD_POST, self::$endpoint, [], [], [], json_encode(self::$query));
+        static::getClient()->request(Request::METHOD_POST, self::$endpoint, [], [], [], json_encode(self::$query));
     }
 
     /**
@@ -89,7 +89,7 @@ trait GraphQLHelperTrait
             print_r(json_encode($variables, JSON_PRETTY_PRINT));
             print_r("\n\n");
             print_r("-------------------- RESPONSE ----------------------\n\n");
-            $content = self::getClient()->getResponse()->getContent();
+            $content = static::getClient()->getResponse()->getContent();
             $json = @json_decode($content, true);
             if ($json) {
                 print_r(json_encode($json, JSON_PRETTY_PRINT));

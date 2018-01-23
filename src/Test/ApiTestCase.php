@@ -93,7 +93,7 @@ class ApiTestCase extends WebTestCase
      */
     protected static function getClient(): Client
     {
-        return self::$client ?? self::createClient();
+        return self::$client ?? static::createClient();
     }
 }
 

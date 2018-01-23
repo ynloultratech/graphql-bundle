@@ -23,7 +23,7 @@ trait ResponseHelperTrait
      */
     protected static function assertResponseEmptyContent()
     {
-        self::assertEmpty(self::getClient()->getResponse()->getContent());
+        static::assertEmpty(static::getClient()->getResponse()->getContent());
     }
 
     /**
@@ -31,7 +31,7 @@ trait ResponseHelperTrait
      */
     protected static function assertResponseCodeIs($code)
     {
-        self::assertEquals($code, self::getClient()->getResponse()->getStatusCode());
+        static::assertEquals($code, static::getClient()->getResponse()->getStatusCode());
     }
 
     /**
@@ -39,7 +39,7 @@ trait ResponseHelperTrait
      */
     protected static function assertResponseCodeIsOK()
     {
-        self::assertEquals(Response::HTTP_OK, self::getClient()->getResponse()->getStatusCode());
+        static::assertEquals(Response::HTTP_OK, static::getClient()->getResponse()->getStatusCode());
     }
 
     /**
@@ -47,6 +47,6 @@ trait ResponseHelperTrait
      */
     protected static function getResponse(): Response
     {
-        return self::getClient()->getResponse();
+        return static::getClient()->getResponse();
     }
 }
