@@ -27,6 +27,9 @@ class ApiTestCase extends WebTestCase
     use DoctrineORMHelperTrait;
     use GraphQLHelperTrait;
 
+    /**
+     * @var Client
+     */
     protected static $client;
 
     /**
@@ -64,6 +67,8 @@ class ApiTestCase extends WebTestCase
      */
     final public function setUp()
     {
+        parent::setUp();
+
         static::loadFixtures();
         $this->before();
     }
@@ -81,6 +86,8 @@ class ApiTestCase extends WebTestCase
      */
     final protected function tearDown()
     {
+        parent::tearDown();
+
         if ($this->cleanup) {
             static::$client = null;
         }
