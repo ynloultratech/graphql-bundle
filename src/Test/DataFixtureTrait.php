@@ -11,7 +11,6 @@
 namespace Ynlo\GraphQLBundle\Test;
 
 use Doctrine\Common\DataFixtures\ReferenceRepository;
-use Doctrine\ORM\EntityManager;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Ynlo\GraphQLBundle\Test\FixtureLoader\FixtureLoader;
 
@@ -39,19 +38,8 @@ trait DataFixtureTrait
         }
     }
 
-    /**
-     * @param string $name
-     *
-     * @return mixed
-     */
-    public static function getFixtureReference($name)
+    public static function getFixtureReference(string $name)
     {
-        $reference = self::$referenceRepository->getReference($name);
-
-        /** @var EntityManager $em */
-        $em = static::getDoctrine()->getManager();
-        $em->refresh($reference);
-
-        return $reference;
+        return self::$referenceRepository->getReference($name);
     }
 }
