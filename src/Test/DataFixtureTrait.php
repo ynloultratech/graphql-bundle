@@ -31,7 +31,7 @@ trait DataFixtureTrait
     public static function loadFixtures($classNames = [])
     {
         /** @var Client $client */
-        $client = static::createClient();
+        $client = static::getClient();
         $container = $client->getContainer();
         if ($container) {
             $fixtureLoader = new FixtureLoader($container, $container->get('doctrine'));

@@ -15,11 +15,15 @@ use Doctrine\DBAL\Connection;
 use Doctrine\DBAL\Driver;
 use Doctrine\ORM\Tools\SchemaTool;
 
-/**
- * Class ORMSQLite
- */
 class ORMSQLite implements SchemaUpdaterInterface
 {
+    protected $cacheDir;
+
+    public function __construct(string $cacheDir = null)
+    {
+        $this->cacheDir = $cacheDir;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -47,12 +51,37 @@ class ORMSQLite implements SchemaUpdaterInterface
         }
 
         $om = $registry->getManager();
-        $metadata = $om->getMetadataFactory()->getAllMetadata();
+        static $metadata = null;
+        static $metadataHash = null;
+        if (!$metadata) {
+            $metadata = $om->getMetadataFactory()->getAllMetadata();
+            $metadataHash = md5(serialize($metadata));
+        }
+
+        if ($this->cacheDir && $this->cacheExist($metadataHash)) {
+            copy($this->getCacheFile($metadataHash), $name);
+
+            return;
+        }
 
         $schemaTool = new SchemaTool($om);
         $schemaTool->dropDatabase();
         if (!empty($metadata)) {
             $schemaTool->createSchema($metadata);
         }
+
+        if ($this->cacheDir) {
+            copy($name, $this->getCacheFile($metadataHash));
+        }
+    }
+
+    public function getCacheFile($hash): string
+    {
+        return $this->cacheDir.DIRECTORY_SEPARATOR.$hash.'.schema';
+    }
+
+    public function cacheExist($hash): bool
+    {
+        return file_exists($this->getCacheFile($hash));
     }
 }

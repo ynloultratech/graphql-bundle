@@ -14,12 +14,21 @@ use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\DataFixtures\Executor\AbstractExecutor;
 use Doctrine\Common\DataFixtures\Executor\ORMExecutor;
 use Doctrine\Common\DataFixtures\Purger\ORMPurger;
+use Doctrine\DBAL\Connection;
+use Doctrine\DBAL\Driver;
 
 /**
  * Class ORMDataLoader
  */
 class ORMDataLoader implements DataLoaderInterface
 {
+    protected $cacheDir;
+
+    public function __construct($cacheDir = null)
+    {
+        $this->cacheDir = $cacheDir;
+    }
+
     /**
      * {@inheritdoc}
      */
@@ -35,6 +44,12 @@ class ORMDataLoader implements DataLoaderInterface
     {
         $om = $registry->getManager();
         $purger = new ORMPurger();
+
+        if (($connection = $registry->getConnection())
+            && $connection instanceof Connection
+            && $connection->getDriver() instanceof Driver\AbstractSQLiteDriver) {
+            return new SQLiteORMExecutor($om, $purger, $this->cacheDir);
+        }
 
         return new ORMExecutor($om, $purger);
     }

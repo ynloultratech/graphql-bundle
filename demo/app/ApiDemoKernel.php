@@ -29,7 +29,7 @@ class ApiDemoKernel extends Kernel
             new Ynlo\GraphQLBundle\Demo\AppBundle\AppBundle(),
         ];
 
-        if ($this->isDebug()) {
+        if (in_array($this->getEnvironment(), ['dev', 'test'])) {
             $bundles[] = new \Symfony\Bundle\WebProfilerBundle\WebProfilerBundle();
             $bundles[] = new Symfony\Bundle\DebugBundle\DebugBundle();
         }
