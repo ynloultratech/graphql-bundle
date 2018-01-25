@@ -64,7 +64,7 @@ class ApiTestCase extends WebTestCase
      *
      * @var bool
      */
-    protected static $insulateRequests = true;
+    protected static $insulateRequests = false;
 
     /**
      * Endpoint where the API is available, e.g. /api
