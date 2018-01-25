@@ -23,9 +23,6 @@ class NoteTest extends ApiTestCase
      */
     public function testGetNode()
     {
-        /** @var Post $post */
-        $post = self::getFixtureReference('post1');
-
         $query = <<<'GraphQL'
 query($id: ID!){
     node(id: $id) {
@@ -37,9 +34,12 @@ query($id: ID!){
     }
 }
 GraphQL;
-        self::send($query, ['id' => $id = self::encodeID('Post', $post)]);
+        self::send($query, ['id' => $id = self::getFixtureGlobalId('post1')]);
 
         self::assertResponseCodeIsOK();
+
+        /** @var Post $post */
+        $post = self::getFixtureReference('post1');
         self::assertResponseJsonPathEquals($id, 'data.node.id');
         self::assertResponseJsonPathEquals($post->getTitle(), 'data.node.title');
         self::assertResponseJsonPathEquals($post->getBody(), 'data.node.body');
@@ -52,15 +52,15 @@ GraphQL;
     {
         /** @var Post $post1 */
         $post1 = self::getFixtureReference('post1');
-        $id1 = self::encodeID('Post', $post1);
+        $id1 = self::encodeID($post1);
 
         /** @var Post $post1 */
         $post2 = self::getFixtureReference('post2');
-        $id2 = self::encodeID('Post', $post2);
+        $id2 = self::encodeID($post2);
 
         /** @var Post $post3 */
         $post3 = self::getFixtureReference('post3');
-        $id3 = self::encodeID('Post', $post3);
+        $id3 = self::encodeID($post3);
 
         $query = <<<'GraphQL'
 query($ids: [ID!]!){

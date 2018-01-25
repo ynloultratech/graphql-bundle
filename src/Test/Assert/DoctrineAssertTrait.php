@@ -11,7 +11,6 @@
 namespace Ynlo\GraphQLBundle\Test\Assert;
 
 use Symfony\Bundle\FrameworkBundle\Client;
-use Ynlo\GraphQLBundle\Model\ID;
 
 /**
  * @method Client getClient()
@@ -36,18 +35,5 @@ trait DoctrineAssertTrait
     public static function assertRepositoryNotContains($class, $criteria)
     {
         static::assertNull(static::getRepository($class)->findOneBy($criteria));
-    }
-
-    /**
-     * @param string $class
-     * @param mixed  $id
-     *
-     * @return mixed
-     */
-    public static function findOneById($class, $id)
-    {
-        $databaseId = ID::createFromString($id)->getDatabaseId();
-
-        return static::getRepository($class)->find($databaseId);
     }
 }

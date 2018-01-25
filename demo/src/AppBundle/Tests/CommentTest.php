@@ -57,7 +57,7 @@ GraphQL;
             $mutation,
             [
                 'input' => [
-                    'commentable' => $commentableId = self::encodeID('Post', $post),
+                    'commentable' => self::encodeID($post),
                     'body' => $comment = $faker->sentence,
                     'clientMutationId' => (string) $clientMutationId = mt_rand(),
                 ],

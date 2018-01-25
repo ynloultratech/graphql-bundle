@@ -14,6 +14,8 @@ use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\Client;
+use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
+use Ynlo\GraphQLBundle\Model\ID;
 
 /**
  * @method Client getClient()
@@ -33,5 +35,27 @@ trait DoctrineHelperTrait
     public static function getRepository(string $class): ObjectRepository
     {
         return static::getDoctrine()->getRepository($class);
+    }
+
+    /**
+     * Find a database record from global id
+     *
+     * findOneByGlobalId('VXNlcjox') => object
+     *
+     * @param mixed $id
+     *
+     * @return mixed
+     */
+    public static function findOneByGlobalId($id)
+    {
+        $id = ID::createFromString($id);
+        $databaseId = $id->getDatabaseId();
+        $class = static::getClient()
+                       ->getContainer()
+                       ->get(DefinitionRegistry::class)
+                       ->getEndpoint()
+                       ->getClassForType($id->getNodeType());
+
+        return static::getRepository($class)->find($databaseId);
     }
 }

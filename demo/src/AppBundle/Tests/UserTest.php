@@ -400,7 +400,7 @@ GraphQL;
         self::assertEquals($login, $loginInResponse);
 
         /** @var User $createdUser */
-        $createdUser = self::findOneById(User::class, $id);
+        $createdUser = self::findOneByGlobalId($id);
 
         self::assertEquals($login, $createdUser->getUsername());
 
@@ -493,7 +493,7 @@ GraphQL;
             $mutation,
             [
                 'input' => [
-                    'id' => $id = self::encodeID('User', $user1),
+                    'id' => $id = self::encodeID($user1),
                     'login' => $newLogin,
                     'enabled' => false,
                     'profile' => [
@@ -537,7 +537,7 @@ GraphQL;
             $mutation,
             [
                 'input' => [
-                    'id' => $id = self::encodeID('User', $user1->getId()),
+                    'id' => $id = self::encodeID($user1),
                     'clientMutationId' => (string) $clientMutationId = mt_rand(),
                 ],
             ]
@@ -585,7 +585,7 @@ GraphQL;
         self::send(
             $query,
             [
-                'id' => self::encodeID('User', $user1),
+                'id' => self::encodeID($user1),
             ]
         );
 

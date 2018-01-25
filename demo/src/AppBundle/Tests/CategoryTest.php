@@ -104,7 +104,7 @@ GraphQL;
         self::send(
             $query,
             [
-                'id' =>  self::encodeID('Category', $category1),
+                'id' => self::encodeID($category1),
             ]
         );
 
@@ -122,12 +122,6 @@ GraphQL;
      */
     public function testGetCategoryPostsByStatusVerifyMaxConcurrentUsage()
     {
-        /** @var Category $category1 */
-        $category1 = self::getFixtureReference('category1');
-
-        /** @var Category $category2 */
-        $category2 = self::getFixtureReference('category2');
-
         $query = <<<'GraphQL'
 query($ids: [ID!]!) {
     nodes (ids: $ids) {
@@ -149,8 +143,8 @@ GraphQL;
             $query,
             [
                 'ids' => [
-                    self::encodeID('Category', $category1),
-                    self::encodeID('Category', $category2),
+                    self::getFixtureGlobalId('category1'),
+                    self::getFixtureGlobalId('category2'),
                 ],
             ]
         );

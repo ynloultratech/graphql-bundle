@@ -12,12 +12,14 @@
 namespace Ynlo\GraphQLBundle\Test;
 
 use Doctrine\Common\DataFixtures\ReferenceRepository;
+use Doctrine\Common\Util\ClassUtils;
 use PHPUnit\Util\Blacklist;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Stopwatch\Stopwatch;
+use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
 use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Test\Assert\DoctrineAssertTrait;
@@ -181,20 +183,53 @@ class ApiTestCase extends WebTestCase
     }
 
     /**
-     * @param string               $nodeType
-     * @param string|NodeInterface $databaseId
+     * Use this method to get the global ID of a existent fixture
+     *
+     * getFixtureGlobalId('user1') => VXNlcjox
+     */
+    protected static function getFixtureGlobalId(string $name): string
+    {
+        $fixture = static::getFixtureReference($name);
+        if ($fixture instanceof NodeInterface) {
+            return static::encodeID($fixture);
+        }
+
+        throw new \RuntimeException(sprintf('The fixture must implements %s', NodeInterface::class));
+    }
+
+    /**
+     * Encode given id or node interface to global ID
+     *
+     * encodeID($user) => VXNlcjox
+     * encodeID(1, 'User') => VXNlcjox
+     *
+     * @param string|NodeInterface $node     id of the node or instance
+     * @param string               $nodeType required in case the first argument is scalar
      *
      * @return string
      */
-    protected static function encodeID($nodeType, $databaseId)
+    protected static function encodeID($node, $nodeType = null)
     {
-        if ($databaseId instanceof NodeInterface) {
-            $databaseId = $databaseId->getId();
+        if (!is_object($node) && !$nodeType) {
+            throw new \RuntimeException('Node type is required when use scalar ID as node');
         }
 
-        return ID::encode($nodeType, $databaseId);
+        if ($node instanceof NodeInterface) {
+            $nodeType = static::getClient()
+                              ->getContainer()
+                              ->get(DefinitionRegistry::class)
+                              ->getEndpoint()
+                              ->getTypeForClass(ClassUtils::getClass($node));
+
+            $node = $node->getId();
+        }
+
+        return ID::encode($nodeType, $node);
     }
 
+    /**
+     * Decode globalId to get type and real database id
+     */
     protected static function decodeID(string $globalID): ID
     {
         return ID::createFromString($globalID);

@@ -11,7 +11,6 @@
 namespace Ynlo\GraphQLBundle\Demo\AppBundle\Tests;
 
 use Faker\Factory;
-use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Category;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Post;
 use Ynlo\GraphQLBundle\Test\ApiTestCase;
 
@@ -46,6 +45,9 @@ mutation ($input: AddPostInput!){
 }
 GraphQL;
 
+        $category1 = self::getFixtureReference('category1');
+        $category2 = self::getFixtureReference('category2');
+
         self::send(
             $mutation,
             [
@@ -55,8 +57,8 @@ GraphQL;
                     'status' => 'PUBLISHED',
                     'tags' => $tags = $faker->words(3),
                     'categories' => [
-                        self::encodeID('Category', 1),
-                        self::encodeID('Category', 2),
+                        self::encodeID($category1),
+                        self::encodeID($category2),
                     ],
                     'clientMutationId' => (string) $clientMutationId = mt_rand(),
                 ],
@@ -69,11 +71,7 @@ GraphQL;
         self::assertResponseJsonPathEquals('PUBLISHED', 'data.posts.add.node.status');
         self::assertResponseJsonPathEquals($clientMutationId, 'data.posts.add.clientMutationId');
         self::assertResponseJsonPathEquals($tags, 'data.posts.add.node.tags');
-
-        $category1 = self::getRepository(Category::class)->find(1);
         self::assertResponseJsonPathEquals($category1->getName(), 'data.posts.add.node.categories[0].name');
-
-        $category2 = self::getRepository(Category::class)->find(2);
         self::assertResponseJsonPathEquals($category2->getName(), 'data.posts.add.node.categories[1].name');
     }
 
@@ -112,8 +110,8 @@ GraphQL;
                     'status' => 'FUTURE',
                     'futurePublishDate' => $date = '1985-06-18T18:05:00-05:00',
                     'categories' => [
-                        self::encodeID('Category', 1),
-                        self::encodeID('Category', 2),
+                        self::getFixtureGlobalId('category1'),
+                        self::getFixtureGlobalId('category2'),
                     ],
                     'clientMutationId' => (string) $clientMutationId = mt_rand(),
                 ],
