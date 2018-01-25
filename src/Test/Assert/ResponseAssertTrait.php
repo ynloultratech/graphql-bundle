@@ -140,4 +140,40 @@ trait ResponseAssertTrait
     {
         static::assertJsonPathNotMatch(static::getResponse()->getContent(), $path);
     }
+
+    /**
+     * @param string $format
+     * @param string $path
+     */
+    public static function assertResponseJsonValueMatchesFormat($format, $path)
+    {
+        static::assertJsonValueMatchesFormat(static::getResponse()->getContent(), $format, $path);
+    }
+
+    /**
+     * @param string $format
+     * @param string $path
+     */
+    public static function assertResponseJsonValueNotMatchesFormat($format, $path)
+    {
+        static::assertJsonValueNotMatchesFormat(static::getResponse()->getContent(), $format, $path);
+    }
+
+    /**
+     * @param string $pattern
+     * @param string $path
+     */
+    public static function assertResponseJsonValueRegExp($pattern, $path)
+    {
+        static::assertJsonValueRegExp(static::getResponse()->getContent(), $pattern, $path);
+    }
+
+    /**
+     * @param string $pattern
+     * @param string $path
+     */
+    public static function assertResponseJsonValueNotRegExp($pattern, $path)
+    {
+        static::assertJsonValueNotRegExp(static::getResponse()->getContent(), $pattern, $path);
+    }
 }

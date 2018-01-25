@@ -123,4 +123,48 @@ trait JsonAssertTrait
             static::assertNull($value);
         }
     }
+
+    /**
+     * @param string|array $json
+     * @param string       $format
+     * @param string       $path
+     */
+    public static function assertJsonValueMatchesFormat($json, $format, $path)
+    {
+        $value = static::getJsonPathValue($json, $path);
+        static::assertStringMatchesFormat($format, $value);
+    }
+
+    /**
+     * @param string|array $json
+     * @param string       $format
+     * @param string       $path
+     */
+    public static function assertJsonValueNotMatchesFormat($json, $format, $path)
+    {
+        $value = static::getJsonPathValue($json, $path);
+        static::assertStringNotMatchesFormat($format, $value);
+    }
+
+    /**
+     * @param string|array $json
+     * @param string       $pattern
+     * @param string       $path
+     */
+    public static function assertJsonValueRegExp($json, $pattern, $path)
+    {
+        $value = static::getJsonPathValue($json, $path);
+        static::assertRegExp($pattern, $value);
+    }
+
+    /**
+     * @param string|array $json
+     * @param string       $pattern
+     * @param string       $path
+     */
+    public static function assertJsonValueNotRegExp($json, $pattern, $path)
+    {
+        $value = static::getJsonPathValue($json, $path);
+        static::assertNotRegExp($pattern, $value);
+    }
 }
