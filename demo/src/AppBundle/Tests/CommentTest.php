@@ -65,11 +65,11 @@ GraphQL;
         );
 
         self::assertRepositoryContains(PostComment::class, ['body' => $comment, 'post' => $post]);
-        self::assertJsonPathEquals($comment, 'data.comments.add.node.body');
-        self::assertJsonPathEquals($post->getTitle(), 'data.comments.add.node.commentable.title');
-        self::assertJsonPathEquals($clientMutationId, 'data.comments.add.clientMutationId');
+        self::assertResponseJsonPathEquals($comment, 'data.comments.add.node.body');
+        self::assertResponseJsonPathEquals($post->getTitle(), 'data.comments.add.node.commentable.title');
+        self::assertResponseJsonPathEquals($clientMutationId, 'data.comments.add.clientMutationId');
 
-        return self::getJsonPathValue('data.comments.add.node.id');
+        return self::getResponseJsonPathValue('data.comments.add.node.id');
     }
 
     /**
@@ -101,7 +101,7 @@ GraphQL;
         );
 
         self::assertResponseCodeIsOK();
-        self::assertJsonPathEquals($id, 'data.comments.delete.id');
-        self::assertJsonPathEquals($clientMutationId, 'data.comments.delete.clientMutationId');
+        self::assertResponseJsonPathEquals($id, 'data.comments.delete.id');
+        self::assertResponseJsonPathEquals($clientMutationId, 'data.comments.delete.clientMutationId');
     }
 }
