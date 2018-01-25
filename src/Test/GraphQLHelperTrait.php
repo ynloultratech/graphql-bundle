@@ -21,26 +21,45 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  */
 trait GraphQLHelperTrait
 {
-    private static $endpoint;
+    /**
+     * Whether to insulate each request or not.
+     * The request ran into a separate process to avoid
+     * any conflict (cache, container, doctrine etc..) with previous requests.
+     *
+     * NOTE: should be disabled for debugging
+     *
+     * @var bool
+     */
+    protected static $insulateRequests = true;
+
+    /**
+     * Endpoint where the API is available, e.g. /api
+     *
+     * @var string
+     */
+    protected static $endpoint = '';
 
     private static $query;
 
     /**
-     * @param string $endpoint
+     * @param string    $query     query in GraphQL format
+     * @param array     $variables array of variables
+     * @param bool|null $insulate  Whether to insulate the requests or not. Leave null to use default value.
+     *                             The request ran into a separate process to avoid
+     *                             any conflict (cache, container, doctrine etc..) with previous requests.
+     *                             NOTE: should be disabled for debugging
      */
-    protected static function endpoint($endpoint)
-    {
-        self::$endpoint = $endpoint;
-    }
-
-    /**
-     * @param string $query
-     * @param array  $variables
-     */
-    protected static function send($query, array $variables = [])
+    protected static function send($query, array $variables = [], $insulate = null)
     {
         self::$query = ['query' => $query, 'variables' => $variables];
-        static::getClient()->request(Request::METHOD_POST, self::$endpoint, [], [], [], json_encode(self::$query));
+
+        if (null === $insulate) {
+            $insulate = static::$insulateRequests;
+        }
+
+        $client = static::getClient();
+        $client->insulate($insulate);
+        $client->request(Request::METHOD_POST, self::$endpoint, [], [], [], json_encode(self::$query));
     }
 
     /**

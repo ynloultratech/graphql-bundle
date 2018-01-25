@@ -33,13 +33,6 @@ class ApiTestCase extends WebTestCase
     protected static $client;
 
     /**
-     * Whether the client should be cleared after each test
-     *
-     * @var bool
-     */
-    protected $cleanup = true;
-
-    /**
      * Constructs a test case with the given name.
      *
      * @param string $name
@@ -87,10 +80,7 @@ class ApiTestCase extends WebTestCase
     final protected function tearDown()
     {
         parent::tearDown();
-
-        if ($this->cleanup) {
-            static::$client = null;
-        }
+        static::$client = null;
         $this->after();
     }
 
@@ -107,10 +97,7 @@ class ApiTestCase extends WebTestCase
      */
     protected static function createClient(array $options = [], array $server = [])
     {
-        $client = parent::createClient($options, $server);
-        static::$client = $client;
-
-        return $client;
+        return static::$client = parent::createClient($options, $server);
     }
 
     /**
