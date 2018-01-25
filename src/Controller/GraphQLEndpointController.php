@@ -11,6 +11,7 @@
 
 namespace Ynlo\GraphQLBundle\Controller;
 
+use GraphQL\Error\ClientAware;
 use GraphQL\Error\Debug;
 use GraphQL\GraphQL;
 use GraphQL\Validator\DocumentValidator;
@@ -82,7 +83,13 @@ class GraphQLEndpointController
                 $this->logger->error($e->getMessage(), $e->getTrace());
             }
             $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
-            $output['errors']['message'] = $e->getMessage();
+            $message = Response::$statusTexts[$statusCode] ?? 'Internal Server Error';
+
+            if ($this->debug || ($e instanceof ClientAware && $e->isClientSafe())) {
+                $message = $e->getMessage();
+            }
+
+            $output['errors']['message'] = $message;
             $output['errors']['category'] = 'internal';
 
             if ($this->debug) {
