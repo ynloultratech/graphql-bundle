@@ -51,7 +51,7 @@ GraphQL;
         self::send($query);
 
         foreach ($records as $index => $category) {
-            self::assertResponseJsonPathEquals($category->getName(), "data.categories.all.edges[$index].node.name");
+            self::assertResponseJsonValueEquals($category->getName(), "data.categories.all.edges[$index].node.name");
             /** @var Post[] $posts */
             $posts = self::getRepository(Post::class)
                          ->createQueryBuilder('o')
@@ -63,7 +63,7 @@ GraphQL;
                          ->getResult();
 
             foreach ($posts as $indexPost => $post) {
-                self::assertResponseJsonPathEquals($post->getTitle(), "data.categories.all.edges[$index].node.posts.edges[$indexPost].node.title");
+                self::assertResponseJsonValueEquals($post->getTitle(), "data.categories.all.edges[$index].node.posts.edges[$indexPost].node.title");
             }
         }
     }
@@ -149,6 +149,6 @@ GraphQL;
             ]
         );
 
-       self::assertResponseJsonPathEquals('The field "postsByStatus" can be fetched only once per query. This field can`t be used in a list.', 'errors[0].message');
+       self::assertResponseJsonValueEquals('The field "postsByStatus" can be fetched only once per query. This field can`t be used in a list.', 'errors[0].message');
     }
 }

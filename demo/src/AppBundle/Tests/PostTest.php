@@ -66,13 +66,13 @@ GraphQL;
         );
 
         self::assertRepositoryContains(Post::class, ['title' => $title, 'body' => $body]);
-        self::assertResponseJsonPathEquals($title, 'data.posts.add.node.title');
-        self::assertResponseJsonPathEquals($body, 'data.posts.add.node.body');
-        self::assertResponseJsonPathEquals('PUBLISHED', 'data.posts.add.node.status');
-        self::assertResponseJsonPathEquals($clientMutationId, 'data.posts.add.clientMutationId');
-        self::assertResponseJsonPathEquals($tags, 'data.posts.add.node.tags');
-        self::assertResponseJsonPathEquals($category1->getName(), 'data.posts.add.node.categories[0].name');
-        self::assertResponseJsonPathEquals($category2->getName(), 'data.posts.add.node.categories[1].name');
+        self::assertResponseJsonValueEquals($title, 'data.posts.add.node.title');
+        self::assertResponseJsonValueEquals($body, 'data.posts.add.node.body');
+        self::assertResponseJsonValueEquals('PUBLISHED', 'data.posts.add.node.status');
+        self::assertResponseJsonValueEquals($clientMutationId, 'data.posts.add.clientMutationId');
+        self::assertResponseJsonValueEquals($tags, 'data.posts.add.node.tags');
+        self::assertResponseJsonValueEquals($category1->getName(), 'data.posts.add.node.categories[0].name');
+        self::assertResponseJsonValueEquals($category2->getName(), 'data.posts.add.node.categories[1].name');
     }
 
     /**
@@ -126,11 +126,11 @@ GraphQL;
                 'futurePublishDate' => date_create_from_format(DATE_ATOM, $date),
             ]
         );
-        self::assertResponseJsonPathEquals($title, 'data.posts.add.node.title');
-        self::assertResponseJsonPathEquals($body, 'data.posts.add.node.body');
-        self::assertResponseJsonPathEquals('FUTURE', 'data.posts.add.node.status');
-        self::assertResponseJsonPathEquals($date, 'data.posts.add.node.futurePublishDate');
-        self::assertResponseJsonPathEquals($clientMutationId, 'data.posts.add.clientMutationId');
+        self::assertResponseJsonValueEquals($title, 'data.posts.add.node.title');
+        self::assertResponseJsonValueEquals($body, 'data.posts.add.node.body');
+        self::assertResponseJsonValueEquals('FUTURE', 'data.posts.add.node.status');
+        self::assertResponseJsonValueEquals($date, 'data.posts.add.node.futurePublishDate');
+        self::assertResponseJsonValueEquals($clientMutationId, 'data.posts.add.clientMutationId');
     }
 
     /**
@@ -161,9 +161,9 @@ GraphQL;
         self::send($query);
 
         foreach ($records as $index => $post) {
-            self::assertResponseJsonPathEquals($post->getTitle(), "data.posts.all.edges[$index].node.title");
-            self::assertResponseJsonPathEquals($post->getCategories()->first()->getName(), "data.posts.all.edges[$index].node.categories[0].name");
-            self::assertResponseJsonPathEquals($post->getTags(), "data.posts.all.edges[$index].node.tags");
+            self::assertResponseJsonValueEquals($post->getTitle(), "data.posts.all.edges[$index].node.title");
+            self::assertResponseJsonValueEquals($post->getCategories()->first()->getName(), "data.posts.all.edges[$index].node.categories[0].name");
+            self::assertResponseJsonValueEquals($post->getTags(), "data.posts.all.edges[$index].node.tags");
         }
     }
 }

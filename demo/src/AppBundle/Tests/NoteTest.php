@@ -40,9 +40,9 @@ GraphQL;
 
         /** @var Post $post */
         $post = self::getFixtureReference('post1');
-        self::assertResponseJsonPathEquals($id, 'data.node.id');
-        self::assertResponseJsonPathEquals($post->getTitle(), 'data.node.title');
-        self::assertResponseJsonPathEquals($post->getBody(), 'data.node.body');
+        self::assertResponseJsonValueEquals($id, 'data.node.id');
+        self::assertResponseJsonValueEquals($post->getTitle(), 'data.node.title');
+        self::assertResponseJsonValueEquals($post->getBody(), 'data.node.body');
     }
 
     /**
@@ -77,16 +77,16 @@ GraphQL;
         self::send($query, ['ids' => [$id1, $id3, $id2]]);
 
         self::assertResponseCodeIsOK();
-        self::assertResponseJsonPathEquals($id1, 'data.nodes[0].id');
-        self::assertResponseJsonPathEquals($post1->getTitle(), 'data.nodes[0].title');
-        self::assertResponseJsonPathEquals($post1->getBody(), 'data.nodes[0].body');
+        self::assertResponseJsonValueEquals($id1, 'data.nodes[0].id');
+        self::assertResponseJsonValueEquals($post1->getTitle(), 'data.nodes[0].title');
+        self::assertResponseJsonValueEquals($post1->getBody(), 'data.nodes[0].body');
 
-        self::assertResponseJsonPathEquals($id3, 'data.nodes[1].id');
-        self::assertResponseJsonPathEquals($post3->getTitle(), 'data.nodes[1].title');
-        self::assertResponseJsonPathEquals($post3->getBody(), 'data.nodes[1].body');
+        self::assertResponseJsonValueEquals($id3, 'data.nodes[1].id');
+        self::assertResponseJsonValueEquals($post3->getTitle(), 'data.nodes[1].title');
+        self::assertResponseJsonValueEquals($post3->getBody(), 'data.nodes[1].body');
 
-        self::assertResponseJsonPathEquals($id2, 'data.nodes[2].id');
-        self::assertResponseJsonPathEquals($post2->getTitle(), 'data.nodes[2].title');
-        self::assertResponseJsonPathEquals($post2->getBody(), 'data.nodes[2].body');
+        self::assertResponseJsonValueEquals($id2, 'data.nodes[2].id');
+        self::assertResponseJsonValueEquals($post2->getTitle(), 'data.nodes[2].title');
+        self::assertResponseJsonValueEquals($post2->getBody(), 'data.nodes[2].body');
     }
 }

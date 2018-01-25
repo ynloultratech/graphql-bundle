@@ -24,7 +24,7 @@ trait JsonAssertTrait
      * @param string       $type
      * @param string       $path
      */
-    public static function assertJsonPathInternalType($json, $type, $path)
+    public static function assertJsonValueInternalType($json, $type, $path)
     {
         static::assertInternalType($type, static::getJsonPathValue($json, $path));
     }
@@ -34,7 +34,7 @@ trait JsonAssertTrait
      * @param string       $type
      * @param string       $path
      */
-    public static function assertJsonPathNotInternalType($json, $type, $path)
+    public static function assertJsonValueNotInternalType($json, $type, $path)
     {
         static::assertNotInternalType($type, static::getJsonPathValue($json, $path));
     }
@@ -44,7 +44,7 @@ trait JsonAssertTrait
      * @param mixed        $expected
      * @param string       $path
      */
-    public static function assertJsonPathEquals($json, $expected, $path)
+    public static function assertJsonValueEquals($json, $expected, $path)
     {
         static::assertEquals($expected, static::getJsonPathValue($json, $path));
     }
@@ -53,7 +53,7 @@ trait JsonAssertTrait
      * @param string|array $json
      * @param string       $path
      */
-    public static function assertJsonPathFalse($json, $path)
+    public static function assertJsonValueIsFalse($json, $path)
     {
         static::assertFalse(static::getJsonPathValue($json, $path));
     }
@@ -62,7 +62,7 @@ trait JsonAssertTrait
      * @param string|array $json
      * @param string       $path
      */
-    public static function assertJsonPathTrue($json, $path)
+    public static function assertJsonValueIsTrue($json, $path)
     {
         static::assertTrue(static::getJsonPathValue($json, $path));
     }
@@ -72,7 +72,7 @@ trait JsonAssertTrait
      * @param mixed        $expected
      * @param string       $path
      */
-    public static function assertJsonPathNotEquals($json, $expected, $path)
+    public static function assertJsonValueNotEquals($json, $expected, $path)
     {
         static::assertNotEquals($expected, static::getJsonPathValue($json, $path));
     }
@@ -81,7 +81,7 @@ trait JsonAssertTrait
      * @param string|array $json
      * @param string       $path
      */
-    public static function assertJsonPathNull($json, $path)
+    public static function assertJsonValueIsNull($json, $path)
     {
         static::assertNull(static::getJsonPathValue($json, $path));
     }
@@ -94,34 +94,6 @@ trait JsonAssertTrait
     public static function assertJsonArraySubset($json, $expected, $path)
     {
         static::assertArraySubset($expected, static::getJsonPathValue($json, $path));
-    }
-
-    /**
-     * @param string|array $json
-     * @param string       $path
-     */
-    public static function assertJsonPathMatch($json, $path)
-    {
-        $value = static::getJsonPathValue($json, $path);
-        if (\is_array($value)) {
-            static::assertNotEmpty($value);
-        } else {
-            static::assertNotNull($value);
-        }
-    }
-
-    /**
-     * @param string|array $json
-     * @param string       $path
-     */
-    public static function assertJsonPathNotMatch($json, $path)
-    {
-        $value = static::getJsonPathValue($json, $path);
-        if (\is_array($value)) {
-            static::assertEmpty($value);
-        } else {
-            static::assertNull($value);
-        }
     }
 
     /**
