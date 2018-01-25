@@ -55,11 +55,23 @@ class GraphQLEndpointController
 
             $result = GraphQL::executeQuery($schema, $query, null, $context, $variableValues, $operationName, null, $validationRules);
 
-            $debug = false;
-            if ($this->debug) {
-                $debug = Debug::INCLUDE_DEBUG_MESSAGE | Debug::INCLUDE_TRACE;
+            if (!$this->debug) {
+                // in case of debug = false
+                // If API_DEBUG is passed, output of error formatter is enriched which debugging information.
+                // Helpful for tests to get full error logs without the need of enable full app debug flag
+                if (isset($_ENV['API_DEBUG'])) {
+                    $this->debug = $_ENV['API_DEBUG'];
+                } elseif (isset($_SERVER['API_DEBUG'])) {
+                    $this->debug = $_SERVER['API_DEBUG'];
+                }
             }
-            $output = $result->toArray($debug);
+
+            $debugFlags = false;
+            if ($this->debug) {
+                $debugFlags = Debug::INCLUDE_DEBUG_MESSAGE | Debug::INCLUDE_TRACE;
+            }
+
+            $output = $result->toArray($debugFlags);
             $statusCode = Response::HTTP_OK;
 
             if (isset($output['errors'])) {
