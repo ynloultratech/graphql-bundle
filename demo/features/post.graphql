@@ -1,0 +1,49 @@
+mutation AddPost($input: AddPostInput!){
+    posts {
+        add(input: $input){
+            node {
+                title
+                body
+                status
+                tags
+                futurePublishDate
+                categories {
+                    name
+                }
+            }
+            clientMutationId
+        }
+    }
+}
+
+query ListPostsWithCategories{
+    posts {
+        all(first: 5, orderBy: {field: "title", direction: ASC}){
+            edges {
+                node {
+                    title
+                    tags
+                    categories {
+                        name
+                    }
+                }
+            }
+        }
+    }
+}
+
+query ListPostsWithCategories2{
+    posts {
+        all(first: 5, orderBy: {field: "title", direction: ASC}){
+            edges {
+                node {
+                    title
+                    tags
+                    categories {
+                        name
+                    }
+                }
+            }
+        }
+    }
+}

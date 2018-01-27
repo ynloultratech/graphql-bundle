@@ -23,3 +23,4 @@
 - [Configuration](configuration.md)
 - [GraphiQL](graphiql.md)
 - [Schema](schema.md)
+- [Tests](tests/index.md)

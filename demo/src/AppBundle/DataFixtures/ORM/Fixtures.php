@@ -20,7 +20,7 @@ use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\PostComment;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\User;
 
 /**
- * Class Fixtures
+ * Class FixtureManager
  */
 class Fixtures extends Fixture
 {
