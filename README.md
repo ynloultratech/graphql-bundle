@@ -14,5 +14,5 @@
 - [X] API explorer and documentation with [GraphiQL](https://github.com/graphql/graphiql)
 - [X] Common CRUD operations (Queries & Mutations)
 - [X] Customizable mutations using Symfony Forms & Validator
-- [X] Test framework to write functional GraphQL API tests easily
+- [X] [Behat](http://behat.org) extension included to write GraphQL API tests easily
 - [X] *Convention over configuration* approach to avoid complicated configurations
