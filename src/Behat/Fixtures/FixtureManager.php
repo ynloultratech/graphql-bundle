@@ -79,6 +79,12 @@ class FixtureManager
             return ID::encode($nodeType, $id);
         }
 
-        return null;
+        throw new \RuntimeException(
+            sprintf(
+                'Can\'t get global ID for given fixture name "%s", beacouse "%s" does not implements NodeInterface.',
+                $name,
+                ClassUtils::getClass($fixture)
+            )
+        );
     }
 }
