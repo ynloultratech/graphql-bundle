@@ -27,7 +27,9 @@ before_script:
 script:
   - mkdir -p build/logs
   - php bin/phpunit -c phpunit.xml.dist --coverage-text --coverage-clover=${clover=build/logs/clover.xml}
-
+  - cd demo
+  - php ../bin/behat -f progress --rerun --no-interaction
+  - cd ..
 after_success:
  - composer require satooshi/php-coveralls
  - php bin/coveralls

@@ -1,0 +1,29 @@
+#Expression Language Initializers
+services:
+  Ynlo\GraphQLBundle\Behat\Transformer\ExpressionLanguage\StorageValuesProvider:
+    arguments: ['@Ynlo\GraphQLBundle\Behat\Storage\Storage']
+    tags:
+      - { name: 'graphql.expression_preprocessor' }
+
+  Ynlo\GraphQLBundle\Behat\Transformer\ExpressionLanguage\FixturePreprocessor:
+    arguments: ['@Ynlo\GraphQLBundle\Behat\Fixtures\FixtureManager']
+    tags:
+      - { name: 'graphql.expression_preprocessor' }
+
+  Ynlo\GraphQLBundle\Behat\Transformer\ExpressionLanguage\ResponseValueProvider:
+    arguments: ['@Ynlo\GraphQLBundle\Behat\Client\GraphQLClient']
+    tags:
+      - { name: 'graphql.expression_preprocessor' }
+
+  Ynlo\GraphQLBundle\Behat\Transformer\ExpressionLanguage\ClientVariablesValueProvider:
+    arguments: ['@Ynlo\GraphQLBundle\Behat\Client\GraphQLClient']
+    tags:
+      - { name: 'graphql.expression_preprocessor' }
+
+  Ynlo\GraphQLBundle\Behat\Transformer\ExpressionLanguage\FakerProvider:
+    tags:
+      - { name: 'graphql.expression_preprocessor' }
+
+  Ynlo\GraphQLBundle\Behat\Transformer\ExpressionLanguage\JMESPathSearchProvider:
+    tags:
+      - { name: 'graphql.expression_preprocessor' }

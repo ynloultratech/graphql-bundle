@@ -51,7 +51,16 @@
     "cocur/slugify": "^3.0",
     "fzaninotto/faker": "^1.7",
     "fresh/doctrine-enum-bundle": "5.2",
-    "escapestudios/symfony2-coding-standard": "3.x-dev"
+    "escapestudios/symfony2-coding-standard": "3.x-dev",
+    "behat/behat": "^3.4",
+    "behat/symfony2-extension": "^2.1"
+  },
+  "suggest": {
+    "behat/behat": "Integration with Behat BDD tests",
+    "behat/symfony2-extension": "Integration of Behat tests with Symfony",
+    "phpunit/phpunit": "To use assertions in Behat tests",
+    "doctrine/doctrine-fixtures-bundle": "If you want to create test fixtures",
+    "fzaninotto/faker": "If you want to generate fake values during tests"
   },
   "extra": {
     "branch-alias": {

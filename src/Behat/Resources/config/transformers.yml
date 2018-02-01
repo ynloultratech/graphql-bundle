@@ -1,0 +1,42 @@
+#Argument Value Transformers
+services:
+  Ynlo\GraphQLBundle\Behat\Transformer\TransformStringToNumber:
+    tags:
+      - { name: 'transformation.argument_transformer' }
+
+  Ynlo\GraphQLBundle\Behat\Transformer\TransformStringToBoolean:
+    tags:
+      - { name: 'transformation.argument_transformer' }
+
+  Ynlo\GraphQLBundle\Behat\Transformer\TransformAnyValueToString:
+    arguments: ['@Ynlo\GraphQLBundle\Behat\Transformer\TransformStringToExpression']
+    tags:
+      - { name: 'transformation.argument_transformer' }
+
+  Ynlo\GraphQLBundle\Behat\Transformer\TransformFixtureNameToObject:
+    arguments: ['@symfony2_extension.kernel', '@Ynlo\GraphQLBundle\Behat\Fixtures\FixtureManager']
+    tags:
+      - { name: 'transformation.argument_transformer' }
+
+  Ynlo\GraphQLBundle\Behat\Transformer\TransformFixtureNameToGlobalId:
+    arguments: ['@symfony2_extension.kernel', '@Ynlo\GraphQLBundle\Behat\Fixtures\FixtureManager']
+    tags:
+      - { name: 'transformation.argument_transformer' }
+
+  Ynlo\GraphQLBundle\Behat\Transformer\TransformStringToExpression:
+      arguments:
+        - '@Ynlo\GraphQLBundle\Behat\Client\GraphQLClient'
+        - '@Ynlo\GraphQLBundle\Behat\Fixtures\FixtureManager'
+        - '@Ynlo\GraphQLBundle\Behat\Storage\Storage'
+      tags:
+        - { name: 'transformation.argument_transformer' }
+
+  Ynlo\GraphQLBundle\Behat\Transformer\TransformPystringToYamlstring:
+      arguments:
+          -
+            - '@Ynlo\GraphQLBundle\Behat\Transformer\TransformFixtureNameToObject'
+            - '@Ynlo\GraphQLBundle\Behat\Transformer\TransformFixtureNameToGlobalId'
+            - '@Ynlo\GraphQLBundle\Behat\Transformer\TransformAnyValueToString'
+            - '@Ynlo\GraphQLBundle\Behat\Transformer\TransformStringToExpression'
+      tags:
+        - { name: 'transformation.argument_transformer' }
