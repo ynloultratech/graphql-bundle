@@ -26,7 +26,7 @@ final class AssertContext implements Context
      * Example: Then "{response.data.title}" should be equal to "{@post1.getTitle()}"
      * Example: Then "{response.data.id}" should be equal to "#post1"
      *
-     * @Then /^"([^"]*)" should be equal to "([^"]*)"$/
+     * @Then /^"([^"]*)" should be equal to "?([^"]*)"?$/
      */
     public function shouldBeEqualTo($actual, $expected)
     {
@@ -40,7 +40,7 @@ final class AssertContext implements Context
      * Example: Then "{response.data.title}" should not be equal to "{@post1.getTitle()}"
      * Example: Then "{response.data.id}" should not be equal to "#post1"
      *
-     * @Then /^"([^"]*)" should not be equal to "([^"]*)"$/
+     * @Then /^"([^"]*)" should not be equal to "?([^"]*)"?$/
      */
     public function shouldNotBeEqualTo($actual, $expected)
     {
