@@ -1,0 +1,34 @@
+query UserList($first: Int, $last: Int, $orderBy: [OrderBy], $after: String, $before: String) {
+    users{
+        all(first:$first, last: $last, orderBy: $orderBy, after: $after, before: $before){
+            totalCount
+            pageInfo {
+                endCursor
+                startCursor
+                hasPreviousPage
+                hasNextPage
+            }
+            edges {
+                node {
+                    id
+                    login
+                    profile {
+                        phone
+                        address {
+                            zipCode
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+query UsersByLogin($logins: [String!]!){
+    users {
+        byLogin(logins: $logins){
+            id
+            login
+        }
+    }
+}
