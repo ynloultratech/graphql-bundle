@@ -5,10 +5,11 @@ Feature: User
     And variable "first" is 5
     When send
     Then the response is OK
-    And "{response.data.users.all.pageInfo.startCursor}" should be equal to "Y3Vyc29yOjA="
-    And "{response.data.users.all.pageInfo.endCursor}" should be equal to "Y3Vyc29yOjQ="
-    And "{response.data.users.all.pageInfo.hasPreviousPage}" should be false
-    And "{response.data.users.all.pageInfo.hasNextPage}" should be true
+    And save in "pageInfo" the value from "{response.data.users.all.pageInfo}"
+    And "{pageInfo.startCursor}" should be equal to "Y3Vyc29yOjA="
+    And "{pageInfo.endCursor}" should be equal to "Y3Vyc29yOjQ="
+    And "{pageInfo.hasPreviousPage}" should be false
+    And "{pageInfo.hasNextPage}" should be true
     And "{response.data.users.all.edges[0].node.login}" should be equal to "admin"
     And "{response.data.users.all.edges[1].node.profile.phone}" should be equal to "{@user1.getProfile().getPhone()}"
     And "{response.data.users.all.edges[1].node.profile.address.zipCode}" should be equal to "{@user1.getProfile().getAddress().getZipCode()}"

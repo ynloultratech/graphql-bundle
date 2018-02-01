@@ -9,6 +9,7 @@ parameters:
         - Ynlo\GraphQLBundle\Behat\Context\DoctrineContext
         - Ynlo\GraphQLBundle\Behat\Context\GraphQLContext
         - Ynlo\GraphQLBundle\Behat\Context\ResponseContext
+        - Ynlo\GraphQLBundle\Behat\Context\StorageContext
 
 services:
   Ynlo\GraphQLBundle\Behat\Fixtures\FixtureManager:
