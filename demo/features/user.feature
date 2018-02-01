@@ -5,7 +5,7 @@ Feature: User
     And variable "first" is 5
     When send
     Then the response is OK
-    And save in "pageInfo" the value from "{response.data.users.all.pageInfo}"
+    And grab "{response.data.users.all.pageInfo}" to use as "pageInfo"
     And "{pageInfo.startCursor}" should be equal to "Y3Vyc29yOjA="
     And "{pageInfo.endCursor}" should be equal to "Y3Vyc29yOjQ="
     And "{pageInfo.hasPreviousPage}" should be false

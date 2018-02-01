@@ -27,12 +27,12 @@ final class StorageContext implements Context, StorageAwareInterface
      * Example:
      *
      * <code>
-     *  - And save in "orderItems" the value from "{response.data.add.order.items}"
+     *  - And grab "{response.data.add.order.items}" to use as "orderItems"
      * </code>
      *
-     * @Given /^save in "([^"]*)" the value from "([^"]*)"$/
+     * @Given /^grab "([^"]*)" to use as "([^"]*)"$/
      */
-    public function saveInTheValueFrom($name, $value)
+    public function grabToUseAs($value, $name)
     {
         $this->storage->setValue($name, $value);
     }
