@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Ynlo\GraphQLBundle\Behat\Deprecation\DeprecationAdviser;
 
 /**
  * Client to communicate between behat tests and symfony kernel
@@ -63,11 +64,17 @@ class GraphQLClient extends Client
      */
     protected $config = [];
 
-    public function __construct(KernelInterface $kernel, $config = [])
+    /**
+     * @var DeprecationAdviser
+     */
+    protected $deprecationAdviser = [];
+
+    public function __construct(KernelInterface $kernel, DeprecationAdviser $deprecationAdviser = null, $config = [])
     {
         parent::__construct($kernel);
 
         $this->config = $config;
+        $this->deprecationAdviser = $deprecationAdviser;
     }
 
     public function restart()
@@ -212,5 +219,23 @@ class GraphQLClient extends Client
         $this->request(Request::METHOD_POST, $this->getEndpoint(), $this->getRequestsParameters(), [], $this->getServerParameters(), $content);
 
         return $this->response = $this->getResponse();
+    }
+
+    public function request($method, $uri, array $parameters = [], array $files = [], array $server = [], $content = null, $changeHistory = true)
+    {
+        set_error_handler(
+            function ($level, $message, $errFile, $errLine) {
+                if ($this->deprecationAdviser) {
+                    $this->deprecationAdviser->addWarning($message, $errFile, $errLine);
+                }
+            },
+            E_USER_DEPRECATED
+        );
+
+        $result = parent::request($method, $uri, $parameters, $files, $server, $content, $changeHistory);
+
+        restore_error_handler();
+
+        return $result;
     }
 }
