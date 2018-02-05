@@ -12,6 +12,10 @@ api_explore:
       prefix:   /explorer
 ````
 
+Install required javascript and stylesheets:
+
+    bin/console assets:install --symlink
+
 > If you only need use the GraphiQL tool in a dev environment add the route configuration to `routing_dev.yml` instead.
 
 Now you can use GraphiQL to interact with your API using the path `/explorer` in your browser.
