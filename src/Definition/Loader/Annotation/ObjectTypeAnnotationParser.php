@@ -277,6 +277,8 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
                     }
                     if ($annotation->alias) {
                         $fieldDefinition->setName($annotation->alias);
+                        $objectDefinition->removeField($fieldDefinition->getName());
+                        $objectDefinition->addField($fieldDefinition);
                     }
                 } else {
                     $error = sprintf(
