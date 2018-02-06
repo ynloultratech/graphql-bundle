@@ -59,7 +59,17 @@ class ObjectDefinitionType extends ObjectType implements
     {
         $fields = [];
         foreach ($this->definition->getFields() as $fieldDefinition) {
-            $type = TypeRegistry::get($fieldDefinition->getType());
+            try {
+                $type = TypeRegistry::get($fieldDefinition->getType());
+            } catch (\UnexpectedValueException $exception) {
+                $msg = sprintf(
+                    'The property "%s" of object "%s" does not have valid type. %s',
+                    $fieldDefinition->getName(),
+                    $this->definition->getName(),
+                    $exception->getMessage()
+                );
+                throw new \RuntimeException($msg);
+            }
 
             if ($fieldDefinition->isList()) {
                 if ($fieldDefinition->isNonNullList()) {
