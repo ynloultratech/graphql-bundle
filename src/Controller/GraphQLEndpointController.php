@@ -74,10 +74,6 @@ class GraphQLEndpointController
 
             $output = $result->toArray($debugFlags);
             $statusCode = Response::HTTP_OK;
-
-            if (isset($output['errors'])) {
-                $statusCode = Response::HTTP_BAD_REQUEST;
-            }
         } catch (\Exception $e) {
             if (null !== $this->logger) {
                 $this->logger->error($e->getMessage(), $e->getTrace());
