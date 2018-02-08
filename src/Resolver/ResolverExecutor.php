@@ -105,11 +105,19 @@ class ResolverExecutor implements ContainerAwareInterface
         if (class_exists($resolverName)) {
             $refClass = new \ReflectionClass($resolverName);
 
-            /** @var callable $resolver */
-            $resolver = $this->container->get(AutoWire::class)->createInstance($refClass->getName());
-            if ($resolver instanceof ContainerAwareInterface) {
-                $resolver->setContainer($this->container);
+            //Verify if exist a service with resolver name and use it
+            //otherwise build the resolver using simple injection
+            //@see Ynlo\GraphQLBundle\Component\AutoWire\AutoWire
+            if ($this->container->has($resolverName)) {
+                $resolver = $this->container->get($resolverName);
+            } else {
+                /** @var callable $resolver */
+                $resolver = $this->container->get(AutoWire::class)->createInstance($refClass->getName());
+                if ($resolver instanceof ContainerAwareInterface) {
+                    $resolver->setContainer($this->container);
+                }
             }
+
             if ($refClass->hasMethod('__invoke')) {
                 $refMethod = $refClass->getMethod('__invoke');
             }
