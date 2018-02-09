@@ -113,9 +113,10 @@ class ResolverExecutor implements ContainerAwareInterface
             } else {
                 /** @var callable $resolver */
                 $resolver = $this->container->get(AutoWire::class)->createInstance($refClass->getName());
-                if ($resolver instanceof ContainerAwareInterface) {
-                    $resolver->setContainer($this->container);
-                }
+            }
+
+            if ($resolver instanceof ContainerAwareInterface) {
+                $resolver->setContainer($this->container);
             }
 
             if ($refClass->hasMethod('__invoke')) {
