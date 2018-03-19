@@ -2,10 +2,16 @@ services:
     Ynlo\GraphQLBundle\Controller\GraphQLEndpointController:
         arguments:
             - '@Ynlo\GraphQLBundle\Schema\SchemaCompiler'
+            - !tagged graphql.middleware
             - '%kernel.debug%'
             - '@?logger'
+
         calls:
             - [ addGlobalValidationRules, ['%graphql.security.validation_rules%'] ]
+
+    Ynlo\GraphQLBundle\Request\StandardGraphQLRequestMiddleware:
+         tags:
+            - { name: 'graphql.middleware' }
 
     Ynlo\GraphQLBundle\Controller\ExplorerController:
         arguments:
