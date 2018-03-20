@@ -15,6 +15,7 @@ use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\MutationDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Util\ClassUtils;
+use Ynlo\GraphQLBundle\Util\TypeUtil;
 
 /**
  * Parse mutation annotation to fetch definitions
@@ -83,7 +84,10 @@ class MutationAnnotationParser extends QueryAnnotationParser
             }
         }
 
-        $mutation->setType($annotation->payload);
+        $mutation->setType(TypeUtil::normalize($annotation->payload));
+        $mutation->setList(TypeUtil::isTypeList($annotation->payload));
+        $mutation->setNonNullList(TypeUtil::isTypeNonNullList($annotation->payload));
+        $mutation->setNonNull(TypeUtil::isTypeNonNull($annotation->payload));
 
         if (!$mutation->getType()) {
             $error = sprintf(
