@@ -259,27 +259,15 @@ class ResolverExecutor implements ContainerAwareInterface
      */
     protected function applyArgumentsNamingConventions(&$args)
     {
-        //any parameter with suffix Id of type ID automatically will be created other parameter with the real object
-        //e.g. productId => ID() produce other parameter: product => Product()
-        //
-        // Usage:
-        //  * ...
-        //  * @GraphQL\Argument(name="productId", type="ID!")
-        //  */
-        //  public function someMethod(Product $product){
-        //      //...
-        //  }
-        //
+        //Automatically resolve parameters of type ID to real object
+        //except if the parameter name is 'id', in that case a object of type ID is given
         foreach ($args as $name => $value) {
-            if ($value instanceof ID && preg_match('/Id$/', $name)) {
-                $objectParamName = preg_replace('/Id$/', null, $name);
-                if (!isset($args[$objectParamName])) {
-                    $definition = $this->endpoint->getType($value->getNodeType());
-                    if ($definition instanceof ObjectDefinition && $definition->getClass()) {
-                        /** @var EntityManager $em */
-                        $em = $this->container->get('doctrine')->getManager();
-                        $args[$objectParamName] = $em->getRepository($definition->getClass())->find($value->getDatabaseId());
-                    }
+            if ($value instanceof ID && 'id' !== $name) {
+                $definition = $this->endpoint->getType($value->getNodeType());
+                if ($definition instanceof ObjectDefinition && $definition->getClass()) {
+                    /** @var EntityManager $em */
+                    $em = $this->container->get('doctrine')->getManager();
+                    $args[$name] = $em->getRepository($definition->getClass())->find($value->getDatabaseId());
                 }
             }
         }
