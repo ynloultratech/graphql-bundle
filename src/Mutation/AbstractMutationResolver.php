@@ -16,8 +16,8 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Validator\ConstraintViolation as SymfonyConstraintViolation;
-use Ynlo\GraphQLBundle\Form\DataTransformer\DataWithIdToNodeTransformer;
 use Ynlo\GraphQLBundle\Model\ConstraintViolation;
+use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
 use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
 
@@ -34,7 +34,7 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
      */
     public function __invoke($input)
     {
-        $formBuilder = $this->createDefinitionForm($input);
+        $formBuilder = $this->createDefinitionForm($this->initialFormData($input));
 
         $form = null;
         if ($formBuilder) {
@@ -161,7 +161,26 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
     abstract public function returnPayload($data, ConstraintViolationList $violations, $inputSource);
 
     /**
-     * @param mixed $data
+     * @param array $input
+     *
+     * @return mixed
+     */
+    public function initialFormData($input)
+    {
+        if (is_array($input) && isset($input['id'])) {
+            $id = ID::createFromString($input['id']);
+            if ($this->context->getEndpoint()->hasType($id->getNodeType())) {
+                $class = $this->context->getEndpoint()->getClassForType($id->getNodeType());
+                if ($class) {
+                    return $this->getManager()->getRepository($class)->find($id->getDatabaseId());
+                }
+            }
+        }
+
+        return null;
+    }
+    /**
+     * @param mixed|null $data
      *
      * @return FormBuilderInterface|null
      */
@@ -188,11 +207,7 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
 
         $options = array_merge($options, $formConfig['options'] ?? []);
 
-        $form = $this->createFormBuilder($formType, $data, $options);
-        $viewTransformer = new DataWithIdToNodeTransformer($this->getManager(), $this->context->getEndpoint());
-        $form->addViewTransformer($viewTransformer);
-
-        return $form;
+        return $this->createFormBuilder($formType, $data, $options);
     }
 
     /**
