@@ -24,7 +24,7 @@ class ClassUtils
      */
     public static function relatedBundleNamespace($class)
     {
-        return preg_replace('~Bundle(?!.*Bundle)[\\\\\w+]+~', null, $class).'Bundle';
+        return preg_replace('~Bundle\\\\(?!.*Bundle\\\\)[\\\\\w+]+~', null, $class).'Bundle';
     }
 
     /**
