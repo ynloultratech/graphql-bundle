@@ -77,10 +77,6 @@ class NamespaceDefinitionExtension extends AbstractDefinitionExtension
                 $nodeClass = $endpoint->getClassForType($node);
             }
 
-            if (!is_a($nodeClass, NodeInterface::class, true)) {
-                return;
-            }
-
             if (isset($this->globalConfig['nodes']['aliases'][$node])) {
                 $node = $this->globalConfig['nodes']['aliases'][$node];
             }
