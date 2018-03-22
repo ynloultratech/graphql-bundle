@@ -120,12 +120,6 @@ services:
         tags:
             - { name: 'graphql.definition_annotation_parser', priority: 50 }
 
-    Ynlo\GraphQLBundle\Definition\Loader\Annotation\DoctrineORMNodeChecker:
-        calls:
-            - [ setReader, ['@annotations.reader']]
-        tags:
-            - { name: 'graphql.definition_annotation_parser' }
-
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\FieldDecorator\GraphQLFieldDefinitionDecorator:
         calls:
             - [ setReader, ['@annotations.reader']]
