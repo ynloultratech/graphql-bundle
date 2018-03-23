@@ -259,15 +259,28 @@ class ResolverExecutor implements ContainerAwareInterface
      */
     protected function applyArgumentsNamingConventions(&$args)
     {
+        //TODO: move this behavior to some configurable external service or middleware
         //Automatically resolve parameters of type ID to real object
-        //except if the parameter name is 'id', in that case a object of type ID is given
-        foreach ($args as $name => $value) {
+        //except if the parameter name is 'id' or 'ids', in that case a object of type ID or ID[] is given
+        foreach ($args as $name => &$value) {
             if ($value instanceof ID && 'id' !== $name) {
                 $definition = $this->endpoint->getType($value->getNodeType());
                 if ($definition instanceof ObjectDefinition && $definition->getClass()) {
                     /** @var EntityManager $em */
                     $em = $this->container->get('doctrine')->getManager();
-                    $args[$name] = $em->getRepository($definition->getClass())->find($value->getDatabaseId());
+                    $value = $em->getRepository($definition->getClass())->find($value->getDatabaseId());
+                }
+            }
+            if (is_array($value)) {
+                foreach ($value as &$val) {
+                    if ($val instanceof ID && 'ids' !== $name) {
+                        $definition = $this->endpoint->getType($val->getNodeType());
+                        if ($definition instanceof ObjectDefinition && $definition->getClass()) {
+                            /** @var EntityManager $em */
+                            $em = $this->container->get('doctrine')->getManager();
+                            $val = $em->getRepository($definition->getClass())->find($val->getDatabaseId());
+                        }
+                    }
                 }
             }
         }
