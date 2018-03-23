@@ -113,10 +113,21 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
             //ID are formed with base64 representation of the Types and real database ID
             //in order to create a unique and global identifier for each resource
             //@see https://facebook.github.io/relay/docs/graphql-object-identification.html
-            if ($value instanceof ID) {
-                $value = (string) $value;
+            if (is_array($value)) {
+                foreach ($value as &$val) {
+                    if ($val instanceof ID) {
+                        $val = (string) $val;
+                    } else {
+                        $val = (string) new ID($this->definition->getName(), $val);
+                    }
+                }
+                unset($val);
             } else {
-                $value = (string) new ID($this->definition->getName(), $value);
+                if ($value instanceof ID) {
+                    $value = (string) $value;
+                } else {
+                    $value = (string) new ID($this->definition->getName(), $value);
+                }
             }
         }
 

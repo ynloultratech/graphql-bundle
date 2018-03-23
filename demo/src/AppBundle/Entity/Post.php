@@ -39,6 +39,7 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  * @GraphQL\MutationAdd()
  * @GraphQL\MutationUpdate()
  * @GraphQL\MutationDelete()
+ * @GraphQL\MutationDeleteBatch()
  */
 class Post implements NodeInterface, CommentableInterface, TimestampableInterface, HasAuthorInterface
 {

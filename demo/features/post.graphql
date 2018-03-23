@@ -16,6 +16,24 @@ mutation AddPost($input: AddPostInput!){
     }
 }
 
+mutation DeletePost($input: DeletePostInput!){
+    posts {
+        delete(input: $input){
+            id
+            clientMutationId
+        }
+    }
+}
+
+mutation DeletePosts($input: DeleteBatchPostInput!){
+    posts {
+        deleteBatch(input: $input){
+            ids
+            clientMutationId
+        }
+    }
+}
+
 query ListPostsWithCategories{
     posts {
         all(first: 5, orderBy: {field: "title", direction: ASC}){

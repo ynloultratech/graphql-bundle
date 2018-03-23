@@ -47,3 +47,41 @@ Feature: Post
     And "{response.data.posts.add.node.title}" should be equal to "{variables.input.title}"
     And "{response.data.posts.add.node.status}" should be equal to "{variables.input.status}"
     And "{response.data.posts.add.node.futurePublishDate}" should be equal to "{variables.input.futurePublishDate}"
+
+  Scenario: Delete Post
+    Given the operation named "DeletePost"
+    And variables:
+    """
+    input:
+      clientMutationId: "'{faker.randomNumber}'"
+      id: "{#post1}"
+    """
+    When send
+    Then the response is OK
+    And "{response.data.posts.delete.clientMutationId}" should be equal to "{variables.input.clientMutationId}"
+    And "{response.data.posts.delete.id}" should be equal to "{#post1}"
+    And should not exist in repository "AppBundle:Post" a record matching:
+    """
+    id: "{@post1.getId()}"
+    """
+
+  Scenario: Delete Posts (Batch)
+    Given the operation named "DeletePosts"
+    And variables:
+    """
+    input:
+      clientMutationId: "'{faker.randomNumber}'"
+      ids: ["{#post1}", "{#post2}"]
+    """
+    When send
+    Then the response is OK
+    And "{response.data.posts.deleteBatch.clientMutationId}" should be equal to "{variables.input.clientMutationId}"
+    And "{response.data.posts.deleteBatch.ids}" should be equal to "{variables.input.ids}"
+    And should not exist in repository "AppBundle:Post" a record matching:
+    """
+    id: "{@post1.getId()}"
+    """
+    And should not exist in repository "AppBundle:Post" a record matching:
+    """
+    id: "{@post2.getId()}"
+    """

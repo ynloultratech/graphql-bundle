@@ -58,6 +58,31 @@ final class DoctrineContext implements Context, ClientAwareInterface, StorageAwa
     }
 
     /**
+     * Use a YAML syntax to create a criteria to match a record in given repository
+     *
+     * Example: Then should not exist in repository "AppBundle:Post" a record matching:
+     *   """
+     *   title: "Welcome"
+     *   body: "Welcome to web page"
+     *   """
+     *
+     * Expression syntax is allowed
+     *
+     * Example: Then should not exist in table "post" a record matching:
+     *   """
+     *   title: "{variables.input.title}"
+     *   body: "{variables.input.body}"
+     *   """
+     *
+     * @Given /^should not exist in repository "([^"]*)" a record matching:$/
+     */
+    public function shouldNotExistInRepositoryARecordMatching($repo, YamlStringNode $criteria)
+    {
+        $exists = (boolean) $this->getDoctrine()->getRepository($repo)->findOneBy($criteria->toArray());
+        Assert::assertFalse($exists, sprintf('Exist at least one record in the repository "%s" matching given conditions', $repo));
+    }
+
+    /**
      * Grab a set of records from database in a temp variable inside the `"storage"` in order to use latter in an expression
      *
      * The prefix `"grab in"` is optional and can be used in "Then" for readability
