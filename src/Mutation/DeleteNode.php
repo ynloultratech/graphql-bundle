@@ -57,7 +57,10 @@ class DeleteNode extends AbstractMutationResolver
      */
     public function onSubmit(FormEvent $event)
     {
-        if (!$event->getData() instanceof NodeInterface || !$event->getData()->getId()) {
+        $node = $this->context->getDefinition()->getNode();
+        $class = $this->context->getEndpoint()->getClassForType($node);
+
+        if (!$event->getData() instanceof NodeInterface || !$event->getData()->getId() || !is_a($event->getData(), $class)) {
             throw new NodeNotFoundException();
         }
     }
