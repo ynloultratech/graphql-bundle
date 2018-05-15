@@ -29,7 +29,7 @@
   },
   "require": {
     "php": ">=7.1",
-    "symfony/symfony": "^3.4|^4.0",
+    "symfony/symfony": "^3.4 || ^4.0",
     "webonyx/graphql-php": "^0.11.4",
     "doctrine/annotations": "^1.5",
     "doctrine/common": "^2.8",
