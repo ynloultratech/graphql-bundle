@@ -22,5 +22,6 @@ class ClassUtilsTest extends TestCase
         self::assertEquals('AppBundle', ClassUtils::relatedBundleNamespace('AppBundle\User'));
         self::assertEquals('Ynlo\GraphQLBundle\Demo\AppBundle', ClassUtils::relatedBundleNamespace('Ynlo\GraphQLBundle\Demo\AppBundle\Test'));
         self::assertEquals('AppBundle', ClassUtils::relatedBundleNamespace('AppBundle\Test\HelloBundleName'));
+        self::assertEquals('App', ClassUtils::relatedBundleNamespace('App\Test\HelloBundleName'));
     }
 }

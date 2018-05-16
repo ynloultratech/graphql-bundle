@@ -24,6 +24,11 @@ class ClassUtils
      */
     public static function relatedBundleNamespace($class)
     {
+        //symfony4, app does not have bundle namespace
+        if (preg_match('/^App\\\\/', $class)) {
+            return 'App';
+        }
+
         return preg_replace('~Bundle\\\\(?!.*Bundle\\\\)[\\\\\w+]+~', null, $class).'Bundle';
     }
 
