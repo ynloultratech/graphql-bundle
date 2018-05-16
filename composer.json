@@ -44,13 +44,12 @@
     "mtdowling/jmespath.php": "^2.4"
   },
   "require-dev": {
+    "symfony/symfony": "^3.0",
     "phpunit/phpunit": "^6.2",
     "symfony/phpunit-bridge": "^3.1",
     "lexik/jwt-authentication-bundle": "^2.4",
     "symfony/web-server-bundle": "^3.3",
     "symfony/monolog-bundle": "^3.1",
-    "symfony/web-profiler-bundle": "^3.1",
-    "symfony/debug-bundle": "^3.1",
     "mockery/mockery": "dev-master",
     "doctrine/orm": "^2.5",
     "doctrine/doctrine-bundle": "^1.6",
