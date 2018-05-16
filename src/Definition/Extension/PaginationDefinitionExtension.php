@@ -267,6 +267,10 @@ class PaginationDefinitionExtension extends AbstractDefinitionExtension
             }
         }
 
+        if (!$filters->getFields()) {
+            return;
+        }
+
         $search = new ArgumentDefinition();
         $search->setName('filters');
         $search->setType($filters->getName());
