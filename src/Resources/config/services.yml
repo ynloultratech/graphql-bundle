@@ -142,6 +142,7 @@ services:
 
     Ynlo\GraphQLBundle\Type\Loader\TypeAutoLoader:
         arguments: ['%kernel.cache_dir%', '%kernel.bundles_metadata%']
+        public: true
 
     Ynlo\GraphQLBundle\Form\TypeGuesser\GraphQLIDTypeGuesser:
         arguments: ['@annotations.reader']
