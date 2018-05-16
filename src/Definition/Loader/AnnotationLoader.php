@@ -91,26 +91,46 @@ class AnnotationLoader implements DefinitionLoaderInterface
             foreach ($bundles as $bundle) {
                 $path = $bundle->getPath().'/'.$definitionLocation;
                 if (file_exists($path)) {
-                    $finder = new Finder();
-                    foreach ($finder->in($path)->name('/.php$/')->getIterator() as $file) {
-                        $namespace = $bundle->getNamespace();
-                        $className = preg_replace('/.php$/', null, $file->getFilename());
-
-                        if ($file->getRelativePath()) {
-                            $subNamespace = str_replace('/', '\\', $file->getRelativePath());
-                            $fullyClassName = $namespace.'\\'.$definitionLocation.'\\'.$subNamespace.'\\'.$className;
-                        } else {
-                            $fullyClassName = $namespace.'\\'.$definitionLocation.'\\'.$className;
-                        }
-
-                        if (class_exists($fullyClassName) || interface_exists($fullyClassName)) {
-                            $classes[] = $fullyClassName;
-                        }
-                    }
+                    $classes = array_merge($classes, $this->extractNamespaceClasses($path, $bundle->getNamespace(), $definitionLocation));
                 }
             }
+
+            if (Kernel::VERSION_ID >= 40000) {
+                $path = $this->kernel->getRootDir().'/'.$definitionLocation;
+                if (file_exists($path)) {
+                    $classes = array_merge($classes, $this->extractNamespaceClasses($path, 'App', $definitionLocation));
+                }
+            }
+
         }
 
         return array_unique($classes);
+    }
+
+    /**
+     * @param string $path
+     * @param string $baseNamespace
+     * @param string $baseLocation
+     *
+     * @return array
+     */
+    protected function extractNamespaceClasses($path, $baseNamespace, $baseLocation)
+    {
+        $classes = [];
+        $finder = new Finder();
+        foreach ($finder->in($path)->name('/.php$/')->getIterator() as $file) {
+            $className = preg_replace('/.php$/', null, $file->getFilename());
+            if ($file->getRelativePath()) {
+                $subNamespace = str_replace('/', '\\', $file->getRelativePath());
+                $fullyClassName = $baseNamespace.'\\'.$baseLocation.'\\'.$subNamespace.'\\'.$className;
+            } else {
+                $fullyClassName = $baseNamespace.'\\'.$baseLocation.'\\'.$className;
+            }
+            if (class_exists($fullyClassName) || interface_exists($fullyClassName)) {
+                $classes[] = $fullyClassName;
+            }
+        }
+
+        return $classes;
     }
 }
