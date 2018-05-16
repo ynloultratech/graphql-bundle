@@ -10,11 +10,9 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Loader;
 
-use Doctrine\Common\Annotations\AnnotationReader;
-use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\DependencyInjection\Definition;
+use Doctrine\Common\Annotations\Reader;
 use Symfony\Component\Finder\Finder;
-use Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices;
+use Symfony\Component\HttpKernel\Kernel;
 use Ynlo\GraphQLBundle\Definition\Loader\Annotation\AnnotationParserInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 
@@ -35,22 +33,30 @@ class AnnotationLoader implements DefinitionLoaderInterface
     ];
 
     /**
-     * @var ContainerInterface
+     * @var Kernel
      */
-    protected $container;
+    protected $kernel;
 
     /**
-     * @var AnnotationReader
+     * @var Reader
      */
     protected $reader;
 
     /**
-     * @param ContainerInterface $container
+     * @var iterable|array|AnnotationParserInterface[]
      */
-    public function __construct(ContainerInterface $container)
+    protected $annotationParsers = [];
+
+    /**
+     * @param Kernel                               $kernel
+     * @param Reader                               $reader
+     * @param iterable|AnnotationParserInterface[] $annotationParsers
+     */
+    public function __construct(Kernel $kernel, Reader $reader, $annotationParsers = [])
     {
-        $this->container = $container;
-        $this->reader = $container->get('annotations.reader');
+        $this->kernel = $kernel;
+        $this->reader = $reader;
+        $this->annotationParsers = $annotationParsers;
     }
 
     /**
@@ -58,43 +64,15 @@ class AnnotationLoader implements DefinitionLoaderInterface
      */
     public function loadDefinitions(Endpoint $endpoint): void
     {
-        /** @var Definition $resolversServiceDefinition */
-        $resolverDefinitions = $this->container
-            ->get(TaggedServices::class)
-            ->findTaggedServices('graphql.definition_annotation_parser');
-
-        $resolvers = [];
-        foreach ($resolverDefinitions as $resolverDefinition) {
-            $attr = $resolverDefinition->getAttributes();
-            $priority = 0;
-            if (isset($attr['priority'])) {
-                $priority = $attr['priority'];
-            }
-
-            $resolvers[] = [$priority, $resolverDefinition->getService()];
-        }
-
-        //sort by priority
-        usort(
-            $resolvers,
-            function ($service1, $service2) {
-                list($priority1) = $service1;
-                list($priority2) = $service2;
-
-                return version_compare($priority2, $priority1);
-            }
-        );
-
         $classesToLoad = $this->resolveClasses();
-        foreach ($resolvers as $resolver) {
-            list(, $resolver) = $resolver;
-            if ($resolver instanceof AnnotationParserInterface) {
+        foreach ($this->annotationParsers as $parser) {
+            if ($parser instanceof AnnotationParserInterface) {
                 foreach ($classesToLoad as $class) {
                     $refClass = new \ReflectionClass($class);
                     $annotations = $this->reader->getClassAnnotations($refClass);
                     foreach ($annotations as $annotation) {
-                        if ($resolver->supports($annotation)) {
-                            $resolver->parse($annotation, $refClass, $endpoint);
+                        if ($parser->supports($annotation)) {
+                            $parser->parse($annotation, $refClass, $endpoint);
                         }
                     }
                 }
@@ -107,7 +85,7 @@ class AnnotationLoader implements DefinitionLoaderInterface
      */
     protected function resolveClasses(): array
     {
-        $bundles = $this->container->get('kernel')->getBundles();
+        $bundles = $this->kernel->getBundles();
         $classes = [];
         foreach (self::DEFINITIONS_LOCATIONS as $definitionLocation) {
             foreach ($bundles as $bundle) {

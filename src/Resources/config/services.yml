@@ -59,7 +59,7 @@ services:
 
     Ynlo\GraphQLBundle\Definition\Loader\AnnotationLoader:
         public: true
-        arguments: ['@service_container']
+        arguments: ['@kernel','@annotation_reader', !tagged graphql.definition_annotation_parser]
         tags:
             - { name: 'graphql.definition_loader' }
 
