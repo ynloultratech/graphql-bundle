@@ -86,23 +86,24 @@ class AnnotationLoader implements DefinitionLoaderInterface
     protected function resolveClasses(): array
     {
         $bundles = $this->kernel->getBundles();
-        $classes = [];
+        $classes = [[]];
         foreach (self::DEFINITIONS_LOCATIONS as $definitionLocation) {
             foreach ($bundles as $bundle) {
                 $path = $bundle->getPath().'/'.$definitionLocation;
                 if (file_exists($path)) {
-                    $classes = array_merge($classes, $this->extractNamespaceClasses($path, $bundle->getNamespace(), $definitionLocation));
+                    $classes[] = $this->extractNamespaceClasses($path, $bundle->getNamespace(), $definitionLocation);
                 }
             }
 
             if (Kernel::VERSION_ID >= 40000) {
                 $path = $this->kernel->getRootDir().'/'.$definitionLocation;
                 if (file_exists($path)) {
-                    $classes = array_merge($classes, $this->extractNamespaceClasses($path, 'App', $definitionLocation));
+                    $classes[] = $this->extractNamespaceClasses($path, 'App', $definitionLocation);
                 }
             }
-
         }
+
+        $classes = array_merge(...$classes);
 
         return array_unique($classes);
     }
