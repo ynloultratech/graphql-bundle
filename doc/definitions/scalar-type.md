@@ -18,6 +18,17 @@ Scalar types use [naming convention](../naming-conventions.md) and should be cre
 
 `Type\{Name}Type`
 
+>If the name of the class does not match with desired object name can use the property name or pass the `name` argument in the parent constructor.
+
+````php
+public function __construct(array $config = [])
+{
+   $this->name = 'SomeName';
+   // or
+   parent::__construct(['name'=>'SomeName']);
+}
+````
+
 ###### Example:
 
 ````php
@@ -29,7 +40,6 @@ class DateTimeType extends ScalarType
 {
     public function __construct(array $config = [])
     {
-        $this->name = 'DateTime';
         $this->description = 'An ISO-8601 encoded UTC date string.';
 
         parent::__construct($config);
