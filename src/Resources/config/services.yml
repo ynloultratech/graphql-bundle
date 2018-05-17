@@ -165,7 +165,7 @@ services:
 
     Ynlo\GraphQLBundle\Type\Loader\TypeAutoLoader:
         public: true
-        arguments: ['%kernel.cache_dir%', '%kernel.bundles_metadata%']
+        arguments: ['@kernel']
 
     Ynlo\GraphQLBundle\Form\TypeGuesser\GraphQLIDTypeGuesser:
         public: true
