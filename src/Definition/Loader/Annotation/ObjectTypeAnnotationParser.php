@@ -148,6 +148,16 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
     protected function extractInterfaceDefinitions(\ReflectionClass $refClass)
     {
         $int = $refClass->getInterfaces();
+
+        //get recursively all parent abstract classes to use as interfaces
+        $currentClass = $refClass;
+        while ($currentClass->getParentClass()) {
+            if ($currentClass->getParentClass()->isAbstract()) {
+                $int[] = $currentClass->getParentClass();
+            }
+            $currentClass = $currentClass->getParentClass();
+        }
+
         $definitions = [];
         foreach ($int as $intRef) {
             /** @var Annotation\InterfaceType $intAnnot */
@@ -161,6 +171,13 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
                 $intDef->setName($intAnnot->name);
                 $intDef->setClass($intRef->getName());
                 $intDef->setDescription($intAnnot->description);
+
+                // abstract classes use exclude all by default
+                // like interfaces require the inclusion of fields manually
+                if ($intRef->isAbstract()) {
+                    $intDef->setExclusionPolicy(ObjectDefinitionInterface::EXCLUDE_ALL);
+                }
+
                 $this->resolveFields($intRef, $intDef);
                 if (!$intDef->getName() && preg_match('/\w+$/', $intRef->getName(), $matches)) {
                     $intDef->setName(preg_replace('/Interface$/', null, $matches[0]));
