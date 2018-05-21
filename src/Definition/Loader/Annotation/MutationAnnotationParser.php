@@ -44,7 +44,7 @@ class MutationAnnotationParser extends QueryAnnotationParser
     {
         /** @var Annotation\Mutation $annotation */
 
-        if (!preg_match('/Bundle\\\\Mutation\\\\/', $refClass->getName())) {
+        if (!preg_match('/\\Mutation\\\\/', $refClass->getName())) {
             $error = sprintf(
                 'Annotation "@Mutation" in the class "%s" is not valid, 
             mutations can only be applied to classes inside "...Bundle\Mutation\..."',
