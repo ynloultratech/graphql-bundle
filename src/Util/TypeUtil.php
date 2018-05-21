@@ -83,6 +83,9 @@ final class TypeUtil
             case 'date':
                 $type = Types::DATETIME;
                 break;
+            case 'any':
+                $type = Types::ANY;
+                break;
         }
 
         return Inflector::classify($type);

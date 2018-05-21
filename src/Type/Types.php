@@ -17,12 +17,13 @@ use GraphQL\Type\Definition\Type as GraphQLType;
  */
 final class Types
 {
-    public const ID = GraphQLType ::ID;
+    public const ID = GraphQLType::ID;
     public const STRING = GraphQLType::STRING;
     public const INT = GraphQLType::INT;
     public const BOOLEAN = GraphQLType::BOOLEAN;
     public const FLOAT = GraphQLType::FLOAT;
     public const DATETIME = DateTimeType::DATETIME;
+    public const ANY = AnyType::ANY;
 
     /**
      * @param string $type
