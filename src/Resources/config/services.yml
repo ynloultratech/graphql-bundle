@@ -200,6 +200,10 @@ services:
             - '@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry'
         tags: [form.type]
 
+    Ynlo\GraphQLBundle\Form\Extension\GraphQLExtensionType:
+        tags:
+          - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\FormType }
+
     Ynlo\GraphQLBundle\Definition\Extension\DefinitionExtensionManager:
         public: true
         arguments: ['@Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices']
