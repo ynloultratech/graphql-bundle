@@ -216,7 +216,9 @@ class GraphQLFieldDefinitionDecorator implements FieldDefinitionDecoratorInterfa
         }
 
         if ($prop instanceof \ReflectionMethod) {
-            return lcfirst(preg_replace('/^(get|set)/', null, $prop->name));
+            if ($methodName = lcfirst(preg_replace('/^(get|set|has|is)/', null, $prop->name))) {
+                return $methodName;
+            }
         }
 
         return $prop->name;
