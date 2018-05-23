@@ -14,6 +14,7 @@ use GraphQL\Type\Definition\Type;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 
 class TypeAutoLoader
@@ -88,10 +89,18 @@ class TypeAutoLoader
 
             if (class_exists($fullyClassName)) {
                 $ref = new \ReflectionClass($fullyClassName);
-                if ($ref->isSubclassOf(Type::class)
-                    && $ref->isInstantiable()
-                    && !$ref->getConstructor()->getNumberOfRequiredParameters()
-                ) {
+                if ($ref->isSubclassOf(Type::class) && $ref->isInstantiable()) {
+                    $requiredParams = false;
+                    foreach ($ref->getConstructor()->getParameters() as $parameter) {
+                        if ($parameter->getClass() && $parameter->getClass()->implementsInterface(DefinitionInterface::class)) {
+                            continue 2;
+                        }
+                    }
+
+                    if ($requiredParams) {
+                        $error = sprintf('The graphql type defined in class "%s" is not instantiable because has some required parameters in the constructor.', $fullyClassName);
+                        throw new \LogicException($error);
+                    }
                     /** @var Type $instance */
                     $instance = $ref->newInstance();
                     TypeRegistry::addTypeMapping($instance->name, $fullyClassName);
