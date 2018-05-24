@@ -221,14 +221,14 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
         foreach ($errors as $error) {
             $violation = new ConstraintViolation();
             $violation->setMessage($error->getMessage());
-            $violation->setMessageTemplate($error->getMessageTemplate());
+            $violation->setMessageTemplate($error->getMessageTemplate() ?? $error->getMessage());
             foreach ($error->getMessageParameters() as $key => $value) {
                 $violation->addParameter($key, $value);
             }
 
             $cause = $error->getCause();
             if ($cause instanceof SymfonyConstraintViolation) {
-                $violation->setCode($cause->getCode());
+                $violation->setCode($cause->getCode() ?? md5($violation->getMessageTemplate()));
                 $violation->setInvalidValue($cause->getInvalidValue());
                 $violation->setPlural($cause->getPlural());
 
