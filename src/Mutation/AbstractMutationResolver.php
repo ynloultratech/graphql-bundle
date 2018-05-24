@@ -253,12 +253,15 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
      */
     private function publicPropertyPath(FormInterface $form, $path)
     {
-        if (strpos($path, '.') !== false) {
+        if (strpos($path, '.') !== false) { // object.child.property
             $pathArray = explode('.', $path);
+        } elseif (strpos($path, '[') !== false) { //[array][child][property]
+            $path = str_replace(']', null, $path);
+            $pathArray = explode('[', $path);
         } else {
             $pathArray = [$path];
         }
-        if ($pathArray[0] === 'data') {
+        if (in_array($pathArray[0], ['data', 'children'])) {
             array_shift($pathArray);
         }
 
