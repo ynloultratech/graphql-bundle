@@ -86,6 +86,11 @@ final class TypeUtil
             case 'any':
                 $type = Types::ANY;
                 break;
+            case 'dynamic':
+            case 'dynamicObject':
+            case 'dynamic_object':
+                $type = Types::DYNAMIC_OBJECT;
+                break;
         }
 
         return Inflector::classify($type);
