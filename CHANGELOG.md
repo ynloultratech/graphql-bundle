@@ -1,0 +1,44 @@
+CHANGELOG
+=========
+
+[Unreleased]
+-----
+ * Add `symfony4` support
+ * Fix error in pagination when filters does not have any field to filter
+ * Fix error in pagination when a node use custom object as node field
+ * Add support to use abstract PHP classes as graphql interfaces
+ * Add graphql scalar type called `Any` to support arbitrary values
+ * Add graphql form extension to allow set custom type, description and deprecationReason in forms
+ * [BC BREAK] `has` and `his` prefixes are now removed in method definitions like `get` and `set`. Now a method like `isActive()` is converted to graphql definition like `active`
+ * [BC BREAK] a exception is thrown when register a graphql custom type and is not instantiable
+ * Add graphql scalar type called `DynamicObject` to support custom objects like `key:value` pairs
+ * Hide field description in graphiql when a list of fields are displayed _(improve readability)_
+ * Update `graphiql` assets to latest version
+
+1.0.6 - 18-03-23
+----
+ * Resolve array of IDs to real nodes
+ * Add `MutationDeleteBatch` to allow delete multiple nodes in batch
+ 
+1.0.5 - 18-03-22
+----
+ * Allow doctrine entities not implementing node interface
+ * Mutations can override and use custom initial form data
+ 
+1.0.4 - 18-03-21
+----
+ * Automatically resolve parameters of type ID to real node
+ 
+1.0.3 - 18-03-20
+----
+ * Add support for mutations to return array of objects
+ 
+1.0.2 - 18-03-19
+----
+ * Add support for doctrine GUID type
+ * Add request middleware interface to allow customize API requests
+ * Add support to upload files using [GraphQL multipart request specification](https://github.com/jaydenseric/graphql-multipart-request-spec)
+ 
+1.0.1 - 18-02-08
+-----
+ * Initial Release
