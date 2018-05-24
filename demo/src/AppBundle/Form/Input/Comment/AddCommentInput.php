@@ -30,6 +30,7 @@ class AddCommentInput extends AbstractType
                 'commentable',
                 IDType::class,
                 [
+                    'label' => false, //check issue #11
                     'constraints' => [new NotBlank()],
                 ]
             )

@@ -14,6 +14,7 @@ CHANGELOG
  * Add graphql scalar type called `DynamicObject` to support custom objects like `key:value` pairs
  * Hide field description in graphiql when a list of fields are displayed _(improve readability)_
  * Update `graphiql` assets to latest version
+ * Fixed #11 (Label=false in a form, throws schema error ...Must be named. Unexpected name: (empty string))
 
 1.0.6 - 18-03-23
 ----

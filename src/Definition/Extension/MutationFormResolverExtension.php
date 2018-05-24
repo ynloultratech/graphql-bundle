@@ -172,7 +172,8 @@ class MutationFormResolverExtension extends AbstractDefinitionExtension
 
         foreach ($form->all() as $formField) {
             $field = new FieldDefinition();
-            $field->setName($formField->getConfig()->getOption('label') ?? $formField->getName());
+            $label = $formField->getConfig()->getOption('label');
+            $field->setName(!empty($label) ? $label : $formField->getName());
             $field->setDescription($formField->getConfig()->getOption('graphql_description') ?? null);
             $field->setDeprecationReason($formField->getConfig()->getOption('graphql_deprecation_reason') ?? null);
             $field->setNonNull($formField->isRequired());
