@@ -24,7 +24,10 @@ class DynamicObjectType extends ScalarType
         $this->description = 'The `DynamicObject` represent a object with unknown and dynamic properties. 
 For this type of objects you can\'t select the properties to get. 
 
-A common usage of these type of objects is when the object represent a set of **key:value** pairs';
+A common usage of these type of objects is when the object represent a set of **key:value** pairs.
+
+Some tools like GraphiQL display a syntax warning when try to send this type of object, but works fine. 
+In any case to remove the warning can set the object inside a string.';
 
         parent::__construct([]);
     }
@@ -52,6 +55,10 @@ A common usage of these type of objects is when the object represent a set of **
      */
     public function parseValue($value)
     {
+        if (is_string($value)) {
+            $value = json_decode($value, true);
+        }
+
         return $value;
     }
 
