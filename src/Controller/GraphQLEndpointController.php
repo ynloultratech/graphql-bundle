@@ -102,6 +102,25 @@ class GraphQLEndpointController
                 $debugFlags = Debug::INCLUDE_DEBUG_MESSAGE | Debug::INCLUDE_TRACE;
             }
 
+            foreach ($result->errors as $error) {
+                if (null !== $this->logger) {
+                    $originError = $error->getTrace()[0]['args'][0] ?? null;
+                    $context = [];
+                    if ($originError instanceof \Exception) {
+                        $context = [
+                            'file' => $originError->getFile(),
+                            'line' => $originError->getLine(),
+                            'error' => get_class($originError),
+                        ];
+                    }
+                    if ($error->isClientSafe()) {
+                        $this->logger->notice($error->getMessage(), $context);
+                    } else {
+                        $this->logger->error($error->getMessage(), $context);
+                    }
+                }
+            }
+
             $output = $result->toArray($debugFlags);
             $statusCode = Response::HTTP_OK;
         } catch (\Exception $e) {
