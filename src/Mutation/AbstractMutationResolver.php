@@ -161,6 +161,32 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
     abstract public function returnPayload($data, ConstraintViolationList $violations, $inputSource);
 
     /**
+     * @return null|string
+     */
+    protected function getPayloadClass(): string
+    {
+        $type = $this->getContext()->getDefinition()->getType();
+
+        if (class_exists($type)) {
+            return $type;
+        }
+
+        if ($this->context->getEndpoint()->hasType($type)) {
+            $class = $this->context->getEndpoint()->getClassForType($type);
+            if (class_exists($class)) {
+                return $class;
+            }
+        }
+
+        throw new \RuntimeException(
+            sprintf(
+                'Can\'t find a valid payload class for "%s".',
+                $this->getContext()->getDefinition()->getName()
+            )
+        );
+    }
+
+    /**
      * @param array $input
      *
      * @return mixed

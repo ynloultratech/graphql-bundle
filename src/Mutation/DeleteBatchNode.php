@@ -57,7 +57,9 @@ class DeleteBatchNode extends AbstractMutationResolver
             $ids[] = ID::createFromString($id);
         }
 
-        return new DeleteBatchNodePayload($ids, $inputSource['clientMutationId'] ?? null);
+        $class = $this->getPayloadClass();
+
+        return new $class($ids, $inputSource['clientMutationId'] ?? null);
     }
 
     /**

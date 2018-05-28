@@ -59,7 +59,9 @@ class UpdateNode extends AbstractMutationResolver
             $data = null;
         }
 
-        return new UpdateNodePayload($data, $violations->all(), $inputSource['clientMutationId'] ?? null);
+        $class = $this->getPayloadClass();
+
+        return new $class($data, $violations->all(), $inputSource['clientMutationId'] ?? null);
     }
 
     /**

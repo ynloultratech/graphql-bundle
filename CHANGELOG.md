@@ -17,6 +17,7 @@ CHANGELOG
  * Fixed #11 (Label=false in a form, throws schema error ...Must be named. Unexpected name: (empty string))
  * Fix error when a validation constraint does not have code or message template
  * Fix log errors correctly and define user errors as notices
+ * Resolve mutation payload class automatically for easy override
 
 1.0.6 - 18-03-23
 ----
