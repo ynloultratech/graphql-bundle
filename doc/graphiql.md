@@ -43,6 +43,7 @@ If you need expose GraphiQL in the production most likely your API
 require some authentication mechanism like OAuth2, JWT, API Key or any other.
 
 Enable the authentication requirement in the bundle config.
+
 ````yaml
 #config.yml
 
@@ -72,6 +73,7 @@ graphql:
 > The login url should be the url to retrieve the token, can be a route name or URI.
 
 Full configuration for JWT provider:
+
 ````yaml
 jwt:
     enabled:              false
@@ -97,6 +99,8 @@ jwt:
         # Customize how the token should be send,  use the place holder {token} to replace for current token
         token_template:       'Bearer {token}'
 ````
+
+> By default the JWT configuration is ready to work with [LexikJWTAuthenticationBundle](https://github.com/lexik/LexikJWTAuthenticationBundle) out of the box.
 
 ### OAuth2
 
