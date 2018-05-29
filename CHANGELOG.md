@@ -21,6 +21,7 @@ CHANGELOG
  * Add support tu use CRUD extensions for real PHP interfaces without register a graphql interface type.
  * [BC BREAK] Removed `getPriority` method in CRUD extensions, must use service tag priority instead. 
  * Add config to set custom labels for GraphiQL JWT Authentication form fields
+ * fix GraphiQL CORS error when use the explorer in a different domain or subdomain
 
 1.0.6 - 18-03-23
 ----
