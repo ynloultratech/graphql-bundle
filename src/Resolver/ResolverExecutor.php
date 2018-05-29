@@ -26,6 +26,7 @@ use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Extension\ExtensionInterface;
+use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Extension\ExtensionsAwareInterface;
 use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Type\Types;
@@ -100,11 +101,20 @@ class ResolverExecutor implements ContainerAwareInterface
         if (class_exists($resolverName)) {
             $refClass = new \ReflectionClass($resolverName);
 
-            /** @var callable $resolver */
-            $resolver = $this->container->get(AutoWire::class)->createInstance($refClass->getName());
+            //Verify if exist a service with resolver name and use it
+            //otherwise build the resolver using simple injection
+            //@see Ynlo\GraphQLBundle\Component\AutoWire\AutoWire
+            if ($this->container->has($resolverName)) {
+                $resolver = $this->container->get($resolverName);
+            } else {
+                /** @var callable $resolver */
+                $resolver = $this->container->get(AutoWire::class)->createInstance($refClass->getName());
+            }
+
             if ($resolver instanceof ContainerAwareInterface) {
                 $resolver->setContainer($this->container);
             }
+
             if ($refClass->hasMethod('__invoke')) {
                 $refMethod = $refClass->getMethod('__invoke');
             }
@@ -165,31 +175,32 @@ class ResolverExecutor implements ContainerAwareInterface
     protected function resolveObjectExtensions(HasExtensionsInterface $objectDefinition): array
     {
         $extensions = [];
-        foreach ($objectDefinition->getExtensions() as $extensionDefinition) {
-            $extensionClass = $extensionDefinition->getClass();
-            if ($this->container->has($extensionClass)) {
-                $extensionInstance = $this->container->get($extensionClass);
-            } else {
-                $extensionInstance = new $extensionClass();
-                if ($extensionInstance instanceof ContainerAwareInterface) {
-                    $extensionInstance->setContainer($this->container);
+
+        //get all extensions registered as services
+        $registeredExtensions = $this->container->get(ExtensionManager::class)->getExtensions();
+        foreach ($registeredExtensions as $registeredExtension) {
+            foreach ($objectDefinition->getExtensions() as $extensionDefinition) {
+                $extensionClass = $extensionDefinition->getClass();
+                if (get_class($registeredExtension) === $extensionClass) {
+                    $extensions[$extensionClass] = $registeredExtension;
                 }
             }
-            $extensions[] = [$extensionDefinition->getPriority(), $extensionInstance];
         }
 
-        //sort by priority
-        usort(
-            $extensions,
-            function ($extension1, $extension2) {
-                list($priority1) = $extension1;
-                list($priority2) = $extension2;
+        //get all extensions not registered as services
+        foreach ($objectDefinition->getExtensions() as $extensionDefinition) {
+            $class = $extensionDefinition->getClass();
+            if (!isset($extensions[$class])) {
+                $instance = new $class();
+                if ($instance instanceof ContainerAwareInterface) {
+                    $instance->setContainer($this->container);
+                }
 
-                return version_compare($priority2 + 250, $priority1 + 250);
+                $extensions[$class] = $instance;
             }
-        );
+        }
 
-        return array_column($extensions, 1);
+        return array_values($extensions);
     }
 
     /**
@@ -245,26 +256,27 @@ class ResolverExecutor implements ContainerAwareInterface
      */
     protected function applyArgumentsNamingConventions(&$args)
     {
-        //any parameter with suffix Id of type ID automatically will be created other parameter with the real object
-        //e.g. productId => ID() produce other parameter: product => Product()
-        //
-        // Usage:
-        //  * ...
-        //  * @GraphQL\Argument(name="productId", type="ID!")
-        //  */
-        //  public function someMethod(Product $product){
-        //      //...
-        //  }
-        //
-        foreach ($args as $name => $value) {
-            if ($value instanceof ID && preg_match('/Id$/', $name)) {
-                $objectParamName = preg_replace('/Id$/', null, $name);
-                if (!isset($args[$objectParamName])) {
-                    $definition = $this->endpoint->getType($value->getNodeType());
-                    if ($definition instanceof ObjectDefinition && $definition->getClass()) {
-                        /** @var EntityManager $em */
-                        $em = $this->container->get('doctrine')->getManager();
-                        $args[$objectParamName] = $em->getRepository($definition->getClass())->find($value->getDatabaseId());
+        //TODO: move this behavior to some configurable external service or middleware
+        //Automatically resolve parameters of type ID to real object
+        //except if the parameter name is 'id' or 'ids', in that case a object of type ID or ID[] is given
+        foreach ($args as $name => &$value) {
+            if ($value instanceof ID && 'id' !== $name) {
+                $definition = $this->endpoint->getType($value->getNodeType());
+                if ($definition instanceof ObjectDefinition && $definition->getClass()) {
+                    /** @var EntityManager $em */
+                    $em = $this->container->get('doctrine')->getManager();
+                    $value = $em->getRepository($definition->getClass())->find($value->getDatabaseId());
+                }
+            }
+            if (is_array($value)) {
+                foreach ($value as &$val) {
+                    if ($val instanceof ID && 'ids' !== $name) {
+                        $definition = $this->endpoint->getType($val->getNodeType());
+                        if ($definition instanceof ObjectDefinition && $definition->getClass()) {
+                            /** @var EntityManager $em */
+                            $em = $this->container->get('doctrine')->getManager();
+                            $val = $em->getRepository($definition->getClass())->find($val->getDatabaseId());
+                        }
                     }
                 }
             }

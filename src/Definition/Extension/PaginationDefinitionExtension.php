@@ -11,6 +11,7 @@
 namespace Ynlo\GraphQLBundle\Definition\Extension;
 
 use Doctrine\Common\Annotations\Reader;
+use GraphQL\Type\Definition\ObjectType;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
@@ -25,6 +26,7 @@ use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Model\OrderBy;
 use Ynlo\GraphQLBundle\Query\Node\AllNodesWithPagination;
+use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 
 /**
  * Convert a simple return of nodes into a paginated collection with edges
@@ -251,9 +253,26 @@ class PaginationDefinitionExtension extends AbstractDefinitionExtension
                     }
                     $filter->setList(true);
                 }
+
+                // fields using custom object as type
+                // are not available for filters
+                if (TypeRegistry::getTypeMapp()) {
+                    if (isset(TypeRegistry::getTypeMapp()[$type])) {
+                        $class = TypeRegistry::getTypeMapp()[$type];
+                        $ref = new \ReflectionClass($class);
+                        if ($ref->isSubclassOf(ObjectType::class)) {
+                            continue;
+                        }
+                    }
+                }
+
                 $filter->setType($type);
                 $filters->addField($filter);
             }
+        }
+
+        if (!$filters->getFields()) {
+            return;
         }
 
         $search = new ArgumentDefinition();

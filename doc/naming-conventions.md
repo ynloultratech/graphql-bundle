@@ -12,7 +12,7 @@ Some files require special locations to works without specific configuration
 - **Mutations:**  `Mutation\{Node}\{MutationName}`
 - **Input Forms:**  `Form\Input\{Node}\{MutationName}Input`
 - **Types:**  `Type\{Name}Type`
-- **Extensions:**  `Extensions\{InterfaceName}Extension`
+- **Extensions:**  `Extension\{InterfaceName}Extension`
 
 > `{Node}` refer to the public node name and not the class name, 
 if the class name is `User` and the public name is `Customer` the node name is the last one.

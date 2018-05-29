@@ -51,11 +51,8 @@ use [NelmioCorsBundle](https://github.com/nelmio/NelmioCorsBundle) instead of bu
 
 In order to keep simple and customizable this bundle, 
  doest not have integrated any authentication system. 
-
-The following bundles can be easily integrated and are powerful:
  
-- OAuth2 - [FOSOAuthServerBundle](https://github.com/FriendsOfSymfony/FOSOAuthServerBundle)
-- JWToken - [LexikJWTAuthenticationBundle](https://github.com/lexik/LexikJWTAuthenticationBundle)
+- [JWToken](security/jwt-authentication.md)
 
 ## Roles & Permissions
 

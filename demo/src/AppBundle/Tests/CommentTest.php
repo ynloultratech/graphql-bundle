@@ -57,7 +57,7 @@ GraphQL;
             $mutation,
             [
                 'input' => [
-                    'commentable' => $commentableId = self::encodeID('Post', $post),
+                    'commentable' => self::encodeID($post),
                     'body' => $comment = $faker->sentence,
                     'clientMutationId' => (string) $clientMutationId = mt_rand(),
                 ],
@@ -65,11 +65,11 @@ GraphQL;
         );
 
         self::assertRepositoryContains(PostComment::class, ['body' => $comment, 'post' => $post]);
-        self::assertJsonPathEquals($comment, 'data.comments.add.node.body');
-        self::assertJsonPathEquals($post->getTitle(), 'data.comments.add.node.commentable.title');
-        self::assertJsonPathEquals($clientMutationId, 'data.comments.add.clientMutationId');
+        self::assertResponseJsonValueEquals($comment, 'data.comments.add.node.body');
+        self::assertResponseJsonValueEquals($post->getTitle(), 'data.comments.add.node.commentable.title');
+        self::assertResponseJsonValueEquals($clientMutationId, 'data.comments.add.clientMutationId');
 
-        return self::getJsonPathValue('data.comments.add.node.id');
+        return self::getResponseJsonPathValue('data.comments.add.node.id');
     }
 
     /**
@@ -101,7 +101,7 @@ GraphQL;
         );
 
         self::assertResponseCodeIsOK();
-        self::assertJsonPathEquals($id, 'data.comments.delete.id');
-        self::assertJsonPathEquals($clientMutationId, 'data.comments.delete.clientMutationId');
+        self::assertResponseJsonValueEquals($id, 'data.comments.delete.id');
+        self::assertResponseJsonValueEquals($clientMutationId, 'data.comments.delete.clientMutationId');
     }
 }

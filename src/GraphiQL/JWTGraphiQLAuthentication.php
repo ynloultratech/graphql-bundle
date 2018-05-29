@@ -69,14 +69,14 @@ class JWTGraphiQLAuthentication implements GraphiQLAuthenticationProviderInterfa
                 $this->config['login']['username_parameter'] ?? 'username',
                 null,
                 [
-                    'label' => 'Username',
+                    'label' => $this->config['login']['username_label'] ?? 'Label',
                 ]
             )
             ->add(
                 $this->config['login']['password_parameter'] ?? 'password',
                 PasswordType::class,
                 [
-                    'label' => 'Password',
+                    'label' => $this->config['login']['password_label'] ?? 'Password',
                 ]
             );
     }

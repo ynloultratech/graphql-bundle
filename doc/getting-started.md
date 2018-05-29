@@ -23,13 +23,15 @@ $bundles = [
  ];
 ````
 
+> In Symfony4 the bundle is automatically registered after composer installation.
+
 At this point its almost ready
 
 ## Configuration
      
 #### Endpoint Route
 
-GraphQL use one only endpoint to all queries & mutations to configure it, add the following route in your `routing.yml`
+GraphQL use one only endpoint to all queries & mutations to configure it, add the following route in your `routing.yml` or `routes.yaml` in symfony4.
 
 ````yaml    
 api:

@@ -51,7 +51,7 @@ GraphQL;
         self::send($query);
 
         foreach ($records as $index => $category) {
-            self::assertJsonPathEquals($category->getName(), "data.categories.all.edges[$index].node.name");
+            self::assertResponseJsonValueEquals($category->getName(), "data.categories.all.edges[$index].node.name");
             /** @var Post[] $posts */
             $posts = self::getRepository(Post::class)
                          ->createQueryBuilder('o')
@@ -63,7 +63,7 @@ GraphQL;
                          ->getResult();
 
             foreach ($posts as $indexPost => $post) {
-                self::assertJsonPathEquals($post->getTitle(), "data.categories.all.edges[$index].node.posts.edges[$indexPost].node.title");
+                self::assertResponseJsonValueEquals($post->getTitle(), "data.categories.all.edges[$index].node.posts.edges[$indexPost].node.title");
             }
         }
     }
@@ -104,15 +104,15 @@ GraphQL;
         self::send(
             $query,
             [
-                'id' =>  self::encodeID('Category', $category1),
+                'id' => self::encodeID($category1),
             ]
         );
 
-        $resultCategory1 = self::getJsonPathValue('data.node');
+        $resultCategory1 = self::getResponseJsonPathValue('data.node');
 
         self::assertEquals($category1->getName(), $resultCategory1['name']);
 
-        $postsInCategory1 = self::getJsonPathValue('data.node.postsByStatus.edges[*].node');
+        $postsInCategory1 = self::getResponseJsonPathValue('data.node.postsByStatus.edges[*].node');
 
         self::assertEquals($publish1, $postsInCategory1);
     }
@@ -122,12 +122,6 @@ GraphQL;
      */
     public function testGetCategoryPostsByStatusVerifyMaxConcurrentUsage()
     {
-        /** @var Category $category1 */
-        $category1 = self::getFixtureReference('category1');
-
-        /** @var Category $category2 */
-        $category2 = self::getFixtureReference('category2');
-
         $query = <<<'GraphQL'
 query($ids: [ID!]!) {
     nodes (ids: $ids) {
@@ -149,12 +143,12 @@ GraphQL;
             $query,
             [
                 'ids' => [
-                    self::encodeID('Category', $category1),
-                    self::encodeID('Category', $category2),
+                    self::getFixtureGlobalId('category1'),
+                    self::getFixtureGlobalId('category2'),
                 ],
             ]
         );
 
-       self::assertJsonPathEquals('The field "postsByStatus" can be fetched only once per query. This field can`t be used in a list.', 'errors[0].message');
+       self::assertResponseJsonValueEquals('The field "postsByStatus" can be fetched only once per query. This field can`t be used in a list.', 'errors[0].message');
     }
 }

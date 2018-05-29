@@ -128,6 +128,7 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
                 break;
             case DoctrineType::STRING:
             case DoctrineType::TEXT:
+            case DoctrineType::GUID:
                 $type = Types::STRING;
                 break;
             case DoctrineType::SIMPLE_ARRAY:

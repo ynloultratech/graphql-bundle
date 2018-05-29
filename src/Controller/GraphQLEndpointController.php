@@ -11,6 +11,7 @@
 
 namespace Ynlo\GraphQLBundle\Controller;
 
+use GraphQL\Error\ClientAware;
 use GraphQL\Error\Debug;
 use GraphQL\GraphQL;
 use GraphQL\Validator\DocumentValidator;
@@ -20,16 +21,35 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Ynlo\GraphQLBundle\Request\ExecuteQuery;
+use Ynlo\GraphQLBundle\Request\RequestMiddlewareInterface;
 use Ynlo\GraphQLBundle\Schema\SchemaCompiler;
 
 class GraphQLEndpointController
 {
-    private $compiler;
-    private $debug;
-    private $logger;
+    /**
+     * @var SchemaCompiler
+     */
+    protected $compiler;
 
-    public function __construct(SchemaCompiler $compiler, bool $debug, LoggerInterface $logger = null)
+    /**
+     * @var bool
+     */
+    protected $debug;
+
+    /**
+     * @var LoggerInterface
+     */
+    protected $logger;
+
+    /**
+     * @var iterable
+     */
+    protected $middlewares = [];
+
+    public function __construct(SchemaCompiler $compiler, iterable $middlewares = [], bool $debug = false, LoggerInterface $logger = null)
     {
+        $this->middlewares = $middlewares;
         $this->compiler = $compiler;
         $this->debug = $debug;
         $this->logger = $logger;
@@ -41,36 +61,80 @@ class GraphQLEndpointController
             throw new HttpException(Response::HTTP_BAD_REQUEST, 'The method should be POST to talk with GraphQL API');
         }
 
-        $input = json_decode($request->getContent(), true);
-        $query = $input['query'];
+        $query = new ExecuteQuery();
+        foreach ($this->middlewares as $middleware) {
+            if ($middleware instanceof RequestMiddlewareInterface) {
+                $middleware->processRequest($request, $query);
+            }
+        }
+
         $context = null;
-        $variableValues = $input['variables'] ?? null;
-        $operationName = $input['operationName'] ?? null;
-        // this will override global validation rules for this request
         $validationRules = null;
 
         try {
             $schema = $this->compiler->compile();
             $schema->assertValid();
 
-            $result = GraphQL::executeQuery($schema, $query, null, $context, $variableValues, $operationName, null, $validationRules);
+            $result = GraphQL::executeQuery(
+                $schema,
+                $query->getRequestString(),
+                null,
+                $context,
+                $query->getVariables(),
+                $query->getOperationName(),
+                null,
+                $validationRules
+            );
 
-            $debug = false;
+            if (!$this->debug) {
+                // in case of debug = false
+                // If API_DEBUG is passed, output of error formatter is enriched which debugging information.
+                // Helpful for tests to get full error logs without the need of enable full app debug flag
+                if (isset($_ENV['API_DEBUG'])) {
+                    $this->debug = $_ENV['API_DEBUG'];
+                } elseif (isset($_SERVER['API_DEBUG'])) {
+                    $this->debug = $_SERVER['API_DEBUG'];
+                }
+            }
+
+            $debugFlags = false;
             if ($this->debug) {
-                $debug = Debug::INCLUDE_DEBUG_MESSAGE | Debug::INCLUDE_TRACE;
+                $debugFlags = Debug::INCLUDE_DEBUG_MESSAGE | Debug::INCLUDE_TRACE;
             }
-            $output = $result->toArray($debug);
-            $statusCode = Response::HTTP_OK;
 
-            if (isset($output['errors'])) {
-                $statusCode = Response::HTTP_BAD_REQUEST;
+            foreach ($result->errors as $error) {
+                if (null !== $this->logger) {
+                    $originError = $error->getTrace()[0]['args'][0] ?? null;
+                    $context = [];
+                    if ($originError instanceof \Exception) {
+                        $context = [
+                            'file' => $originError->getFile(),
+                            'line' => $originError->getLine(),
+                            'error' => get_class($originError),
+                        ];
+                    }
+                    if ($error->isClientSafe()) {
+                        $this->logger->notice($error->getMessage(), $context);
+                    } else {
+                        $this->logger->error($error->getMessage(), $context);
+                    }
+                }
             }
+
+            $output = $result->toArray($debugFlags);
+            $statusCode = Response::HTTP_OK;
         } catch (\Exception $e) {
             if (null !== $this->logger) {
                 $this->logger->error($e->getMessage(), $e->getTrace());
             }
             $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
-            $output['errors']['message'] = $e->getMessage();
+            $message = Response::$statusTexts[$statusCode] ?? 'Internal Server Error';
+
+            if ($this->debug || ($e instanceof ClientAware && $e->isClientSafe())) {
+                $message = $e->getMessage();
+            }
+
+            $output['errors']['message'] = $message;
             $output['errors']['category'] = 'internal';
 
             if ($this->debug) {

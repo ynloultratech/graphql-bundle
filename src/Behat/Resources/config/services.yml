@@ -1,0 +1,59 @@
+imports:
+    - { resource: "transformers.yml" }
+    - { resource: "preprocessors.yml" }
+
+parameters:
+    graphql.contexts:
+        - Ynlo\GraphQLBundle\Behat\Context\AssertContext
+        - Ynlo\GraphQLBundle\Behat\Context\DatabaseContext
+        - Ynlo\GraphQLBundle\Behat\Context\DoctrineContext
+        - Ynlo\GraphQLBundle\Behat\Context\GraphQLContext
+        - Ynlo\GraphQLBundle\Behat\Context\ResponseContext
+        - Ynlo\GraphQLBundle\Behat\Context\StorageContext
+
+services:
+  Ynlo\GraphQLBundle\Behat\Fixtures\FixtureManager:
+    arguments: ['@symfony2_extension.kernel']
+
+  Ynlo\GraphQLBundle\Behat\Fixtures\LoadFixturesSubscriber:
+    arguments: ['@symfony2_extension.kernel', '@Ynlo\GraphQLBundle\Behat\Fixtures\FixtureManager']
+    tags:
+      - { name: 'event_dispatcher.subscriber' }
+
+  Ynlo\GraphQLBundle\Behat\Context\Loader\ContextLoader:
+    arguments: ['@tester.suite', '%graphql.contexts%']
+    tags:
+      - { name: 'tester.suite.wrapper' }
+
+  Ynlo\GraphQLBundle\Behat\Client\GraphQLClient:
+    arguments: ['@symfony2_extension.kernel', '@Ynlo\GraphQLBundle\Behat\Deprecation\DeprecationAdviser','%graphql.client_config%']
+
+  Ynlo\GraphQLBundle\Behat\Client\ClientResetSubscriber:
+    arguments: ['@Ynlo\GraphQLBundle\Behat\Client\GraphQLClient']
+    tags:
+      - { name: 'event_dispatcher.subscriber' }
+
+  Ynlo\GraphQLBundle\Behat\Client\ClientAwareInitializer:
+    arguments: ['@tester.step', '@Ynlo\GraphQLBundle\Behat\Client\GraphQLClient']
+    tags:
+      - { name: 'tester.step.wrapper', priority: -99999 }
+
+  Ynlo\GraphQLBundle\Behat\Storage\Storage: ~
+
+  Ynlo\GraphQLBundle\Behat\Storage\StorageResetSubscriber:
+    arguments: ['@Ynlo\GraphQLBundle\Behat\Storage\Storage']
+    tags:
+      - { name: 'event_dispatcher.subscriber' }
+
+  Ynlo\GraphQLBundle\Behat\Storage\StorageAwareInitializer:
+    arguments: ['@tester.step', '@Ynlo\GraphQLBundle\Behat\Storage\Storage']
+    tags:
+      - { name: 'tester.step.wrapper', priority: -99999 }
+
+  Ynlo\GraphQLBundle\Behat\Deprecation\DeprecationAdviser:
+    tags:
+        - { name: 'event_dispatcher.subscriber' }
+
+
+
+

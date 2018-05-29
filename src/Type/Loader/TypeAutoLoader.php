@@ -12,19 +12,23 @@ namespace Ynlo\GraphQLBundle\Type\Loader;
 
 use GraphQL\Type\Definition\Type;
 use Symfony\Component\Finder\Finder;
+use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpKernel\KernelInterface;
+use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 
 class TypeAutoLoader
 {
     protected static $loaded = false;
 
-    private $cacheDir;
-    private $bundles;
+    /**
+     * @var KernelInterface
+     */
+    protected $kernel;
 
-    public function __construct(string $cacheDir, array $bundles)
+    public function __construct(KernelInterface $kernel)
     {
-        $this->cacheDir = $cacheDir;
-        $this->bundles = $bundles;
+        $this->kernel = $kernel;
     }
 
     /**
@@ -37,7 +41,7 @@ class TypeAutoLoader
             return;
         }
 
-        if ($this->loadFromCacheCache()) {
+        if (!$this->kernel->isDebug() && $this->loadFromCacheCache()) {
             self::$loaded = true;
 
             return;
@@ -45,32 +49,17 @@ class TypeAutoLoader
 
         self::$loaded = true;
 
-        foreach ($this->bundles as $bundle) {
-            $path = $bundle['path'].'/Type';
+        foreach ($this->kernel->getBundles() as $bundle) {
+            $path = $bundle->getPath().'/Type';
             if (file_exists($path)) {
-                $finder = new Finder();
-                foreach ($finder->in($path)->name('/Type.php$/')->getIterator() as $file) {
-                    $namespace = $bundle['namespace'];
-                    $className = preg_replace('/.php$/', null, $file->getFilename());
-                    $name = preg_replace('/Type$/', null, $className);
+                $this->registerBundleTypes($path, $bundle->getNamespace());
+            }
+        }
 
-                    if ($file->getRelativePath()) {
-                        $subNamespace = str_replace('/', '\\', $file->getRelativePath());
-                        $fullyClassName = $namespace.'\\Type\\'.$subNamespace.'\\'.$className;
-                    } else {
-                        $fullyClassName = $namespace.'\\Type\\'.$className;
-                    }
-
-                    if (class_exists($fullyClassName)) {
-                        $ref = new \ReflectionClass($fullyClassName);
-                        if ($ref->isSubclassOf(Type::class)
-                            && $ref->isInstantiable()
-                            && !$ref->getConstructor()->getNumberOfRequiredParameters()
-                        ) {
-                            TypeRegistry::addTypeMapping($name, $fullyClassName);
-                        }
-                    }
-                }
+        if (Kernel::VERSION_ID >= 40000) {
+            $path = $this->kernel->getRootDir().'/Type';
+            if (file_exists($path)) {
+                $this->registerBundleTypes($path, 'App');
             }
         }
 
@@ -78,11 +67,54 @@ class TypeAutoLoader
     }
 
     /**
+     * Register all GraphQL types for given path
+     *
+     * @param string $path
+     * @param string $namespace
+     *
+     * @throws \ReflectionException
+     */
+    protected function registerBundleTypes($path, $namespace)
+    {
+        $finder = new Finder();
+        foreach ($finder->in($path)->name('/Type.php$/')->getIterator() as $file) {
+            $className = preg_replace('/.php$/', null, $file->getFilename());
+
+            if ($file->getRelativePath()) {
+                $subNamespace = str_replace('/', '\\', $file->getRelativePath());
+                $fullyClassName = $namespace.'\\Type\\'.$subNamespace.'\\'.$className;
+            } else {
+                $fullyClassName = $namespace.'\\Type\\'.$className;
+            }
+
+            if (class_exists($fullyClassName)) {
+                $ref = new \ReflectionClass($fullyClassName);
+                if ($ref->isSubclassOf(Type::class) && $ref->isInstantiable()) {
+                    $requiredParams = false;
+                    foreach ($ref->getConstructor()->getParameters() as $parameter) {
+                        if ($parameter->getClass() && $parameter->getClass()->implementsInterface(DefinitionInterface::class)) {
+                            continue 2;
+                        }
+                    }
+
+                    if ($requiredParams) {
+                        $error = sprintf('The graphql type defined in class "%s" is not instantiable because has some required parameters in the constructor.', $fullyClassName);
+                        throw new \LogicException($error);
+                    }
+                    /** @var Type $instance */
+                    $instance = $ref->newInstance();
+                    TypeRegistry::addTypeMapping($instance->name, $fullyClassName);
+                }
+            }
+        }
+    }
+
+    /**
      * @return string
      */
     protected function cacheFileName()
     {
-        return $this->cacheDir.DIRECTORY_SEPARATOR.'graphql.type_map.meta';
+        return $this->kernel->getCacheDir().DIRECTORY_SEPARATOR.'graphql.type_map.meta';
     }
 
     /**

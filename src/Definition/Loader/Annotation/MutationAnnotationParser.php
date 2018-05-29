@@ -15,6 +15,7 @@ use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\MutationDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Util\ClassUtils;
+use Ynlo\GraphQLBundle\Util\TypeUtil;
 
 /**
  * Parse mutation annotation to fetch definitions
@@ -43,7 +44,9 @@ class MutationAnnotationParser extends QueryAnnotationParser
      */
     public function parse($annotation, \ReflectionClass $refClass, Endpoint $endpoint)
     {
-        if (!preg_match('/Bundle\\\\Mutation\\\\/', $refClass->getName())) {
+        /** @var Annotation\Mutation $annotation */
+
+        if (!preg_match('/\\Mutation\\\\/', $refClass->getName())) {
             $error = sprintf(
                 'Annotation "@Mutation" in the class "%s" is not valid, 
             mutations can only be applied to classes inside "...Bundle\Mutation\..."',
@@ -83,7 +86,10 @@ class MutationAnnotationParser extends QueryAnnotationParser
             }
         }
 
-        $mutation->setType($annotation->payload);
+        $mutation->setType(TypeUtil::normalize($annotation->payload));
+        $mutation->setList(TypeUtil::isTypeList($annotation->payload));
+        $mutation->setNonNullList(TypeUtil::isTypeNonNullList($annotation->payload));
+        $mutation->setNonNull(TypeUtil::isTypeNonNull($annotation->payload));
 
         if (!$mutation->getType()) {
             $error = sprintf(

@@ -156,7 +156,10 @@ class MutationFormResolverExtension extends AbstractDefinitionExtension
 
         foreach ($form->all() as $formField) {
             $field = new FieldDefinition();
-            $field->setName($formField->getConfig()->getOption('label') ?? $formField->getName());
+            $label = $formField->getConfig()->getOption('label');
+            $field->setName(!empty($label) ? $label : $formField->getName());
+            $field->setDescription($formField->getConfig()->getOption('graphql_description') ?? null);
+            $field->setDeprecationReason($formField->getConfig()->getOption('graphql_deprecation_reason') ?? null);
             $field->setNonNull($formField->isRequired());
             $field->setOriginName($formField->getName());
 
@@ -198,6 +201,9 @@ class MutationFormResolverExtension extends AbstractDefinitionExtension
         $resolver = $form->getConfig()->getType()->getOptionsResolver();
         if ($resolver->hasDefault('graphql_type')) {
             $type = $resolver->resolve([])['graphql_type'];
+            if (!$type) {
+                $type = $form->getConfig()->getOptions()['graphql_type'];
+            }
             $field->setList(TypeUtil::isTypeList($type));
             $type = TypeUtil::normalize($type);
         }
@@ -208,34 +214,34 @@ class MutationFormResolverExtension extends AbstractDefinitionExtension
             $type = TypeUtil::normalize($type);
         }
 
-        if (is_a($form->getConfig()->getType()->getInnerType(), IDType::class, true)) {
+        if (!$type && is_a($form->getConfig()->getType()->getInnerType(), IDType::class, true)) {
             if ($form->getConfig()->hasOption('multiple') && $form->getConfig()->getOption('multiple')) {
                 $field->setList(true);
             }
             $type = Types::ID;
         }
 
-        if (is_a($form->getConfig()->getType()->getInnerType(), TextType::class, true)) {
+        if (!$type && is_a($form->getConfig()->getType()->getInnerType(), TextType::class, true)) {
             $type = Types::STRING;
         }
 
-        if (is_a($form->getConfig()->getType()->getInnerType(), TextareaType::class, true)) {
+        if (!$type && is_a($form->getConfig()->getType()->getInnerType(), TextareaType::class, true)) {
             $type = Types::STRING;
         }
 
-        if (is_a($form->getConfig()->getType()->getInnerType(), EmailType::class, true)) {
+        if (!$type && is_a($form->getConfig()->getType()->getInnerType(), EmailType::class, true)) {
             $type = Types::STRING;
         }
 
-        if (is_a($form->getConfig()->getType()->getInnerType(), CheckboxType::class, true)) {
+        if (!$type && is_a($form->getConfig()->getType()->getInnerType(), CheckboxType::class, true)) {
             $type = Types::BOOLEAN;
         }
 
-        if (is_a($form->getConfig()->getType()->getInnerType(), IntegerType::class, true)) {
+        if (!$type && is_a($form->getConfig()->getType()->getInnerType(), IntegerType::class, true)) {
             $type = Types::INT;
         }
 
-        if (is_a($form->getConfig()->getType()->getInnerType(), NumberType::class, true)) {
+        if (!$type && is_a($form->getConfig()->getType()->getInnerType(), NumberType::class, true)) {
             $type = Types::FLOAT;
         }
 

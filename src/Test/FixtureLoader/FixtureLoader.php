@@ -13,10 +13,9 @@ namespace Ynlo\GraphQLBundle\Test\FixtureLoader;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\DataFixtures\DependentFixtureInterface;
 use Doctrine\Common\DataFixtures\Loader;
+use Doctrine\Common\DataFixtures\ProxyReferenceRepository;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Ynlo\GraphQLBundle\Test\FixtureLoader\Cache\CachedReferenceRepository;
-use Ynlo\GraphQLBundle\Test\FixtureLoader\DataPopulator\CachedORMDataLoader;
 use Ynlo\GraphQLBundle\Test\FixtureLoader\DataPopulator\DataLoaderInterface;
 use Ynlo\GraphQLBundle\Test\FixtureLoader\DataPopulator\ORMDataLoader;
 use Ynlo\GraphQLBundle\Test\FixtureLoader\SchemaUpdater\ORMSQLite;
@@ -60,8 +59,12 @@ class FixtureLoader
         $this->container = $container;
 
         $this->plugins = $plugins;
-        $this->plugins[] = new ORMSQLite();
-        $this->plugins[] = new CachedORMDataLoader();
+
+        $cacheDir = $container->getParameter('kernel.cache_dir').DIRECTORY_SEPARATOR.'tests';
+        $container->get('filesystem')->mkdir($cacheDir);
+
+        $this->plugins[] = new ORMSQLite($cacheDir);
+        $this->plugins[] = new ORMDataLoader($cacheDir);
     }
 
     /**
@@ -86,7 +89,7 @@ class FixtureLoader
 
         $loader = $this->getFixtureLoader($this->container, $classNames);
         $fixtures = $loader->getFixtures();
-        $referenceRepository = new CachedReferenceRepository($this->registry->getManager());
+        $referenceRepository = new ProxyReferenceRepository($this->registry->getManager());
         foreach ($this->plugins as $plugin) {
             if ($plugin instanceof DataLoaderInterface) {
                 if ($plugin->supports($this->registry)) {

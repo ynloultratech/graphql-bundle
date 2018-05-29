@@ -22,7 +22,6 @@ interface HasExtensionsInterface
 
     /**
      * @param string $class
-     * @param int    $priority
      */
-    public function addExtension($class, $priority = 0);
+    public function addExtension($class);
 }

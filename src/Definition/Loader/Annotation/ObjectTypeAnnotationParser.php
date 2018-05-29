@@ -147,19 +147,39 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
      */
     protected function extractInterfaceDefinitions(\ReflectionClass $refClass)
     {
-        $interfaces = $refClass->getInterfaces();
-        $definitions = [];
-        foreach ($interfaces as $interfaceRef) {
-            /** @var Annotation\InterfaceType $interfaceAnnotation */
-            $interfaceAnnotation = $this->reader->getClassAnnotation($interfaceRef, Annotation\InterfaceType::class);
+        $int = $refClass->getInterfaces();
 
-            if ($interfaceAnnotation) {
+        //get recursively all parent abstract classes to use as interfaces
+        $currentClass = $refClass;
+        while ($currentClass->getParentClass()) {
+            if ($currentClass->getParentClass()->isAbstract()) {
+                $int[] = $currentClass->getParentClass();
+            }
+            $currentClass = $currentClass->getParentClass();
+        }
+
+        $definitions = [];
+        foreach ($int as $intRef) {
+            /** @var Annotation\InterfaceType $intAnnot */
+            $intAnnot = $this->reader->getClassAnnotation(
+                $intRef,
+                Annotation\InterfaceType::class
+            );
+
+            if ($intAnnot) {
                 $intDef = new InterfaceDefinition();
-                $intDef->setName($interfaceAnnotation->name);
-                $intDef->setClass($interfaceRef->getName());
-                $intDef->setDescription($interfaceAnnotation->description);
-                $this->resolveFields($interfaceRef, $intDef);
-                if (!$intDef->getName() && preg_match('/\w+$/', $interfaceRef->getName(), $matches)) {
+                $intDef->setName($intAnnot->name);
+                $intDef->setClass($intRef->getName());
+                $intDef->setDescription($intAnnot->description);
+
+                // abstract classes use exclude all by default
+                // like interfaces require the inclusion of fields manually
+                if ($intRef->isAbstract()) {
+                    $intDef->setExclusionPolicy(ObjectDefinitionInterface::EXCLUDE_ALL);
+                }
+
+                $this->resolveFields($intRef, $intDef);
+                if (!$intDef->getName() && preg_match('/\w+$/', $intRef->getName(), $matches)) {
                     $intDef->setName(preg_replace('/Interface$/', null, $matches[0]));
                 }
 
@@ -278,6 +298,8 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
             }
             if ($annotation->alias) {
                 $fieldDefinition->setName($annotation->alias);
+                $objectDefinition->removeField($fieldDefinition->getName());
+                $objectDefinition->addField($fieldDefinition);
             }
             if ($annotation->description) {
                 $fieldDefinition->setDescription($annotation->description);
@@ -310,20 +332,39 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
                     $annotation->name
                 ));
             }
+        }
 
-            $fieldDefinition = new FieldDefinition();
-            $fieldDefinition->setName($annotation->name);
-            $fieldDefinition->setDescription($annotation->description);
-            $fieldDefinition->setDeprecationReason($annotation->deprecationReason);
-            $fieldDefinition->setType(TypeUtil::normalize($annotation->type));
-            $fieldDefinition->setNonNull(TypeUtil::isTypeNonNull($annotation->type));
-            $fieldDefinition->setNonNullList(TypeUtil::isTypeNonNullList($annotation->type));
-            $fieldDefinition->setList(TypeUtil::isTypeList($annotation->type));
-            $fieldDefinition->setMeta('expression', $annotation->expression);
-            $fieldDefinition->setResolver(FieldExpressionResolver::class);
-            $fieldDefinition->setComplexity($annotation->complexity);
-            $fieldDefinition->setRoles((array) $annotation->roles);
-            $objectDefinition->addField($fieldDefinition);
+        //load virtual fields
+        $annotations = $this->reader->getClassAnnotations($refClass);
+        foreach ($annotations as $annotation) {
+            if ($annotation instanceof Annotation\VirtualField) {
+                if (!$objectDefinition->hasField($annotation->name)) {
+                    $fieldDefinition = new FieldDefinition();
+                    $fieldDefinition->setName($annotation->name);
+                    $fieldDefinition->setDescription($annotation->description);
+                    $fieldDefinition->setDeprecationReason($annotation->deprecationReason);
+                    $fieldDefinition->setType(TypeUtil::normalize($annotation->type));
+                    $fieldDefinition->setNonNull(TypeUtil::isTypeNonNull($annotation->type));
+                    $fieldDefinition->setNonNullList(TypeUtil::isTypeNonNullList($annotation->type));
+                    $fieldDefinition->setList(TypeUtil::isTypeList($annotation->type));
+                    $fieldDefinition->setMeta('expression', $annotation->expression);
+                    $fieldDefinition->setResolver(FieldExpressionResolver::class);
+                    $fieldDefinition->setComplexity($annotation->complexity);
+                    $fieldDefinition->setRoles((array) $annotation->roles);
+                    $objectDefinition->addField($fieldDefinition);
+                } else {
+                    $fieldDefinition = $objectDefinition->getField($annotation->name);
+                    if ($fieldDefinition->getResolver() === FieldExpressionResolver::class) {
+                        continue;
+                    }
+                    $error = sprintf(
+                        'The object definition "%s" already has a field called "%s".',
+                        $objectDefinition->getName(),
+                        $annotation->name
+                    );
+                    throw new \InvalidArgumentException($error);
+                }
+            }
         }
     }
 

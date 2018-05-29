@@ -13,6 +13,24 @@ class ResolveSomething
 }
 ````
 
+> **IMPORTANT:** As of Symfony 4.0 if your resolver is registered as service, must be `public`, otherwise
+the API can't find your resolver service and use the standalone class instead.
+In symfony 3.4 is not a requirement, but is recommended otherwise a deprecated warning is triggered.
+[More details here.](https://symfony.com/blog/new-in-symfony-3-4-services-are-private-by-default)
+
+The following example register all resolvers as services and set all **PUBLIC**:
+
+````yaml
+services:
+    App\Query\:
+        resource: '../src/Query/*'
+        public: true
+
+    App\Mutation\:
+        resource: '../src/Mutation/*'
+        public: true
+````
+
 # ADR vs MVC
 
 The [MVC Pattern](https://en.wikipedia.org/wiki/Model%E2%80%93view%E2%80%93controller) it's OK, 

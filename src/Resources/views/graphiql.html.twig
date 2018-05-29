@@ -22,6 +22,10 @@
             overflow: hidden;
         }
 
+        .graphiql-container .field-short-description {
+            display: none;
+        }
+
         #loading {
             background: url("{{ asset('bundles/ynlographql/img/spinner.gif') }}") center no-repeat;
             width: 100%;
@@ -102,8 +106,7 @@
         return fetch('{{ url('api_root') }}', {
             method: '{{ method }}',
             headers: {{ headers|json_encode|raw }},
-            body: JSON.stringify(graphQLParams),
-            credentials: 'include'
+            body: JSON.stringify(graphQLParams)
         }).then(function (response) {
             return response.text();
         }).then(function (responseBody) {

@@ -20,7 +20,7 @@ use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\PostComment;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\User;
 
 /**
- * Class Fixtures
+ * Class FixtureManager
  */
 class Fixtures extends Fixture
 {
@@ -34,6 +34,7 @@ class Fixtures extends Fixture
     public function __construct()
     {
         $this->faker = Factory::create();
+        $this->faker->seed(1);
     }
 
     /**
@@ -72,7 +73,7 @@ class Fixtures extends Fixture
             $user->getProfile()->getAddress()->setStreet($this->faker->streetAddress);
             $user->getProfile()->getAddress()->setCity($this->faker->city);
             $user->getProfile()->getAddress()->setState($this->faker->countryCode);
-            $user->getProfile()->getAddress()->setZipCode(\random_int(11111, 99999));
+            $user->getProfile()->getAddress()->setZipCode($this->faker->randomNumber(5));
             $this->setReference("user$i", $user);
             $manager->persist($user);
         }
@@ -99,13 +100,13 @@ class Fixtures extends Fixture
     {
         for ($i = 1; $i <= 20; $i ++) {
             $post = new Post();
-            $author = $this->getReference('user'.\random_int(1, 10));
-            $post->setTitle($this->faker->sentence(\random_int(3, 10)));
-            $post->setBody($this->faker->paragraph(\random_int(3, 10)));
+            $author = $this->getReference('user'.$this->faker->numberBetween(1, 10));
+            $post->setTitle($this->faker->sentence($this->faker->numberBetween(3, 10)));
+            $post->setBody($this->faker->paragraph($this->faker->numberBetween(3, 10)));
             $post->setAuthor($author);
-            $post->setTags($this->faker->words(\random_int(0, 4)));
+            $post->setTags($this->faker->words($this->faker->numberBetween(0, 4)));
 
-            $cat = \random_int(1, 5);
+            $cat = $this->faker->numberBetween(1, 5);
             $post->getCategories()->add($this->getReference('category'.$cat));
             if ($cat > 2 && $cat < 4) {
                 $post->getCategories()->add($this->getReference('category'.($cat + 1)));
@@ -116,12 +117,12 @@ class Fixtures extends Fixture
 
             $manager->persist($post);
 
-            $maxComments = random_int(1, 5);
+            $maxComments = $this->faker->numberBetween(1, 5);
             for ($ic = 1; $ic <= $maxComments; $ic ++) {
                 $comment = new PostComment();
                 $comment->setCommentable($post);
-                $comment->setAuthor($this->getReference('user'.\random_int(1, 10)));
-                $comment->setBody($this->faker->sentence(\random_int(3, 10)));
+                $comment->setAuthor($this->getReference('user'.$this->faker->numberBetween(1, 10)));
+                $comment->setBody($this->faker->sentence($this->faker->numberBetween(3, 10)));
                 $manager->persist($comment);
             }
 

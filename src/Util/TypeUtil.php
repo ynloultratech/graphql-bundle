@@ -83,6 +83,14 @@ final class TypeUtil
             case 'date':
                 $type = Types::DATETIME;
                 break;
+            case 'any':
+                $type = Types::ANY;
+                break;
+            case 'dynamic':
+            case 'dynamicObject':
+            case 'dynamic_object':
+                $type = Types::DYNAMIC_OBJECT;
+                break;
         }
 
         return Inflector::classify($type);

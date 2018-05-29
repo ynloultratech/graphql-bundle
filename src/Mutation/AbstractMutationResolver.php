@@ -16,8 +16,8 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Validator\ConstraintViolation as SymfonyConstraintViolation;
-use Ynlo\GraphQLBundle\Form\DataTransformer\DataWithIdToNodeTransformer;
 use Ynlo\GraphQLBundle\Model\ConstraintViolation;
+use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
 use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
 
@@ -34,7 +34,7 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
      */
     public function __invoke($input)
     {
-        $formBuilder = $this->createDefinitionForm($input);
+        $formBuilder = $this->createDefinitionForm($this->initialFormData($input));
 
         $form = null;
         if ($formBuilder) {
@@ -161,7 +161,52 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
     abstract public function returnPayload($data, ConstraintViolationList $violations, $inputSource);
 
     /**
-     * @param mixed $data
+     * @return null|string
+     */
+    protected function getPayloadClass(): string
+    {
+        $type = $this->getContext()->getDefinition()->getType();
+
+        if (class_exists($type)) {
+            return $type;
+        }
+
+        if ($this->context->getEndpoint()->hasType($type)) {
+            $class = $this->context->getEndpoint()->getClassForType($type);
+            if (class_exists($class)) {
+                return $class;
+            }
+        }
+
+        throw new \RuntimeException(
+            sprintf(
+                'Can\'t find a valid payload class for "%s".',
+                $this->getContext()->getDefinition()->getName()
+            )
+        );
+    }
+
+    /**
+     * @param array $input
+     *
+     * @return mixed
+     */
+    public function initialFormData($input)
+    {
+        if (is_array($input) && isset($input['id'])) {
+            $id = ID::createFromString($input['id']);
+            if ($this->context->getEndpoint()->hasType($id->getNodeType())) {
+                $class = $this->context->getEndpoint()->getClassForType($id->getNodeType());
+                if ($class) {
+                    return $this->getManager()->getRepository($class)->find($id->getDatabaseId());
+                }
+            }
+        }
+
+        return null;
+    }
+    /**
+     * @param mixed|null $data
      *
      * @return FormBuilderInterface|null
      */
@@ -188,11 +233,7 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
 
         $options = array_merge($options, $formConfig['options'] ?? []);
 
-        $form = $this->createFormBuilder($formType, $data, $options);
-        $viewTransformer = new DataWithIdToNodeTransformer($this->getManager(), $this->context->getEndpoint());
-        $form->addViewTransformer($viewTransformer);
-
-        return $form;
+        return $this->createFormBuilder($formType, $data, $options);
     }
 
     /**
@@ -206,14 +247,14 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
         foreach ($errors as $error) {
             $violation = new ConstraintViolation();
             $violation->setMessage($error->getMessage());
-            $violation->setMessageTemplate($error->getMessageTemplate());
+            $violation->setMessageTemplate($error->getMessageTemplate() ?? $error->getMessage());
             foreach ($error->getMessageParameters() as $key => $value) {
                 $violation->addParameter($key, $value);
             }
 
             $cause = $error->getCause();
             if ($cause instanceof SymfonyConstraintViolation) {
-                $violation->setCode($cause->getCode());
+                $violation->setCode($cause->getCode() ?? md5($violation->getMessageTemplate()));
                 $violation->setInvalidValue($cause->getInvalidValue());
                 $violation->setPlural($cause->getPlural());
 
@@ -238,12 +279,15 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
      */
     private function publicPropertyPath(FormInterface $form, $path)
     {
-        if (strpos($path, '.') !== false) {
+        if (strpos($path, '.') !== false) { // object.child.property
             $pathArray = explode('.', $path);
+        } elseif (strpos($path, '[') !== false) { //[array][child][property]
+            $path = str_replace(']', null, $path);
+            $pathArray = explode('[', $path);
         } else {
             $pathArray = [$path];
         }
-        if ($pathArray[0] === 'data') {
+        if (in_array($pathArray[0], ['data', 'children'])) {
             array_shift($pathArray);
         }
 

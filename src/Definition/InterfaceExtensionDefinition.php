@@ -11,13 +11,15 @@
 namespace Ynlo\GraphQLBundle\Definition;
 
 use Ynlo\GraphQLBundle\Definition\Traits\ClassAwareDefinitionTrait;
+use Ynlo\GraphQLBundle\Definition\Traits\ExtensionsAwareTrait;
 
 /**
  * InterfaceExtensionDefinition
  */
-class InterfaceExtensionDefinition implements ClassAwareDefinitionInterface
+class InterfaceExtensionDefinition implements ClassAwareDefinitionInterface, HasExtensionsInterface
 {
     use ClassAwareDefinitionTrait;
+    use ExtensionsAwareTrait;
 
     /**
      * @var int

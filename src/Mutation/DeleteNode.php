@@ -46,7 +46,9 @@ class DeleteNode extends AbstractMutationResolver
      */
     public function returnPayload($data, ConstraintViolationList $violations, $inputSource)
     {
-        return new DeleteNodePayload(
+        $class = $this->getPayloadClass();
+
+        return new $class(
             $inputSource['id'] ? ID::createFromString($inputSource['id']) : null,
             $inputSource['clientMutationId'] ?? null
         );
@@ -57,7 +59,10 @@ class DeleteNode extends AbstractMutationResolver
      */
     public function onSubmit(FormEvent $event)
     {
-        if (!$event->getData() instanceof NodeInterface || !$event->getData()->getId()) {
+        $node = $this->context->getDefinition()->getNode();
+        $class = $this->context->getEndpoint()->getClassForType($node);
+
+        if (!$event->getData() instanceof NodeInterface || !$event->getData()->getId() || !is_a($event->getData(), $class)) {
             throw new NodeNotFoundException();
         }
     }
