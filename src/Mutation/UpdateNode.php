@@ -12,9 +12,7 @@ namespace Ynlo\GraphQLBundle\Mutation;
 
 use Symfony\Component\Form\FormEvent;
 use Ynlo\GraphQLBundle\Error\NodeNotFoundException;
-use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
-use Ynlo\GraphQLBundle\Model\UpdateNodePayload;
 use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
 
 /**

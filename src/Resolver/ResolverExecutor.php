@@ -26,6 +26,7 @@ use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Extension\ExtensionInterface;
+use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Extension\ExtensionsAwareInterface;
 use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Type\Types;
@@ -179,31 +180,32 @@ class ResolverExecutor implements ContainerAwareInterface
     protected function resolveObjectExtensions(HasExtensionsInterface $objectDefinition): array
     {
         $extensions = [];
-        foreach ($objectDefinition->getExtensions() as $extensionDefinition) {
-            $extensionClass = $extensionDefinition->getClass();
-            if ($this->container->has($extensionClass)) {
-                $extensionInstance = $this->container->get($extensionClass);
-            } else {
-                $extensionInstance = new $extensionClass();
-                if ($extensionInstance instanceof ContainerAwareInterface) {
-                    $extensionInstance->setContainer($this->container);
+
+        //get all extensions registered as services
+        $registeredExtensions = $this->container->get(ExtensionManager::class)->getExtensions();
+        foreach ($registeredExtensions as $registeredExtension) {
+            foreach ($objectDefinition->getExtensions() as $extensionDefinition) {
+                $extensionClass = $extensionDefinition->getClass();
+                if (get_class($registeredExtension) === $extensionClass) {
+                    $extensions[$extensionClass] = $registeredExtension;
                 }
             }
-            $extensions[] = [$extensionDefinition->getPriority(), $extensionInstance];
         }
 
-        //sort by priority
-        usort(
-            $extensions,
-            function ($extension1, $extension2) {
-                list($priority1) = $extension1;
-                list($priority2) = $extension2;
+        //get all extensions not registered as services
+        foreach ($objectDefinition->getExtensions() as $extensionDefinition) {
+            $class = $extensionDefinition->getClass();
+            if (!isset($extensions[$class])) {
+                $instance = new $class();
+                if ($instance instanceof ContainerAwareInterface) {
+                    $instance->setContainer($this->container);
+                }
 
-                return version_compare($priority2 + 250, $priority1 + 250);
+                $extensions[$class] = $instance;
             }
-        );
+        }
 
-        return array_column($extensions, 1);
+        return array_values($extensions);
     }
 
     /**

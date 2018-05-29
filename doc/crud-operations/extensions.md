@@ -89,8 +89,8 @@ interface HasAuthorInterface
 > **NOTE:** The annotation `InterfaceType` is not required but should be 
 used if you want publish the interface in your graphql schema.
 In case you need the same behavior without publishing any in the schema
-use the naming convention to convert the interface name "HasAuthorInterface" 
-to extension name "HasAuthorExtension". The system automatically load this extension
+ensure a correct naming convention when interface name "HasAuthorInterface" 
+must use extension name "HasAuthorExtension". The system automatically load this extension
 for all object implementing this interface.
 
 And use the interface in your objects.
@@ -128,8 +128,25 @@ class HasAuthorExtension extends AbstractExtension
 }
 ````
 
-> Interface extensions must implements `Ynlo\GraphQLBundle\Extension\ExtensionInterface` 
+> Extensions must implements `Ynlo\GraphQLBundle\Extension\ExtensionInterface` 
 or extends from `Ynlo\GraphQLBundle\Extension\AbstractExtension`
+
+If you need the container in your extension you can implements 
+`Symfony\Component\DependencyInjection\ContainerAwareInterface` and the container
+is automatically injected.
+
+> As of symfony4 is not recommended use the container directly to get access to other services. 
+Instead is recommended inject all dependencies in the service constructor. 
+To register the extension as a service must create the extension using the tag `graphql.extension`
+
+Autowiring example for symfony 3.4 or 4+
+
+````yaml
+services:
+    App\Extension\:
+        resource: '../src/Extension/*'
+        tags: ['graphql.extension']
+````
 
 At this point your extension is ready but it does not do anything yet. 
 In this case whe need set the current user as author of every created `Pos` or `Comment`.
@@ -166,12 +183,4 @@ to see all of them.
 ## Prioritizing extensions
 
 By default all extensions are executed in a arbitrary order, this is functional in many cases. 
-But if you need execute some extension with a highest or lowest priority can use the `getPriorityMethod`
-
-````php
-public function getPriority(): int
-{
-    return 100;
-}
-````
-The range of priority should be a number between -250...250, where highest numbers will be executed firstly. 
+But if you need execute some extension with a highest or lowest priority can use services priorities in the tag.

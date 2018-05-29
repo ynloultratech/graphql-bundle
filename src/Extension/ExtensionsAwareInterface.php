@@ -12,7 +12,7 @@ namespace Ynlo\GraphQLBundle\Extension;
 
 /**
  * Every resolver using this interface will be automatically injected
- * with all available interfaces to current node
+ * with all available extensions to current node
  */
 interface ExtensionsAwareInterface
 {

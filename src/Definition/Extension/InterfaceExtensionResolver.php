@@ -16,7 +16,6 @@ use Ynlo\GraphQLBundle\Definition\HasExtensionsInterface;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
-use Ynlo\GraphQLBundle\Extension\ExtensionInterface;
 use Ynlo\GraphQLBundle\Util\ClassUtils;
 
 /**
@@ -71,19 +70,10 @@ class InterfaceExtensionResolver extends AbstractDefinitionExtension
         $bundleNamespace = ClassUtils::relatedBundleNamespace($definition->getClass());
         $extensionClass = ClassUtils::applyNamingConvention($bundleNamespace, 'Extension', null, $definition->getName().'Extension');
         if (class_exists($extensionClass)) {
-            if ($this->container->has($extensionClass)) {
-                $extension = $this->container->get($extensionClass);
-            } else {
-                $extension = new $extensionClass();
-            }
-
-            /** @var ExtensionInterface $extension */
-            $priority = $extension->getPriority();
-
             foreach ($definition->getImplementors() as $implementor) {
                 $object = $endpoint->getType($implementor);
                 if ($object instanceof HasExtensionsInterface) {
-                    $object->addExtension($extensionClass, $priority);
+                    $object->addExtension($extensionClass);
                 }
             }
         }
@@ -111,17 +101,8 @@ class InterfaceExtensionResolver extends AbstractDefinitionExtension
                     if (preg_match('/(\w+)Interface?$/', $interface, $matches)) {
                         $extensionClass = ClassUtils::applyNamingConvention($bundleNamespace, 'Extension', null, $matches[1].'Extension');
                         if (class_exists($extensionClass)) {
-                            if ($this->container->has($extensionClass)) {
-                                $extension = $this->container->get($extensionClass);
-                            } else {
-                                $extension = new $extensionClass();
-                            }
-
-                            /** @var ExtensionInterface $extension */
-                            $priority = $extension->getPriority();
-
                             if ($definition instanceof HasExtensionsInterface) {
-                                $definition->addExtension($extensionClass, $priority);
+                                $definition->addExtension($extensionClass);
                             }
                         }
                     }

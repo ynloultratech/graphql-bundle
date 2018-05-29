@@ -32,10 +32,9 @@ trait ExtensionsAwareTrait
 
     /**
      * @param string $class
-     * @param int    $priority
      */
-    public function addExtension($class, $priority = 0)
+    public function addExtension($class)
     {
-        $this->extensions[$class] = new InterfaceExtensionDefinition($class, $priority);
+        $this->extensions[$class] = new InterfaceExtensionDefinition($class);
     }
 }

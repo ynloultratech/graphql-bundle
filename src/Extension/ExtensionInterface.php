@@ -21,14 +21,6 @@ use Ynlo\GraphQLBundle\Resolver\ResolverContext;
 interface ExtensionInterface
 {
     /**
-     * Extension priority
-     * should return a valued between -250 - 250
-     *
-     * @return int
-     */
-    public function getPriority(): int;
-
-    /**
      * Configure the query builder to filter records or add a complex logic
      *
      * @param QueryBuilder    $queryBuilder

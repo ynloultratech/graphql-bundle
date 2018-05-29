@@ -210,7 +210,7 @@ services:
 
     Ynlo\GraphQLBundle\Extension\ExtensionManager:
         public: true
-        arguments: ['@Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices']
+        arguments: [!tagged graphql.extension]
 
     Ynlo\GraphQLBundle\Definition\Extension\PaginationDefinitionExtension:
         public: true

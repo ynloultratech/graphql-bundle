@@ -24,14 +24,6 @@ abstract class AbstractExtension implements ExtensionInterface
     /**
      * {@inheritdoc}
      */
-    public function getPriority(): int
-    {
-        return 0;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
     public function configureQuery(QueryBuilder $queryBuilder, $resolver, ResolverContext $context)
     {
         // TODO: Implement configureQuery() method.

@@ -10,9 +10,6 @@
 
 namespace Ynlo\GraphQLBundle\Extension;
 
-use Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices;
-use Ynlo\GraphQLBundle\Component\TaggedServices\TagSpecification;
-
 /**
  * ExtensionManager
  */
@@ -24,46 +21,18 @@ class ExtensionManager
     protected $extensions;
 
     /**
-     * @var bool
+     * @param iterable $extensions
      */
-    protected $loaded = false;
-
-    /**
-     * @var TaggedServices
-     */
-    protected $taggedServices;
-
-    /**
-     * ExtensionManager constructor.
-     *
-     * @param TaggedServices $taggedServices
-     */
-    public function __construct(TaggedServices $taggedServices)
+    public function __construct(iterable $extensions)
     {
-        $this->taggedServices = $taggedServices;
+        $this->extensions = $extensions;
     }
 
     /**
-     * @return array|ExtensionInterface[]
+     * @return iterable|ExtensionInterface[]
      */
-    public function getExtensions()
+    public function getExtensions(): iterable
     {
-        if ($this->loaded) {
-            return $this->extensions;
-
-        }
-        $this->extensions = [];
-
-        /** @var TagSpecification $extensions */
-        $taggedServices = $this->taggedServices->findTaggedServices('graphql.extension');
-        foreach ($taggedServices as $tagSpecification) {
-            /** @var ExtensionInterface $extension */
-            $extension = $tagSpecification->getService();
-            $this->extensions[] = $extension;
-        }
-
-        $this->loaded = true;
-
         return $this->extensions;
     }
 }
