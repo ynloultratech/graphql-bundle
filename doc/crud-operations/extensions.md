@@ -5,10 +5,7 @@ and the integration of extensions ensure a high level of customization.
 
 ## Extensions for Interfaces
 
-Extensions are designed for [interfaces](../definitions/interface-type.md) 
-to add extra features for common operations.
-
-For example, imagine you have two entities, a Post and a Comment:
+Imagine you have two entities, a Post and a Comment:
 
 ````php
 /**
@@ -61,7 +58,7 @@ For this scenario [override the resolver](customizing.md)
 to use `prePersist` is not a good and reusable solution.
 
 First of all you need detect this type of scenarios and take proper actions. For example
-in this case should create a new [interface](../definitions/interface-type.md) `HasAuthorInterface`
+in this case must create a new interface.
 
 ````php
 namespace AppBundle\Model;
@@ -89,6 +86,13 @@ interface HasAuthorInterface
     public function setAuthor(User $user): HasAuthorInterface;
 }
 ````
+> **NOTE:** The annotation `InterfaceType` is not required but should be 
+used if you want publish the interface in your graphql schema.
+In case you need the same behavior without publishing any in the schema
+use the naming convention to convert the interface name "HasAuthorInterface" 
+to extension name "HasAuthorExtension". The system automatically load this extension
+for all object implementing this interface.
+
 And use the interface in your objects.
 
 ````php

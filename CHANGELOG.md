@@ -18,6 +18,7 @@ CHANGELOG
  * Fix error when a validation constraint does not have code or message template
  * Fix log errors correctly and define user errors as notices
  * Resolve mutation payload class automatically for easy override
+ * Add support tu use CRUD extensions for real PHP interfaces without register a graphql interface type.
 
 1.0.6 - 18-03-23
 ----

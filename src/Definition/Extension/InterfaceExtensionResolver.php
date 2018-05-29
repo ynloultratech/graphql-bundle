@@ -14,6 +14,7 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\HasExtensionsInterface;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
+use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Extension\ExtensionInterface;
 use Ynlo\GraphQLBundle\Util\ClassUtils;
@@ -49,10 +50,24 @@ class InterfaceExtensionResolver extends AbstractDefinitionExtension
      */
     public function configure(DefinitionInterface $definition, Endpoint $endpoint, array $config)
     {
-        if (!$definition instanceof InterfaceDefinition || !$definition->getImplementors()) {
-            return;
+        if ($definition instanceof InterfaceDefinition && $definition->getImplementors()) {
+            $this->resolveInterfaceExtension($definition, $endpoint);
         }
 
+        if ($definition instanceof ObjectDefinition) {
+            $this->resolveObjectRealInterfaceExtensions($definition);
+        }
+    }
+
+    /**
+     * Using naming convention resolve CRUD extension for given interface definition and automatically register this extension
+     * for all interface implementors
+     *
+     * @param InterfaceDefinition $definition
+     * @param Endpoint            $endpoint
+     */
+    protected function resolveInterfaceExtension(InterfaceDefinition $definition, Endpoint $endpoint)
+    {
         $bundleNamespace = ClassUtils::relatedBundleNamespace($definition->getClass());
         $extensionClass = ClassUtils::applyNamingConvention($bundleNamespace, 'Extension', null, $definition->getName().'Extension');
         if (class_exists($extensionClass)) {
@@ -69,6 +84,47 @@ class InterfaceExtensionResolver extends AbstractDefinitionExtension
                 $object = $endpoint->getType($implementor);
                 if ($object instanceof HasExtensionsInterface) {
                     $object->addExtension($extensionClass, $priority);
+                }
+            }
+        }
+    }
+
+    /**
+     * Using naming convention resolve all extensions for given object
+     * based on implemented interfaces.
+     *
+     * This method use PHP real interfaces instead of registered interface types.
+     *
+     * @param ObjectDefinition $definition
+     *
+     * @throws \ReflectionException
+     */
+    protected function resolveObjectRealInterfaceExtensions(ObjectDefinition $definition)
+    {
+        $class = $definition->getClass();
+
+        if (class_exists($class)) {
+            $refClass = new \ReflectionClass($definition->getClass());
+            if ($interfaces = $refClass->getInterfaceNames()) {
+                foreach ($interfaces as $interface) {
+                    $bundleNamespace = ClassUtils::relatedBundleNamespace($interface);
+                    if (preg_match('/(\w+)Interface?$/', $interface, $matches)) {
+                        $extensionClass = ClassUtils::applyNamingConvention($bundleNamespace, 'Extension', null, $matches[1].'Extension');
+                        if (class_exists($extensionClass)) {
+                            if ($this->container->has($extensionClass)) {
+                                $extension = $this->container->get($extensionClass);
+                            } else {
+                                $extension = new $extensionClass();
+                            }
+
+                            /** @var ExtensionInterface $extension */
+                            $priority = $extension->getPriority();
+
+                            if ($definition instanceof HasExtensionsInterface) {
+                                $definition->addExtension($extensionClass, $priority);
+                            }
+                        }
+                    }
                 }
             }
         }
