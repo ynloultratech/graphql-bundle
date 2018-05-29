@@ -79,8 +79,14 @@ if this value is FALSE and a provider is specified the authentication is optiona
         $jwtLogin->scalarNode('username_parameter')
                  ->defaultValue('username');
 
+        $jwtLogin->scalarNode('username_label')
+                 ->defaultValue('Username');
+
         $jwtLogin->scalarNode('password_parameter')
                  ->defaultValue('password');
+
+        $jwtLogin->scalarNode('password_label')
+                 ->defaultValue('Password');
 
         $jwtLogin->enumNode('parameters_in')
                  ->values(['form', 'query', 'header'])

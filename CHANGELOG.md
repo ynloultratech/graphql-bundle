@@ -20,6 +20,7 @@ CHANGELOG
  * Resolve mutation payload class automatically for easy override
  * Add support tu use CRUD extensions for real PHP interfaces without register a graphql interface type.
  * [BC BREAK] Removed `getPriority` method in CRUD extensions, must use service tag priority instead. 
+ * Add config to set custom labels for GraphiQL JWT Authentication form fields
 
 1.0.6 - 18-03-23
 ----
