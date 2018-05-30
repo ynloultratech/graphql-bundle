@@ -14,7 +14,6 @@ use GraphQL\Type\Schema;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
-use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 
 /**
