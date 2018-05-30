@@ -16,3 +16,22 @@
 - [X] Customizable mutations using Symfony Forms & Validator
 - [X] [Behat](http://behat.org) extension included to write GraphQL API tests easily
 - [X] *Convention over configuration* approach to avoid complicated configurations
+
+## Documentation
+
+Full documentation is available on the [Documentation](https://ynloultratech.github.io/graphql-bundle) site as well as in the doc folder of the distribution.
+
+If you don't know what GraphQL is, visit this [official website](http://graphql.org/) 
+by the Facebook engineering team.
+
+## Demo
+
+There are a functional demo project in the demo folder of the distribution.
+
+## Contribute
+
+Please refer to [CONTRIBUTING.md](CONTRIBUTING.md) for information on how to contribute.
+
+## Copyright
+
+This project is licensed under the [MIT license](LICENSE).
