@@ -136,7 +136,7 @@
 {% endmacro %}
 
 {% macro objects_table(endpoint, objects) %}
-    {% from '@YnloGraphQL/data_collector/template.html.twig' import fields_table, link_type %}
+    {% from '@YnloGraphQL/data_collector/template.html.twig' import fields_table, link_type, plugins_table %}
     <table>
         <thead>
         <tr>
@@ -233,6 +233,7 @@
                                     </td>
                                 </tr>
                             {% endif %}
+
                             {% if object.fields is defined %}
                                 <tr>
                                 <th>
@@ -247,9 +248,8 @@
 
                                 <td>
                                 {{ object.fields|length }}
-
+                                </tr>
                                 {% if object.fields|length %}
-                                    </tr>
                                     <tr id="fields-{{ object.name }}" class="context sf-toggle-content sf-toggle-hidden">
                                         <td colspan="2">
                                             {{ fields_table(endpoint, object.name, object.fields) }}
@@ -257,6 +257,7 @@
                                     </tr>
                                 {% endif %}
                             {% endif %}
+                            {{ plugins_table(object) }}
                             </tbody>
                         </table>
                     </div>
@@ -267,8 +268,41 @@
     </table>
 {% endmacro %}
 
+{% macro plugins_table(definition) %}
+    {% if definition.metas is defined and definition.metas|length %}
+        <tr>
+            <th colspan="2">
+                <a class="btn btn-link text-small sf-toggle"
+                   data-toggle-selector="#plugins-{{ definition.name }}"
+                   data-toggle-alt-content="&#x25B2; plugins">&#x25BC; plugins
+                </a>
+            </th>
+        </tr>
+        <tr id="plugins-{{ definition.name }}" class="context sf-toggle-content sf-toggle-hidden">
+            <td colspan="2">
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Plugin</th>
+                        <th>Data</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {% for name, data in definition.metas %}
+                        <tr>
+                            <td><strong>{{ name }}</strong></td>
+                            <td><strong>{{ dump(data) }}</strong></td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </td>
+        </tr>
+    {% endif %}
+{% endmacro %}
+
 {% macro fields_table(endpoint, objectName, fields) %}
-    {% from '@YnloGraphQL/data_collector/template.html.twig' import link_type %}
+    {% from '@YnloGraphQL/data_collector/template.html.twig' import link_type, plugins_table %}
     <table>
         <thead>
         <tr>
@@ -359,6 +393,7 @@
                                 </td>
                             </tr>
                         {% endif %}
+                        {{ plugins_table(field) }}
                         </tbody>
                     </table>
                 </td>

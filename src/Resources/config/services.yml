@@ -273,4 +273,4 @@ services:
     Ynlo\GraphQLBundle\DataCollector\GraphQLDataCollector:
         arguments: ['@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry']
         tags:
-          - { name: 'data_collector',template: '@YnloGraphQL/data_collector/template.html.twig',  id: 'graphql.collector' }
+          - { name: 'data_collector',template: '@YnloGraphQL/data_collector/template.html.twig',  id: 'graphql' }

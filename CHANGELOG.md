@@ -24,6 +24,7 @@ CHANGELOG
  * fix GraphiQL CORS error when use the explorer in a different domain or subdomain
  * [BC BREAK] Change definitions "extensions" to "plugins" to avoid confusion with CRUD extensions
  * Add dataCollector to display helpful information in the web profiler
+ * Add support to configure plugins using annotations instead of only arrays
  
 1.0.6 - 18-03-23
 ----

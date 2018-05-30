@@ -10,6 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Traits;
 
+use Ynlo\GraphQLBundle\Annotation\Plugin\PluginConfigAnnotation;
 use Ynlo\GraphQLBundle\Definition\MetaAwareInterface;
 
 /**
@@ -59,6 +60,14 @@ trait MetaAwareTrait
     {
         $this->metas = $metas;
 
+        //convert pluginAnnotation meta to correct key:value pair
+        foreach ($this->metas as $index => $meta) {
+            if ($meta instanceof PluginConfigAnnotation) {
+                unset($this->metas[$index]);
+                $this->setMeta($meta->getName(), $meta->getConfig());
+            }
+        }
+
         return $this;
     }
 
@@ -70,6 +79,12 @@ trait MetaAwareTrait
      */
     public function setMeta(string $key, $value): MetaAwareInterface
     {
+        //convert pluginAnnotation meta to correct key:value pair
+        if ($value instanceof PluginConfigAnnotation) {
+            $key = $value->getName();
+            $value = $value->getConfig();
+        }
+
         $this->metas[$key] = $value;
 
         return $this;

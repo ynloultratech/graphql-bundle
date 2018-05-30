@@ -77,6 +77,7 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
         $objectDefinition->setName($annotation->name);
         $objectDefinition->setExclusionPolicy($annotation->exclusionPolicy);
         $objectDefinition->setClass($refClass->name);
+        $objectDefinition->setMetas($annotation->options);
 
         if (!$objectDefinition->getName()) {
             preg_match('/\w+$/', $refClass->getName(), $matches);
@@ -87,7 +88,6 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
             return;
         }
 
-        $objectDefinition->setClass($refClass->getName());
         $objectDefinition->setDescription($annotation->description);
 
         if ($objectDefinition instanceof ImplementorInterface) {
@@ -170,6 +170,7 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
                 $intDef = new InterfaceDefinition();
                 $intDef->setName($intAnnot->name);
                 $intDef->setClass($intRef->getName());
+                $intDef->setMetas($intAnnot->options);
                 $intDef->setDescription($intAnnot->description);
 
                 // abstract classes use exclude all by default

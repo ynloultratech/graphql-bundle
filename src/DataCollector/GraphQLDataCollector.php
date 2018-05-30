@@ -13,6 +13,7 @@ namespace Ynlo\GraphQLBundle\DataCollector;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
+use Symfony\Component\VarDumper\Cloner\Data;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
@@ -46,7 +47,7 @@ class GraphQLDataCollector extends DataCollector
      */
     public function getName()
     {
-        return 'graphql.collector';
+        return 'graphql';
     }
 
     /**
@@ -89,5 +90,15 @@ class GraphQLDataCollector extends DataCollector
     public function isObject($definition)
     {
         return $definition instanceof ObjectDefinition;
+    }
+
+    /**
+     * @param array $data
+     *
+     * @return Data
+     */
+    public static function arrayToData(array $data)
+    {
+        return new Data($data);
     }
 }

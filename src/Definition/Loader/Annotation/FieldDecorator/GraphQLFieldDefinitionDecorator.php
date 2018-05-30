@@ -47,6 +47,10 @@ class GraphQLFieldDefinitionDecorator implements FieldDefinitionDecoratorInterfa
             $definition->setDescription($description);
         }
 
+        if ($metas = $this->resolveFieldMetas($field)) {
+            $definition->setMetas(array_merge($metas, $definition->getMetas()));
+        }
+
         if (null !== $deprecationReason = $this->resolveFieldDeprecationReason($field)) {
             $definition->setDeprecationReason($deprecationReason);
         }
@@ -91,6 +95,21 @@ class GraphQLFieldDefinitionDecorator implements FieldDefinitionDecoratorInterfa
         /** @var Annotation\Field $annotation */
         if ($annotation = $this->getFieldAnnotation($prop, Annotation\Field::class)) {
             return $annotation->description;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param \ReflectionMethod|\ReflectionProperty $prop
+     *
+     * @return array|null
+     */
+    protected function resolveFieldMetas($prop): ?array
+    {
+        /** @var Annotation\Field $annotation */
+        if ($annotation = $this->getFieldAnnotation($prop, Annotation\Field::class)) {
+            return $annotation->options;
         }
 
         return null;

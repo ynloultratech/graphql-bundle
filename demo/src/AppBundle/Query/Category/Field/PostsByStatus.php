@@ -20,10 +20,7 @@ use Ynlo\GraphQLBundle\Query\Node\AllNodesWithPagination;
  *     complexity="children_complexity * first",
  *     maxConcurrentUsage=1,
  *     options={
- *          "pagination": {
- *              "parent_field": "categories",
- *              "parent_relation": "MANY_TO_MANY"
- *          }
+ *        @GraphQL\Plugin\Pagination(parentField="categories", parentRelation="MANY_TO_MANY")
  *     }
  * )
  * @GraphQL\Argument(name="status", type="Ynlo\GraphQLBundle\Demo\AppBundle\DBAL\Types\PostStatusType!")

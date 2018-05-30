@@ -16,7 +16,9 @@ use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\User;
 use Ynlo\GraphQLBundle\Query\Node\AllNodesWithPagination;
 
 /**
- * @GraphQL\Query(type="[]", options={"pagination": {"limit": 30 }})
+ * @GraphQL\Query(type="[]", options={
+ *     @GraphQL\Plugin\Pagination(limit=30)
+ * })
  */
 class Admins extends AllNodesWithPagination
 {

@@ -15,20 +15,12 @@ annotations.
 ````
  * @GraphQL\ObjectType()
  * @GraphQL\QueryList(options={
- *      "pagination": { "limit": 10 }
+ *      @GraphQL\Plugin\Pagination(limit=10)
  * })
 ````
 
 > The above configuration limit to 10 the max number of records 
 to fetch when use pagination for this node. 
-
-to know available options for a specific plugin can use the following command:
-
-    /bin/console graphql:plugins pagination
-
-or this other to get the list of all available plugins and configuration.
-
-    /bin/console graphql:plugins
 
 # Build-in Plugins
 
