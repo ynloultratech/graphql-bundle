@@ -59,6 +59,22 @@ class User extends BaseUser implements NodeInterface, TimestampableInterface
     /**
      * @var string
      *
+     * @GraphQL\Field(type="string")
+     * @GraphQL\Expose()
+     */
+    protected $email;
+
+    /**
+     * @var bool
+     *
+     * @GraphQL\Field(type="bool")
+     * @GraphQL\Expose()
+     */
+    protected $enabled;
+
+    /**
+     * @var string
+     *
      * @ORM\Column(name="type", type="string")
      *
      * @GraphQL\Expose()

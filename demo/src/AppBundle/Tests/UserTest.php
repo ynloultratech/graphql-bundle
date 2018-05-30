@@ -10,6 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Demo\AppBundle\Tests;
 
+use Ynlo\GraphQLBundle\Demo\AppBundle\DataFixtures\ORM\Fixtures;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Post;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\User;
 use Ynlo\GraphQLBundle\Test\ApiTestCase;
@@ -369,6 +370,7 @@ mutation($input: AddUserInput!){
             node {
                 id
                 login
+                email
                 profile {
                     email
                 }
@@ -384,8 +386,10 @@ GraphQL;
             [
                 'input' => [
                     'login' => $login = 'graphql',
+                    'email' => $email = 'test@example.com',
+                    'password' => Fixtures::DEFAULT_PASSWORD,
                     'profile' => [
-                        'email' => $email = 'test@example.com',
+                        'email' => $email,
                     ],
                     'clientMutationId' => (string) $clientMutationId = mt_rand(),
                 ],
@@ -404,6 +408,7 @@ GraphQL;
 
         self::assertEquals($login, $createdUser->getUsername());
 
+        self::assertResponseJsonValueEquals($email, 'data.users.add.node.email');
         self::assertResponseJsonValueEquals($email, 'data.users.add.node.profile.email');
     }
 
@@ -438,6 +443,8 @@ GraphQL;
             [
                 'input' => [
                     'login' => '',
+                    'password' => '',
+                    'email' => '',
                     'profile' => [
                         'email' => 'sssss',
                     ],

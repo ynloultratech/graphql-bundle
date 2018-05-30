@@ -13,6 +13,7 @@ namespace Ynlo\GraphQLBundle\Demo\AppBundle\Form\Input\User;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints\NotBlank;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\User;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Form\Input\Profile\ProfileInput;
 
@@ -27,7 +28,9 @@ class AddUserInput extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('login', null, ['property_path' => 'username', 'required' => true])
+            ->add('login', null, ['property_path' => 'username', 'required' => true, 'constraints' => [new NotBlank()]])
+            ->add('email', null, ['required' => true])
+            ->add('password', null, ['property_path' => 'plainPassword', 'required' => true])
             ->add('profile', ProfileInput::class, ['required' => true])
             ->add('enabled');
     }

@@ -26,6 +26,8 @@ class UpdateUserInput extends AddUserInput
         parent::buildForm($builder, $options);
 
         $builder->get('login')->setRequired(false);
+        $builder->get('email')->setRequired(false);
+        $builder->get('password')->setRequired(false);
         $builder->get('profile')->setRequired(false);
     }
 }
