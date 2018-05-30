@@ -13,4 +13,10 @@ echo Preparing...
 ./console doctrine:schema:update  --force -q
 ./console doctrine:fixtures:load -n -q
 ./console assets:install public --symlink
+
+# this is used to run a instance to allow login in the explorer
+# the login is made in background in the original instance
+# but PHP build in server does not support multiple requests
+./console server:run localhost:8010 --docroot=public -q &
+
 ./console server:run --docroot=public

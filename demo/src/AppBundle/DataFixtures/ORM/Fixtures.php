@@ -25,6 +25,7 @@ use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\User;
 class Fixtures extends Fixture
 {
     public const USER_ADMIN = 'admin';
+    public const DEFAULT_PASSWORD = '12345';
 
     protected $faker;
 
@@ -56,17 +57,24 @@ class Fixtures extends Fixture
     {
         $user = new User();
         $user->setUsername(self::USER_ADMIN);
+        $user->setEnabled(true);
+        $user->setPlainPassword('12345');
         $user->setType(User::TYPE_ADMIN);
-        $user->getProfile()->setEmail('admin@example.com');
+        $user->setEmail('admin@example.com');
+        $user->setRoles(['ROLE_ADMIN']);
+        $user->getProfile()->setEmail($user->getEmail());
         $this->setReference($user->getUsername(), $user);
         $manager->persist($user);
 
         for ($i = 1; $i <= 10; $i ++) {
             $user = new User();
             $user->setUsername($this->faker->userName);
+            $user->setEnabled(true);
+            $user->setPlainPassword(self::DEFAULT_PASSWORD);
+            $user->setEmail($this->faker->email);
             $user->getProfile()->setFirstName($this->faker->firstName);
             $user->getProfile()->setLastName($this->faker->lastName);
-            $user->getProfile()->setEmail($this->faker->email);
+            $user->getProfile()->setEmail($user->getEmail());
             $user->getProfile()->setPhone($this->faker->phoneNumber);
             $user->getProfile()->setTwitter('#'.$user->getUsername());
             $user->getProfile()->setFacebook(strtolower($user->getProfile()->getFirstName().'.'.$user->getProfile()->getLastName()));

@@ -12,6 +12,7 @@ namespace Ynlo\GraphQLBundle\Demo\AppBundle\Entity;
 
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use FOS\UserBundle\Model\User as BaseUser;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Validator\Constraints as Assert;
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
@@ -25,13 +26,13 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  *
  * @UniqueEntity(fields={"username"}, message="The username <b>{{ value }}</b> is already taken")
  *
- * @GraphQL\ObjectType()
+ * @GraphQL\ObjectType(exclusionPolicy="ALL")
  * @GraphQL\QueryList()
  * @GraphQL\MutationAdd()
  * @GraphQL\MutationUpdate()
  * @GraphQL\MutationDelete()
  */
-class User implements NodeInterface, TimestampableInterface
+class User extends BaseUser implements NodeInterface, TimestampableInterface
 {
     use TimestampableTrait;
 
@@ -50,12 +51,8 @@ class User implements NodeInterface, TimestampableInterface
     /**
      * @var string
      *
-     * @ORM\Column(name="username", type="string")
-     *
-     * @Assert\NotBlank()
-     * @Assert\Length(min="5")
-     *
-     * @GraphQL\Field(name="login")
+     * @GraphQL\Field(name="login", type="string")
+     * @GraphQL\Expose()
      */
     protected $username;
 
@@ -63,6 +60,8 @@ class User implements NodeInterface, TimestampableInterface
      * @var string
      *
      * @ORM\Column(name="type", type="string")
+     *
+     * @GraphQL\Expose()
      */
     protected $type = self::TYPE_USER;
 
@@ -73,46 +72,19 @@ class User implements NodeInterface, TimestampableInterface
      *
      * @Assert\Valid()
      * @Assert\NotNull()
+     *
+     * @GraphQL\Expose()
      */
     protected $profile;
-
-    /**
-     * @var bool
-     *
-     * @ORM\Column(name="enabled", type="boolean")
-     */
-    protected $enabled = true;
 
     /**
      * @var Collection
      *
      * @ORM\OneToMany(targetEntity="Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Post", mappedBy="author", fetch="EXTRA_LAZY")
+     *
+     * @GraphQL\Expose()
      */
     protected $posts;
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getId(): ?Int
-    {
-        return $this->id;
-    }
-
-    /**
-     * @return string
-     */
-    public function getUsername()
-    {
-        return $this->username;
-    }
-
-    /**
-     * @param string $username
-     */
-    public function setUsername(?string $username)
-    {
-        $this->username = $username;
-    }
 
     /**
      * @return string
@@ -179,22 +151,6 @@ class User implements NodeInterface, TimestampableInterface
     public function setProfile(?Profile $profile)
     {
         $this->profile = $profile;
-    }
-
-    /**
-     * @return bool
-     */
-    public function isEnabled(): bool
-    {
-        return $this->enabled;
-    }
-
-    /**
-     * @param bool $enabled
-     */
-    public function setEnabled(bool $enabled)
-    {
-        $this->enabled = $enabled;
     }
 
     /**

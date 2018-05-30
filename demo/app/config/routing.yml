@@ -5,3 +5,8 @@ api:
 api_explore:
       resource: '@YnloGraphQLBundle/Resources/config/routing/explorer.yml'
       prefix:   /explorer
+
+api_login:
+      path: login
+      defaults:
+          _format: json

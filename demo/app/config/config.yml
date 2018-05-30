@@ -7,6 +7,10 @@ imports:
 # http://symfony.com/doc/current/best_practices/configuration.html#application-related-configuration
 parameters:
     locale: en
+    jwt_private_key_path: '%kernel.root_dir%/config/jwt/private.pem' # ssh private key path
+    jwt_public_key_path:  '%kernel.root_dir%/config/jwt/public.pem'  # ssh public key path
+    jwt_key_pass_phrase:  '1234567890'                                  # ssh key pass phrase
+    jwt_token_ttl:        3600
 
 framework:
     #esi:             ~
@@ -52,6 +56,23 @@ twig:
     debug:            "%kernel.debug%"
     strict_variables: "%kernel.debug%"
 
+fos_user:
+    db_driver: orm
+    firewall_name: main
+    user_class: Ynlo\GraphQLBundle\Demo\AppBundle\Entity\User
+    use_flash_notifications: false
+    from_email:
+        address: no-reply@example.com
+        sender_name: Example
+    service:
+        mailer:  fos_user.mailer.noop
+
+lexik_jwt_authentication:
+    private_key_path: '%jwt_private_key_path%'
+    public_key_path:  '%jwt_public_key_path%'
+    pass_phrase:      '%jwt_key_pass_phrase%'
+    token_ttl:        '%jwt_token_ttl%'
+
 graphql:
     security:
         validation_rules:
@@ -59,4 +80,11 @@ graphql:
     definitions:
         extensions:
             namespaces: true
+    graphiql:
+        authentication:
+            required: false
+            provider:
+                jwt:
+                  login:
+                      url: http://localhost:8010/login # the demo app, must run in 2 instances, 8000 and 8010 to handle the login
 

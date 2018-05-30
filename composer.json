@@ -61,7 +61,8 @@
     "fresh/doctrine-enum-bundle": "5.2",
     "escapestudios/symfony2-coding-standard": "3.x-dev",
     "behat/behat": "^3.4",
-    "behat/symfony2-extension": "^2.1"
+    "behat/symfony2-extension": "^2.1",
+    "friendsofsymfony/user-bundle": "^2.1"
   },
   "suggest": {
     "behat/behat": "Integration with Behat BDD tests",
