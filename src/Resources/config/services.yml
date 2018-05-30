@@ -231,6 +231,7 @@ services:
             - { name: 'graphql.definition_extension'}
 
     Ynlo\GraphQLBundle\Definition\Extension\RolesDefinitionExtension:
+        public: true
         arguments: ['@graphql.security.authorization_checker']
         tags:
             - { name: 'graphql.definition_extension', priority: -190}
