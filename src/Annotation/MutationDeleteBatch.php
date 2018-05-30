@@ -53,5 +53,10 @@ final class MutationDeleteBatch
     /**
      * @var array
      */
+    public $roles;
+
+    /**
+     * @var array
+     */
     public $options = [];
 }
