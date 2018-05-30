@@ -8,18 +8,18 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Definition\Extension;
+namespace Ynlo\GraphQLBundle\Definition\Plugin;
 
 use Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices;
 use Ynlo\GraphQLBundle\Component\TaggedServices\TagSpecification;
 
 /**
- * ExtensionManager
+ * GraphQLDefinitionPluginManager
  */
-class DefinitionExtensionManager
+class GraphQLDefinitionPluginManager
 {
     /**
-     * @var DefinitionExtensionInterface[]
+     * @var DefinitionPluginInterface[]
      */
     protected $extensions;
 
@@ -44,7 +44,7 @@ class DefinitionExtensionManager
     }
 
     /**
-     * @return array|DefinitionExtensionInterface[]
+     * @return array|DefinitionPluginInterface[]
      */
     public function getExtensions()
     {
@@ -56,7 +56,7 @@ class DefinitionExtensionManager
         /** @var TagSpecification $extensions */
         $taggedServices = $this->taggedServices->findTaggedServices('graphql.definition_extension');
         foreach ($taggedServices as $tagSpecification) {
-            /** @var DefinitionExtensionInterface $extension */
+            /** @var DefinitionPluginInterface $extension */
             $extension = $tagSpecification->getService();
             $this->extensions[$extension->getName()] = $extension;
         }

@@ -8,17 +8,17 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Definition\Extension;
+namespace Ynlo\GraphQLBundle\Definition\Plugin;
 
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 
 /**
- * Definitions extensions power up definitions
+ * Definitions plugins power up definitions
  * adding extra schema to resolved and parsed definitions
  */
-interface DefinitionExtensionInterface
+interface DefinitionPluginInterface
 {
     /**
      * Unique name of the extension

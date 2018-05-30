@@ -8,7 +8,7 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Definition\Extension;
+namespace Ynlo\GraphQLBundle\Definition\Plugin;
 
 use Doctrine\Common\Annotations\Reader;
 use GraphQL\Type\Definition\ObjectType;
@@ -31,7 +31,7 @@ use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 /**
  * Convert a simple return of nodes into a paginated collection with edges
  */
-class PaginationDefinitionExtension extends AbstractDefinitionExtension
+class PaginationDefinitionPlugin extends AbstractDefinitionPlugin
 {
     public const ONE_TO_MANY = 'ONE_TO_MANY';
     public const MANY_TO_MANY = 'MANY_TO_MANY';

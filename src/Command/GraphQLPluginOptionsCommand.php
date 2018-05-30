@@ -17,22 +17,22 @@ use Symfony\Component\Config\Definition\Dumper\YamlReferenceDumper;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
-use Ynlo\GraphQLBundle\Definition\Extension\DefinitionExtensionInterface;
-use Ynlo\GraphQLBundle\Definition\Extension\DefinitionExtensionManager;
+use Ynlo\GraphQLBundle\Definition\Plugin\DefinitionPluginInterface;
+use Ynlo\GraphQLBundle\Definition\Plugin\GraphQLDefinitionPluginManager;
 
 /**
- * DefinitionOptionsCommand
+ * GraphQLPluginOptionsCommand
  */
-class DefinitionOptionsCommand extends ContainerAwareCommand
+class GraphQLPluginOptionsCommand extends ContainerAwareCommand
 {
     /**
      * {@inheritDoc}
      */
     protected function configure()
     {
-        $this->setName('graphql:definition:options')
-             ->setDescription('Expose all available options for one or all graphql definition extensions')
-             ->addArgument('extension', InputArgument::OPTIONAL, 'Show only options for given extension');
+        $this->setName('graphql:plugins')
+             ->setDescription('Expose all available options for one or all graphql plugins')
+             ->addArgument('plugin', InputArgument::OPTIONAL, 'Show only options for given plugin');
     }
 
     /**
@@ -41,11 +41,11 @@ class DefinitionOptionsCommand extends ContainerAwareCommand
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $filterBy = null;
-        if ($input->hasArgument('extension')) {
-            $filterBy = $input->getArgument('extension');
+        if ($input->hasArgument('plugin')) {
+            $filterBy = $input->getArgument('plugin');
         }
 
-        $extensions = $this->getContainer()->get(DefinitionExtensionManager::class)->getExtensions();
+        $extensions = $this->getContainer()->get(GraphQLDefinitionPluginManager::class)->getExtensions();
 
         $dumped = false;
         foreach ($extensions as $extension) {
@@ -62,30 +62,30 @@ class DefinitionOptionsCommand extends ContainerAwareCommand
         }
 
         if ($filterBy && !$dumped) {
-            throw new \InvalidArgumentException('The extension does not exist or not have configuration');
+            throw new \InvalidArgumentException('The plugin does not exist or not have configuration');
         }
     }
 
     /**
-     * @param DefinitionExtensionInterface $extension
+     * @param DefinitionPluginInterface $extension
      *
      * @return ConfigurationInterface
      */
-    protected function createConfig(DefinitionExtensionInterface $extension): ConfigurationInterface
+    protected function createConfig(DefinitionPluginInterface $extension): ConfigurationInterface
     {
         return new class($extension) implements ConfigurationInterface
         {
             /**
-             * @var DefinitionExtensionInterface
+             * @var DefinitionPluginInterface
              */
             protected $extension;
 
             /**
              *  constructor.
              *
-             * @param DefinitionExtensionInterface $extension
+             * @param DefinitionPluginInterface $extension
              */
-            public function __construct(DefinitionExtensionInterface $extension)
+            public function __construct(DefinitionPluginInterface $extension)
             {
                 $this->extension = $extension;
             }

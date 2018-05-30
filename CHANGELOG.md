@@ -22,6 +22,7 @@ CHANGELOG
  * [BC BREAK] Removed `getPriority` method in CRUD extensions, must use service tag priority instead. 
  * Add config to set custom labels for GraphiQL JWT Authentication form fields
  * fix GraphiQL CORS error when use the explorer in a different domain or subdomain
+ * [BC BREAK] Change definitions "extensions" to "plugins" to avoid confusion with CRUD extensions
 
 1.0.6 - 18-03-23
 ----

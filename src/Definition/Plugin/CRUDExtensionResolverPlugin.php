@@ -8,7 +8,7 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Definition\Extension;
+namespace Ynlo\GraphQLBundle\Definition\Plugin;
 
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
@@ -18,7 +18,11 @@ use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Util\ClassUtils;
 
-class InterfaceExtensionResolver extends AbstractDefinitionExtension
+/**
+ * This plugin automatically load CRUD extensions
+ * based on object interfaces and registered interfaces
+ */
+class CRUDExtensionResolverPlugin extends AbstractDefinitionPlugin
 {
     protected $container;
 

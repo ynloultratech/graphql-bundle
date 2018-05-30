@@ -9,7 +9,7 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Definition\Extension;
+namespace Ynlo\GraphQLBundle\Definition\Plugin;
 
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
@@ -17,7 +17,7 @@ use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 
-class RolesDefinitionExtension extends AbstractDefinitionExtension
+class RolesDefinitionPlugin extends AbstractDefinitionPlugin
 {
     /**
      * @var bool[]

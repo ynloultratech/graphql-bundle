@@ -17,8 +17,8 @@ use Symfony\Component\Config\Definition\Processor;
 use Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices;
 use Ynlo\GraphQLBundle\Component\TaggedServices\TagSpecification;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
-use Ynlo\GraphQLBundle\Definition\Extension\DefinitionExtensionInterface;
-use Ynlo\GraphQLBundle\Definition\Extension\DefinitionExtensionManager;
+use Ynlo\GraphQLBundle\Definition\Plugin\DefinitionPluginInterface;
+use Ynlo\GraphQLBundle\Definition\Plugin\GraphQLDefinitionPluginManager;
 use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Loader\DefinitionLoaderInterface;
 use Ynlo\GraphQLBundle\Definition\MetaAwareInterface;
@@ -34,7 +34,7 @@ class DefinitionRegistry
     private $taggedServices;
 
     /**
-     * @var DefinitionExtensionManager
+     * @var GraphQLDefinitionPluginManager
      */
     private $extensionManager;
 
@@ -51,11 +51,11 @@ class DefinitionRegistry
     /**
      * DefinitionRegistry constructor.
      *
-     * @param TaggedServices             $taggedServices
-     * @param DefinitionExtensionManager $extensionManager
-     * @param null|string                $cacheDir
+     * @param TaggedServices                 $taggedServices
+     * @param GraphQLDefinitionPluginManager $extensionManager
+     * @param null|string                    $cacheDir
      */
-    public function __construct(TaggedServices $taggedServices, DefinitionExtensionManager $extensionManager, ?string $cacheDir = null)
+    public function __construct(TaggedServices $taggedServices, GraphQLDefinitionPluginManager $extensionManager, ?string $cacheDir = null)
     {
         $this->taggedServices = $taggedServices;
         $this->extensionManager = $extensionManager;
@@ -175,11 +175,11 @@ class DefinitionRegistry
     }
 
     /**
-     * @param DefinitionExtensionInterface $extension
-     * @param DefinitionInterface          $definition
-     * @param Endpoint                     $endpoint
+     * @param DefinitionPluginInterface $extension
+     * @param DefinitionInterface       $definition
+     * @param Endpoint                  $endpoint
      */
-    protected function configureDefinition(DefinitionExtensionInterface $extension, DefinitionInterface $definition, Endpoint $endpoint)
+    protected function configureDefinition(DefinitionPluginInterface $extension, DefinitionInterface $definition, Endpoint $endpoint)
     {
         $config = [];
         if ($definition instanceof MetaAwareInterface) {

@@ -8,7 +8,7 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Definition\Extension;
+namespace Ynlo\GraphQLBundle\Definition\Plugin;
 
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
@@ -33,7 +33,7 @@ use Ynlo\GraphQLBundle\Type\Types;
 use Ynlo\GraphQLBundle\Util\ClassUtils;
 use Ynlo\GraphQLBundle\Util\TypeUtil;
 
-class MutationFormResolverExtension extends AbstractDefinitionExtension
+class MutationFormResolverPlugin extends AbstractDefinitionPlugin
 {
     protected $formFactory;
 

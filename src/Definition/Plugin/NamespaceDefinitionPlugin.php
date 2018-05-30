@@ -8,7 +8,7 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Definition\Extension;
+namespace Ynlo\GraphQLBundle\Definition\Plugin;
 
 use Doctrine\Common\Util\Inflector;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
@@ -28,7 +28,7 @@ use Ynlo\GraphQLBundle\Resolver\EmptyObjectResolver;
  * This extension configure namespace in definitions
  * using definition node and bundle in the node
  */
-class NamespaceDefinitionExtension extends AbstractDefinitionExtension
+class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
 {
     protected $globalConfig = [];
 

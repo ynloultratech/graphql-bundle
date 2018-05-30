@@ -13,7 +13,7 @@ namespace Ynlo\GraphQLBundle\Query\Node;
 use Doctrine\ORM\Query\Expr\Orx;
 use Doctrine\ORM\QueryBuilder;
 use GraphQL\Error\Error;
-use Ynlo\GraphQLBundle\Definition\Extension\PaginationDefinitionExtension;
+use Ynlo\GraphQLBundle\Definition\Plugin\PaginationDefinitionPlugin;
 use Ynlo\GraphQLBundle\Model\ConnectionInterface;
 use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Model\NodeConnection;
@@ -205,7 +205,7 @@ class AllNodesWithPagination extends AllNodes
         }
 
         $paramName = 'root'.mt_rand();
-        if ($this->queryDefinition->getMeta('pagination')['parent_relation'] === PaginationDefinitionExtension::MANY_TO_MANY) {
+        if ($this->queryDefinition->getMeta('pagination')['parent_relation'] === PaginationDefinitionPlugin::MANY_TO_MANY) {
             $qb->andWhere(sprintf(':%s MEMBER OF %s.%s', $paramName, $this->queryAlias, $parentField))
                ->setParameter($paramName, $root);
         } else {

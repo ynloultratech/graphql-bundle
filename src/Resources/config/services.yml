@@ -54,7 +54,7 @@ services:
         public: true
         arguments:
             - '@Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices'
-            - '@Ynlo\GraphQLBundle\Definition\Extension\DefinitionExtensionManager'
+            - '@Ynlo\GraphQLBundle\Definition\Plugin\GraphQLDefinitionPluginManager'
             - '%kernel.cache_dir%'
 
     Ynlo\GraphQLBundle\Definition\Loader\AnnotationLoader:
@@ -204,7 +204,7 @@ services:
         tags:
           - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\FormType }
 
-    Ynlo\GraphQLBundle\Definition\Extension\DefinitionExtensionManager:
+    Ynlo\GraphQLBundle\Definition\Plugin\GraphQLDefinitionPluginManager:
         public: true
         arguments: ['@Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices']
 
@@ -212,37 +212,37 @@ services:
         public: true
         arguments: [!tagged graphql.extension]
 
-    Ynlo\GraphQLBundle\Definition\Extension\PaginationDefinitionExtension:
+    Ynlo\GraphQLBundle\Definition\Plugin\PaginationDefinitionPlugin:
         public: true
         arguments: ['@annotations.reader','%graphql.extension_config.pagination%']
         tags:
             - { name: 'graphql.definition_extension'}
 
-    Ynlo\GraphQLBundle\Definition\Extension\MutationFormResolverExtension:
+    Ynlo\GraphQLBundle\Definition\Plugin\MutationFormResolverPlugin:
         public: true
         arguments: ['@form.factory']
         tags:
             - { name: 'graphql.definition_extension'}
 
-    Ynlo\GraphQLBundle\Definition\Extension\InterfaceExtensionResolver:
+    Ynlo\GraphQLBundle\Definition\Plugin\CRUDExtensionResolverPlugin:
         public: true
         arguments: ['@service_container']
         tags:
             - { name: 'graphql.definition_extension'}
 
-    Ynlo\GraphQLBundle\Definition\Extension\RolesDefinitionExtension:
+    Ynlo\GraphQLBundle\Definition\Plugin\RolesDefinitionPlugin:
         public: true
         arguments: ['@graphql.security.authorization_checker']
         tags:
             - { name: 'graphql.definition_extension', priority: -190}
 
-    Ynlo\GraphQLBundle\Definition\Extension\NamespaceDefinitionExtension:
+    Ynlo\GraphQLBundle\Definition\Plugin\NamespaceDefinitionPlugin:
         public: true
         arguments: ['%graphql.extension_config.namespaces%']
         tags:
             - { name: 'graphql.definition_extension', priority: -200}
 
-    Ynlo\GraphQLBundle\Definition\Extension\ReorderDefinitionsExtension:
+    Ynlo\GraphQLBundle\Definition\Plugin\ReorderDefinitionsPlugin:
         public: true
         tags:
             - { name: 'graphql.definition_extension', priority: -210}
