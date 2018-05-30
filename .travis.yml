@@ -17,19 +17,14 @@ install:
   - travis_retry composer global require hirak/prestissimo
   - travis_retry composer install --no-interaction
 
-before_script:
-  - php demo/console cache:clear --env=test --no-warmup
-  - php demo/console cache:warmup --env=test
-  - php demo/console doctrine:database:create --env=test
-  - php demo/console doctrine:schema:update -f --env=test
-  - php demo/console doctrine:fixtures:load -n --env=test
-
 script:
   - mkdir -p build/logs
   - php bin/phpunit -c phpunit.xml.dist --coverage-text --coverage-clover=${clover=build/logs/clover.xml}
   - cd demo
+  - rm -rf var/cache
   - php ../bin/behat -f progress --rerun --no-interaction
   - cd ..
+
 after_success:
  - composer require satooshi/php-coveralls
  - php bin/coveralls
