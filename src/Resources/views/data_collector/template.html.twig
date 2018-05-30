@@ -1,0 +1,383 @@
+{# @var collector \Ynlo\GraphQLBundle\DataCollector\GraphQLDataCollector #}
+
+
+{% extends '@WebProfiler/Profiler/layout.html.twig' %}
+
+{% block icon %}
+    <svg width="2207" height="2500" viewBox="0 0 256 290" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid">
+        <path d="M152.912 137.678l62.902-35.399a24.226 24.226 0 0 0 7.138 4.344l.045 76.366a24.368 24.368 0 0 0-15.501 22.728c0 1.788.192 3.53.556 5.21l-62.984 35.793a24.092 24.092 0 0 0-15.72-5.811 24.098 24.098 0 0 0-16.073 6.118l-65.034-37.71a24.67 24.67 0 0 0 .263-3.6c0-11.309-7.67-20.818-18.07-23.564l-.11-74.648c10.455-2.707 18.18-12.243 18.18-23.592 0-2.106-.266-4.15-.766-6.098l62.264-35.74c4.344 4.122 10.203 6.65 16.65 6.65 13.394 0 24.252-10.908 24.252-24.363S140.046 0 126.652 0C113.258 0 102.4 10.907 102.4 24.362c0 1.462.128 2.895.374 4.286L39.5 64.968a24.083 24.083 0 0 0-15.247-5.417C10.858 59.55 0 70.458 0 83.913a24.37 24.37 0 0 0 15.078 22.559l.113 76.64A24.37 24.37 0 0 0 0 205.717c0 13.455 10.858 24.362 24.252 24.362 6.688 0 12.744-2.72 17.131-7.118l64.237 37.248a24.57 24.57 0 0 0-.524 5.062c0 13.455 10.858 24.362 24.252 24.362 13.394 0 24.252-10.907 24.252-24.362 0-1.896-.216-3.741-.623-5.512l62.813-35.697a24.096 24.096 0 0 0 15.958 6.017c13.394 0 24.252-10.907 24.252-24.362 0-11.196-7.518-20.628-17.76-23.48l-.043-74.833C248.46 104.568 256 95.124 256 83.913c0-13.455-10.858-24.362-24.252-24.362-13.394 0-24.252 10.907-24.252 24.362 0 1.798.194 3.551.562 5.239l-63.212 35.573a24.088 24.088 0 0 0-15.498-5.623c-13.394 0-24.252 10.907-24.252 24.362 0 13.455 10.858 24.362 24.252 24.362 13.394 0 24.252-10.907 24.252-24.362 0-1.994-.238-3.931-.688-5.786z" fill="#FFF"/>
+    </svg>
+{% endblock %}
+
+{% from _self import operations_table, fields_table, link_type, objects_table %}
+
+{% block toolbar %}
+    {% set icon %}
+        {# this is the content displayed as a panel in the toolbar #}
+        {{ block('icon') }}
+        <span class="sf-toolbar-value">GraphQL</span>
+    {% endset %}
+
+    {% set text %}
+        {# this is the content displayed when hovering the mouse over
+           the toolbar panel #}
+        <div class="sf-toolbar-info-piece">
+            <b>Queries</b>
+            <span>{{ collector.endpoint.allQueries|length }}</span>
+        </div>
+
+        <div class="sf-toolbar-info-piece">
+            <b>Mutations</b>
+            <span>{{ collector.endpoint.allMutations|length }}</span>
+        </div>
+    {% endset %}
+
+    {# the 'link' value set to 'false' means that this panel doesn't
+       show a section in the web profiler #}
+    {{ include('@WebProfiler/Profiler/toolbar_item.html.twig', { link: true }) }}
+{% endblock %}
+
+{% block head %}
+    {{ parent() }}
+    <style>
+        tr.sf-toggle-content.sf-toggle-visible {
+            display: table-row;
+        }
+    </style>
+{% endblock %}
+
+{% block menu %}
+    {# This left-hand menu appears when using the full-screen profiler. #}
+    <span class="label">
+        <span class="icon"> {{ block('icon') }}</span>
+        <strong>GraphQL</strong>
+    </span>
+{% endblock %}
+
+{% block panel %}
+    {# @var endpoint \Ynlo\GraphQLBundle\Definition\Registry\Endpoint #}
+    {% set endpoint = collector.endpoint %}
+
+    <h2>Schema</h2>
+
+    <div class="sf-tabs">
+        <div class="tab">
+            <h3 class="tab-title">Queries <span class="badge status-">{{ endpoint.allQueries|length }}</span></h3>
+            <div class="tab-content">
+                {{ operations_table(endpoint, endpoint.allQueries) }}
+            </div>
+        </div>
+
+        <div class="tab">
+            <h3 class="tab-title">Mutations <span class="badge status-">{{ endpoint.allMutations|length }}</span></h3>
+            <div class="tab-content">
+                <div class="tab-content">
+                    {{ operations_table(endpoint, endpoint.allMutations) }}
+                </div>
+            </div>
+        </div>
+        {% set types = endpoint.allTypes %}
+        {% set objects = [] %}
+        {% set inputObjects = [] %}
+        {% set interfaces = [] %}
+        {% for type in types %}
+            {% if collector.object(type) %}
+                {% set objects = objects|merge([type]) %}
+            {% elseif collector.inputObject(type) %}
+                {% set inputObjects = inputObjects|merge([type]) %}
+            {% elseif collector.interface(type) %}
+                {% set interfaces = interfaces|merge([type]) %}
+            {% endif %}
+        {% endfor %}
+
+        <div class="tab">
+            <h3 class="tab-title">Object Types <span class="badge status-default }}">{{ objects|length }}</span></h3>
+            <div class="tab-content">
+                {{ objects_table(endpoint, objects) }}
+            </div>
+        </div>
+
+        <div class="tab">
+            <h3 class="tab-title">Input Object Types <span class="badge status-default }}">{{ inputObjects|length }}</span></h3>
+            <div class="tab-content">
+                {{ objects_table(endpoint, inputObjects) }}
+            </div>
+        </div>
+
+        <div class="tab">
+            <h3 class="tab-title">Interfaces <span class="badge status-default }}">{{ interfaces|length }}</span></h3>
+            <div class="tab-content">
+                {{ objects_table(endpoint, interfaces) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+{% macro operations_table(endpoint, operations) %}
+    {% from '@YnloGraphQL/data_collector/template.html.twig' import link_type %}
+    <table class="logs">
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for operation in operations %}
+            <tr>
+                <th class="font-normal" scope="row">{{ operation.name }}</th>
+                <td>
+                    {{ link_type(endpoint, operation.type) }}
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endmacro %}
+
+{% macro objects_table(endpoint, objects) %}
+    {% from '@YnloGraphQL/data_collector/template.html.twig' import fields_table, link_type %}
+    <table>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Class / Details</th>
+        </tr>
+        </thead>
+        <tbody>
+        {# @var object \Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface #}
+        {% for object in objects %}
+            <tr>
+                <th class="font-normal" scope="row">
+                    <a name="{{ object.name }}"
+                       class="btn btn-link text-small sf-toggle"
+                       data-toggle-selector="#details-{{ object.name }}"
+                       data-toggle-alt-content="&#x25B2; {{ object.name }}">&#x25BC;
+                        {{ object.name }}
+                    </a>
+                </th>
+                <td>
+                    {{ object.class }}
+                    <div id="details-{{ object.name }}" class="context sf-toggle-content sf-toggle-hidden">
+                        <table>
+                            <tbody>
+                            {% if object.exclusionPolicy is defined %}
+                                <tr>
+                                    <th>exclusionPolicy</th>
+                                    <td>
+                                        <span class="badge status-{{ object.exclusionPolicy == 'ALL' ? 'success' : 'warning' }}">
+                                            {{ object.exclusionPolicy }}
+                                        </span>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                            {% if object.description is defined and object.description %}
+                                <tr>
+                                    <th>description</th>
+                                    <td>
+                                        {{ object.description }}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                            {% if object.deprecationReason is defined and object.deprecationReason %}
+                                <tr>
+                                    <th>deprecationReason</th>
+                                    <td>
+                                        {{ object.deprecationReason }}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                            {% if object.implementors is defined %}
+                                <tr>
+                                    <th>implementations</th>
+                                    <td>
+                                        {% if object.implementors|length %}
+                                            <ul>
+                                                {% for type in object.implementors %}
+                                                    <li>
+                                                        {{ link_type(endpoint, type) }}
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% else %}
+                                            Not Implemented
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% endif %}
+                            {% if object.interfaces is defined and object.interfaces|length %}
+                                <tr>
+                                    <th>interfaces</th>
+                                    <td>
+                                        <ul>
+                                            {% for type in object.interfaces %}
+                                                <li>
+                                                    {{ link_type(endpoint, type) }}
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                            {% if object.extensions is defined and object.extensions|length %}
+                                <tr>
+                                    <th>extensions</th>
+                                    <td>
+                                        <ul>
+                                            {% for name in object.extensions %}
+                                                <li>
+                                                    name
+                                                </li>
+                                            {% endfor %}
+                                        </ul>
+                                    </td>
+                                </tr>
+                            {% endif %}
+                            {% if object.fields is defined %}
+                                <tr>
+                                <th>
+                                    {% if object.fields|length %}
+                                        <a class="btn btn-link text-small sf-toggle"
+                                           data-toggle-selector="#fields-{{ object.name }}"
+                                           data-toggle-alt-content="&#x25B2; fields">&#x25BC; fields</a>
+                                    {% else %}
+                                        fields
+                                    {% endif %}
+                                </th>
+
+                                <td>
+                                {{ object.fields|length }}
+
+                                {% if object.fields|length %}
+                                    </tr>
+                                    <tr id="fields-{{ object.name }}" class="context sf-toggle-content sf-toggle-hidden">
+                                        <td colspan="2">
+                                            {{ fields_table(endpoint, object.name, object.fields) }}
+                                        </td>
+                                    </tr>
+                                {% endif %}
+                            {% endif %}
+                            </tbody>
+                        </table>
+                    </div>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endmacro %}
+
+{% macro fields_table(endpoint, objectName, fields) %}
+    {% from '@YnloGraphQL/data_collector/template.html.twig' import link_type %}
+    <table>
+        <thead>
+        <tr>
+            <th>Name</th>
+            <th>Type</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for field in fields %}
+            {# @var field \Ynlo\GraphQLBundle\Definition\FieldDefinition #}
+            <tr>
+                <th>
+                    <a class="btn btn-link text-small sf-toggle"
+                       data-toggle-selector="#field-{{ objectName }}-{{ field.name }}"
+                       data-toggle-alt-content="&#x25B2; {{ field.name }}">
+                        &#x25BC; {{ field.name }}
+                    </a>
+                </th>
+                <td>
+                    {{ link_type(endpoint, field.type) }}
+                </td>
+            </tr>
+            <tr id="field-{{ objectName }}-{{ field.name }}" class="context sf-toggle-content sf-toggle-hidden">
+                <td colspan="2">
+                    <table>
+                        <tbody>
+                        {% if field.description is defined and field.description %}
+                            <tr>
+                                <th>description</th>
+                                <td>
+                                    {{ field.description }}
+                                </td>
+                            </tr>
+                        {% endif %}
+                        {% if field.deprecationReason is defined and field.deprecationReason %}
+                            <tr>
+                                <th>deprecationReason</th>
+                                <td>
+                                    <span class="bade status-error">{{ field.deprecationReason }}</span>
+                                </td>
+                            </tr>
+                        {% endif %}
+                        {% if field.resolver is defined and field.resolver %}
+                            <tr>
+                                <th>Resolver</th>
+                                <td>
+                                    {{ field.resolver }}
+                                </td>
+                            </tr>
+                        {% endif %}
+                        {% if field.originName is defined and field.originName %}
+                            <tr>
+                                <th>originName</th>
+                                <td>
+                                    {{ field.originName }}
+                                </td>
+                            </tr>
+                        {% endif %}
+                        {% if field.originType is defined and field.originType %}
+                            <tr>
+                                <th>originType</th>
+                                <td>
+                                    {{ field.originType }}
+                                </td>
+                            </tr>
+                        {% endif %}
+                        {% if field.list is defined %}
+                            <tr>
+                                <th>List</th>
+                                <td>
+                                    {{ field.list ? 'YES': 'NO' }}
+                                </td>
+                            </tr>
+                        {% endif %}
+                        {% if field.nonNull is defined %}
+                            <tr>
+                                <th>NonNull</th>
+                                <td>
+                                    {{ field.nonNull ? 'YES': 'NO' }}
+                                </td>
+                            </tr>
+                        {% endif %}
+                        {% if field.nonNullList is defined %}
+                            <tr>
+                                <th>NonNullList</th>
+                                <td>
+                                    {{ field.nonNullList ? 'YES': 'NO' }}
+                                </td>
+                            </tr>
+                        {% endif %}
+                        </tbody>
+                    </table>
+                </td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+{% endmacro %}
+
+{% macro link_type(endpoint, type) %}
+    {% if endpoint.hasTypeForClass(type) %}
+        {% set type = endpoint.typeForClass(type) %}
+    {% endif %}
+
+    {% if endpoint.hasType(type) %}
+        <a href="#{{ type }}">
+            {{ type }}
+        </a>
+    {% else %}
+        {{ type }}
+    {% endif %}
+{% endmacro %}
