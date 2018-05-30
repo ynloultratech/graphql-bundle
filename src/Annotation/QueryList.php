@@ -64,7 +64,7 @@ final class QueryList
     public $limit;
 
     /**
-     * Options used by extensions
+     * Options used by plugins
      *
      * @var array
      */

@@ -53,7 +53,7 @@ final class Query
     public $roles = [];
 
     /**
-     * Options used by extensions
+     * Options used by plugins
      *
      * @var array
      */
