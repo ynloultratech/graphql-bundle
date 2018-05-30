@@ -30,6 +30,19 @@ after_success:
  - php bin/coveralls
  - wget https://scrutinizer-ci.com/ocular.phar
  - php ocular.phar code-coverage:upload --format=php-clover "$clover"
+ - cd doc
+ - composer install
+ - composer build
+ - cd ..
+
+deploy:
+  provider: pages
+  skip-cleanup: true
+  github-token: $GITHUB_TOKEN
+  keep-history: true
+  local-dir: doc/static
+  on:
+    branch: master
 
 notifications:
   email:
