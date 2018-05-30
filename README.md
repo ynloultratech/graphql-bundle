@@ -6,6 +6,7 @@
 [![Latest Unstable Version](https://poser.pugx.org/ynloultratech/graphql-bundle/v/unstable)](//packagist.org/packages/ynloultratech/graphql-bundle)
 [![License](https://poser.pugx.org/ynloultratech/graphql-bundle/license)](https://packagist.org/packages/ynloultratech/graphql-bundle)
 [![GraphQL](https://img.shields.io/badge/GraphQL-Relay-blue.svg)](http://facebook.github.io/relay/docs/graphql-relay-specification.html)
+[![Symfony](https://img.shields.io/badge/Symfony-3.4%20%7C%204.0-green.svg)](https://symfony.com)
 
  Framework _(Symfony Bundle)_ designed to easily create API projects based on [GraphQL](https://graphql.org/) & [Relay Specification](http://facebook.github.io/relay/docs/en/graphql-relay-specification.html)
 
