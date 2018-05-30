@@ -131,19 +131,19 @@ if this value is FALSE and a provider is specified the authentication is optiona
     {
         $definitions = $root->arrayNode('definitions')->addDefaultsIfNotSet()->children();
 
-        $extensions = $definitions->arrayNode('extensions')->addDefaultsIfNotSet();
-        $this->configureExtensionPagination($extensions->children());
-        $this->configureExtensionNamespace($extensions->children());
+        $plugins = $definitions->arrayNode('plugins')->addDefaultsIfNotSet();
+        $this->configurePluginPaginationGlobalConfig($plugins->children());
+        $this->configurePluginNamespaceGlobalConfig($plugins->children());
     }
 
-    protected function configureExtensionPagination(NodeBuilder $root)
+    protected function configurePluginPaginationGlobalConfig(NodeBuilder $root)
     {
         $pagination = $root->arrayNode('pagination')->addDefaultsIfNotSet()->children();
         $pagination->integerNode('limit')
                    ->defaultValue(100)->info('Maximum limit allowed for all paginations');
     }
 
-    protected function configureExtensionNamespace(NodeBuilder $root)
+    protected function configurePluginNamespaceGlobalConfig(NodeBuilder $root)
     {
         $namespaces = $root->arrayNode('namespaces')
                            ->info(

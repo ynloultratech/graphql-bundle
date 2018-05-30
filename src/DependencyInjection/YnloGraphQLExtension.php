@@ -31,15 +31,15 @@ class YnloGraphQLExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        if (!isset($config['definitions']['extensions']['namespaces']['bundles']['aliases']['GraphQLBundle'])) {
-            $config['definitions']['extensions']['namespaces']['bundles']['aliases']['GraphQLBundle'] = 'AppBundle';
+        if (!isset($config['definitions']['plugins']['namespaces']['bundles']['aliases']['GraphQLBundle'])) {
+            $config['definitions']['plugins']['namespaces']['bundles']['aliases']['GraphQLBundle'] = 'AppBundle';
         }
 
         $container->setParameter('graphql.config', $config);
-        if (isset($config['definitions']['extensions'])) {
-            foreach ($config['definitions']['extensions'] as $extension => $extConfig) {
-                $extConfig = isset($extConfig['enabled']) && $extConfig['enabled'] ? $extConfig : [];
-                $container->setParameter('graphql.extension_config.'.$extension, $extConfig ?? []);
+        if (isset($config['definitions']['plugins'])) {
+            foreach ($config['definitions']['plugins'] as $plugin => $pluginConfig) {
+                $pluginConfig = isset($pluginConfig['enabled']) && $pluginConfig['enabled'] ? $pluginConfig : [];
+                $container->setParameter('graphql.plugin_config.'.$plugin, $pluginConfig ?? []);
             }
         }
 
