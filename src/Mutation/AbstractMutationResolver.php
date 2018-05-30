@@ -279,20 +279,31 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
      */
     private function publicPropertyPath(FormInterface $form, $path)
     {
+        $pathArray = [$path];
+
         if (strpos($path, '.') !== false) { // object.child.property
             $pathArray = explode('.', $path);
-        } elseif (strpos($path, '[') !== false) { //[array][child][property]
+        }
+
+        if (strpos($path, '[') !== false) { //[array][child][property]
             $path = str_replace(']', null, $path);
             $pathArray = explode('[', $path);
-        } else {
-            $pathArray = [$path];
         }
+
         if (in_array($pathArray[0], ['data', 'children'])) {
             array_shift($pathArray);
         }
 
         $contextForm = $form;
         foreach ($pathArray as &$propName) {
+            //for some reason some inputs are resolved as "inputName.data"
+            //because the original form property is children[inputName].data
+            //this is the case of DEMO AddUserInput form the login field is validated as path children[login].data
+            //the following statements remove the trailing ".data"
+            if (preg_match('/\.data$/', $propName)) {
+                $propName = preg_replace('/\.data$/', null, $propName);
+            }
+
             $index = null;
             if (preg_match('/(\w+)(\[\d+\])$/', $propName, $matches)) {
                 list(, $propName, $index) = $matches;
