@@ -122,7 +122,7 @@ class DefinitionRegistry
         if (file_exists($this->cacheFileName())) {
             $content = @file_get_contents($this->cacheFileName());
             if ($content) {
-                self::$endpoint = unserialize($content, ['allowed_classes' => false]);
+                self::$endpoint = unserialize($content, ['allowed_classes' => true]);
             }
         }
     }
@@ -141,6 +141,7 @@ class DefinitionRegistry
     {
         //run all extensions for each definition
         foreach ($this->extensionManager->getExtensions() as $extension) {
+            //run extensions recursively in all types and fields
             foreach ($endpoint->allTypes() as $type) {
                 $this->configureDefinition($extension, $type, $endpoint);
                 if ($type instanceof FieldsAwareDefinitionInterface) {
@@ -153,12 +154,15 @@ class DefinitionRegistry
                 }
             }
 
+            //run extension in all queries
             foreach ($endpoint->allQueries() as $query) {
                 $this->configureDefinition($extension, $query, $endpoint);
                 foreach ($query->getArguments() as $argument) {
                     $this->configureDefinition($extension, $argument, $endpoint);
                 }
             }
+
+            //run extensions in all mutations
             foreach ($endpoint->allMutations() as $mutation) {
                 $this->configureDefinition($extension, $mutation, $endpoint);
                 foreach ($mutation->getArguments() as $argument) {
