@@ -1,3 +1,0 @@
-# Behat Extension Configuration
-
-@TODO

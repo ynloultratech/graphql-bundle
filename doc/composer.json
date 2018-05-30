@@ -1,0 +1,21 @@
+{
+  "name": "ynloultratech/graphql-bundle-docs",
+  "license": "MIT",
+  "authors": [
+    {
+      "name": "YNLO-Ultratech Development Team",
+      "email": "developer@ynloultratech.com",
+      "homepage": "https://github.com/ynloultratech"
+    }
+  ],
+  "require": {
+    "daux/daux.io": "^0.7.2"
+  },
+  "config": {
+    "bin-dir": "bin",
+    "preferred-install": "dist"
+  },
+  "scripts": {
+    "build": "bin/daux generate -s content"
+  }
+}
