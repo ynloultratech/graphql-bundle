@@ -31,7 +31,7 @@ use Ynlo\GraphQLBundle\Test\Helper\JsonHelperTrait;
 use Ynlo\GraphQLBundle\Test\Helper\ResponseHelperTrait;
 
 /**
- * Class ApiTestCase
+ * @deprecated in favor of Behat tests
  */
 class ApiTestCase extends WebTestCase
 {

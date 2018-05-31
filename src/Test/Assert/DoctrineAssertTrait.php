@@ -16,6 +16,8 @@ use Symfony\Bundle\FrameworkBundle\Client;
  * @method Client getClient()
  *
  * @requires DoctrineHelperTrait
+ *
+ * @deprecated in favor of Behat tests
  */
 trait DoctrineAssertTrait
 {

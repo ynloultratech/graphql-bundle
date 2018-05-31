@@ -19,6 +19,8 @@ use Ynlo\GraphQLBundle\Model\ID;
 
 /**
  * @method Client getClient()
+ *
+ * @deprecated in favor of Behat tests
  */
 trait DoctrineHelperTrait
 {

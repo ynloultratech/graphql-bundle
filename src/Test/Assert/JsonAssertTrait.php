@@ -16,6 +16,8 @@ use Symfony\Component\HttpFoundation\Response;
  * @method Response getResponse()
  *
  * @requires JsonHelperTrait
+ *
+ * @deprecated in favor of Behat tests
  */
 trait JsonAssertTrait
 {

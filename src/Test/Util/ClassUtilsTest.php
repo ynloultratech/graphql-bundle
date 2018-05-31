@@ -13,6 +13,9 @@ namespace Ynlo\GraphQLBundle\Test\Util;
 use PHPUnit\Framework\TestCase;
 use Ynlo\GraphQLBundle\Util\ClassUtils;
 
+/**
+ * @deprecated in favor of Behat tests
+ */
 class ClassUtilsTest extends TestCase
 {
 

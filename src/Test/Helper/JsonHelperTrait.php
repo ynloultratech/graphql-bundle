@@ -15,6 +15,8 @@ use function JmesPath\search;
 
 /**
  * @method Response getResponse()
+ *
+ * @deprecated in favor of Behat tests
  */
 trait JsonHelperTrait
 {

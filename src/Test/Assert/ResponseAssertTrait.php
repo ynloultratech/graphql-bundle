@@ -17,6 +17,8 @@ use Symfony\Component\HttpFoundation\Response;
  * @method Client getClient()
  *
  * @requires ResponseHelperTrait
+ *
+ * @deprecated in favor of Behat tests
  */
 trait ResponseAssertTrait
 {

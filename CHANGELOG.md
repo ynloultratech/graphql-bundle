@@ -27,6 +27,7 @@ CHANGELOG
  * Add support to configure plugins using annotations instead of only arrays
  * Add support to use endpoints
  * Improve the schema cache warmer for dev environments
+ * PHPUnit ApiTestCase has been deprecated in favor of Behat tests 
  
 1.0.6 - 18-03-23
 ----
