@@ -26,6 +26,7 @@ CHANGELOG
  * Add dataCollector to display helpful information in the web profiler
  * Add support to configure plugins using annotations instead of only arrays
  * Add support to use endpoints
+ * Improve the schema cache warmer for dev environments
  
 1.0.6 - 18-03-23
 ----

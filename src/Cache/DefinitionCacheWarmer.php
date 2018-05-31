@@ -11,7 +11,9 @@
 namespace Ynlo\GraphQLBundle\Cache;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmer;
+use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\KernelEvents;
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
 
@@ -26,12 +28,19 @@ class DefinitionCacheWarmer extends CacheWarmer implements EventSubscriberInterf
     protected $registry;
 
     /**
+     * @var Kernel
+     */
+    protected $kernel;
+
+    /**
      * DefinitionCacheWarmer constructor.
      *
+     * @param Kernel             $kernel
      * @param DefinitionRegistry $registry
      */
-    public function __construct(DefinitionRegistry $registry)
+    public function __construct(Kernel $kernel, DefinitionRegistry $registry)
     {
+        $this->kernel = $kernel;
         $this->registry = $registry;
     }
 
@@ -49,6 +58,7 @@ class DefinitionCacheWarmer extends CacheWarmer implements EventSubscriberInterf
     public function warmUp($cacheDir)
     {
         $this->registry->clearCache();
+        $this->updateControlFile();
     }
 
     /**
@@ -57,7 +67,10 @@ class DefinitionCacheWarmer extends CacheWarmer implements EventSubscriberInterf
      */
     public function warmUpOnEveryRequest()
     {
-        $this->warmUp(null);
+        if (!$this->isFreshCache()) {
+            $this->warmUp(null);
+            $this->updateControlFile();
+        }
     }
 
     /**
@@ -68,5 +81,47 @@ class DefinitionCacheWarmer extends CacheWarmer implements EventSubscriberInterf
         return [
             KernelEvents::REQUEST => 'warmUpOnEveryRequest',
         ];
+    }
+
+    protected function isFreshCache()
+    {
+        if (!file_exists($this->getControlFileName())) {
+            return false;
+        }
+
+        $controlTime = filemtime($this->getControlFileName());
+
+        $projectDir = $this->kernel->getProjectDir();
+
+        if (Kernel::VERSION_ID >= 40000) {
+            $dirs[] = $projectDir.'/config';
+            $dirs[] = $projectDir.'/src';
+        } else {
+            $dirs[] = $this->kernel->getRootDir();
+            $dirs[] = $this->kernel->getRootDir().'/../src';
+        }
+
+        $files = Finder::create()
+                       ->in($dirs[1])
+                       ->date(sprintf('>= %s', date('Y-m-d H:i:s', $controlTime)))
+                       ->files();
+
+        //exist at least one modified file
+        foreach ($files as $file) {
+            return false;
+            break;
+        }
+
+        return true;
+    }
+
+    protected function getControlFileName()
+    {
+        return $this->kernel->getCacheDir().'/graphal.schema.timestamp';
+    }
+
+    protected function updateControlFile()
+    {
+        file_put_contents($this->getControlFileName(), time());
     }
 }
