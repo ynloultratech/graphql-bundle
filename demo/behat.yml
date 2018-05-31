@@ -2,11 +2,7 @@ default:
     extensions:
         Ynlo\GraphQLBundle\Behat\GraphQLApiExtension:
             jwt:
-              path: /login
-              credentials:
-                admin:
-                  username: admin
-                  password: 12345
+              users: [admin]
 
         Behat\Symfony2Extension:
             kernel:

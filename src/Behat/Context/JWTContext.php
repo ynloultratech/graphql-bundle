@@ -12,21 +12,40 @@ namespace Ynlo\GraphQLBundle\Behat\Context;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeStepScope;
+use Behat\Symfony2Extension\Context\KernelAwareContext;
+use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpKernel\KernelInterface;
+use Ynlo\GraphQLBundle\Behat\Authentication\JWT\TokenGeneratorInterface;
+use Ynlo\GraphQLBundle\Behat\Authentication\UserResolverInterface;
 use Ynlo\GraphQLBundle\Behat\Client\ClientAwareInterface;
 use Ynlo\GraphQLBundle\Behat\Client\ClientAwareTrait;
 use Ynlo\GraphQLBundle\Behat\GraphQLApiExtension;
-use Ynlo\GraphQLBundle\Util\Json;
 
 /**
  * JWT Context
  */
-final class JWTContext implements Context, ClientAwareInterface
+final class JWTContext implements Context, KernelAwareContext, ClientAwareInterface
 {
     use ClientAwareTrait;
+
+    /**
+     * @var Kernel
+     */
+    protected $kernel;
 
     private static $tokens = [];
 
     protected $token;
+
+    /**
+     * Sets Kernel instance.
+     *
+     * @param KernelInterface $kernel
+     */
+    public function setKernel(KernelInterface $kernel)
+    {
+        $this->kernel = $kernel;
+    }
 
     /**
      * @BeforeScenario
@@ -42,7 +61,7 @@ final class JWTContext implements Context, ClientAwareInterface
     public function beforeStep(BeforeStepScope $scope)
     {
         $config = GraphQLApiExtension::getConfig();
-        if (!isset($config['jwt']['credentials'])) {
+        if (!isset($config['jwt']['users'])) {
             return;
         }
 
@@ -52,64 +71,30 @@ final class JWTContext implements Context, ClientAwareInterface
             return;
         }
 
-        foreach ($config['jwt']['credentials'] as $name => $credentials) {
-            if (\in_array($name, $scope->getFeature()->getTags())) {
-                if (isset(self::$tokens[$name])) {
-                    $this->token = self::$tokens[$name];
+        foreach ($config['jwt']['users'] as $username) {
+            if (\in_array($username, $scope->getFeature()->getTags())) {
+                if (isset(self::$tokens[$username])) {
+                    $this->token = self::$tokens[$username];
                     $this->setToken($this->token);
                     break;
                 }
 
-                $path = $config['jwt']['path'] ?? null;
-                $username = $credentials['username'] ?? null;
-                $password = $credentials['password'] ?? null;
-                $usernameParam = $config['jwt']['username_parameter'] ?? null;
-                $passwordParam = $config['jwt']['password_parameter'] ?? null;
-                $parametersIn = $config['jwt']['parameters_in'] ?? 'form';
-                $tokenPath = $config['jwt']['response_token_path'] ?? 'token';
+                $resolverClass = $config['jwt']['user_resolver'];
+                $tokenGeneratorClass = $config['jwt']['generator'];
 
-                $headers = [];
-                $parameters = [];
+                /** @var UserResolverInterface $resolver */
+                $resolver = new $resolverClass($this->kernel);
+                $user = $resolver->findByUsername($username);
 
-                switch ($parametersIn) {
-                    case 'form':
-                        $parameters[$usernameParam] = $username;
-                        $parameters[$passwordParam] = $password;
-                        $headers['HTTP_CONTENT_TYPE'] = 'application/x-www-form-urlencoded';
-                        break;
-                    case 'query':
-                        $parameters[$usernameParam] = $username;
-                        $parameters[$passwordParam] = $password;
-                        break;
-                    case 'header':
-                        $headers[$usernameParam] = $username;
-                        $headers[$passwordParam] = $password;
-                        break;
-                }
-
-                foreach ($headers as $key => $value) {
-                    if (!preg_match('/^http_|HTTP_/', $value)) {
-                        unset($headers[$key]);
-                        $headers['HTTP_'.strtoupper($key)] = $value;
-                    }
-                }
-
-                $this->client->request(
-                    'post',
-                    $path,
-                    $parameters,
-                    [],
-                    $headers
-                );
-
-                $this->token = Json::getValue($this->client->getResponse(), $tokenPath);
-                $this->client->restart();
+                /** @var TokenGeneratorInterface $tokenGenerator */
+                $tokenGenerator = new $tokenGeneratorClass($this->kernel);
+                $this->token = $tokenGenerator->generate($user);
 
                 if (!$this->token) {
                     throw new \RuntimeException('Cant resolve a token using given credentials');
                 }
 
-                self::$tokens[$name] = $this->token;
+                self::$tokens[$username] = $this->token;
                 $this->setToken($this->token);
                 break;
             }
