@@ -13,7 +13,6 @@ namespace Ynlo\GraphQLBundle\Demo\AppBundle\Tests;
 use Ynlo\GraphQLBundle\Demo\AppBundle\DataFixtures\ORM\Fixtures;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Post;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\User;
-use Ynlo\GraphQLBundle\Test\ApiTestCase;
 
 /**
  * Class UserTest

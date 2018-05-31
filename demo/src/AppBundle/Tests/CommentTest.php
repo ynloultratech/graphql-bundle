@@ -13,7 +13,6 @@ namespace Ynlo\GraphQLBundle\Demo\AppBundle\Tests;
 use Faker\Factory;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Post;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\PostComment;
-use Ynlo\GraphQLBundle\Test\ApiTestCase;
 
 /**
  * Class CommentTest
