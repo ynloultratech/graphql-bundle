@@ -21,6 +21,7 @@ use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\Stopwatch\Stopwatch;
 use Ynlo\GraphQLBundle\Behat\Client\ClientAwareInterface;
 use Ynlo\GraphQLBundle\Behat\Client\ClientAwareTrait;
+use Ynlo\GraphQLBundle\Behat\Client\GraphQLClient;
 use Ynlo\GraphQLBundle\Behat\Gherkin\YamlStringNode;
 
 /**
@@ -34,14 +35,9 @@ final class GraphQLContext implements Context, ClientAwareInterface
     use ClientAwareTrait;
 
     /**
-     * @var int
-     */
-    protected $lastExecutionTime = 0;
-
-    /**
      * @var File
      */
-    protected static $currentFeatureFile;
+    private static $currentFeatureFile;
 
     /**
      * @BeforeFeature
@@ -207,36 +203,42 @@ final class GraphQLContext implements Context, ClientAwareInterface
     public function debugLastQuery()
     {
         if ($this->client->getGraphQL()) {
-            $query = $this->client->getGraphQL() ?? null;
-
-            $type = 'QUERY';
-            if (preg_match('/^\s*mutation/', $query)) {
-                $type = 'MUTATION';
-            }
-
-            $variables = $this->client->getVariables() ?? null;
-
-            print_r("\n\n\033[43m----------------------- $type ---------------------\033[0m\n\n");
-            print_r($query ?? null);
-            print_r("\n\n");
-            print_r("\033[46m------------------- VARIABLES-----------------------\033[0m\n\n");
-            print_r(json_encode($variables, JSON_PRETTY_PRINT));
-            print_r("\n\n");
 
             /** @var Response $response */
             $response = $this->client->getResponse();
-            $bg = $response->getStatusCode() >= 400 ? 41 : 42;
-            print_r("\033[{$bg}m-------------------- RESPONSE ----------------------\033[0m\n\n");
-            print_r(sprintf("STATUS: [%s] %s \n", $response->getStatusCode(), Response::$statusTexts[$response->getStatusCode()] ?? 'Unknown Status'));
-            print_r(sprintf("TIME: %s ms \n\n", $this->lastExecutionTime));
 
             $content = $response->getContent();
             $json = @json_decode($content, true);
+
+            $responseWithError = false;
+            if ($json && isset($json['errors'])) {
+                $responseWithError = true;
+            }
+
+            $bg = $response->getStatusCode() || $responseWithError >= 400 ? 41 : 42;
+            print_r("\n\n");
+            print_r("\033[{$bg}m-------------------- RESPONSE ----------------------\033[0m\n\n");
+            print_r(sprintf("STATUS: [%s] %s \n", $response->getStatusCode(), Response::$statusTexts[$response->getStatusCode()] ?? 'Unknown Status'));
+
             if ($json) {
                 print_r(json_encode($json, JSON_PRETTY_PRINT));
             } else {
                 print_r($content);
             }
+
+            print_r("\n\n");
+            print_r("\033[46m------------------- VARIABLES-----------------------\033[0m\n\n");
+            $variables = $this->client->getVariables() ?? null;
+            print_r(json_encode($variables, JSON_PRETTY_PRINT));
+
+            $query = $this->client->getGraphQL() ?? null;
+            $type = 'QUERY';
+            if (preg_match('/^\s*mutation/', $query)) {
+                $type = 'MUTATION';
+            }
+
+            print_r("\n\n\033[43m----------------------- $type ---------------------\033[0m\n\n");
+            print_r($query ?? null);
             print_r("\n\n");
             print_r("-----------------------------------------------------\n\n");
             ob_flush();

@@ -11,6 +11,8 @@
 namespace Ynlo\GraphQLBundle\Behat\Context;
 
 use Behat\Behat\Context\Context;
+use Behat\Behat\Definition\Call\Then;
+use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use PHPUnit\Framework\Assert;
 use Symfony\Component\HttpFoundation\Response;
 use Ynlo\GraphQLBundle\Behat\Client\ClientAwareInterface;
@@ -22,6 +24,19 @@ use Ynlo\GraphQLBundle\Behat\Client\ClientAwareTrait;
 final class ResponseContext implements Context, ClientAwareInterface
 {
     use ClientAwareTrait;
+
+    /** @var GraphQLContext */
+    private $graphQLContext;
+
+    /**
+     * @BeforeScenario
+     */
+    public function gatherContexts(BeforeScenarioScope $scope)
+    {
+        $environment = $scope->getEnvironment();
+
+        $this->graphQLContext = $environment->getContext('Ynlo\GraphQLBundle\Behat\Context\GraphQLContext');
+    }
 
     /**
      * Checks, that current response status is equal to specified
@@ -41,5 +56,16 @@ final class ResponseContext implements Context, ClientAwareInterface
     public function assertResponseIsOk()
     {
         $this->assertResponseStatus(Response::HTTP_OK);
+
+        //success GraphQL response should not contains errors
+        if ($this->client->getGraphQL()) {
+            $content = $this->client->getResponse()->getContent();
+            Assert::assertJson((string) $content, 'Invalid server response');
+            $response = json_decode($content, true);
+            if ($response && isset($response['errors'])) {
+                $this->graphQLContext->debugLastQuery();
+                Assert::assertArrayNotHasKey('errors', $response);
+            }
+        }
     }
 }
