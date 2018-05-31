@@ -81,7 +81,7 @@ class FixtureManager
 
         throw new \RuntimeException(
             sprintf(
-                'Can\'t get global ID for given fixture name "%s", beacouse "%s" does not implements NodeInterface.',
+                'Can\'t get global ID for given fixture name "%s", because "%s" does not implements NodeInterface.',
                 $name,
                 ClassUtils::getClass($fixture)
             )
