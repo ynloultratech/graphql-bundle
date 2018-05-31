@@ -36,6 +36,12 @@ security:
                 #paramaters names changes for readability in API usage
                 username_parameter:       username
                 password_parameter:       password
+
+        explorer:
+            pattern:   ^/explorer
+            anonymous: true
+            provider: fos_userbundle
+
         api:
             pattern:   ^/(?!explorer|login)
             stateless: true

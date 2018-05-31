@@ -30,12 +30,59 @@ class Configuration implements ConfigurationInterface
         $treeBuilder = new TreeBuilder();
         /** @var NodeBuilder $rootNode */
         $rootNode = $treeBuilder->root('graphql')->addDefaultsIfNotSet()->children();
+        $this->configureEndpoints($rootNode);
         $this->configureCORS($rootNode);
         $this->configureGraphiQL($rootNode);
         $this->configureDefinition($rootNode);
         $this->configureSecurity($rootNode);
 
         return $treeBuilder;
+    }
+
+    protected function configureEndpoints(NodeBuilder $root)
+    {
+        $endpoints = $root->arrayNode('endpoints')
+                          ->useAttributeAsKey('name')
+                          ->validate()
+                          ->ifTrue(
+                              function ($v) {
+                                  return array_key_exists('default', $v);
+                              }
+                          )->thenInvalid('"default" can\'t be used as endpoint name, the system internally use this endpoint name to store the entire schema.')
+                          ->end()
+                          ->arrayPrototype()
+                          ->children();
+
+        $endpoints->arrayNode('roles')
+                  ->beforeNormalization()
+                  ->ifString()
+                  ->then(
+                      function ($v) {
+                          return preg_split('/\s*,\s*/', $v);
+                      }
+                  )
+                  ->end()
+                  ->prototype('scalar')
+                  ->end();
+
+        $endpoints->scalarNode('host')->example('^api\.backend\.');
+        $endpoints->scalarNode('path')->example('/backend');
+
+        $root->arrayNode('endpoint_alias')
+             ->info('Use alias to refer to multiple endpoints using only one name')
+             ->useAttributeAsKey('name')
+             ->beforeNormalization()
+             ->ifString()
+             ->then(
+                 function ($v) {
+                     return preg_split('/\s*,\s*/', $v);
+                 }
+             )
+             ->end()
+             ->variablePrototype();
+
+        $root->scalarNode('endpoint_default')->info('Endpoint to apply to all definitions without explicit endpoint.');
+
     }
 
     protected function configureGraphiQL(NodeBuilder $root)

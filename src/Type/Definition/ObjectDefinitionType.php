@@ -67,6 +67,9 @@ class ObjectDefinitionType extends ObjectType implements
         $fields = [];
         foreach ($this->definition->getFields() as $fieldDefinition) {
             try {
+                if (!$fieldDefinition->getType()){
+                    print_r($fieldDefinition);exit;
+                }
                 $type = TypeRegistry::get($fieldDefinition->getType());
             } catch (\UnexpectedValueException $exception) {
                 $msg = sprintf(

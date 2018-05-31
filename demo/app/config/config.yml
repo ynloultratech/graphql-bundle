@@ -74,6 +74,14 @@ lexik_jwt_authentication:
     token_ttl:        '%jwt_token_ttl%'
 
 graphql:
+    endpoints:
+        admin:
+            roles: [IS_AUTHENTICATED_FULLY, ROLE_ADMIN]
+        frontend:
+            roles: IS_AUTHENTICATED_ANONYMOUSLY
+
+    endpoint_default: admin
+
     security:
         validation_rules:
             query_complexity: 200
@@ -83,6 +91,7 @@ graphql:
     graphiql:
         authentication:
             required: false
+            login_message: 'Start exploring GraphQL API queries using your account’s data now. <br><br>Username: <b>admin</b><br>Password: <b>12345<?b>'
             provider:
                 jwt:
                   login:

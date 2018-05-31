@@ -16,7 +16,9 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
 
 /**
  * @GraphQL\InterfaceType()
- * @GraphQL\CRUDOperations(include={"delete"})
+ * @GraphQL\MutationDelete(options={
+ *  @GraphQL\Plugin\Endpoints("admin")
+ * })
  */
 interface CommentInterface extends NodeInterface, HasAuthorInterface, TimestampableInterface
 {

@@ -17,7 +17,8 @@ use Ynlo\GraphQLBundle\Query\Node\AllNodesWithPagination;
 
 /**
  * @GraphQL\Query(type="[]", options={
- *     @GraphQL\Plugin\Pagination(limit=30)
+ *     @GraphQL\Plugin\Pagination(limit=30),
+ *     @GraphQL\Plugin\Endpoints("aa")
  * })
  */
 class Admins extends AllNodesWithPagination

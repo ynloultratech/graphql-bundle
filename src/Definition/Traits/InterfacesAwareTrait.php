@@ -35,4 +35,21 @@ trait InterfacesAwareTrait
     {
         $this->interfaces[] = $name;
     }
+
+    /**
+     * @param string $name
+     *
+     * @return $this
+     */
+    public function removeInterface(string $name)
+    {
+        foreach ($this->interfaces as $index => $interface) {
+            if ($interface === $name) {
+                unset($this->interfaces[$index]);
+                break;
+            }
+        }
+
+        return $this;
+    }
 }

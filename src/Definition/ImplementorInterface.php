@@ -24,4 +24,9 @@ interface ImplementorInterface extends DefinitionInterface, FieldsAwareDefinitio
      * @param string $name
      */
     public function addInterface(string $name);
+
+    /**
+     * @param string $name
+     */
+    public function removeInterface(string $name);
 }

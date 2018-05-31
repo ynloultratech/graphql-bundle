@@ -22,10 +22,11 @@ interface MetaAwareInterface
 
     /**
      * @param string $key
+     * @param null   $default
      *
      * @return mixed
      */
-    public function getMeta(string $key);
+    public function getMeta(string $key, $default = null);
 
     /**
      * @param string $key

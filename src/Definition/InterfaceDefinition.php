@@ -47,4 +47,18 @@ class InterfaceDefinition implements ObjectDefinitionInterface, HasExtensionsInt
     {
         $this->implementors[$type] = $type;
     }
+
+    /**
+     * @param string $type
+     *
+     * @return $this
+     */
+    public function removeImplementor($type)
+    {
+        if (isset($this->implementors[$type])) {
+            unset($this->implementors[$type]);
+        }
+
+        return $this;
+    }
 }

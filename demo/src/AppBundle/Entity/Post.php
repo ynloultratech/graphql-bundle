@@ -34,12 +34,16 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  *
  * @ORM\HasLifecycleCallbacks()
  *
- * @GraphQL\ObjectType()
- * @GraphQL\QueryList()
- * @GraphQL\MutationAdd()
- * @GraphQL\MutationUpdate()
- * @GraphQL\MutationDelete()
- * @GraphQL\MutationDeleteBatch()
+ * @GraphQL\ObjectType(options={
+ *     @GraphQL\Plugin\Endpoints({"frontend", "admin"})
+ * })
+ * @GraphQL\QueryList(options={
+ *     @GraphQL\Plugin\Endpoints({"frontend", "admin"})
+ * })
+ * @GraphQL\MutationAdd(options={@GraphQL\Plugin\Endpoints("admin")})
+ * @GraphQL\MutationUpdate(options={@GraphQL\Plugin\Endpoints("admin")})
+ * @GraphQL\MutationDelete(options={@GraphQL\Plugin\Endpoints("admin")})
+ * @GraphQL\MutationDeleteBatch(options={@GraphQL\Plugin\Endpoints("admin")})
  */
 class Post implements NodeInterface, CommentableInterface, TimestampableInterface, HasAuthorInterface
 {

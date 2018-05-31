@@ -20,13 +20,20 @@ use Psr\Log\LoggerInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Ynlo\GraphQLBundle\Request\ExecuteQuery;
 use Ynlo\GraphQLBundle\Request\RequestMiddlewareInterface;
 use Ynlo\GraphQLBundle\Schema\SchemaCompiler;
+use Ynlo\GraphQLBundle\Security\EndpointResolver;
 
 class GraphQLEndpointController
 {
+    /**
+     * @var EndpointResolver
+     */
+    protected $resolver;
+
     /**
      * @var SchemaCompiler
      */
@@ -47,8 +54,15 @@ class GraphQLEndpointController
      */
     protected $middlewares = [];
 
-    public function __construct(SchemaCompiler $compiler, iterable $middlewares = [], bool $debug = false, LoggerInterface $logger = null)
+    public function __construct(
+        EndpointResolver $endpointResolver,
+        SchemaCompiler $compiler,
+        iterable $middlewares = [],
+        bool $debug = false,
+        LoggerInterface $logger = null
+    )
     {
+        $this->resolver = $endpointResolver;
         $this->middlewares = $middlewares;
         $this->compiler = $compiler;
         $this->debug = $debug;
@@ -72,7 +86,12 @@ class GraphQLEndpointController
         $validationRules = null;
 
         try {
-            $schema = $this->compiler->compile();
+            $endpoint = $this->resolver->resolveEndpoint($request);
+            if (!$endpoint) {
+                throw new AccessDeniedHttpException();
+            }
+
+            $schema = $this->compiler->compile($endpoint);
             $schema->assertValid();
 
             $result = GraphQL::executeQuery(
@@ -127,11 +146,16 @@ class GraphQLEndpointController
             if (null !== $this->logger) {
                 $this->logger->error($e->getMessage(), $e->getTrace());
             }
-            $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
-            $message = Response::$statusTexts[$statusCode] ?? 'Internal Server Error';
 
-            if ($this->debug || ($e instanceof ClientAware && $e->isClientSafe())) {
-                $message = $e->getMessage();
+            if ($e instanceof HttpException) {
+                $message = Response::$statusTexts[$e->getStatusCode()];
+                $statusCode = $e->getStatusCode();
+            } else {
+                $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
+                $message = 'Internal Server Error';
+                if ($this->debug || ($e instanceof ClientAware && $e->isClientSafe())) {
+                    $message = $e->getMessage();
+                }
             }
 
             $output['errors']['message'] = $message;

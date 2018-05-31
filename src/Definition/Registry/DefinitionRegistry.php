@@ -10,18 +10,17 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Registry;
 
+use Doctrine\Common\Util\Inflector;
 use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
-use Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices;
-use Ynlo\GraphQLBundle\Component\TaggedServices\TagSpecification;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
-use Ynlo\GraphQLBundle\Definition\Plugin\DefinitionPluginInterface;
-use Ynlo\GraphQLBundle\Definition\Plugin\GraphQLDefinitionPluginManager;
 use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Loader\DefinitionLoaderInterface;
 use Ynlo\GraphQLBundle\Definition\MetaAwareInterface;
+use Ynlo\GraphQLBundle\Definition\Plugin\DefinitionPluginInterface;
+use Ynlo\GraphQLBundle\Extension\EndpointNotValidException;
 
 /**
  * DefinitionRegistry
@@ -29,19 +28,29 @@ use Ynlo\GraphQLBundle\Definition\MetaAwareInterface;
 class DefinitionRegistry
 {
     /**
-     * @var TaggedServices
+     * This endpoint is used as default endpoint
      */
-    private $taggedServices;
+    public const DEFAULT_ENDPOINT = 'default';
 
     /**
-     * @var GraphQLDefinitionPluginManager
+     * @var iterable|DefinitionLoaderInterface[]
      */
-    private $extensionManager;
+    private $loaders;
 
     /**
-     * @var Endpoint
+     * @var iterable|DefinitionPluginInterface[]
      */
-    private static $endpoint;
+    private $plugins;
+
+    /**
+     * @var array|Endpoint[]
+     */
+    private static $endpoints = [];
+
+    /**
+     * @var array
+     */
+    protected $endpointsConfig = [];
 
     /**
      * @var string
@@ -51,37 +60,62 @@ class DefinitionRegistry
     /**
      * DefinitionRegistry constructor.
      *
-     * @param TaggedServices                 $taggedServices
-     * @param GraphQLDefinitionPluginManager $extensionManager
-     * @param null|string                    $cacheDir
+     * @param iterable|DefinitionLoaderInterface[] $loaders
+     * @param iterable|DefinitionPluginInterface[] $plugins
+     * @param null|string                          $cacheDir
+     * @param array                                $endpointsConfig
      */
-    public function __construct(TaggedServices $taggedServices, GraphQLDefinitionPluginManager $extensionManager, ?string $cacheDir = null)
+    public function __construct(iterable $loaders, iterable $plugins, ?string $cacheDir = null, array $endpointsConfig = [])
     {
-        $this->taggedServices = $taggedServices;
-        $this->extensionManager = $extensionManager;
+        $this->loaders = $loaders;
+        $this->plugins = $plugins;
         $this->cacheDir = $cacheDir;
+        $this->endpointsConfig = array_merge($endpointsConfig['endpoints'] ?? [], [self::DEFAULT_ENDPOINT => []]);
     }
 
     /**
+     * Get endpoint schema
+     *
+     * For internal use can get the default endpoint (contains all definitions)
+     * For consumers must get the endpoint for current consumer.
+     *
+     * @param string $name
+     *
      * @return Endpoint
+     *
+     * @throws EndpointNotValidException
      */
-    public function getEndpoint(): Endpoint
+    public function getEndpoint($name = self::DEFAULT_ENDPOINT): Endpoint
     {
-        //use first static cache
-        if (self::$endpoint) {
-            return self::$endpoint;
+        $endpoints = $this->endpointsConfig;
+        unset($endpoints[self::DEFAULT_ENDPOINT]);
+        $endpointsNames = array_keys($endpoints);
+        if (self::DEFAULT_ENDPOINT !== $name && !\in_array($name, $endpointsNames)) {
+            throw new EndpointNotValidException(
+                sprintf(
+                    '"%s" is not a valid configured endpoint, use one of the following endpoints: [%s]',
+                    $name,
+                    implode($endpointsNames, ',')
+                )
+            );
         }
 
-        $this->loadCache();
+        //use first static cache
+        if (isset(self::$endpoints[$name])) {
+            return self::$endpoints[$name];
+        }
 
         //use file cache
-        if (self::$endpoint) {
-            return self::$endpoint;
+        $this->loadCache($name);
+
+        //retry after load from file
+        if (isset(self::$endpoints[$name])) {
+            return self::$endpoints[$name];
         }
 
-        $this->initialize();
+        $this->initialize($name);
 
-        return self::$endpoint;
+        return self::$endpoints[$name];
     }
 
     /**
@@ -89,47 +123,47 @@ class DefinitionRegistry
      */
     public function clearCache()
     {
-        @unlink($this->cacheFileName());
-        $this->initialize();
+        foreach ($this->endpointsConfig as $name => $config) {
+            @unlink($this->cacheFileName($name));
+            $this->initialize($name);
+        }
     }
 
     /**
      * Initialize endpoint
+     *
+     * @param string $name
      */
-    protected function initialize()
+    protected function initialize(string $name)
     {
-        self::$endpoint = new Endpoint();
+        self::$endpoints[$name] = new Endpoint($name);
 
-        $specifications = $this->getTaggedServices('graphql.definition_loader');
-        foreach ($specifications as $specification) {
-            $resolver = $specification->getService();
-            if ($resolver instanceof DefinitionLoaderInterface) {
-                $resolver->loadDefinitions(self::$endpoint);
-            }
+        foreach ($this->loaders as $loader) {
+            $loader->loadDefinitions(self::$endpoints[$name]);
         }
 
-        $this->compile(self::$endpoint);
-        $this->saveCache();
+        $this->compile(self::$endpoints[$name]);
+        $this->saveCache($name);
     }
 
-    protected function cacheFileName(): string
+    protected function cacheFileName($name): string
     {
-        return $this->cacheDir.DIRECTORY_SEPARATOR.'graphql.registry_definitions.meta';
+        return sprintf('%s%sgraphql.registry_definitions_%s.meta', $this->cacheDir, DIRECTORY_SEPARATOR, Inflector::tableize($name));
     }
 
-    protected function loadCache(): void
+    protected function loadCache($name): void
     {
-        if (file_exists($this->cacheFileName())) {
-            $content = @file_get_contents($this->cacheFileName());
+        if (file_exists($this->cacheFileName($name))) {
+            $content = @file_get_contents($this->cacheFileName($name));
             if ($content) {
-                self::$endpoint = unserialize($content, ['allowed_classes' => true]);
+                self::$endpoints[$name] = unserialize($content, ['allowed_classes' => true]);
             }
         }
     }
 
-    protected function saveCache(): void
+    protected function saveCache($name): void
     {
-        file_put_contents($this->cacheFileName(), serialize(self::$endpoint));
+        file_put_contents($this->cacheFileName($name), serialize(self::$endpoints[$name]));
     }
 
     /**
@@ -140,15 +174,15 @@ class DefinitionRegistry
     protected function compile(Endpoint $endpoint): void
     {
         //run all extensions for each definition
-        foreach ($this->extensionManager->getExtensions() as $extension) {
+        foreach ($this->plugins as $plugin) {
             //run extensions recursively in all types and fields
             foreach ($endpoint->allTypes() as $type) {
-                $this->configureDefinition($extension, $type, $endpoint);
+                $this->configureDefinition($plugin, $type, $endpoint);
                 if ($type instanceof FieldsAwareDefinitionInterface) {
                     foreach ($type->getFields() as $field) {
-                        $this->configureDefinition($extension, $field, $endpoint);
+                        $this->configureDefinition($plugin, $field, $endpoint);
                         foreach ($field->getArguments() as $argument) {
-                            $this->configureDefinition($extension, $argument, $endpoint);
+                            $this->configureDefinition($plugin, $argument, $endpoint);
                         }
                     }
                 }
@@ -156,44 +190,44 @@ class DefinitionRegistry
 
             //run extension in all queries
             foreach ($endpoint->allQueries() as $query) {
-                $this->configureDefinition($extension, $query, $endpoint);
+                $this->configureDefinition($plugin, $query, $endpoint);
                 foreach ($query->getArguments() as $argument) {
-                    $this->configureDefinition($extension, $argument, $endpoint);
+                    $this->configureDefinition($plugin, $argument, $endpoint);
                 }
             }
 
             //run extensions in all mutations
             foreach ($endpoint->allMutations() as $mutation) {
-                $this->configureDefinition($extension, $mutation, $endpoint);
+                $this->configureDefinition($plugin, $mutation, $endpoint);
                 foreach ($mutation->getArguments() as $argument) {
-                    $this->configureDefinition($extension, $argument, $endpoint);
+                    $this->configureDefinition($plugin, $argument, $endpoint);
                 }
             }
 
-            $extension->configureEndpoint($endpoint);
+            $plugin->configureEndpoint($endpoint);
         }
     }
 
     /**
-     * @param DefinitionPluginInterface $extension
+     * @param DefinitionPluginInterface $plugin
      * @param DefinitionInterface       $definition
      * @param Endpoint                  $endpoint
      */
-    protected function configureDefinition(DefinitionPluginInterface $extension, DefinitionInterface $definition, Endpoint $endpoint)
+    protected function configureDefinition(DefinitionPluginInterface $plugin, DefinitionInterface $definition, Endpoint $endpoint)
     {
         $config = [];
         if ($definition instanceof MetaAwareInterface) {
             $treeBuilder = new TreeBuilder();
             /** @var NodeBuilder $root */
-            $root = $treeBuilder->root($extension->getName());
-            $extension->buildConfig($root);
+            $root = $treeBuilder->root($plugin->getName());
+            $plugin->buildConfig($root);
 
-            if ($definition->hasMeta($extension->getName())) {
-                $options = $definition->getMeta($extension->getName());
+            if ($definition->hasMeta($plugin->getName())) {
+                $options = $definition->getMeta($plugin->getName());
                 $processor = new Processor();
 
                 try {
-                    $options = $extension->normalizeConfig($definition, $options);
+                    $options = $plugin->normalizeConfig($definition, $options);
                     $config = $processor->process($treeBuilder->buildTree(), [$options]);
                 } catch (InvalidConfigurationException $exception) {
                     $error = sprintf('Error compiling schema definition "%s", %s', $definition->getName(), $exception->getMessage());
@@ -201,17 +235,6 @@ class DefinitionRegistry
                 }
             }
         }
-        $extension->configure($definition, $endpoint, $config);
-    }
-
-
-    /**
-     * @param string $tag
-     *
-     * @return array|TagSpecification[]
-     */
-    private function getTaggedServices($tag): array
-    {
-        return $this->taggedServices->findTaggedServices($tag);
+        $plugin->configure($definition, $endpoint, $config);
     }
 }

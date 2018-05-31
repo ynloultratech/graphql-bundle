@@ -2,6 +2,7 @@ services:
     Ynlo\GraphQLBundle\Controller\GraphQLEndpointController:
         public: true
         arguments:
+            - '@Ynlo\GraphQLBundle\Security\EndpointResolver'
             - '@Ynlo\GraphQLBundle\Schema\SchemaCompiler'
             - !tagged graphql.middleware
             - '%kernel.debug%'
@@ -27,7 +28,9 @@ services:
 
     Ynlo\GraphQLBundle\Controller\SchemaController:
         public: true
-        arguments: ['@Ynlo\GraphQLBundle\Schema\SchemaCompiler']
+        arguments:
+          - '@Ynlo\GraphQLBundle\Schema\SchemaCompiler'
+          - '@Ynlo\GraphQLBundle\Security\EndpointResolver'
 
     Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices:
         public: true
@@ -53,9 +56,10 @@ services:
     Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry:
         public: true
         arguments:
-            - '@Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices'
-            - '@Ynlo\GraphQLBundle\Definition\Plugin\GraphQLDefinitionPluginManager'
+            - !tagged graphql.definition_loader
+            - !tagged graphql.definition_plugin
             - '%kernel.cache_dir%'
+            - '%graphql.endpoints%'
 
     Ynlo\GraphQLBundle\Definition\Loader\AnnotationLoader:
         public: true
@@ -216,36 +220,42 @@ services:
         public: true
         arguments: ['@annotations.reader','%graphql.plugin_config.pagination%']
         tags:
-            - { name: 'graphql.definition_extension'}
+            - { name: 'graphql.definition_plugin'}
 
     Ynlo\GraphQLBundle\Definition\Plugin\MutationFormResolverPlugin:
         public: true
         arguments: ['@form.factory']
         tags:
-            - { name: 'graphql.definition_extension'}
+            - { name: 'graphql.definition_plugin'}
+
+    Ynlo\GraphQLBundle\Definition\Plugin\EndpointsDefinitionPlugin:
+        public: true
+        arguments: ['%graphql.endpoints%']
+        tags:
+            - { name: 'graphql.definition_plugin', priority: 200 }
 
     Ynlo\GraphQLBundle\Definition\Plugin\CRUDExtensionResolverPlugin:
         public: true
         arguments: ['@service_container']
         tags:
-            - { name: 'graphql.definition_extension'}
+            - { name: 'graphql.definition_plugin'}
 
     Ynlo\GraphQLBundle\Definition\Plugin\RolesDefinitionPlugin:
         public: true
         arguments: ['@graphql.security.authorization_checker']
         tags:
-            - { name: 'graphql.definition_extension', priority: -190}
+            - { name: 'graphql.definition_plugin', priority: -190}
 
     Ynlo\GraphQLBundle\Definition\Plugin\NamespaceDefinitionPlugin:
         public: true
         arguments: ['%graphql.plugin_config.namespaces%']
         tags:
-            - { name: 'graphql.definition_extension', priority: -200}
+            - { name: 'graphql.definition_plugin', priority: -200}
 
     Ynlo\GraphQLBundle\Definition\Plugin\ReorderDefinitionsPlugin:
         public: true
         tags:
-            - { name: 'graphql.definition_extension', priority: -210}
+            - { name: 'graphql.definition_plugin', priority: -210}
 
     Ynlo\GraphQLBundle\GraphiQL\JWTGraphiQLAuthentication:
         public: true
@@ -253,7 +263,7 @@ services:
 
     Ynlo\GraphQLBundle\Cache\DefinitionCacheWarmer:
         public: false
-        arguments: ['@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry']
+        arguments: ['@kernel','@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry']
         tags:
             - { name: 'kernel.cache_warmer', priority: 200 }
             - { name: 'kernel.event_subscriber', priority: 200 }
@@ -271,6 +281,11 @@ services:
         public: true
 
     Ynlo\GraphQLBundle\DataCollector\GraphQLDataCollector:
-        arguments: ['@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry']
+        arguments:
+          - '@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry'
+          - '@Ynlo\GraphQLBundle\Security\EndpointResolver'
         tags:
           - { name: 'data_collector',template: '@YnloGraphQL/data_collector/template.html.twig',  id: 'graphql' }
+
+    Ynlo\GraphQLBundle\Security\EndpointResolver:
+        arguments: ['@security.authorization_checker', '%graphql.endpoints%']

@@ -32,9 +32,9 @@ class SchemaCompiler implements ContainerAwareInterface
         $this->registry = $registry;
     }
 
-    public function compile(): Schema
+    public function compile($name): Schema
     {
-        $endpoint = $this->registry->getEndpoint();
+        $endpoint = $this->registry->getEndpoint($name);
         TypeRegistry::setUp($this->container, $endpoint);
 
         //automatically create all interface implementors

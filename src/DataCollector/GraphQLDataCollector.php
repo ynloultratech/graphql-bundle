@@ -19,6 +19,8 @@ use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\Extension\EndpointNotValidException;
+use Ynlo\GraphQLBundle\Security\EndpointResolver;
 
 class GraphQLDataCollector extends DataCollector
 {
@@ -26,6 +28,11 @@ class GraphQLDataCollector extends DataCollector
      * @var DefinitionRegistry
      */
     protected $registry;
+
+    /**
+     * @var EndpointResolver
+     */
+    protected $endpointResolver;
 
     /**
      * @var Endpoint
@@ -36,10 +43,12 @@ class GraphQLDataCollector extends DataCollector
      * GraphQLDataCollector constructor.
      *
      * @param DefinitionRegistry $registry
+     * @param EndpointResolver   $endpointResolver
      */
-    public function __construct(DefinitionRegistry $registry)
+    public function __construct(DefinitionRegistry $registry, EndpointResolver $endpointResolver)
     {
         $this->registry = $registry;
+        $this->endpointResolver = $endpointResolver;
     }
 
     /**
@@ -63,10 +72,15 @@ class GraphQLDataCollector extends DataCollector
      */
     public function collect(Request $request, Response $response, \Exception $exception = null)
     {
-        $this->endpoint = $this->registry->getEndpoint();
-        $this->data = [
-            'endpoint' => $this->endpoint,
-        ];
+        try {
+            $name = $this->endpointResolver->resolveEndpoint($request);
+            $this->endpoint = $this->registry->getEndpoint($name);
+            $this->data = [
+                'endpoint' => $this->endpoint,
+            ];
+        } catch (EndpointNotValidException $exception) {
+            //do nothing
+        }
     }
 
     /**
@@ -74,7 +88,7 @@ class GraphQLDataCollector extends DataCollector
      */
     public function getEndpoint()
     {
-        return $this->data['endpoint'];
+        return $this->data['endpoint'] ?? null;
     }
 
     public function isInputObject($definition)

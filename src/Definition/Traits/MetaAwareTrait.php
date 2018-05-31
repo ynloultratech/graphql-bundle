@@ -32,13 +32,14 @@ trait MetaAwareTrait
     }
 
     /**
-     * @param string $key
+     * @param string     $key
+     * @param null|mixed $default
      *
      * @return mixed
      */
-    public function getMeta(string $key)
+    public function getMeta(string $key, $default = null)
     {
-        return $this->metas[$key];
+        return $this->metas[$key] ?? $default;
     }
 
     /**

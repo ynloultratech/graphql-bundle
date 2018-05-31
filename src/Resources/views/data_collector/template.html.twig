@@ -22,14 +22,25 @@
         {# this is the content displayed when hovering the mouse over
            the toolbar panel #}
         <div class="sf-toolbar-info-piece">
-            <b>Queries</b>
-            <span>{{ collector.endpoint.allQueries|length }}</span>
+            <b>Endpoint</b>
+            {% if collector.endpoint %}
+                <span>{{ collector.endpoint.name }}</span>
+            {% else %}
+                <span class="sf-toolbar-status sf-toolbar-status-red">None</span>
+            {% endif %}
         </div>
 
-        <div class="sf-toolbar-info-piece">
-            <b>Mutations</b>
-            <span>{{ collector.endpoint.allMutations|length }}</span>
-        </div>
+        {% if collector.endpoint %}
+            <div class="sf-toolbar-info-piece">
+                <b>Queries</b>
+                <span class="sf-toolbar-status sf-toolbar-status-">{{ collector.endpoint.allQueries|length }}</span>
+            </div>
+
+            <div class="sf-toolbar-info-piece">
+                <b>Mutations</b>
+                <span class="sf-toolbar-status sf-toolbar-status-">{{ collector.endpoint.allMutations|length }}</span>
+            </div>
+        {% endif %}
     {% endset %}
 
     {# the 'link' value set to 'false' means that this panel doesn't
@@ -48,73 +59,86 @@
 
 {% block menu %}
     {# This left-hand menu appears when using the full-screen profiler. #}
-    <span class="label">
+    <span class="label {% if not collector.endpoint %}disabled{% endif %}">
         <span class="icon"> {{ block('icon') }}</span>
         <strong>GraphQL</strong>
     </span>
 {% endblock %}
 
 {% block panel %}
-    {# @var endpoint \Ynlo\GraphQLBundle\Definition\Registry\Endpoint #}
-    {% set endpoint = collector.endpoint %}
+    {% if collector.endpoint %}
+        {# @var endpoint \Ynlo\GraphQLBundle\Definition\Registry\Endpoint #}
+        {% set endpoint = collector.endpoint %}
 
-    <h2>Schema</h2>
-
-    <div class="sf-tabs">
-        <div class="tab">
-            <h3 class="tab-title">Queries <span class="badge status-">{{ endpoint.allQueries|length }}</span></h3>
-            <div class="tab-content">
-                {{ operations_table(endpoint, endpoint.allQueries) }}
+        <div class="metrics">
+            <div class="metric">
+                <span class="value">{{ endpoint.name }}</span>
+                <span class="label">Endpoint</span>
             </div>
         </div>
 
-        <div class="tab">
-            <h3 class="tab-title">Mutations <span class="badge status-">{{ endpoint.allMutations|length }}</span></h3>
-            <div class="tab-content">
+        <h2>Schema</h2>
+
+        <div class="sf-tabs">
+            <div class="tab">
+                <h3 class="tab-title">Queries <span class="badge status-">{{ endpoint.allQueries|length }}</span></h3>
                 <div class="tab-content">
-                    {{ operations_table(endpoint, endpoint.allMutations) }}
+                    {{ operations_table(endpoint, endpoint.allQueries) }}
+                </div>
+            </div>
+
+            <div class="tab">
+                <h3 class="tab-title">Mutations <span class="badge status-">{{ endpoint.allMutations|length }}</span></h3>
+                <div class="tab-content">
+                    <div class="tab-content">
+                        {{ operations_table(endpoint, endpoint.allMutations) }}
+                    </div>
+                </div>
+            </div>
+            {% set types = endpoint.allTypes %}
+            {% set objects = [] %}
+            {% set inputObjects = [] %}
+            {% set interfaces = [] %}
+            {% for type in types %}
+                {% if collector.object(type) %}
+                    {% set objects = objects|merge([type]) %}
+                {% elseif collector.inputObject(type) %}
+                    {% set inputObjects = inputObjects|merge([type]) %}
+                {% elseif collector.interface(type) %}
+                    {% set interfaces = interfaces|merge([type]) %}
+                {% endif %}
+            {% endfor %}
+
+            <div class="tab">
+                <h3 class="tab-title">Object Types <span class="badge status-default }}">{{ objects|length }}</span></h3>
+                <div class="tab-content">
+                    {{ objects_table(collector.endpoint, objects) }}
+                </div>
+            </div>
+
+            <div class="tab">
+                <h3 class="tab-title">Input Object Types <span class="badge status-default }}">{{ inputObjects|length }}</span></h3>
+                <div class="tab-content">
+                    {{ objects_table(endpoint, inputObjects) }}
+                </div>
+            </div>
+
+            <div class="tab">
+                <h3 class="tab-title">Interfaces <span class="badge status-default }}">{{ interfaces|length }}</span></h3>
+                <div class="tab-content">
+                    {{ objects_table(endpoint, interfaces) }}
                 </div>
             </div>
         </div>
-        {% set types = endpoint.allTypes %}
-        {% set objects = [] %}
-        {% set inputObjects = [] %}
-        {% set interfaces = [] %}
-        {% for type in types %}
-            {% if collector.object(type) %}
-                {% set objects = objects|merge([type]) %}
-            {% elseif collector.inputObject(type) %}
-                {% set inputObjects = inputObjects|merge([type]) %}
-            {% elseif collector.interface(type) %}
-                {% set interfaces = interfaces|merge([type]) %}
-            {% endif %}
-        {% endfor %}
-
-        <div class="tab">
-            <h3 class="tab-title">Object Types <span class="badge status-default }}">{{ objects|length }}</span></h3>
-            <div class="tab-content">
-                {{ objects_table(endpoint, objects) }}
-            </div>
+    {% else %}
+        <div class="empty">
+            <p>No API endpoint has been loaded.</p>
         </div>
-
-        <div class="tab">
-            <h3 class="tab-title">Input Object Types <span class="badge status-default }}">{{ inputObjects|length }}</span></h3>
-            <div class="tab-content">
-                {{ objects_table(endpoint, inputObjects) }}
-            </div>
-        </div>
-
-        <div class="tab">
-            <h3 class="tab-title">Interfaces <span class="badge status-default }}">{{ interfaces|length }}</span></h3>
-            <div class="tab-content">
-                {{ objects_table(endpoint, interfaces) }}
-            </div>
-        </div>
-    </div>
+    {% endif %}
 {% endblock %}
 
 {% macro operations_table(endpoint, operations) %}
-    {% from '@YnloGraphQL/data_collector/template.html.twig' import link_type %}
+    {% from '@YnloGraphQL/data_collector/template.html.twig' import fields_table, link_type, plugins_table %}
     <table class="logs">
         <thead>
         <tr>
@@ -124,10 +148,45 @@
         </thead>
         <tbody>
         {% for operation in operations %}
+            {% set id = random() %}
             <tr>
-                <th class="font-normal" scope="row">{{ operation.name }}</th>
+                <th class="font-normal" scope="row">
+                    <a name="{{ operation.name }}"
+                       class="btn btn-link sf-toggle"
+                       data-toggle-selector="#operation-{{ operation.name }}-{{ id }}"
+                       data-toggle-alt-content="&#x25B2; {{ operation.name }}">
+                        &#x25BC; {{ operation.name }}
+                    </a>
+                </th>
                 <td>
                     {{ link_type(endpoint, operation.type) }}
+                </td>
+            </tr>
+            <tr id="operation-{{ operation.name }}-{{ id }}" class="context sf-toggle-content sf-toggle-hidden">
+                <td colspan="2">
+                    <table>
+                        <tbody>
+                        {% if operation.description is defined and operation.description %}
+                            <tr>
+                                <th>Description</th>
+                                <td>
+                                    {{ operation.description }}
+                                </td>
+                            </tr>
+                        {% endif %}
+                        {% if operation.resolver is defined and operation.resolver %}
+                            <tr>
+                                <th>Resolver</th>
+                                <td>
+                                    {{ operation.resolver }}
+                                </td>
+                            </tr>
+                        {% endif %}
+
+                        {{ fields_table(endpoint, operation) }}
+                        {{ plugins_table(operation) }}
+                        </tbody>
+                    </table>
                 </td>
             </tr>
         {% endfor %}
@@ -147,18 +206,19 @@
         <tbody>
         {# @var object \Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface #}
         {% for object in objects %}
+            {% set id = random() %}
             <tr>
                 <th class="font-normal" scope="row">
                     <a name="{{ object.name }}"
-                       class="btn btn-link text-small sf-toggle"
-                       data-toggle-selector="#details-{{ object.name }}"
+                       class="btn btn-link sf-toggle"
+                       data-toggle-selector="#details-{{ object.name }}-{{ id }}"
                        data-toggle-alt-content="&#x25B2; {{ object.name }}">&#x25BC;
                         {{ object.name }}
                     </a>
                 </th>
                 <td>
                     {{ object.class }}
-                    <div id="details-{{ object.name }}" class="context sf-toggle-content sf-toggle-hidden">
+                    <div id="details-{{ object.name }}-{{ id }}" class="context sf-toggle-content sf-toggle-hidden">
                         <table>
                             <tbody>
                             {% if object.exclusionPolicy is defined %}
@@ -234,29 +294,8 @@
                                 </tr>
                             {% endif %}
 
-                            {% if object.fields is defined %}
-                                <tr>
-                                <th>
-                                    {% if object.fields|length %}
-                                        <a class="btn btn-link text-small sf-toggle"
-                                           data-toggle-selector="#fields-{{ object.name }}"
-                                           data-toggle-alt-content="&#x25B2; fields">&#x25BC; fields</a>
-                                    {% else %}
-                                        fields
-                                    {% endif %}
-                                </th>
+                            {{ fields_table(endpoint, object) }}
 
-                                <td>
-                                {{ object.fields|length }}
-                                </tr>
-                                {% if object.fields|length %}
-                                    <tr id="fields-{{ object.name }}" class="context sf-toggle-content sf-toggle-hidden">
-                                        <td colspan="2">
-                                            {{ fields_table(endpoint, object.name, object.fields) }}
-                                        </td>
-                                    </tr>
-                                {% endif %}
-                            {% endif %}
                             {{ plugins_table(object) }}
                             </tbody>
                         </table>
@@ -270,15 +309,16 @@
 
 {% macro plugins_table(definition) %}
     {% if definition.metas is defined and definition.metas|length %}
+        {% set id = random() %}
         <tr>
             <th colspan="2">
                 <a class="btn btn-link text-small sf-toggle"
-                   data-toggle-selector="#plugins-{{ definition.name }}"
+                   data-toggle-selector="#plugins-{{ definition.name }}-{{ id }}"
                    data-toggle-alt-content="&#x25B2; plugins">&#x25BC; plugins
                 </a>
             </th>
         </tr>
-        <tr id="plugins-{{ definition.name }}" class="context sf-toggle-content sf-toggle-hidden">
+        <tr id="plugins-{{ definition.name }}-{{ id }}" class="context sf-toggle-content sf-toggle-hidden">
             <td colspan="2">
                 <table>
                     <thead>
@@ -301,114 +341,139 @@
     {% endif %}
 {% endmacro %}
 
-{% macro fields_table(endpoint, objectName, fields) %}
+{% macro fields_table(endpoint, definition) %}
     {% from '@YnloGraphQL/data_collector/template.html.twig' import link_type, plugins_table %}
-    <table>
-        <thead>
+
+    {% if definition.fields is defined %}
+        {% set id = random() %}
         <tr>
-            <th>Name</th>
-            <th>Type</th>
-        </tr>
-        </thead>
-        <tbody>
-        {% for field in fields %}
-            {# @var field \Ynlo\GraphQLBundle\Definition\FieldDefinition #}
-            <tr>
-                <th>
+            <th>
+                {% if definition.fields|length %}
                     <a class="btn btn-link text-small sf-toggle"
-                       data-toggle-selector="#field-{{ objectName }}-{{ field.name }}"
-                       data-toggle-alt-content="&#x25B2; {{ field.name }}">
-                        &#x25BC; {{ field.name }}
-                    </a>
-                </th>
-                <td>
-                    {{ link_type(endpoint, field.type) }}
-                </td>
-            </tr>
-            <tr id="field-{{ objectName }}-{{ field.name }}" class="context sf-toggle-content sf-toggle-hidden">
+                       data-toggle-selector="#fields-{{ definition.name }}-{{ id }}"
+                       data-toggle-alt-content="&#x25B2; fields">&#x25BC; fields</a>
+                {% else %}
+                    fields
+                {% endif %}
+            </th>
+
+            <td>
+                {{ definition.fields|length }}
+        </tr>
+        {% if definition.fields|length %}
+            <tr id="fields-{{ definition.name }}-{{ id }}" class="context sf-toggle-content sf-toggle-hidden">
                 <td colspan="2">
                     <table>
+                        <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Type</th>
+                        </tr>
+                        </thead>
                         <tbody>
-                        {% if field.description is defined and field.description %}
+                        {% for field in definition.fields %}
+                            {% set id = random() %}
+                            {# @var field \Ynlo\GraphQLBundle\Definition\FieldDefinition #}
                             <tr>
-                                <th>description</th>
+                                <th>
+                                    <a class="btn btn-link text-small sf-toggle"
+                                       data-toggle-selector="#field-{{ definition.name }}-{{ field.name }}-{{ id }}"
+                                       data-toggle-alt-content="&#x25B2; {{ field.name }}">
+                                        &#x25BC; {{ field.name }}
+                                    </a>
+                                </th>
                                 <td>
-                                    {{ field.description }}
+                                    {{ link_type(endpoint, field.type) }}
                                 </td>
                             </tr>
-                        {% endif %}
-                        {% if field.deprecationReason is defined and field.deprecationReason %}
-                            <tr>
-                                <th>deprecationReason</th>
-                                <td>
-                                    <span class="bade status-error">{{ field.deprecationReason }}</span>
+                            <tr id="field-{{ definition.name }}-{{ field.name }}-{{ id }}" class="context sf-toggle-content sf-toggle-hidden">
+                                <td colspan="2">
+                                    <table>
+                                        <tbody>
+                                        {% if field.description is defined and field.description %}
+                                            <tr>
+                                                <th>description</th>
+                                                <td>
+                                                    {{ field.description }}
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                        {% if field.deprecationReason is defined and field.deprecationReason %}
+                                            <tr>
+                                                <th>deprecationReason</th>
+                                                <td>
+                                                    <span class="bade status-error">{{ field.deprecationReason }}</span>
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                        {% if field.resolver is defined and field.resolver %}
+                                            <tr>
+                                                <th>Resolver</th>
+                                                <td>
+                                                    {{ field.resolver }}
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                        {% if field.originName is defined and field.originName %}
+                                            <tr>
+                                                <th>originName</th>
+                                                <td>
+                                                    {{ field.originName }}
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                        {% if field.originType is defined and field.originType %}
+                                            <tr>
+                                                <th>originType</th>
+                                                <td>
+                                                    {{ field.originType }}
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                        {% if field.list is defined %}
+                                            <tr>
+                                                <th>List</th>
+                                                <td>
+                                                    {{ field.list ? 'YES': 'NO' }}
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                        {% if field.nonNull is defined %}
+                                            <tr>
+                                                <th>NonNull</th>
+                                                <td>
+                                                    {{ field.nonNull ? 'YES': 'NO' }}
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                        {% if field.nonNullList is defined %}
+                                            <tr>
+                                                <th>NonNullList</th>
+                                                <td>
+                                                    {{ field.nonNullList ? 'YES': 'NO' }}
+                                                </td>
+                                            </tr>
+                                        {% endif %}
+                                        {{ plugins_table(field) }}
+                                        </tbody>
+                                    </table>
                                 </td>
                             </tr>
-                        {% endif %}
-                        {% if field.resolver is defined and field.resolver %}
-                            <tr>
-                                <th>Resolver</th>
-                                <td>
-                                    {{ field.resolver }}
-                                </td>
-                            </tr>
-                        {% endif %}
-                        {% if field.originName is defined and field.originName %}
-                            <tr>
-                                <th>originName</th>
-                                <td>
-                                    {{ field.originName }}
-                                </td>
-                            </tr>
-                        {% endif %}
-                        {% if field.originType is defined and field.originType %}
-                            <tr>
-                                <th>originType</th>
-                                <td>
-                                    {{ field.originType }}
-                                </td>
-                            </tr>
-                        {% endif %}
-                        {% if field.list is defined %}
-                            <tr>
-                                <th>List</th>
-                                <td>
-                                    {{ field.list ? 'YES': 'NO' }}
-                                </td>
-                            </tr>
-                        {% endif %}
-                        {% if field.nonNull is defined %}
-                            <tr>
-                                <th>NonNull</th>
-                                <td>
-                                    {{ field.nonNull ? 'YES': 'NO' }}
-                                </td>
-                            </tr>
-                        {% endif %}
-                        {% if field.nonNullList is defined %}
-                            <tr>
-                                <th>NonNullList</th>
-                                <td>
-                                    {{ field.nonNullList ? 'YES': 'NO' }}
-                                </td>
-                            </tr>
-                        {% endif %}
-                        {{ plugins_table(field) }}
+                        {% endfor %}
                         </tbody>
                     </table>
                 </td>
             </tr>
-        {% endfor %}
-        </tbody>
-    </table>
+        {% endif %}
+    {% endif %}
 {% endmacro %}
 
 {% macro link_type(endpoint, type) %}
-    {% if endpoint.hasTypeForClass(type) %}
+    {% if type and endpoint.hasTypeForClass(type) %}
         {% set type = endpoint.typeForClass(type) %}
     {% endif %}
 
-    {% if endpoint.hasType(type) %}
+    {% if type and endpoint.hasType(type) %}
         <a href="#{{ type }}">
             {{ type }}
         </a>

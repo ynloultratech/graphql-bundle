@@ -16,7 +16,9 @@ use Ynlo\GraphQLBundle\Demo\AppBundle\Model\CommentableInterface;
 use Ynlo\GraphQLBundle\Mutation\AddNode;
 
 /**
- * @GraphQL\Mutation()
+ * @GraphQL\Mutation(options={
+ *     @GraphQL\Plugin\Endpoints("admin")
+ * })
  */
 class AddComment extends AddNode
 {
@@ -31,13 +33,4 @@ class AddComment extends AddNode
         $comment->setBody($event->getData()['body']);
         $event->setData($comment);
     }
-
-    //    /**
-    //     * {@inheritdoc}
-    //     */
-    //    protected function postValidation($data, ConstraintViolationList $violations)
-    //    {
-    //        $otherViolations = $this->getValidator()->validate($data);
-    //        $violations->addViolationList($otherViolations);
-    //    }
 }

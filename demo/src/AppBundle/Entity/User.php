@@ -26,7 +26,10 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  *
  * @UniqueEntity(fields={"username"}, message="The username <b>{{ value }}</b> is already taken")
  *
- * @GraphQL\ObjectType(exclusionPolicy="ALL")
+ * @GraphQL\ObjectType(exclusionPolicy="ALL",
+ *  options={
+ *     @GraphQL\Plugin\Endpoints({"admin"})
+ * })
  * @GraphQL\QueryList()
  * @GraphQL\MutationAdd()
  * @GraphQL\MutationUpdate()

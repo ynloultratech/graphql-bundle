@@ -25,6 +25,7 @@ CHANGELOG
  * [BC BREAK] Change definitions "extensions" to "plugins" to avoid confusion with CRUD extensions
  * Add dataCollector to display helpful information in the web profiler
  * Add support to configure plugins using annotations instead of only arrays
+ * Add support to use endpoints
  
 1.0.6 - 18-03-23
 ----

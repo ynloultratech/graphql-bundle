@@ -48,6 +48,13 @@ class YnloGraphQLExtension extends Extension
         $container->setParameter('graphql.graphiql_auth_jwt', $config['graphiql']['authentication']['provider']['jwt'] ?? []);
         $container->setParameter('graphql.security.validation_rules', $config['security']['validation_rules'] ?? []);
 
+        $endpointsConfig = [];
+        $endpointsConfig['endpoints'] = $config['endpoints'] ?? [];
+        $endpointsConfig['default'] = $config['endpoint_default'] ?? null;
+        $endpointsConfig['alias'] = $config['endpoint_alias'] ?? [];
+
+        $container->setParameter('graphql.endpoints', $endpointsConfig);
+
         $graphiQLAuthProvider = null;
         if ($config['graphiql']['authentication']['provider']['jwt']['enabled'] ?? false) {
             $graphiQLAuthProvider = JWTGraphiQLAuthentication::class;

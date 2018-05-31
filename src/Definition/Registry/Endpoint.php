@@ -22,6 +22,11 @@ use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 class Endpoint
 {
     /**
+     * @var string
+     */
+    protected $name;
+
+    /**
      * @var DefinitionInterface[]
      */
     protected $types = [];
@@ -45,6 +50,24 @@ class Endpoint
      * @var QueryDefinition[]
      */
     protected $queries = [];
+
+    /**
+     * Endpoint constructor.
+     *
+     * @param string $name
+     */
+    public function __construct(string $name)
+    {
+        $this->name = $name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getName(): string
+    {
+        return $this->name;
+    }
 
     /**
      * @return DefinitionInterface[]
@@ -190,6 +213,13 @@ class Endpoint
      */
     public function removeType($name): Endpoint
     {
+        if ($this->hasType($name)) {
+            $type = $this->getType($name);
+            if ($type instanceof InterfaceDefinition) {
+                unset($this->interfaces[$type->getName()]);
+            }
+        }
+
         unset($this->types[$name]);
         if (isset($this->typeMap[$name])) {
             unset($this->typeMap[$name]);

@@ -16,10 +16,19 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Ynlo\GraphQLBundle\Schema\SchemaCompiler;
+use Ynlo\GraphQLBundle\Security\EndpointResolver;
 
 class SchemaController
 {
+    /**
+     * @var SchemaCompiler
+     */
     private $compiler;
+
+    /**
+     * @var EndpointResolver
+     */
+    private $endpointResolver;
 
     private const INTROSPECTION_QUERY = <<<GraphQL
 query IntrospectionQuery {
@@ -116,14 +125,16 @@ query IntrospectionQuery {
 GraphQL;
 
 
-    public function __construct(SchemaCompiler $compiler)
+    public function __construct(SchemaCompiler $compiler, EndpointResolver $endpointResolver)
     {
         $this->compiler = $compiler;
+        $this->endpointResolver = $endpointResolver;
     }
 
     public function __invoke(Request $request): Response
     {
-        $schema = $this->compiler->compile();
+        $name = $this->endpointResolver->resolveEndpoint($request);
+        $schema = $this->compiler->compile($name);
 
         if ('json' === $request->getRequestFormat()) {
             $result = GraphQL::executeQuery($schema, self::INTROSPECTION_QUERY);
