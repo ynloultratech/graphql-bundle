@@ -1,0 +1,12 @@
+query UserList($first: Int, $last: Int, $orderBy: [OrderBy], $after: String, $before: String) {
+    users{
+        all(first:$first, last: $last, orderBy: $orderBy, after: $after, before: $before){
+            edges {
+                node {
+                    id
+                    login
+                }
+            }
+        }
+    }
+}

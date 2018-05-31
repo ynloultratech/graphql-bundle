@@ -16,6 +16,7 @@ use Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServicesCompilerPass;
 use Ynlo\GraphQLBundle\DependencyInjection\Compiler\ControllerPass;
 use Ynlo\GraphQLBundle\DependencyInjection\YnloGraphQLExtension;
 use Ynlo\GraphQLBundle\Type\Loader\TypeAutoLoader;
+use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 
 /**
  * Class YnloGraphQLBundle
@@ -27,6 +28,7 @@ class YnloGraphQLBundle extends Bundle
      */
     public function boot()
     {
+        TypeRegistry::clear(); //required for tests
         $this->container->get(TypeAutoLoader::class)->autoloadTypes();
     }
 

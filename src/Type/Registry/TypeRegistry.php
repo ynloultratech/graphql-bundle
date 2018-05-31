@@ -54,6 +54,14 @@ class TypeRegistry
     }
 
     /**
+     * Clear all registered instantiated types
+     */
+    public static function clear()
+    {
+        self::$types = [];
+    }
+
+    /**
      * @param string $name
      *
      * @return Type

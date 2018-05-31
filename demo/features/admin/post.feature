@@ -1,3 +1,4 @@
+@admin
 Feature: Post
 
   Scenario: Add Post

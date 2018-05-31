@@ -14,9 +14,11 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Definition\Call\Then;
 use Behat\Behat\Hook\Scope\BeforeScenarioScope;
 use PHPUnit\Framework\Assert;
+use PHPUnit\Framework\AssertionFailedError;
 use Symfony\Component\HttpFoundation\Response;
 use Ynlo\GraphQLBundle\Behat\Client\ClientAwareInterface;
 use Ynlo\GraphQLBundle\Behat\Client\ClientAwareTrait;
+use Ynlo\GraphQLBundle\Util\Json;
 
 /**
  * Context to work with latest response
@@ -51,6 +53,26 @@ final class ResponseContext implements Context, ClientAwareInterface
     }
 
     /**
+     * Assert that latest response is a GraphQL error with the given message
+     *
+     * @Then /^the response is GraphQL error with "([^"]*)"$/
+     */
+    public function theResponseIsGraphQLErrorWith($message)
+    {
+        $this->assertResponseStatus(Response::HTTP_OK);
+
+        //success GraphQL response should not contains errors
+        if ($this->client->getGraphQL()) {
+            if ($this->isValidGraphQLResponse() && $errors = $this->getGraphQLResponseError()) {
+                Assert::assertContains($message, $errors[0]->message ?? null);
+            } else {
+                $this->graphQLContext->debugLastQuery();
+                throw new AssertionFailedError('The response is not the expected error response.');
+            }
+        }
+    }
+
+    /**
      * @Then the response is OK
      */
     public function assertResponseIsOk()
@@ -59,13 +81,29 @@ final class ResponseContext implements Context, ClientAwareInterface
 
         //success GraphQL response should not contains errors
         if ($this->client->getGraphQL()) {
-            $content = $this->client->getResponse()->getContent();
-            Assert::assertJson((string) $content, 'Invalid server response');
-            $response = json_decode($content, true);
-            if ($response && isset($response['errors'])) {
+            if (!$this->isValidGraphQLResponse() || $this->getGraphQLResponseError()) {
                 $this->graphQLContext->debugLastQuery();
-                Assert::assertArrayNotHasKey('errors', $response);
+                throw new AssertionFailedError('The response is not a success response.');
             }
         }
     }
+
+    protected function isValidGraphQLResponse()
+    {
+        $content = $this->client->getResponse()->getContent();
+        Assert::assertJson((string) $content, 'Invalid server response');
+        $response = json_decode($content, true);
+
+        return $response && (isset($response['errors']) || isset($response['data']));
+    }
+
+    protected function getGraphQLResponseError()
+    {
+        if ($this->isValidGraphQLResponse()) {
+            return Json::getValue($this->client->getResponse(), 'errors');
+        }
+
+        return null;
+    }
 }
+

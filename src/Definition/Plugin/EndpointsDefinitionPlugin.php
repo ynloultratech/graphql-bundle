@@ -20,6 +20,7 @@ use Ynlo\GraphQLBundle\Definition\ImplementorInterface;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\MutationDefinition;
 use Ynlo\GraphQLBundle\Definition\NodeAwareDefinitionInterface;
+use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 
@@ -77,6 +78,10 @@ class EndpointsDefinitionPlugin extends AbstractDefinitionPlugin
      */
     public function configure(DefinitionInterface $definition, Endpoint $endpoint, array $config): void
     {
+        if ($endpoint->getName() === DefinitionRegistry::DEFAULT_ENDPOINT) {
+            return;
+        }
+
         //apply default endpoint to operations and nodes
         $endpoints = $this->normalizeConfig($definition, $definition->getMeta('endpoints'));
         if (!$endpoints && $this->endpointDefault) {
@@ -94,6 +99,10 @@ class EndpointsDefinitionPlugin extends AbstractDefinitionPlugin
      */
     public function configureEndpoint(Endpoint $endpoint): void
     {
+        if ($endpoint->getName() === DefinitionRegistry::DEFAULT_ENDPOINT) {
+            return;
+        }
+
         $forbiddenTypes = $this->getForbiddenTypes($endpoint);
         $this->processForbiddenTypes($endpoint, $forbiddenTypes);
     }

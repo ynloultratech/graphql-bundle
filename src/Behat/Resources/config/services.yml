@@ -10,6 +10,7 @@ parameters:
         - Ynlo\GraphQLBundle\Behat\Context\GraphQLContext
         - Ynlo\GraphQLBundle\Behat\Context\ResponseContext
         - Ynlo\GraphQLBundle\Behat\Context\StorageContext
+        - Ynlo\GraphQLBundle\Behat\Context\JWTContext
 
 services:
   Ynlo\GraphQLBundle\Behat\Fixtures\FixtureManager:
@@ -34,9 +35,9 @@ services:
       - { name: 'event_dispatcher.subscriber' }
 
   Ynlo\GraphQLBundle\Behat\Client\ClientAwareInitializer:
-    arguments: ['@tester.step', '@Ynlo\GraphQLBundle\Behat\Client\GraphQLClient']
+    arguments: ['@tester.scenario', '@Ynlo\GraphQLBundle\Behat\Client\GraphQLClient']
     tags:
-      - { name: 'tester.step.wrapper', priority: -99999 }
+      - { name: 'tester.scenario.wrapper', priority: -99999 }
 
   Ynlo\GraphQLBundle\Behat\Storage\Storage: ~
 

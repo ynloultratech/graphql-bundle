@@ -11,16 +11,20 @@
 namespace Ynlo\GraphQLBundle\Behat\Client;
 
 use Behat\Behat\Context\Environment\InitializedContextEnvironment;
+use Behat\Behat\EventDispatcher\Tester\EventDispatchingScenarioTester;
 use Behat\Behat\Tester\Result\StepResult;
+use Behat\Behat\Tester\ScenarioTester;
 use Behat\Behat\Tester\StepTester;
 use Behat\Gherkin\Node\FeatureNode;
+use Behat\Gherkin\Node\ScenarioInterface;
 use Behat\Gherkin\Node\StepNode;
 use Behat\Testwork\Environment\Environment;
+use Behat\Testwork\Tester\Result\TestResult;
 
 /**
  * Inject GraphQLClient instance on very context implementing ClientAwareInterface
  */
-class ClientAwareInitializer implements StepTester
+class ClientAwareInitializer implements ScenarioTester
 {
     /**
      * @var StepTester
@@ -32,18 +36,18 @@ class ClientAwareInitializer implements StepTester
      */
     private $client;
 
-    public function __construct(StepTester $baseTester, GraphQLClient $client)
+    public function __construct(EventDispatchingScenarioTester $baseTester, GraphQLClient $client)
     {
         $this->baseTester = $baseTester;
         $this->client = $client;
     }
 
-    public function setUp(Environment $env, FeatureNode $feature, StepNode $step, $skip)
+    public function setUp(Environment $env, FeatureNode $feature, ScenarioInterface $step, $skip)
     {
         return $this->baseTester->setUp($env, $feature, $step, $skip);
     }
 
-    public function test(Environment $env, FeatureNode $feature, StepNode $step, $skip)
+    public function test(Environment $env, FeatureNode $feature, ScenarioInterface $step, $skip)
     {
         /** @var InitializedContextEnvironment $env */
         foreach ($env->getContexts() as $context) {
@@ -55,7 +59,7 @@ class ClientAwareInitializer implements StepTester
         return $this->baseTester->test($env, $feature, $step, $skip);
     }
 
-    public function tearDown(Environment $env, FeatureNode $feature, StepNode $step, $skip, StepResult $result)
+    public function tearDown(Environment $env, FeatureNode $feature, ScenarioInterface $step, $skip, TestResult $result)
     {
         return $this->baseTester->tearDown($env, $feature, $step, $skip, $result);
     }

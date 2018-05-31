@@ -1,3 +1,4 @@
+@admin
 Feature: User
 
   Scenario: User list

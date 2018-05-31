@@ -251,4 +251,6 @@ final class GraphQLContext implements Context, ClientAwareInterface
             throw new \RuntimeException('Does not exist any executed query on current test, try use this method after "send" the query.');
         }
     }
+
+
 }
