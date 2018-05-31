@@ -13,6 +13,13 @@
         "date_modified_format": "l, F j, Y g:i A",
         "float": false,
         "inherit_index": true,
+        "repo": "ynloultratech/graphql-bundle",
+        "edit_on_github": "ynloultratech/graphql-bundle/blob/master/doc/content",
+        "links": {
+            "Download": "https://github.com/ynloultratech/graphql-bundle/archive/master.zip",
+            "GitHub Repo": "https://github.com/ynloultratech/graphql-bundle",
+            "Help/Support/Bugs": "https://github.com/ynloultratech/graphql-bundle/issues"
+        },
         "powered_by": "Powered by YnloUltratech"
     }
 }

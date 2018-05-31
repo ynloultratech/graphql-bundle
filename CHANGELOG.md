@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-[Unreleased]
+[2.0.0 - Unreleased]
 -----
  * Add `symfony4` support
  * Fix error in pagination when filters does not have any field to filter

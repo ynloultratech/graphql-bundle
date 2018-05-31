@@ -16,6 +16,6 @@
     "preferred-install": "dist"
   },
   "scripts": {
-    "build": "bin/daux generate -s content"
+    "build": " cp ../CHANGELOG.md content/99_CHANGELOG.md | bin/daux generate -s content"
   }
 }
