@@ -21,7 +21,6 @@ use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\Stopwatch\Stopwatch;
 use Ynlo\GraphQLBundle\Behat\Client\ClientAwareInterface;
 use Ynlo\GraphQLBundle\Behat\Client\ClientAwareTrait;
-use Ynlo\GraphQLBundle\Behat\Client\GraphQLClient;
 use Ynlo\GraphQLBundle\Behat\Gherkin\YamlStringNode;
 
 /**
@@ -210,21 +209,27 @@ final class GraphQLContext implements Context, ClientAwareInterface
             $content = $response->getContent();
             $json = @json_decode($content, true);
 
-            $responseWithError = false;
+            $error = $response->getStatusCode() >= 400;
             if ($json && isset($json['errors'])) {
-                $responseWithError = true;
+                $error = true;
             }
 
-            $bg = $response->getStatusCode() || $responseWithError >= 400 ? 41 : 42;
+            $bg = $error ? 41 : 42;
             print_r("\n\n");
             print_r("\033[{$bg}m-------------------- RESPONSE ----------------------\033[0m\n\n");
             print_r(sprintf("STATUS: [%s] %s \n", $response->getStatusCode(), Response::$statusTexts[$response->getStatusCode()] ?? 'Unknown Status'));
 
             if ($json) {
-                print_r(json_encode($json, JSON_PRETTY_PRINT));
+                $output = json_encode($json, JSON_PRETTY_PRINT);
             } else {
-                print_r($content);
+                $output = $content;
             }
+
+            if ($error) {
+                $output = substr($output, 0, 1500).' ...';
+            }
+
+            print_r($output);
 
             print_r("\n\n");
             print_r("\033[46m------------------- VARIABLES-----------------------\033[0m\n\n");
