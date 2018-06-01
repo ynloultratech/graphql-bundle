@@ -106,10 +106,10 @@ class DefinitionRegistry
         }
 
         //use file cache
-        $this->loadCache($name);
+        self::$endpoints[$name] = $this->loadCache($name);
 
         //retry after load from file
-        if (isset(self::$endpoints[$name])) {
+        if (isset(self::$endpoints[$name]) && self::$endpoints[$name] instanceof Endpoint) {
             return self::$endpoints[$name];
         }
 
@@ -136,14 +136,28 @@ class DefinitionRegistry
      */
     protected function initialize(string $name)
     {
-        self::$endpoints[$name] = new Endpoint($name);
+        $rawDefault = $this->loadCache('default.raw');
+        if (!$rawDefault) {
+            $rawDefault = new Endpoint(self::DEFAULT_ENDPOINT);
 
-        foreach ($this->loaders as $loader) {
-            $loader->loadDefinitions(self::$endpoints[$name]);
+            foreach ($this->loaders as $loader) {
+                $loader->loadDefinitions($rawDefault);
+            }
+
+            $this->saveCache('default.raw', $rawDefault);
         }
 
-        $this->compile(self::$endpoints[$name]);
-        $this->saveCache($name);
+        if (!isset(self::$endpoints[$name])) {
+            //copy from raw to specific endpoint
+            self::$endpoints[$name] = new Endpoint($name);
+            self::$endpoints[$name]->setTypes($rawDefault->allTypes());
+            self::$endpoints[$name]->setMutations($rawDefault->allMutations());
+            self::$endpoints[$name]->setQueries($rawDefault->allQueries());
+
+            $this->compile(self::$endpoints[$name]);
+        }
+
+        $this->saveCache($name, self::$endpoints[$name]);
     }
 
     protected function cacheFileName($name): string
@@ -151,19 +165,21 @@ class DefinitionRegistry
         return sprintf('%s%sgraphql.registry_definitions_%s.meta', $this->cacheDir, DIRECTORY_SEPARATOR, Inflector::tableize($name));
     }
 
-    protected function loadCache($name): void
+    protected function loadCache($name): ?Endpoint
     {
         if (file_exists($this->cacheFileName($name))) {
             $content = @file_get_contents($this->cacheFileName($name));
             if ($content) {
-                self::$endpoints[$name] = unserialize($content, ['allowed_classes' => true]);
+                return unserialize($content, ['allowed_classes' => true]);
             }
         }
+
+        return null;
     }
 
-    protected function saveCache($name): void
+    protected function saveCache($name, Endpoint $endpoint): void
     {
-        file_put_contents($this->cacheFileName($name), serialize(self::$endpoints[$name]));
+        file_put_contents($this->cacheFileName($name), serialize($endpoint));
     }
 
     /**

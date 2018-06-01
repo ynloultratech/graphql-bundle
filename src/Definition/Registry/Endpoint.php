@@ -151,7 +151,11 @@ class Endpoint
      */
     public function setTypes(array $types)
     {
-        $this->types = $types;
+        $this->types = [];
+        $this->interfaces = [];
+        foreach ($types as $type) {
+            $this->addType($type);
+        }
     }
 
     /**
@@ -159,7 +163,10 @@ class Endpoint
      */
     public function setMutations(array $mutations)
     {
-        $this->mutations = $mutations;
+        $this->mutations = [];
+        foreach ($mutations as $mutation) {
+            $this->addMutation($mutation);
+        }
     }
 
     /**
@@ -167,7 +174,10 @@ class Endpoint
      */
     public function setQueries(array $queries)
     {
-        $this->queries = $queries;
+        $this->queries = [];
+        foreach ($queries as $query) {
+            $this->addQuery($query);
+        }
     }
 
     /**
