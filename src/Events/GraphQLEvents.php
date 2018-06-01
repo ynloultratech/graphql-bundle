@@ -56,4 +56,20 @@ final class GraphQLEvents
      * @var string
      */
     public const POST_READ_FIELD = 'graphql.postGetField';
+
+    /**
+     * This event is executed when a mutation is submitted
+     * event: Ynlo\GraphQLBundle\Events\GraphQLMutationEvent
+     *
+     * @var string
+     */
+    public const MUTATION_SUBMITTED = 'graphql.mutationSubmitted';
+
+    /**
+     * This event is executed when a mutation is completed
+     * event: Ynlo\GraphQLBundle\Events\GraphQLMutationEvent
+     *
+     * @var string
+     */
+    public const MUTATION_COMPLETED = 'graphql.mutationCompleted';
 }

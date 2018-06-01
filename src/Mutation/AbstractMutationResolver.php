@@ -16,6 +16,8 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Validator\ConstraintViolation as SymfonyConstraintViolation;
+use Ynlo\GraphQLBundle\Events\GraphQLEvents;
+use Ynlo\GraphQLBundle\Events\GraphQLMutationEvent;
 use Ynlo\GraphQLBundle\Model\ConstraintViolation;
 use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
@@ -35,9 +37,20 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
     public function __invoke($input)
     {
         $formBuilder = $this->createDefinitionForm($this->initialFormData($input));
+        $mutationEvent = null;
 
         $form = null;
         if ($formBuilder) {
+            $formBuilder->addEventListener(
+                FormEvents::SUBMIT,
+                function (FormEvent $event) use (&$mutationEvent) {
+                    if ($this->eventDispatcher) {
+                        $mutationEvent = new GraphQLMutationEvent($this->context, $event);
+                        $this->eventDispatcher->dispatch(GraphQLEvents::MUTATION_SUBMITTED, $mutationEvent);
+                    }
+                }
+            );
+
             $formBuilder->addEventSubscriber($this);
 
             $extensionExecutor = function ($method) {
@@ -79,7 +92,15 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
             }
         }
 
-        return $this->returnPayload($data, $violations, $input);
+        $payload = $this->returnPayload($data, $violations, $input);
+
+        if ($mutationEvent instanceof GraphQLMutationEvent) {
+            $mutationEvent->setPayload($payload);
+            $this->eventDispatcher->dispatch(GraphQLEvents::MUTATION_COMPLETED, $mutationEvent);
+            $payload = $mutationEvent->getPayload();
+        }
+
+        return $payload;
     }
 
     /**

@@ -16,6 +16,7 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Ynlo\GraphQLBundle\Component\AutoWire\AutoWire;
 use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
@@ -25,6 +26,7 @@ use Ynlo\GraphQLBundle\Definition\NodeAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\Events\EventDispatcherAwareInterface;
 use Ynlo\GraphQLBundle\Extension\ExtensionInterface;
 use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Extension\ExtensionsAwareInterface;
@@ -150,12 +152,16 @@ class ResolverExecutor implements ContainerAwareInterface
                 }
             }
 
-            if ($resolver instanceof AbstractResolver) {
+            if ($resolver instanceof ResolverInterface) {
                 $resolver->setContext($resolveContext);
             }
 
             if ($resolver instanceof ExtensionsAwareInterface && $nodeDefinition instanceof HasExtensionsInterface) {
                 $resolver->setExtensions($this->resolveObjectExtensions($nodeDefinition));
+            }
+
+            if ($resolver instanceof EventDispatcherAwareInterface) {
+                $resolver->setEventDispatcher($this->container->get(EventDispatcherInterface::class));
             }
 
             $params = $this->prepareMethodParameters($refMethod, $args);

@@ -11,10 +11,11 @@
 namespace Ynlo\GraphQLBundle\Resolver;
 
 use Doctrine\ORM\EntityManager;
-use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
+use Ynlo\GraphQLBundle\Events\EventDispatcherAwareInterface;
+use Ynlo\GraphQLBundle\Events\EventDispatcherAwareTrait;
 use Ynlo\GraphQLBundle\Extension\ExtensionInterface;
 use Ynlo\GraphQLBundle\Extension\ExtensionsAwareInterface;
 
@@ -23,9 +24,10 @@ use Ynlo\GraphQLBundle\Extension\ExtensionsAwareInterface;
  *
  * It provides methods to common features needed in resolvers.
  */
-abstract class AbstractResolver implements ExtensionsAwareInterface, ContainerAwareInterface
+abstract class AbstractResolver implements ResolverInterface, ExtensionsAwareInterface, EventDispatcherAwareInterface
 {
     use ContainerAwareTrait;
+    use EventDispatcherAwareTrait;
 
     /**
      * @var ResolverContext
