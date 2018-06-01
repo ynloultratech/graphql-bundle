@@ -18,13 +18,16 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
-use Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\Events\GraphQLEvents;
+use Ynlo\GraphQLBundle\Events\GraphQLFieldEvent;
+use Ynlo\GraphQLBundle\Events\GraphQLFieldInfo;
 use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Type\Definition\EndpointAwareInterface;
@@ -71,6 +74,23 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
     {
         $value = null;
         $fieldDefinition = $this->definition->getField($info->fieldName);
+        $eventDispatcher = $this->container->get(EventDispatcherInterface::class);
+
+        $fieldInfo = new GraphQLFieldInfo($this->definition, $fieldDefinition, $info);
+        $event = new GraphQLFieldEvent(
+            $fieldInfo,
+            $root,
+            $args,
+            $context
+        );
+        $eventDispatcher->dispatch(GraphQLEvents::PRE_READ_FIELD, $event);
+
+        if ($event->isPropagationStopped() || $event->getValue()) {
+            $eventDispatcher->dispatch(GraphQLEvents::POST_READ_FIELD, $event);
+
+            return $event->getValue();
+        }
+
         $this->verifyConcurrentUsage($fieldDefinition);
         $this->denyAccessUnlessGranted($fieldDefinition);
 
@@ -137,7 +157,10 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
             );
         }
 
-        return $value;
+        $event->setValue($value);
+        $eventDispatcher->dispatch(GraphQLEvents::POST_READ_FIELD, $event);
+
+        return $event->getValue();
     }
 
     /**

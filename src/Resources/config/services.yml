@@ -289,3 +289,7 @@ services:
 
     Ynlo\GraphQLBundle\Security\EndpointResolver:
         arguments: ['@security.authorization_checker', '%graphql.endpoints%']
+
+    Symfony\Component\EventDispatcher\EventDispatcherInterface:
+        alias: event_dispatcher
+        public: true

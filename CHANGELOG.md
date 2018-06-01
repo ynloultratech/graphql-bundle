@@ -29,6 +29,7 @@ CHANGELOG
  * Improve the schema cache warmer for dev environments
  * PHPUnit ApiTestCase has been deprecated in favor of Behat tests
  * Add support to use JWT authentication on Behat tests
+ * Add GraphQL event system to hook into field/operations before/after are resolved
  
 1.0.6 - 18-03-23
 ----
