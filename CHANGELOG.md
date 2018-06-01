@@ -1,7 +1,7 @@
 CHANGELOG
 =========
 
-[2.0.0 - Unreleased]
+[1.1 - Unreleased]
 -----
  * Add `symfony4` support
  * Fix error in pagination when filters does not have any field to filter
@@ -9,8 +9,8 @@ CHANGELOG
  * Add support to use abstract PHP classes as graphql interfaces
  * Add graphql scalar type called `Any` to support arbitrary values
  * Add graphql form extension to allow set custom type, description and deprecationReason in forms
- * [BC BREAK] `has` and `his` prefixes are now removed in method definitions like `get` and `set`. Now a method like `isActive()` is converted to graphql definition like `active`
- * [BC BREAK] a exception is thrown when register a graphql custom type and is not instantiable
+ * **[BC BREAK]** `has` and `his` prefixes are now removed in method definitions like `get` and `set`. Now a method like `isActive()` is converted to graphql definition like `active`
+ * Exception is thrown when register a graphql custom type and is not instantiable
  * Add graphql scalar type called `DynamicObject` to support custom objects like `key:value` pairs
  * Hide field description in graphiql when a list of fields are displayed _(improve readability)_
  * Update `graphiql` assets to latest version
@@ -19,10 +19,10 @@ CHANGELOG
  * Fix log errors correctly and define user errors as notices
  * Resolve mutation payload class automatically for easy override
  * Add support tu use CRUD extensions for real PHP interfaces without register a graphql interface type.
- * [BC BREAK] Removed `getPriority` method in CRUD extensions, must use service tag priority instead. 
+ * Removed `getPriority` method in CRUD extensions, must use service tag priority instead. 
  * Add config to set custom labels for GraphiQL JWT Authentication form fields
  * fix GraphiQL CORS error when use the explorer in a different domain or subdomain
- * [BC BREAK] Change definitions "extensions" to "plugins" to avoid confusion with CRUD extensions
+ * **[BC BREAK]** Change definitions "extensions" to "plugins" to avoid confusion with CRUD extensions
  * Add dataCollector to display helpful information in the web profiler
  * Add support to configure plugins using annotations instead of only arrays
  * Add support to use endpoints

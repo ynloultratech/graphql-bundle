@@ -2,4 +2,5 @@
 /vendor
 /bin
 /composer.lock
+content/98_UPGRADE.md
 content/99_CHANGELOG.md
