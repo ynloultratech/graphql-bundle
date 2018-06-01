@@ -124,7 +124,7 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
         /** @var DefinitionInterface $definition */
         foreach ($definitions as $definition) {
             if (!$definition->hasMeta('namespace') || !$definition->getMeta('namespace')) {
-                $namespacedDefinitions[] = $definition;
+                $namespacedDefinitions[$definition->getName()] = $definition;
                 continue;
             }
 
@@ -166,7 +166,7 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
 
             if ($root && $parent) {
                 $this->addDefinitionToNamespace($parent, $definition);
-                $namespacedDefinitions[] = $root;
+                $namespacedDefinitions[$root->getName()] = $root;
             }
         }
 
