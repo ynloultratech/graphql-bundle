@@ -55,6 +55,6 @@ abstract class PluginConfigAnnotation
     {
         preg_match('/\w+$/', get_class($this), $matches);
 
-        return strtolower($matches[0]);
+        return Inflector::tableize($matches[0]);
     }
 }

@@ -100,6 +100,10 @@ class Post implements NodeInterface, CommentableInterface, TimestampableInterfac
      *
      * @Assert\Expression(expression="!this.isFuturePublish() or this.getFuturePublishDate()",
      *     message="A future publish post require a date to publish")
+     *
+     * @GraphQL\Field(options={
+     *     @GraphQL\Plugin\AccessControl(expression="has_role('ROLE_ADMIN')", message="You are not authorized to view post status.")
+     * })
      */
     protected $status;
 
@@ -107,6 +111,10 @@ class Post implements NodeInterface, CommentableInterface, TimestampableInterfac
      * @var \DateTime
      *
      * @ORM\Column(name="future_publish_date", type="datetime", nullable=true)
+     *
+     * @GraphQL\Field(options={
+     *     @GraphQL\Plugin\AccessControl(expression="has_role('ROLE_ADMIN')")
+     * })
      */
     protected $futurePublishDate;
 

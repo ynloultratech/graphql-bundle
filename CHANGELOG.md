@@ -30,6 +30,7 @@ CHANGELOG
  * PHPUnit ApiTestCase has been deprecated in favor of Behat tests
  * Add support to use JWT authentication on Behat tests
  * Add GraphQL event system to hook into field/operations before/after are resolved
+ * Add AccessControl plugin to control access to object and fields using Symfony security checker with expressions
  
 1.0.6 - 18-03-23
 ----

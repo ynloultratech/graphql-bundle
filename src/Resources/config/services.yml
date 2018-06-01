@@ -240,6 +240,10 @@ services:
         tags:
             - { name: 'graphql.definition_plugin'}
 
+    Ynlo\GraphQLBundle\Definition\Plugin\AccessControlDefinitionPlugin:
+        tags:
+            - { name: 'graphql.definition_plugin'}
+
     Ynlo\GraphQLBundle\Definition\Plugin\RolesDefinitionPlugin:
         public: true
         arguments: ['@graphql.security.authorization_checker']
@@ -293,3 +297,8 @@ services:
     Symfony\Component\EventDispatcher\EventDispatcherInterface:
         alias: event_dispatcher
         public: true
+
+    Ynlo\GraphQLBundle\EventListener\GraphQL\AccessControlListener:
+        arguments: ['@security.authorization_checker']
+        tags:
+            - { name: 'kernel.event_subscriber' }

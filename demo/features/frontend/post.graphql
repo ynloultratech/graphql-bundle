@@ -1,0 +1,12 @@
+query getPostsWithStatus{
+    posts{
+        all(first: 10){
+            edges{
+                node{
+                    tags
+                    status
+                }
+            }
+        }
+    }
+}
