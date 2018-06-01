@@ -41,9 +41,17 @@ protected $author;
 > If unauthorized access is detected a exception is thrown and the consumer view a **security** error. 
 In this case the query fails and not data is returned in any way.
 
+The following functions and variables are available:
+
+- **is_anonymous():** check if current user is authenticated anonymously.
+- **is_fully_authenticated():** check if current user is fully authenticated.
+- **has_role():** check if user has the given role
+- **object:** current object where the expression is executed
+- **subject:** current object where the expression is executed
+
 ## Custom Message
 
-By default when API request will be denied you will get the "Access Denied." message.
+By default when API request will be denied you will get the predefined message.
 You can change it by configuring "message" attribute.
 
 For Example:
