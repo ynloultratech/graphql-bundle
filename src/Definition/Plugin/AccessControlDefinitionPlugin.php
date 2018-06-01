@@ -11,6 +11,7 @@
 namespace Ynlo\GraphQLBundle\Definition\Plugin;
 
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+use Symfony\Component\ExpressionLanguage\ParsedExpression;
 use Symfony\Component\Security\Core\Authorization\ExpressionLanguage;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
@@ -39,13 +40,12 @@ class AccessControlDefinitionPlugin extends AbstractDefinitionPlugin
     public function configure(DefinitionInterface $definition, Endpoint $endpoint, array $config): void
     {
         if ($config && $expression = $config['expression']) {
-            $expressionSerialized = serialize(
+            $nodes =
                 (new ExpressionLanguage())
                     ->parse($expression, ['token', 'user', 'object', 'roles', 'request', 'trust_resolver'])
-                    ->getNodes()
-            );
+                    ->getNodes();
 
-            $config['expression_serialized'] = $expressionSerialized;
+            $config['expression_serialized'] = serialize(new ParsedExpression($expression, $nodes));
             $definition->setMeta($this->getName(), $config);
         }
     }
