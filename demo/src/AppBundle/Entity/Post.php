@@ -40,7 +40,12 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  * @GraphQL\QueryList(options={
  *     @GraphQL\Plugin\Endpoints({"frontend", "admin"})
  * })
- * @GraphQL\MutationAdd(options={@GraphQL\Plugin\Endpoints("admin")})
+ * @GraphQL\MutationAdd(options={
+ *     @GraphQL\Plugin\Endpoints({"frontend", "admin"}),
+ *     @GraphQL\Plugin\AccessControl(
+ *     expression="has_role('ROLE_ADMIN') or has_role('ROLE_BLOGGER')",
+ *     message="Does not have enough permissions tu publish new posts.")
+ * })
  * @GraphQL\MutationUpdate(options={@GraphQL\Plugin\Endpoints("admin")})
  * @GraphQL\MutationDelete(options={@GraphQL\Plugin\Endpoints("admin")})
  * @GraphQL\MutationDeleteBatch(options={@GraphQL\Plugin\Endpoints("admin")})

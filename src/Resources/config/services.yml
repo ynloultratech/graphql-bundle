@@ -298,7 +298,10 @@ services:
         alias: event_dispatcher
         public: true
 
-    Ynlo\GraphQLBundle\EventListener\GraphQL\AccessControlListener:
+    Ynlo\GraphQLBundle\Security\Authorization\AccessControlChecker:
         arguments: ['@security.authorization_checker']
+
+    Ynlo\GraphQLBundle\EventListener\GraphQL\AccessControlListener:
+        arguments: ['@Ynlo\GraphQLBundle\Security\Authorization\AccessControlChecker']
         tags:
             - { name: 'kernel.event_subscriber' }

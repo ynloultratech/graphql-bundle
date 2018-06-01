@@ -26,8 +26,9 @@ class User implements NodeInterface
 The above example allow only the access to a `User` object if the logged user is
 admin or is his record.
 
-The same approach can be used for fields:
+The same approach can be used for fields or operations.
 
+Field:
 ````php
 /**
  * ...
@@ -36,6 +37,19 @@ The same approach can be used for fields:
  * })
  */
 protected $author;
+````
+
+Operation:
+````php
+ * ...
+ * @GraphQL\MutationAdd(options={
+ *     @GraphQL\Plugin\AccessControl(
+ *     expression="has_role('ROLE_ADMIN') or has_role('ROLE_BLOGGER')",
+ *     message="Does not have enough permissions tu publish new posts.")
+ * })
+ */
+class Post implements NodeInterface
+{
 ````
 
 > If unauthorized access is detected a exception is thrown and the consumer view a **security** error. 
@@ -74,3 +88,7 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
 class Book implements NodeInterface
 {
 ````
+
+> IMPORTANT!: access control does not hide object, fields or operations, only restrict the access.
+The GraphQL schema still displaying all these definitions.
+In order to hide definitions based on user roles must use [endpoints](../07_Advanced/03_Endpoints.md).

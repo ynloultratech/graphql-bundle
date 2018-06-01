@@ -10,3 +10,16 @@ query getPostsWithStatus{
         }
     }
 }
+
+mutation AddPost($input: AddPostInput!){
+    posts {
+        add(input: $input){
+            node {
+                title
+                body
+                tags
+            }
+            clientMutationId
+        }
+    }
+}
