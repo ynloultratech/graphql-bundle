@@ -10,10 +10,12 @@
 
 namespace Ynlo\GraphQLBundle\Annotation;
 
+trigger_error('@CRUDOperations annotation has been deprecated and will be removed in v2.0, use specific crud annotations', E_USER_DEPRECATED);
+
 /**
  * @Annotation()
  *
- * @deprecated use QueryList, MutationAdd, MutationUpdate, MutationDelete annotations instead.
+ * @deprecated [<2.0] use QueryList, MutationAdd, MutationUpdate, MutationDelete annotations instead.
  */
 class CRUDOperations
 {
