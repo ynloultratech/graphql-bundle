@@ -82,7 +82,12 @@ class EndpointsDefinitionPlugin extends AbstractDefinitionPlugin
             return;
         }
 
-        //apply default endpoint to operations and nodes
+        //ignore safe operations
+        if (in_array($definition->getName(), ['node', 'nodes'])) {
+            return;
+        }
+
+        //apply default endpoint to all operations
         $endpoints = $this->normalizeConfig($definition, $definition->getMeta('endpoints'));
         if (!$endpoints && $this->endpointDefault) {
             if ($definition instanceof ExecutableDefinitionInterface
