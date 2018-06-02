@@ -79,55 +79,53 @@
 
         <h2>Schema</h2>
 
-        <div class="sf-tabs">
-            <div class="tab">
-                <h3 class="tab-title">Queries <span class="badge status-">{{ endpoint.allQueries|length }}</span></h3>
+        <div class="tab">
+            <h3 class="tab-title">Queries <span class="badge status-">{{ endpoint.allQueries|length }}</span></h3>
+            <div class="tab-content">
+                {{ operations_table(collector, endpoint.allQueries) }}
+            </div>
+        </div>
+
+        <div class="tab">
+            <h3 class="tab-title">Mutations <span class="badge status-">{{ endpoint.allMutations|length }}</span></h3>
+            <div class="tab-content">
                 <div class="tab-content">
-                    {{ operations_table(endpoint, endpoint.allQueries) }}
+                    {{ operations_table(collector, endpoint.allMutations) }}
                 </div>
             </div>
+        </div>
+        {% set types = endpoint.allTypes %}
+        {% set objects = [] %}
+        {% set inputObjects = [] %}
+        {% set interfaces = [] %}
+        {% for type in types %}
+            {% if collector.object(type) %}
+                {% set objects = objects|merge([type]) %}
+            {% elseif collector.inputObject(type) %}
+                {% set inputObjects = inputObjects|merge([type]) %}
+            {% elseif collector.interface(type) %}
+                {% set interfaces = interfaces|merge([type]) %}
+            {% endif %}
+        {% endfor %}
 
-            <div class="tab">
-                <h3 class="tab-title">Mutations <span class="badge status-">{{ endpoint.allMutations|length }}</span></h3>
-                <div class="tab-content">
-                    <div class="tab-content">
-                        {{ operations_table(endpoint, endpoint.allMutations) }}
-                    </div>
-                </div>
+        <div class="tab">
+            <h3 class="tab-title">Object Types <span class="badge status-default }}">{{ objects|length }}</span></h3>
+            <div class="tab-content">
+                {{ objects_table(collector, objects) }}
             </div>
-            {% set types = endpoint.allTypes %}
-            {% set objects = [] %}
-            {% set inputObjects = [] %}
-            {% set interfaces = [] %}
-            {% for type in types %}
-                {% if collector.object(type) %}
-                    {% set objects = objects|merge([type]) %}
-                {% elseif collector.inputObject(type) %}
-                    {% set inputObjects = inputObjects|merge([type]) %}
-                {% elseif collector.interface(type) %}
-                    {% set interfaces = interfaces|merge([type]) %}
-                {% endif %}
-            {% endfor %}
+        </div>
 
-            <div class="tab">
-                <h3 class="tab-title">Object Types <span class="badge status-default }}">{{ objects|length }}</span></h3>
-                <div class="tab-content">
-                    {{ objects_table(collector.endpoint, objects) }}
-                </div>
+        <div class="tab">
+            <h3 class="tab-title">Input Object Types <span class="badge status-default }}">{{ inputObjects|length }}</span></h3>
+            <div class="tab-content">
+                {{ objects_table(collector, inputObjects) }}
             </div>
+        </div>
 
-            <div class="tab">
-                <h3 class="tab-title">Input Object Types <span class="badge status-default }}">{{ inputObjects|length }}</span></h3>
-                <div class="tab-content">
-                    {{ objects_table(endpoint, inputObjects) }}
-                </div>
-            </div>
-
-            <div class="tab">
-                <h3 class="tab-title">Interfaces <span class="badge status-default }}">{{ interfaces|length }}</span></h3>
-                <div class="tab-content">
-                    {{ objects_table(endpoint, interfaces) }}
-                </div>
+        <div class="tab">
+            <h3 class="tab-title">Interfaces <span class="badge status-default }}">{{ interfaces|length }}</span></h3>
+            <div class="tab-content">
+                {{ objects_table(collector, interfaces) }}
             </div>
         </div>
     {% else %}
@@ -137,7 +135,10 @@
     {% endif %}
 {% endblock %}
 
-{% macro operations_table(endpoint, operations) %}
+{% macro operations_table(collector, operations) %}
+    {# @var collector \Ynlo\GraphQLBundle\DataCollector\GraphQLDataCollector #}
+    {# @var endpoint \Ynlo\GraphQLBundle\Definition\Registry\Endpoint #}
+    {% set endpoint = collector.endpoint %}
     {% from '@YnloGraphQL/data_collector/template.html.twig' import fields_table, link_type, plugins_table %}
     <table class="logs">
         <thead>
@@ -149,15 +150,15 @@
         <tbody>
         {% for operation in operations %}
             {% set id = random() %}
-            <tr>
-                <th class="font-normal" scope="row">
+            <tr class="{{ collector.operationAvailable(operation) ? '' : 'status-error' }}">
+                <td class="font-normal" scope="row">
                     <a name="{{ operation.name }}"
                        class="btn btn-link sf-toggle"
                        data-toggle-selector="#operation-{{ operation.name }}-{{ id }}"
                        data-toggle-alt-content="&#x25B2; {{ operation.name }}">
                         &#x25BC; {{ operation.name }}
                     </a>
-                </th>
+                </td>
                 <td>
                     {{ link_type(endpoint, operation.type) }}
                 </td>
@@ -194,7 +195,10 @@
     </table>
 {% endmacro %}
 
-{% macro objects_table(endpoint, objects) %}
+{% macro objects_table(collector, objects) %}
+    {# @var collector \Ynlo\GraphQLBundle\DataCollector\GraphQLDataCollector #}
+    {# @var endpoint \Ynlo\GraphQLBundle\Definition\Registry\Endpoint #}
+    {% set endpoint = collector.endpoint %}
     {% from '@YnloGraphQL/data_collector/template.html.twig' import fields_table, link_type, plugins_table %}
     <table>
         <thead>
@@ -207,15 +211,15 @@
         {# @var object \Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface #}
         {% for object in objects %}
             {% set id = random() %}
-            <tr>
-                <th class="font-normal" scope="row">
+            <tr class="{{ collector.typeAvailable(object) ? '' : 'status-error' }}">
+                <td class="font-normal" scope="row">
                     <a name="{{ object.name }}"
                        class="btn btn-link sf-toggle"
                        data-toggle-selector="#details-{{ object.name }}-{{ id }}"
                        data-toggle-alt-content="&#x25B2; {{ object.name }}">&#x25BC;
                         {{ object.name }}
                     </a>
-                </th>
+                </td>
                 <td>
                     {{ object.class }}
                     <div id="details-{{ object.name }}-{{ id }}" class="context sf-toggle-content sf-toggle-hidden">

@@ -14,9 +14,12 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\DataCollector\DataCollector;
 use Symfony\Component\VarDumper\Cloner\Data;
+use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
+use Ynlo\GraphQLBundle\Definition\MutationDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
+use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Extension\EndpointNotValidException;
@@ -33,11 +36,6 @@ class GraphQLDataCollector extends DataCollector
      * @var EndpointResolver
      */
     protected $endpointResolver;
-
-    /**
-     * @var Endpoint
-     */
-    protected $endpoint;
 
     /**
      * GraphQLDataCollector constructor.
@@ -74,13 +72,27 @@ class GraphQLDataCollector extends DataCollector
     {
         try {
             $name = $this->endpointResolver->resolveEndpoint($request);
-            $this->endpoint = $this->registry->getEndpoint($name);
             $this->data = [
-                'endpoint' => $this->endpoint,
+                'defaultEndpoint' => $this->registry->getEndpoint(),
+                'endpoint' => $this->registry->getEndpoint($name),
             ];
         } catch (EndpointNotValidException $exception) {
             //do nothing
         }
+    }
+
+    public function isOperationAvailable(QueryDefinition $definition)
+    {
+        if ($definition instanceof MutationDefinition) {
+            return $this->data['endpoint']->hasMutation($definition->getName());
+        }
+
+        return $this->data['endpoint']->hasQuery($definition->getName());
+    }
+
+    public function isTypeAvailable(DefinitionInterface $definition)
+    {
+        return $this->data['endpoint']->hasType($definition->getName());
     }
 
     /**
@@ -88,7 +100,7 @@ class GraphQLDataCollector extends DataCollector
      */
     public function getEndpoint()
     {
-        return $this->data['endpoint'] ?? null;
+        return $this->data['defaultEndpoint'] ?? null;
     }
 
     public function isInputObject($definition)
