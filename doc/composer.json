@@ -16,6 +16,9 @@
     "preferred-install": "dist"
   },
   "scripts": {
-    "build": " cp ../CHANGELOG.md content/99_CHANGELOG.md | cp ../UPGRADE.md content/98_UPGRADE.md | bin/daux generate -s content"
+    "copy_changelog" : "cp ../CHANGELOG.md content/99_CHANGELOG.md",
+    "copy_upgrade" : "cp ../UPGRADE.md content/98_UPGRADE.md",
+    "prepare":  "composer copy_changelog; composer copy_upgrade",
+    "build": "composer prepare; bin/daux generate -s content"
   }
 }

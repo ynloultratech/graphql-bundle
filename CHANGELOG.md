@@ -1,6 +1,3 @@
-CHANGELOG
-=========
-
 [1.1 - Unreleased]
 -----
  * Add `symfony4` support
@@ -21,10 +18,10 @@ CHANGELOG
  * Add support tu use CRUD extensions for real PHP interfaces without register a graphql interface type.
  * Removed `getPriority` method in CRUD extensions, must use service tag priority instead. 
  * Add config to set custom labels for GraphiQL JWT Authentication form fields
- * fix GraphiQL CORS error when use the explorer in a different domain or subdomain
+ * fix GraphiQL CORS error when use the `explorer` in a different domain or subdomain
  * **[BC BREAK]** Change definitions "extensions" to "plugins" to avoid confusion with CRUD extensions
  * Add dataCollector to display helpful information in the web profiler
- * Add support to configure plugins using annotations instead of only arrays
+ * Add support to configure plugins using annotations, arrays are deprecated
  * Add support to use endpoints
  * Improve the schema cache warmer for dev environments
  * PHPUnit ApiTestCase has been deprecated in favor of Behat tests
