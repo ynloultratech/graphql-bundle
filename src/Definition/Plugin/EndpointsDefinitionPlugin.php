@@ -233,16 +233,33 @@ class EndpointsDefinitionPlugin extends AbstractDefinitionPlugin
     {
         $endpoints = $this->normalizeConfig($definition, $definition->getMeta('endpoints', []));
         if ($endpoints) {
-            foreach ($endpoints as $index => $endpointName) {
-                foreach ($this->endpointAlias as $alias => $targets) {
-                    if ($alias === $endpointName) {
-                        unset($endpoints[$index]);
-                        $endpoints = array_merge($endpoints, $targets);
-                    }
+            $endpoints = $this->endpointsAliasToRealNames($endpoints);
+        }
+
+        return empty($endpoints) || \in_array($endpoint->getName(), $endpoints);
+    }
+
+    /**
+     * Given array of endpoints (containing alias) return the array of specific endpoints (without aliases)
+     *
+     * ["all"] => ["admin", "frontend"]
+     *
+     * @param array $endpoints
+     *
+     * @return array
+     */
+    protected function endpointsAliasToRealNames($endpoints)
+    {
+        foreach ($endpoints as $index => $endpointName) {
+            foreach ($this->endpointAlias as $alias => $targets) {
+                if ($alias === $endpointName) {
+                    $targets = $this->endpointsAliasToRealNames($targets);
+                    unset($endpoints[$index]);
+                    $endpoints = array_merge($endpoints, $targets);
                 }
             }
         }
 
-        return empty($endpoints) || \in_array($endpoint->getName(), $endpoints);
+        return $endpoints;
     }
 }
