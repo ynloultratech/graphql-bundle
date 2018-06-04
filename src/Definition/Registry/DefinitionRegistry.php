@@ -20,6 +20,7 @@ use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Loader\DefinitionLoaderInterface;
 use Ynlo\GraphQLBundle\Definition\MetaAwareInterface;
 use Ynlo\GraphQLBundle\Definition\Plugin\DefinitionPluginInterface;
+use Ynlo\GraphQLBundle\Encoder\SimpleIDEncoder;
 use Ynlo\GraphQLBundle\Extension\EndpointNotValidException;
 
 /**

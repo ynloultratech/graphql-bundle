@@ -10,67 +10,65 @@
 
 namespace Ynlo\GraphQLBundle\Query\Node;
 
-use Doctrine\Common\Util\Inflector;
+use Doctrine\Common\Inflector\Inflector;
 use Doctrine\ORM\EntityRepository;
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Model\ID;
+use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
 
 /**
  * @GraphQL\Query(type="[]")
- * @GraphQL\Argument(name="ids", type="[ID!]!")
+ * @GraphQL\Argument(name="ids", type="[ID!]!", internalName="nodes")
  */
 class Nodes extends AbstractResolver
 {
     protected $fetchBy = 'id';
 
     /**
-     * @param ID[]|mixed[] $ids
+     * @param ID[]|mixed[] $nodes
      *
      * @return mixed
      */
-    public function __invoke($ids)
+    public function __invoke($nodes)
     {
-        if (empty($ids)) {
+        if (empty($nodes)) {
             return [];
         }
 
         $types = [];
         $expectedResultsOrder = [];
 
-        if (current($ids) instanceof ID) {
-            foreach ($ids as $id) {
-                $types[$id->getNodeType()][] = $id->getDatabaseId();
-                $expectedResultsOrder[md5($id->getNodeType().$id->getDatabaseId())] = null;
-            }
-        } else {
-            //when use a different field to fetch,
-            //@see QueryGet::fetchBy
-            $type = $this->getContext()->getDefinition()->getType();
+        if (current($nodes) instanceof NodeInterface) {
+            return $nodes;
+        }
 
-            /** @var FieldsAwareDefinitionInterface $objectDefinition */
-            $objectDefinition = $this->getContext()->getEndpoint()->getType($type);
+        //when use a different field to fetch,
+        //@see QueryGet::fetchBy
+        $type = $this->getContext()->getDefinition()->getType();
 
-            /** @var ArgumentDefinition $arg */
-            $arg = array_values($this->getContext()->getDefinition()->getArguments())[0];
+        /** @var FieldsAwareDefinitionInterface $objectDefinition */
+        $objectDefinition = $this->getContext()->getEndpoint()->getType($type);
 
-            $field = null;
-            if ($objectDefinition->hasField($arg->getName())) {
-                $field = $objectDefinition->getField($arg->getName());
-            } elseif ($objectDefinition->hasField(Inflector::singularize($arg->getName()))) { //by convention, singularize
-                $field = $objectDefinition->getField(Inflector::singularize($arg->getName()));
-            }
+        /** @var ArgumentDefinition $arg */
+        $arg = array_values($this->getContext()->getDefinition()->getArguments())[0];
 
-            if (null === $field) {
-                throw new \RuntimeException(sprintf('Can`t resolve the field `%s` inside type `%s`', $arg->getName(), $type));
-            }
+        $field = null;
+        if ($objectDefinition->hasField($arg->getName())) {
+            $field = $objectDefinition->getField($arg->getName());
+        } elseif ($objectDefinition->hasField(Inflector::singularize($arg->getName()))) { //by convention, singularize
+            $field = $objectDefinition->getField(Inflector::singularize($arg->getName()));
+        }
 
-            $types[$type] = $ids;
-            foreach ($ids as $identifier) {
-                $expectedResultsOrder[md5($type.$identifier)] = null;
-            }
+        if (null === $field) {
+            throw new \RuntimeException(sprintf('Can`t resolve the field `%s` inside type `%s`', $arg->getName(), $type));
+        }
+
+        $types[$type] = $nodes;
+        foreach ($nodes as $identifier) {
+            $expectedResultsOrder[md5($type.$identifier)] = null;
         }
 
         foreach ($types as $type => $searchValues) {

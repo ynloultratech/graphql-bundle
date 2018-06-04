@@ -305,3 +305,23 @@ services:
         arguments: ['@Ynlo\GraphQLBundle\Security\Authorization\AccessControlChecker']
         tags:
             - { name: 'kernel.event_subscriber' }
+
+    Ynlo\GraphQLBundle\Encoder\IDEncoderManager:
+        public: true
+        arguments: [''] #inject in the extension builder
+
+    Ynlo\GraphQLBundle\Encoder\SimpleIDEncoder:
+        arguments:
+            - '@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry'
+            - '@doctrine'
+
+    Ynlo\GraphQLBundle\Encoder\Base64IDEncoder:
+        arguments:
+            - '@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry'
+            - '@doctrine'
+
+    Ynlo\GraphQLBundle\Encoder\SecureIDEncoder:
+        arguments:
+            - '@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry'
+            - '@doctrine'
+            - '%kernel.secret%'

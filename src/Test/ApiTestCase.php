@@ -12,7 +12,6 @@
 namespace Ynlo\GraphQLBundle\Test;
 
 use Doctrine\Common\DataFixtures\ReferenceRepository;
-use Doctrine\Common\Util\ClassUtils;
 use PHPUnit\Util\Blacklist;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
@@ -29,6 +28,7 @@ use Ynlo\GraphQLBundle\Test\FixtureLoader\FixtureLoader;
 use Ynlo\GraphQLBundle\Test\Helper\DoctrineHelperTrait;
 use Ynlo\GraphQLBundle\Test\Helper\JsonHelperTrait;
 use Ynlo\GraphQLBundle\Test\Helper\ResponseHelperTrait;
+use Ynlo\GraphQLBundle\Util\IDEncoder;
 
 /**
  * @deprecated in favor of Behat tests
@@ -214,21 +214,23 @@ class ApiTestCase extends WebTestCase
             throw new \RuntimeException('Node type is required when use scalar ID as node');
         }
 
-        if ($node instanceof NodeInterface) {
-            $nodeType = static::getClient()
-                              ->getContainer()
-                              ->get(DefinitionRegistry::class)
-                              ->getEndpoint()
-                              ->getTypeForClass(ClassUtils::getClass($node));
+        if (!$node instanceof NodeInterface) {
+            $nodeClass = static::getClient()
+                               ->getContainer()
+                               ->get(DefinitionRegistry::class)
+                               ->getEndpoint()
+                               ->getClassForType($nodeType);
 
-            $node = $node->getId();
+            $node = self::getDoctrine()->getEntityManager()->getReference($nodeClass, $node);
         }
 
-        return ID::encode($nodeType, $node);
+        return IDEncoder::encode($node);
     }
 
     /**
      * Decode globalId to get type and real database id
+     *
+     * @deprecated since v1.1 use IDEncoder utility instead
      */
     protected static function decodeID(string $globalID): ID
     {

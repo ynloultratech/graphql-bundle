@@ -28,11 +28,11 @@ use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Events\GraphQLEvents;
 use Ynlo\GraphQLBundle\Events\GraphQLFieldEvent;
 use Ynlo\GraphQLBundle\Events\GraphQLFieldInfo;
-use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Type\Definition\EndpointAwareInterface;
 use Ynlo\GraphQLBundle\Type\Definition\EndpointAwareTrait;
 use Ynlo\GraphQLBundle\Type\Types;
+use Ynlo\GraphQLBundle\Util\IDEncoder;
 
 /**
  * Default resolver for all object fields
@@ -119,26 +119,11 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
             $value = $accessor->getValue($root, $originName);
         }
 
-        if (null !== $value && Types::ID === $fieldDefinition->getType()) {
+        if (null !== $value && Types::ID === $fieldDefinition->getType() && $root instanceof NodeInterface) {
             //ID are formed with base64 representation of the Types and real database ID
             //in order to create a unique and global identifier for each resource
             //@see https://facebook.github.io/relay/docs/graphql-object-identification.html
-            if (is_array($value)) {
-                foreach ($value as &$val) {
-                    if ($val instanceof ID) {
-                        $val = (string) $val;
-                    } else {
-                        $val = (string) new ID($this->definition->getName(), $val);
-                    }
-                }
-                unset($val);
-            } else {
-                if ($value instanceof ID) {
-                    $value = (string) $value;
-                } else {
-                    $value = (string) new ID($this->definition->getName(), $value);
-                }
-            }
+            $value = IDEncoder::encode($root);
         }
 
         if ($value instanceof Collection) {

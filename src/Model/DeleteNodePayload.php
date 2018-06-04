@@ -11,6 +11,7 @@
 namespace Ynlo\GraphQLBundle\Model;
 
 use Ynlo\GraphQLBundle\Annotation as API;
+use Ynlo\GraphQLBundle\Util\IDEncoder;
 
 /**
  * @API\ObjectType()
@@ -18,7 +19,7 @@ use Ynlo\GraphQLBundle\Annotation as API;
 class DeleteNodePayload
 {
     /**
-     * @var ID
+     * @var string
      *
      * @API\Field(type="ID!", description="ID of the node deleted on success")
      */
@@ -33,19 +34,19 @@ class DeleteNodePayload
 
     /**
      *
-     * @param ID          $id
-     * @param null|string $clientMutationId
+     * @param NodeInterface $node
+     * @param null|string   $clientMutationId
      */
-    public function __construct(ID $id, ?string $clientMutationId = null)
+    public function __construct(NodeInterface $node, ?string $clientMutationId = null)
     {
-        $this->id = $id;
+        $this->id = IDEncoder::encode($node);
         $this->clientMutationId = $clientMutationId;
     }
 
     /**
-     * @return ID
+     * @return string
      */
-    public function getId(): ID
+    public function getId(): string
     {
         return $this->id;
     }

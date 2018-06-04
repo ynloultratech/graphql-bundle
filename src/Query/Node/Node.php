@@ -11,34 +11,38 @@
 namespace Ynlo\GraphQLBundle\Query\Node;
 
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
-use Ynlo\GraphQLBundle\Model\ID;
+use Ynlo\GraphQLBundle\Error\NodeNotFoundException;
+use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
 
 /**
  * @GraphQL\Query(name="node")
- * @GraphQL\Argument(name="id", type="ID!")
+ * @GraphQL\Argument(name="id", type="ID!", internalName="node")
  */
 class Node extends AbstractResolver
 {
     protected $fetchBy = 'id';
 
     /**
-     * @param mixed $id
+     * @param mixed $node
      *
      * @return null|object
      */
-    public function __invoke($id)
+    public function __invoke($node)
     {
-        if ($id instanceof ID) {
-            $type = $id->getNodeType();
-            $searchValue = $id->getDatabaseId();
-        } else {
-            //when use a different field to fetch,
-            //@see QueryGet::fetchBy
-            $searchValue = $id;
-
-            $type = $this->getContext()->getNodeDefinition()->getName();
+        if (!$node) {
+            throw new NodeNotFoundException();
         }
+
+        if ($node instanceof NodeInterface) {
+            return $node;
+        }
+
+        //when use a different field to fetch,
+        //@see QueryGet::fetchBy
+        $searchValue = $node;
+
+        $type = $this->getContext()->getNodeDefinition()->getName();
 
         $entityClass = $this->getContext()->getEndpoint()->getClassForType($type);
 

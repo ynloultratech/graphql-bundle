@@ -14,8 +14,8 @@ use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\Client;
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
-use Ynlo\GraphQLBundle\Model\ID;
+use Ynlo\GraphQLBundle\Model\NodeInterface;
+use Ynlo\GraphQLBundle\Util\IDEncoder;
 
 /**
  * @method Client getClient()
@@ -46,18 +46,10 @@ trait DoctrineHelperTrait
      *
      * @param mixed $id
      *
-     * @return mixed
+     * @return NodeInterface
      */
     public static function findOneByGlobalId($id)
     {
-        $id = ID::createFromString($id);
-        $databaseId = $id->getDatabaseId();
-        $class = static::getClient()
-                       ->getContainer()
-                       ->get(DefinitionRegistry::class)
-                       ->getEndpoint()
-                       ->getClassForType($id->getNodeType());
-
-        return static::getRepository($class)->find($databaseId);
+        return IDEncoder::decode($id);
     }
 }

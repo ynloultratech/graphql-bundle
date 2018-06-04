@@ -13,9 +13,8 @@ namespace Ynlo\GraphQLBundle\Mutation;
 use GraphQL\Error\UserError;
 use Symfony\Component\Form\FormEvent;
 use Ynlo\GraphQLBundle\Error\NodeNotFoundException;
-use Ynlo\GraphQLBundle\Model\DeleteBatchNodePayload;
-use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
+use Ynlo\GraphQLBundle\Util\IDEncoder;
 use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
 
 /**
@@ -23,6 +22,11 @@ use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
  */
 class DeleteBatchNode extends AbstractMutationResolver
 {
+    /**
+     * @var array
+     */
+    protected $deletedRecords = [];
+
     /**
      * {@inheritdoc}
      */
@@ -34,6 +38,7 @@ class DeleteBatchNode extends AbstractMutationResolver
                 $extension->preDelete($item, $this, $this->context);
             }
 
+            $this->deletedRecords[] = clone $item; //clone required to avoid node without id after delete
             $this->getManager()->remove($item);
         }
 
@@ -52,14 +57,9 @@ class DeleteBatchNode extends AbstractMutationResolver
      */
     public function returnPayload($data, ConstraintViolationList $violations, $inputSource)
     {
-        $ids = [];
-        foreach ($inputSource['ids'] as $id) {
-            $ids[] = ID::createFromString($id);
-        }
-
         $class = $this->getPayloadClass();
 
-        return new $class($ids, $inputSource['clientMutationId'] ?? null);
+        return new $class($this->deletedRecords, $inputSource['clientMutationId'] ?? null);
     }
 
     /**

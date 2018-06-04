@@ -13,9 +13,8 @@ namespace Ynlo\GraphQLBundle\Behat\Fixtures;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Doctrine\Common\Util\ClassUtils;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
-use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
+use Ynlo\GraphQLBundle\Util\IDEncoder;
 
 class FixtureManager
 {
@@ -68,15 +67,7 @@ class FixtureManager
     {
         $fixture = $this->getFixture($name);
         if ($fixture instanceof NodeInterface) {
-            $nodeType = $this->kernel
-                ->getContainer()
-                ->get(DefinitionRegistry::class)
-                ->getEndpoint()
-                ->getTypeForClass(ClassUtils::getClass($fixture));
-
-            $id = $fixture->getId();
-
-            return ID::encode($nodeType, $id);
+            return IDEncoder::encode($fixture);
         }
 
         throw new \RuntimeException(

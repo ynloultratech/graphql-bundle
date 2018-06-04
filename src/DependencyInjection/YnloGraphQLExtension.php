@@ -16,6 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Ynlo\GraphQLBundle\Cache\DefinitionCacheWarmer;
+use Ynlo\GraphQLBundle\Encoder\IDEncoderManager;
 use Ynlo\GraphQLBundle\GraphiQL\JWTGraphiQLAuthentication;
 
 /**
@@ -71,6 +72,11 @@ class YnloGraphQLExtension extends Extension
         if (!$container->getParameter('kernel.debug')) {
             $container->getDefinition(DefinitionCacheWarmer::class)->clearTag('kernel.event_subscriber');
         }
+
+        //build the ID encoder manager with configured encoder
+        $container->getDefinition(IDEncoderManager::class)
+                  ->setPublic(true)
+                  ->replaceArgument(0, $container->getDefinition($config['id_encoder']));
     }
 
     /**

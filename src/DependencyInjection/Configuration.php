@@ -16,6 +16,7 @@ use GraphQL\Validator\Rules\QueryDepth;
 use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Ynlo\GraphQLBundle\Encoder\SecureIDEncoder;
 
 /**
  * Class Configuration
@@ -35,6 +36,7 @@ class Configuration implements ConfigurationInterface
         $this->configureGraphiQL($rootNode);
         $this->configureDefinition($rootNode);
         $this->configureSecurity($rootNode);
+        $this->configureOthers($rootNode);
 
         return $treeBuilder;
     }
@@ -281,5 +283,13 @@ Can be used to group multiple nodes or publish a node with a different group nam
         $validationRulesNode
             ->booleanNode('disable_introspection')
             ->defaultFalse();
+    }
+
+    private function configureOthers(NodeBuilder $rootNode)
+    {
+        $rootNode
+            ->scalarNode('id_encoder')
+            ->defaultValue(SecureIDEncoder::class)
+            ->info('Service used to encode nodes identifiers, must implements IDEncoderInterface');
     }
 }

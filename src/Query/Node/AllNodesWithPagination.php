@@ -132,11 +132,6 @@ class AllNodesWithPagination extends AllNodes
                     $qb->andWhere($qb->expr()->eq($entityField, (int) $value));
                     break;
                 case 'array':
-                    foreach ($value as &$val) {
-                        if ($val instanceof ID) {
-                            $val = (int) $val->getDatabaseId();
-                        }
-                    }
                     if (empty($value)) {
                         $qb->andWhere($qb->expr()->isNull($entityField));
                     } else {

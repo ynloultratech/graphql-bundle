@@ -11,6 +11,7 @@
 namespace Ynlo\GraphQLBundle\Model;
 
 use Ynlo\GraphQLBundle\Annotation as API;
+use Ynlo\GraphQLBundle\Util\IDEncoder;
 
 /**
  * @API\ObjectType()
@@ -18,7 +19,7 @@ use Ynlo\GraphQLBundle\Annotation as API;
 class DeleteBatchNodePayload
 {
     /**
-     * @var ID
+     * @var string[]
      *
      * @API\Field(type="[ID!]!", description="IDs of the node deleted on success")
      */
@@ -32,13 +33,15 @@ class DeleteBatchNodePayload
     public $clientMutationId;
 
     /**
-     *
-     * @param ID[]        $ids
-     * @param null|string $clientMutationId
+     * @param NodeInterface[] $nodes
+     * @param null|string     $clientMutationId
      */
-    public function __construct(array $ids, ?string $clientMutationId = null)
+    public function __construct($nodes, ?string $clientMutationId = null)
     {
-        $this->ids = $ids;
+        /** @var NodeInterface $node */
+        foreach ($nodes as $node) {
+            $this->ids[] = IDEncoder::encode($node);
+        }
         $this->clientMutationId = $clientMutationId;
     }
 

@@ -19,8 +19,8 @@ use Symfony\Component\Validator\ConstraintViolation as SymfonyConstraintViolatio
 use Ynlo\GraphQLBundle\Events\GraphQLEvents;
 use Ynlo\GraphQLBundle\Events\GraphQLMutationEvent;
 use Ynlo\GraphQLBundle\Model\ConstraintViolation;
-use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
+use Ynlo\GraphQLBundle\Util\IDEncoder;
 use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
 
 /**
@@ -215,13 +215,7 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
     public function initialFormData($input)
     {
         if (is_array($input) && isset($input['id'])) {
-            $id = ID::createFromString($input['id']);
-            if ($this->context->getEndpoint()->hasType($id->getNodeType())) {
-                $class = $this->context->getEndpoint()->getClassForType($id->getNodeType());
-                if ($class) {
-                    return $this->getManager()->getRepository($class)->find($id->getDatabaseId());
-                }
-            }
+            return IDEncoder::decode($input['id']);
         }
 
         return null;

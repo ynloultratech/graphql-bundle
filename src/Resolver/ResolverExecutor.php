@@ -32,6 +32,7 @@ use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Extension\ExtensionsAwareInterface;
 use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Type\Types;
+use Ynlo\GraphQLBundle\Util\IDEncoder;
 
 /**
  * This resolver act as a middleware between the executableDefinition and final resolvers.
@@ -336,12 +337,12 @@ class ResolverExecutor implements ContainerAwareInterface
                 $idsArray = [];
                 foreach ($value as $id) {
                     if ($id) {
-                        $idsArray[] = ID::createFromString($id);
+                        $idsArray[] = IDEncoder::decode($id);
                     }
                 }
                 $value = $idsArray;
             } else {
-                $value = ID::createFromString($value);
+                $value = IDEncoder::decode($value);
             }
         }
 

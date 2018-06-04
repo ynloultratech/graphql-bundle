@@ -29,6 +29,8 @@
  * Add GraphQL event system to hook into field/operations before/after are resolved
  * Add AccessControl plugin to control access to object, fields and operations using Symfony security checker with expressions
  * Fix deprecation adviser on behat tests to display deprecation warnings correctly
+ * Added IDEncoder utility and support for custom ID Encoders
+ * Deprecated class `ID`, use IDEncoder utility to encode/decode globalId and nodes
  
 1.0.6 - 18-03-23
 ----

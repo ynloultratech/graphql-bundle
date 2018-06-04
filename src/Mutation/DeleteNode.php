@@ -12,8 +12,6 @@ namespace Ynlo\GraphQLBundle\Mutation;
 
 use Symfony\Component\Form\FormEvent;
 use Ynlo\GraphQLBundle\Error\NodeNotFoundException;
-use Ynlo\GraphQLBundle\Model\DeleteNodePayload;
-use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
 
@@ -23,6 +21,11 @@ use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
 class DeleteNode extends AbstractMutationResolver
 {
     /**
+     * @var NodeInterface
+     */
+    protected $deletedNode;
+
+    /**
      * {@inheritdoc}
      */
     public function process(&$data)
@@ -31,6 +34,8 @@ class DeleteNode extends AbstractMutationResolver
         foreach ($this->extensions as $extension) {
             $extension->preDelete($data, $this, $this->context);
         }
+
+        $this->deletedNode = clone $data; //clone required to avoid node without id after delete
 
         $this->getManager()->remove($data);
         $this->getManager()->flush();
@@ -49,7 +54,7 @@ class DeleteNode extends AbstractMutationResolver
         $class = $this->getPayloadClass();
 
         return new $class(
-            $inputSource['id'] ? ID::createFromString($inputSource['id']) : null,
+            $this->deletedNode,
             $inputSource['clientMutationId'] ?? null
         );
     }

@@ -51,7 +51,7 @@ class IDType extends AbstractType
      */
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        $transformer = new IDToNodeTransformer($this->em, $this->defRegistry->getEndpoint());
+        $transformer = new IDToNodeTransformer();
         $builder->addModelTransformer($transformer);
     }
 

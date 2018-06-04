@@ -10,13 +10,10 @@
 
 namespace Ynlo\GraphQLBundle\Form\DataTransformer;
 
-use Doctrine\Common\Util\ClassUtils;
-use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
-use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
-use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
+use Ynlo\GraphQLBundle\Util\IDEncoder;
 
 /**
  * Class IDToNodeTransformer
@@ -24,33 +21,11 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
 class IDToNodeTransformer implements DataTransformerInterface
 {
     /**
-     * @var EntityManagerInterface
-     */
-    private $em;
-
-    /**
-     * @var Endpoint
-     */
-    protected $endpoint;
-
-    /**
-     * IDToNodeTransformer constructor.
-     *
-     * @param EntityManagerInterface $em
-     * @param Endpoint               $endpoint
-     */
-    public function __construct(EntityManagerInterface $em, Endpoint $endpoint)
-    {
-        $this->em = $em;
-        $this->endpoint = $endpoint;
-    }
-
-    /**
      * Transforms an object (issue) to a string (number).
      *
      * @param NodeInterface|NodeInterface[] $node
      *
-     * @return string
+     * @return string|string[]
      */
     public function transform($node)
     {
@@ -60,6 +35,7 @@ class IDToNodeTransformer implements DataTransformerInterface
 
         if (\is_array($node) || $node instanceof \Traversable) {
             $ids = [];
+            /** @var array $node */
             foreach ($node as $n) {
                 $ids[] = $this->transform($n);
             }
@@ -67,15 +43,13 @@ class IDToNodeTransformer implements DataTransformerInterface
             return $ids;
         }
 
-        $nodeType = $this->endpoint->getTypeForClass(ClassUtils::getClass($node));
-
-        return ID::encode($nodeType, $node->getId());
+        return IDEncoder::encode($node);
     }
 
     /**
      * Transforms a string (id) to an object (node).
      *
-     * @param string|string[] $globalId
+     * @param string|string[]|mixed $globalId
      *
      * @return mixed
      *
@@ -89,21 +63,15 @@ class IDToNodeTransformer implements DataTransformerInterface
 
         if (\is_array($globalId)) {
             $nodes = [];
+            /** @var array $globalId */
             foreach ($globalId as $id) {
                 $nodes[] = $this->reverseTransform($id);
             }
 
             return $nodes;
         }
-        $id = ID::createFromString($globalId);
 
-        if (!$id || !$id->getNodeType() || !$this->endpoint->hasType($id->getNodeType())) {
-            return null;
-        }
-
-        $node = $this->em
-            ->getRepository($this->endpoint->getClassForType($id->getNodeType()))
-            ->find($id->getDatabaseId());
+        $node = IDEncoder::decode($globalId);
 
         if (null === $node) {
             // causes a validation error
@@ -112,7 +80,7 @@ class IDToNodeTransformer implements DataTransformerInterface
             throw new TransformationFailedException(
                 sprintf(
                     'An node with id "%s" does not exist!',
-                    $id
+                    $globalId
                 )
             );
         }
