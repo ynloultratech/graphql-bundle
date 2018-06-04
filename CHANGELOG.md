@@ -28,6 +28,7 @@
  * Add support to use JWT authentication on Behat tests
  * Add GraphQL event system to hook into field/operations before/after are resolved
  * Add AccessControl plugin to control access to object, fields and operations using Symfony security checker with expressions
+ * Fix deprecation adviser on behat tests to display deprecation warnings correctly
  
 1.0.6 - 18-03-23
 ----

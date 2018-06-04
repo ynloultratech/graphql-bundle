@@ -46,11 +46,6 @@ class DeprecationAdviser implements EventSubscriberInterface
      */
     public function dump()
     {
-        echo (string) $this;
-    }
-
-    public function __toString(): string
-    {
         $message = '';
         if (!empty($this->warnings)) {
             uasort(
@@ -66,7 +61,7 @@ class DeprecationAdviser implements EventSubscriberInterface
 
             foreach ($this->warnings as $message => $warnings) {
                 $count = count($warnings);
-                $message .= sprintf("%sx: %s\n", $count, $message);
+                echo sprintf("%sx: %s\n", $count, $message);
             }
         }
 
