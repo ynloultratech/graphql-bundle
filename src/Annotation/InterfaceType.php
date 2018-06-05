@@ -34,7 +34,7 @@ final class InterfaceType
      *
      * @var string
      */
-    public $exclusionPolicy = ObjectDefinitionInterface::EXCLUDE_NONE;
+    public $exclusionPolicy = ObjectDefinitionInterface::EXCLUDE_ALL;
 
     /**
      * @var array
