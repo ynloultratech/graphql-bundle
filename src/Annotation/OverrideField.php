@@ -66,5 +66,15 @@ final class OverrideField
     /**
      * @var array
      */
+    public $in = [];
+
+    /**
+     * @var array
+     */
+    public $notIn = [];
+
+    /**
+     * @var array
+     */
     public $options = [];
 }
