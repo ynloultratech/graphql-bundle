@@ -16,6 +16,7 @@ use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\ProxyReferenceRepository;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Symfony\Component\DependencyInjection\ContainerInterface;
+use Symfony\Component\HttpKernel\Kernel;
 use Ynlo\GraphQLBundle\Test\FixtureLoader\DataPopulator\DataLoaderInterface;
 use Ynlo\GraphQLBundle\Test\FixtureLoader\DataPopulator\ORMDataLoader;
 use Ynlo\GraphQLBundle\Test\FixtureLoader\SchemaUpdater\ORMSQLite;
@@ -132,9 +133,18 @@ class FixtureLoader
                 $this->loadFixtureClass($loader, $className);
             }
         } else {
-            $bundles = $container->get('kernel')->getBundles();
+            $kernel = $container->get('kernel');
+            $bundles = $kernel->getBundles();
             foreach ($bundles as $bundle) {
                 $dir = $bundle->getPath().'/DataFixtures';
+                if (file_exists($dir)) {
+                    $loader->loadFromDirectory($dir);
+                }
+            }
+
+            //load symfony4 data fixtures
+            if (Kernel::VERSION_ID >= 40000) {
+                $dir = $kernel->getRootDir().'/DataFixtures';
                 if (file_exists($dir)) {
                     $loader->loadFromDirectory($dir);
                 }

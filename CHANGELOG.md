@@ -36,6 +36,7 @@
  * Add support to use custom `node` and/or `bundle` namespace in definitions
  * Add schema validation plugin to validate schema during compilation time
  * Add support to ignore implemented interfaces on objects and child interfaces
+ * Add support to load symfony4 data fixtures in path 'src/DataFixtures'
  
 1.0.6 - 18-03-23
 ----
