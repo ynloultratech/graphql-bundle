@@ -91,7 +91,7 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
         $objectDefinition->setDescription($annotation->description);
 
         if ($objectDefinition instanceof ImplementorInterface) {
-            $this->resolveDefinitionInterfaces($refClass, $objectDefinition, $endpoint);
+            $this->resolveDefinitionInterfaces($refClass, $objectDefinition, $endpoint, $annotation);
         }
 
         $this->loadInheritedProperties($refClass, $objectDefinition);
@@ -100,14 +100,19 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
     }
 
     /**
-     * @param \ReflectionClass     $refClass
-     * @param ImplementorInterface $implementor
-     * @param Endpoint             $endpoint
+     * @param \ReflectionClass      $refClass
+     * @param ImplementorInterface  $implementor
+     * @param Endpoint              $endpoint
+     * @param Annotation\ObjectType $annotation
      */
-    protected function resolveDefinitionInterfaces(\ReflectionClass $refClass, ImplementorInterface $implementor, Endpoint $endpoint)
+    protected function resolveDefinitionInterfaces(\ReflectionClass $refClass, ImplementorInterface $implementor, Endpoint $endpoint, Annotation\ObjectType $annotation)
     {
         $interfaceDefinitions = $this->extractInterfaceDefinitions($refClass);
         foreach ($interfaceDefinitions as $interfaceDefinition) {
+            if (in_array($interfaceDefinition->getName(), $annotation->ignoreInterface)) {
+                continue;
+            }
+
             $implementor->addInterface($interfaceDefinition->getName());
 
             if (!$endpoint->hasType($interfaceDefinition->getName())) {
@@ -127,8 +132,13 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
         foreach ($interfaceDefinitions as $interfaceDefinition) {
             if ($interfaceDefinition->getClass()) {
                 $childInterface = new \ReflectionClass($interfaceDefinition->getClass());
+                /** @var Annotation\InterfaceType $interface */
+                $interface = $this->reader->getClassAnnotation($childInterface, Annotation\InterfaceType::class);
                 $parentDefinitions = $this->extractInterfaceDefinitions($childInterface);
                 foreach ($parentDefinitions as $parentDefinition) {
+                    if (in_array($parentDefinition->getName(), $interface->ignoreParent)) {
+                        continue;
+                    }
                     $this->copyFieldsFromInterface($parentDefinition, $interfaceDefinition);
                     if ($endpoint->hasType($parentDefinition->getName())) {
                         $existentParentDefinition = $endpoint->getType($parentDefinition->getName());

@@ -47,6 +47,17 @@ final class InterfaceType
     public $discriminatorProperty;
 
     /**
+     * When a interface extends from another interface in PHP but you need ignore this
+     * second interface in the list of implemented interfaces in graphql.
+     * For example when the interface is implemented partially
+     * or the object is part of polymorphic object and other object in the graph
+     * is using the interface instead of this.
+     *
+     * @var array
+     */
+    public $ignoreParent = [];
+
+    /**
      * @var array
      */
     public $options = [];

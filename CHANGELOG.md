@@ -35,6 +35,7 @@
  * Add support for polymorphic objects, creating interface and different object in the same or different classes
  * Add support to use custom `node` and/or `bundle` namespace in definitions
  * Add schema validation plugin to validate schema during compilation time
+ * Add support to ignore implemented interfaces on objects and child interfaces
  
 1.0.6 - 18-03-23
 ----

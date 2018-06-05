@@ -38,6 +38,17 @@ final class ObjectType
     public $exclusionPolicy = ObjectDefinitionInterface::EXCLUDE_NONE;
 
     /**
+     * When the object implements a interface in PHP but you need ignore this
+     * interface in the list of implemented interfaces in graphql.
+     * For example when the interface is implemented partially
+     * or the object is part of polymorphic object and other object in the graph
+     * is using the interface instead of this.
+     *
+     * @var array
+     */
+    public $ignoreInterface = [];
+
+    /**
      * @var array
      */
     public $options = [];

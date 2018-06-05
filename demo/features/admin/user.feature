@@ -139,9 +139,13 @@ Feature: User
     And "{response.data.users.all.edges[0].node.isCurrent}" should be true
     And "{ search('data.users.all.edges[0].node.posts', response) }" should be null
     And "{ search('data.users.all.edges[0].node.fullName', response) }" should be null
+    And "{ search('data.users.all.edges[0].node.createdAt', response) }" should be null
+    And "{ search('data.users.all.edges[0].node.updatedAt', response) }" should be null
     And "{response.data.users.all.edges[1].node.__typename}" should be equal to "CommonUser"
     And "{response.data.users.all.edges[1].node.isCurrent}" should be false
     And "{ search('data.users.all.edges[1].node.posts', response) }" should not be null
+    And "{ search('data.users.all.edges[1].node.createdAt', response) }" should not be null
+    And "{ search('data.users.all.edges[1].node.updatedAt', response) }" should not be null
     And "{ search('data.users.all.edges[1].node.fullName', response) }" should be equal to "{@user1.getProfile().getFullName()}"
 
   Scenario: Admin users
@@ -150,6 +154,17 @@ Feature: User
     Then the response is OK
     And "{response.data.users.allAdmin.totalCount}" should be equal to "1"
     And "{response.data.users.allAdmin.edges[0].node.login}" should be equal to "admin"
+
+  Scenario: Try get invalid fields on admin users
+    Given the operation named "InvalidAdminUserFields"
+    When send
+    Then the response is GraphQL error with "Cannot query field"
+    And "{response.errors[0].message}" should contains "Cannot query field"
+    And "{response.errors[0].message}" should contains "createdAt"
+    And "{response.errors[0].message}" should contains "AdminUser"
+    And "{response.errors[1].message}" should contains "Cannot query field"
+    And "{response.errors[1].message}" should contains "updatedAt"
+    And "{response.errors[1].message}" should contains "AdminUser"
 
 
 

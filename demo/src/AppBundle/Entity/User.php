@@ -30,10 +30,11 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  *  exclusionPolicy="ALL",
  *  discriminatorProperty="type",
  *  discriminatorMap={"USER":"CommonUser", "ADMIN":"AdminUser"},
+ *  ignoreParent={"Timestampable"},
  *  options={
  *     @GraphQL\Plugin\Endpoints({"admin"})
  * })
- * @GraphQL\ObjectType(name="AdminUser", exclusionPolicy="ALL")
+ * @GraphQL\ObjectType(name="AdminUser", exclusionPolicy="ALL", ignoreInterface={"Timestampable"})
  * @GraphQL\ObjectType(name="CommonUser", exclusionPolicy="ALL")
  * @GraphQL\QueryList()
  * @GraphQL\MutationAdd()

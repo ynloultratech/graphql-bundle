@@ -46,6 +46,8 @@ query UsersByType {
                     }
                     ... on CommonUser {
                         fullName
+                        createdAt
+                        updatedAt
                         posts(first: 2) {
                             edges {
                                 node {
@@ -67,6 +69,21 @@ query AdminUsers{
             edges{
                 node{
                     login
+                }
+            }
+        }
+    }
+}
+
+query InvalidAdminUserFields{
+    users{
+        allAdmin(first:10){
+            totalCount
+            edges{
+                node{
+                    login
+                    createdAt
+                    updatedAt
                 }
             }
         }
