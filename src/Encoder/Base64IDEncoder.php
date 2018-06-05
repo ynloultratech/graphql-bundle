@@ -27,6 +27,6 @@ class Base64IDEncoder extends SimpleIDEncoder
      */
     public function decode($globalId): ?NodeInterface
     {
-        return parent::decode(base64_encode($globalId));
+        return parent::decode(base64_decode($globalId));
     }
 }
