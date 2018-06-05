@@ -123,7 +123,9 @@ class DefinitionRegistry
      */
     public function clearCache()
     {
+        @unlink($this->cacheFileName('default.raw'));
         foreach ($this->endpointsConfig as $name => $config) {
+            unset(self::$endpoints[$name]);
             @unlink($this->cacheFileName($name));
             $this->initialize($name);
         }

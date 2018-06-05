@@ -101,8 +101,9 @@ class DefinitionCacheWarmer extends CacheWarmer implements EventSubscriberInterf
             $dirs[] = $this->kernel->getRootDir().'/../src';
         }
 
+        /** @var iterable $files */
         $files = Finder::create()
-                       ->in($dirs[1])
+                       ->in($dirs)
                        ->date(sprintf('>= %s', date('Y-m-d H:i:s', $controlTime)))
                        ->files();
 
