@@ -255,6 +255,12 @@ services:
         tags:
             - { name: 'graphql.definition_plugin', priority: -190}
 
+    Ynlo\GraphQLBundle\Definition\Plugin\SchemaValidatorDefinitionPlugin:
+        public: true
+        arguments: ['@graphql.security.authorization_checker']
+        tags:
+            - { name: 'graphql.definition_plugin', priority: -250}
+
     Ynlo\GraphQLBundle\Definition\Plugin\NamespaceDefinitionPlugin:
         public: true
         arguments: ['%graphql.plugin_config.namespaces%']

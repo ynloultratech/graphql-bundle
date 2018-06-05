@@ -34,6 +34,7 @@
  * Add support to define multiple types in the same class and filter fields using `in` and `notIn`
  * Add support for polymorphic objects, creating interface and different object in the same or different classes
  * Add support to use custom `node` and/or `bundle` namespace in definitions
+ * Add schema validation plugin to validate schema during compilation time
  
 1.0.6 - 18-03-23
 ----
