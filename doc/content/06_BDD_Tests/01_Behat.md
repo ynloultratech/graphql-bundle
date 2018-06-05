@@ -45,14 +45,23 @@ where the only that you need is change some placeholders, almost magical ;)
  
 # Requirements
 
-You must install the following requirements with composer to start using behat tests:
+Must install the following requirements with composer to start using behat tests:
 
 - `behat/behat`: **Required**, is the core of Behat
 - `behat/symfony2-extension`: **Required**, integrate behat with symfony
 - `phpunit/phpunit`: **Required** The Assert tool is used for assertions
+- `symfony/browser-kit`: **Required** The client library to make requests
 - `doctrine/doctrine-fixtures-bundle`: **Optional**, if you want to create test fixtures
-- `fzaninotto/faker`: **Optional**, 
+- `fzaninotto/faker`: **Optional**, if you want to create fake data in your fixtures
 
+Install requirements in one step:
+
+    composer require behat/behat=^3.4 behat/symfony2-extension=^2.1 "phpunit/phpunit=^6.0|^7.0" symfony/browser-kit=^4.0 --dev
+
+Install optionals in one step:
+
+    composer require doctrine/doctrine-fixtures-bundle=^2.4 fzaninotto/faker=^1.7 --dev
+    
 # Configuration
 
 Create a file called `behat.yml` with the following configuration 
