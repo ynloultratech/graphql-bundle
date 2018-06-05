@@ -39,6 +39,7 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  * @GraphQL\MutationAdd()
  * @GraphQL\MutationUpdate()
  * @GraphQL\MutationDelete()
+ * @GraphQL\VirtualField(name="fullName", type="string", expression="this.getProfile().getFullName()", in={"CommonUser"})
  */
 class User extends BaseUser implements NodeInterface, TimestampableInterface
 {

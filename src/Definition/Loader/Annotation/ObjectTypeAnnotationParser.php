@@ -325,28 +325,17 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
         }
 
         //load virtual fields
-        foreach ($this->reader->getClassAnnotations($refClass) as $annotation) {
-            if (!$annotation instanceof Annotation\VirtualField) {
-                continue;
-            }
-
-            if ($objectDefinition->hasField($annotation->name)) {
-                if (FieldExpressionResolver::class === $objectDefinition->getField($annotation->name)->getResolver()) {
-                    continue;
-                }
-
-                throw new \InvalidArgumentException(sprintf(
-                    'The object definition "%s" already has a field called "%s".',
-                    $objectDefinition->getName(),
-                    $annotation->name
-                ));
-            }
-        }
-
-        //load virtual fields
         $annotations = $this->reader->getClassAnnotations($refClass);
         foreach ($annotations as $annotation) {
             if ($annotation instanceof Annotation\VirtualField) {
+                if ($annotation->in && !\in_array($objectDefinition->getName(), $annotation->in)) {
+                    continue;
+                }
+
+                if ($annotation->notIn && \in_array($objectDefinition->getName(), $annotation->notIn)) {
+                    continue;
+                }
+
                 if (!$objectDefinition->hasField($annotation->name)) {
                     $fieldDefinition = new FieldDefinition();
                     $fieldDefinition->setName($annotation->name);

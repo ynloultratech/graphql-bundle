@@ -138,9 +138,11 @@ Feature: User
     And "{response.data.users.all.edges[0].node.__typename}" should be equal to "AdminUser"
     And "{response.data.users.all.edges[0].node.isCurrent}" should be true
     And "{ search('data.users.all.edges[0].node.posts', response) }" should be null
+    And "{ search('data.users.all.edges[0].node.fullName', response) }" should be null
     And "{response.data.users.all.edges[1].node.__typename}" should be equal to "CommonUser"
     And "{response.data.users.all.edges[1].node.isCurrent}" should be false
     And "{ search('data.users.all.edges[1].node.posts', response) }" should not be null
+    And "{ search('data.users.all.edges[1].node.fullName', response) }" should be equal to "{@user1.getProfile().getFullName()}"
 
   Scenario: Admin users
     Given the operation named "AdminUsers"

@@ -45,6 +45,7 @@ query UsersByType {
                         login
                     }
                     ... on CommonUser {
+                        fullName
                         posts(first: 2) {
                             edges {
                                 node {
