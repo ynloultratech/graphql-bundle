@@ -21,7 +21,6 @@ use Ynlo\GraphQLBundle\Definition\NodeAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
-use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Resolver\EmptyObjectResolver;
 
 /**
@@ -42,10 +41,13 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
      */
     public function buildConfig(ArrayNodeDefinition $root): void
     {
-        $root
+        $config = $root
             ->info('Enable/Disable namespace for queries and mutations')
             ->canBeDisabled()
             ->children();
+
+        $config->scalarNode('node');
+        $config->scalarNode('bundle');
     }
 
     /**
@@ -99,6 +101,9 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
                 }
             }
         }
+
+        $node = $config['node'] ?? $node;
+        $bundle = $config['bundle'] ?? $bundle;
 
         if ($bundle || $node) {
             $definition->setMeta('namespace', ['bundle' => $bundle, 'node' => $node]);

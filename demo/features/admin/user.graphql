@@ -57,3 +57,16 @@ query UsersByType {
         }
     }
 }
+
+query AdminUsers{
+    users{
+        allAdmin(first:10){
+            totalCount
+            edges{
+                node{
+                    login
+                }
+            }
+        }
+    }
+}

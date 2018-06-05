@@ -33,6 +33,7 @@
  * Deprecated class `ID`, use IDEncoder utility to encode/decode globalId and nodes
  * Add support to define multiple types in the same class and filter fields using `in` and `notIn`
  * Add support for polymorphic objects, creating interface and different object in the same or different classes
+ * Add support to use custom `node` and/or `bundle` namespace in definitions
  
 1.0.6 - 18-03-23
 ----

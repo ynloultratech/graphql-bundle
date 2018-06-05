@@ -8,7 +8,7 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Demo\AppBundle\Query\User;
+namespace Ynlo\GraphQLBundle\Demo\AppBundle\Query\AdminUser;
 
 use Doctrine\ORM\QueryBuilder;
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
@@ -16,12 +16,12 @@ use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\User;
 use Ynlo\GraphQLBundle\Query\Node\AllNodesWithPagination;
 
 /**
- * @GraphQL\Query(type="[]", options={
+ * @GraphQL\Query(type="[AdminUser]", options={
  *     @GraphQL\Plugin\Pagination(limit=30),
- *     @GraphQL\Plugin\Endpoints("aa")
+ *     @GraphQL\Plugin\Namespaces(node="User")
  * })
  */
-class Admins extends AllNodesWithPagination
+class AllAdminUser extends AllNodesWithPagination
 {
     /**
      * {@inheritdoc}

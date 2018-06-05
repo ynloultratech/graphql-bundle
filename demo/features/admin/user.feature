@@ -139,3 +139,13 @@ Feature: User
     And "{ search('data.users.all.edges[0].node.posts', response) }" should be null
     And "{response.data.users.all.edges[1].node.__typename}" should be equal to "CommonUser"
     And "{ search('data.users.all.edges[1].node.posts', response) }" should not be null
+
+  Scenario: Admin users
+    Given the operation named "AdminUsers"
+    When send
+    Then the response is OK
+    And "{response.data.users.allAdmin.totalCount}" should be equal to "1"
+    And "{response.data.users.allAdmin.edges[0].node.login}" should be equal to "admin"
+
+
+

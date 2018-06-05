@@ -21,6 +21,16 @@ class Namespaces extends PluginConfigAnnotation
     public $enabled;
 
     /**
+     * @var string
+     */
+    public $node;
+
+    /**
+     * @var string
+     */
+    public $bundle;
+
+    /**
      * {@inheritdoc}
      */
     public function getName(): string
