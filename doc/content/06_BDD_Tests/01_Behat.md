@@ -86,6 +86,32 @@ root
     bootstrap
       FeatureContext.php
 ````
+
+Update `FeatureContext.php` to extends from `ApiContext`:
+
+````php
+<?php
+
+use Ynlo\GraphQLBundle\Behat\Context\ApiContext;
+
+/**
+ * Defines application features from the specific context.
+ */
+class FeatureContext extends ApiContext
+{
+    /**
+     * Initializes context.
+     *
+     * Every scenario gets its own context instance.
+     * You can also pass arbitrary arguments to the
+     * context constructor through behat.yml.
+     */
+    public function __construct()
+    {
+    }
+}
+````
+
 Create your first feature inside the `features` folder:
 ````gherkin
 # features/node.feature
