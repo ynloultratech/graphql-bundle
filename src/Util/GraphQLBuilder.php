@@ -13,10 +13,50 @@ namespace Ynlo\GraphQLBundle\Util;
 use GraphQL\Type\Definition\Type;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 use Ynlo\GraphQLBundle\Definition\ArgumentAwareInterface;
+use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 
 class GraphQLBuilder
 {
+    public static function resolveFields(FieldsAwareDefinitionInterface $definition): array
+    {
+        $fields = [];
+        foreach ($definition->getFields() as $fieldDefinition) {
+            try {
+                $type = TypeRegistry::get($fieldDefinition->getType());
+            } catch (\UnexpectedValueException $exception) {
+                $msg = sprintf(
+                    'The property "%s" of object "%s" does not have valid type. %s',
+                    $fieldDefinition->getName(),
+                    $definition->getName(),
+                    $exception->getMessage()
+                );
+                throw new \RuntimeException($msg);
+            }
+
+            if ($fieldDefinition->isList()) {
+                if ($fieldDefinition->isNonNullList()) {
+                    $type = Type::nonNull($type);
+                }
+                $type = Type::listOf($type);
+            }
+
+            if ($fieldDefinition->isNonNull()) {
+                $type = Type::nonNull($type);
+            }
+
+            $fields[$fieldDefinition->getName()] = [
+                'type' => $type,
+                'description' => $fieldDefinition->getDescription(),
+                'deprecationReason' => $fieldDefinition->getDeprecationReason(),
+                'args' => GraphQLBuilder::buildArguments($fieldDefinition),
+                'complexity' => GraphQLBuilder::buildComplexityFn($fieldDefinition->getComplexity()),
+            ];
+        }
+
+        return $fields;
+    }
+
     public static function buildArguments(ArgumentAwareInterface $argumentAware): array
     {
         $args = [];

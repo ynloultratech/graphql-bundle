@@ -32,3 +32,28 @@ query UsersByLogin($logins: [String!]!){
         }
     }
 }
+
+query UsersByType {
+    users {
+        all(first: 5) {
+            edges {
+                node {
+                    __typename
+                    id
+                    ... on AdminUser {
+                        login
+                    }
+                    ... on CommonUser {
+                        posts(first: 2) {
+                            edges {
+                                node {
+                                    title
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}

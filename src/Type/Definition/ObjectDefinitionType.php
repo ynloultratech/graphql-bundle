@@ -12,7 +12,6 @@ namespace Ynlo\GraphQLBundle\Type\Definition;
 
 use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
-use GraphQL\Type\Definition\Type;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
@@ -38,8 +37,8 @@ class ObjectDefinitionType extends ObjectType implements
             [
                 'name' => $definition->getName(),
                 'description' => $definition->getDescription(),
-                'fields' => function () {
-                    return $this->resolveFields();
+                'fields' => function () use ($definition) {
+                    return GraphQLBuilder::resolveFields($definition);
                 },
                 'interfaces' => function () {
                     return $this->resolveInterfaces();
@@ -54,54 +53,9 @@ class ObjectDefinitionType extends ObjectType implements
                     );
 
                     return $resolver($root, $args, $context, $resolveInfo);
-                },
-                'isTypeOf' => function ($value, $context, ResolveInfo $info) {
-                    //TODO: implement this
-                },
+                }
             ]
         );
-    }
-
-    private function resolveFields(): array
-    {
-        $fields = [];
-        foreach ($this->definition->getFields() as $fieldDefinition) {
-            try {
-                if (!$fieldDefinition->getType()){
-                    print_r($fieldDefinition);exit;
-                }
-                $type = TypeRegistry::get($fieldDefinition->getType());
-            } catch (\UnexpectedValueException $exception) {
-                $msg = sprintf(
-                    'The property "%s" of object "%s" does not have valid type. %s',
-                    $fieldDefinition->getName(),
-                    $this->definition->getName(),
-                    $exception->getMessage()
-                );
-                throw new \RuntimeException($msg);
-            }
-
-            if ($fieldDefinition->isList()) {
-                if ($fieldDefinition->isNonNullList()) {
-                    $type = Type::nonNull($type);
-                }
-                $type = Type::listOf($type);
-            }
-
-            if ($fieldDefinition->isNonNull()) {
-                $type = Type::nonNull($type);
-            }
-
-            $fields[$fieldDefinition->getName()] = [
-                'type' => $type,
-                'description' => $fieldDefinition->getDescription(),
-                'deprecationReason' => $fieldDefinition->getDeprecationReason(),
-                'args' => GraphQLBuilder::buildArguments($fieldDefinition),
-                'complexity' => GraphQLBuilder::buildComplexityFn($fieldDefinition->getComplexity()),
-            ];
-        }
-
-        return $fields;
     }
 
     private function resolveInterfaces(): array

@@ -26,10 +26,15 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
  *
  * @UniqueEntity(fields={"username"}, message="The username <b>{{ value }}</b> is already taken")
  *
- * @GraphQL\ObjectType(exclusionPolicy="ALL",
+ * @GraphQL\InterfaceType(
+ *  exclusionPolicy="ALL",
+ *  discriminatorProperty="type",
+ *  discriminatorMap={"USER":"CommonUser", "ADMIN":"AdminUser"},
  *  options={
  *     @GraphQL\Plugin\Endpoints({"admin"})
  * })
+ * @GraphQL\ObjectType(name="AdminUser", exclusionPolicy="ALL")
+ * @GraphQL\ObjectType(name="CommonUser", exclusionPolicy="ALL")
  * @GraphQL\QueryList()
  * @GraphQL\MutationAdd()
  * @GraphQL\MutationUpdate()
@@ -79,8 +84,6 @@ class User extends BaseUser implements NodeInterface, TimestampableInterface
      * @var string
      *
      * @ORM\Column(name="type", type="string")
-     *
-     * @GraphQL\Expose()
      */
     protected $type = self::TYPE_USER;
 
@@ -102,6 +105,7 @@ class User extends BaseUser implements NodeInterface, TimestampableInterface
      * @ORM\OneToMany(targetEntity="Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Post", mappedBy="author", fetch="EXTRA_LAZY")
      *
      * @GraphQL\Expose()
+     * @GraphQL\Field(notIn={"CommonUser"})
      */
     protected $posts;
 
@@ -119,37 +123,6 @@ class User extends BaseUser implements NodeInterface, TimestampableInterface
     public function setType(string $type)
     {
         $this->type = $type;
-    }
-
-    /**
-     * @return bool
-     *
-     * @GraphQL\Field(type="bool")
-     */
-    public function isAdmin(): bool
-    {
-        return $this->getType() === self::TYPE_ADMIN;
-    }
-
-    /**
-     * @return bool
-     *
-     * @GraphQL\Field(type="bool")
-     * @GraphQL\Argument(name="type", type="string!")
-     */
-    public function is($type): bool
-    {
-        return $this->getType() === $type;
-    }
-
-    /**
-     * @return bool
-     *
-     * @GraphQL\Field(type="bool")
-     */
-    public function isNormalUser(): bool
-    {
-        return $this->getType() === self::TYPE_USER;
     }
 
     /**

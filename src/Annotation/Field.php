@@ -51,6 +51,22 @@ final class Field
     public $roles = [];
 
     /**
+     * Use this field only for given types
+     * helpful for polymorphic objects
+     *
+     * @var array
+     */
+    public $in = [];
+
+    /**
+     * Does not use this field for given types
+     * helpful for polymorphic objects
+     *
+     * @var array
+     */
+    public $notIn = [];
+
+    /**
      * @var array
      */
     public $options = [];

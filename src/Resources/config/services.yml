@@ -228,6 +228,11 @@ services:
         tags:
             - { name: 'graphql.definition_plugin'}
 
+#    Ynlo\GraphQLBundle\Definition\Plugin\PolymorphicDefinitionPlugin:
+#        public: true
+#        tags:
+#            - { name: 'graphql.definition_plugin', priority: -200 }
+
     Ynlo\GraphQLBundle\Definition\Plugin\EndpointsDefinitionPlugin:
         public: true
         arguments: ['%graphql.endpoints%']

@@ -31,6 +31,8 @@
  * Fix deprecation adviser on behat tests to display deprecation warnings correctly
  * Added IDEncoder utility and support for custom ID Encoders
  * Deprecated class `ID`, use IDEncoder utility to encode/decode globalId and nodes
+ * Add support to define multiple types in the same class and filter fields using `in` and `notIn`
+ * Add support for polymorphic objects, creating interface and different object in the same or different classes
  
 1.0.6 - 18-03-23
 ----

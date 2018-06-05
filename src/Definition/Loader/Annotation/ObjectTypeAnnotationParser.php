@@ -121,7 +121,7 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
         }
 
         //support interface inheritance
-        //Interface inheritance is implemented in GraphQL
+        //Interface inheritance is not implemented in GraphQL
         //@see https://github.com/facebook/graphql/issues/295
         //BUT, GraphQLBundle use this feature in some places like extensions etc.
         foreach ($interfaceDefinitions as $interfaceDefinition) {
@@ -129,6 +129,7 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
                 $childInterface = new \ReflectionClass($interfaceDefinition->getClass());
                 $parentDefinitions = $this->extractInterfaceDefinitions($childInterface);
                 foreach ($parentDefinitions as $parentDefinition) {
+                    $this->copyFieldsFromInterface($parentDefinition, $interfaceDefinition);
                     if ($endpoint->hasType($parentDefinition->getName())) {
                         $existentParentDefinition = $endpoint->getType($parentDefinition->getName());
                         if ($existentParentDefinition instanceof InterfaceDefinition) {
@@ -158,6 +159,12 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
             $currentClass = $currentClass->getParentClass();
         }
 
+        //current class can be a object and interface at the same time,
+        //When use different object types using discriminator map
+        if ($this->reader->getClassAnnotation($refClass, Annotation\InterfaceType::class)) {
+            $int[] = $refClass;
+        }
+
         $definitions = [];
         foreach ($int as $intRef) {
             /** @var Annotation\InterfaceType $intAnnot */
@@ -170,15 +177,16 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
                 $intDef = new InterfaceDefinition();
                 $intDef->setName($intAnnot->name);
                 $intDef->setClass($intRef->getName());
-                $intDef->setMetas($intAnnot->options);
-                $intDef->setDescription($intAnnot->description);
 
-                // abstract classes use exclude all by default
-                // like interfaces require the inclusion of fields manually
-                if ($intRef->isAbstract()) {
-                    $intDef->setExclusionPolicy(ObjectDefinitionInterface::EXCLUDE_ALL);
+                if (!$intDef->getName() && preg_match('/\w+$/', $intRef->getName(), $matches)) {
+                    $intDef->setName(preg_replace('/Interface$/', null, $matches[0]));
                 }
 
+                $intDef->setMetas($intAnnot->options);
+                $intDef->setDescription($intAnnot->description);
+                $intDef->setDiscriminatorMap($intAnnot->discriminatorMap);
+                $intDef->setDiscriminatorProperty($intAnnot->discriminatorProperty);
+                $intDef->setExclusionPolicy($intAnnot->exclusionPolicy);
                 $this->resolveFields($intRef, $intDef);
                 if (!$intDef->getName() && preg_match('/\w+$/', $intRef->getName(), $matches)) {
                     $intDef->setName(preg_replace('/Interface$/', null, $matches[0]));
@@ -434,6 +442,16 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
             $exposed = false;
         } elseif (!$exposed && $this->getFieldAnnotation($prop, Annotation\Expose::class)) {
             $exposed = true;
+        }
+
+        /** @var Annotation\Field $fieldAnnotation */
+        if ($fieldAnnotation = $this->getFieldAnnotation($prop, Annotation\Field::class)) {
+            $exposed = true;
+            if ($fieldAnnotation->in) {
+                $exposed = \in_array($definition->getName(), $fieldAnnotation->in);
+            } elseif (($fieldAnnotation->notIn)) {
+                $exposed = !\in_array($definition->getName(), $fieldAnnotation->notIn);
+            }
         }
 
         if (!$exposed) {

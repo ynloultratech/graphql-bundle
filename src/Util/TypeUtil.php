@@ -10,7 +10,14 @@
 
 namespace Ynlo\GraphQLBundle\Util;
 
+use Doctrine\Common\Util\ClassUtils as DoctrineClassUtils;
 use Doctrine\Common\Util\Inflector;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Ynlo\GraphQLBundle\Definition\ClassAwareDefinitionInterface;
+use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
+use Ynlo\GraphQLBundle\Definition\PolymorphicDefinitionInterface;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Type\Types;
 
 /**
@@ -18,6 +25,84 @@ use Ynlo\GraphQLBundle\Type\Types;
  */
 final class TypeUtil
 {
+    /**
+     * Resolve the node type for given node instance
+     *
+     * @param Endpoint      $endpoint
+     * @param NodeInterface $node
+     *
+     * @return null|string
+     */
+    public static function resolveNodeType(Endpoint $endpoint, NodeInterface $node): ?string
+    {
+        $types = $endpoint->getTypesForClass(DoctrineClassUtils::getClass($node));
+
+        //if only one type for given node class return the type
+        if (count($types) === 1) {
+            return $types[0];
+        }
+
+        //in case of multiple types using polymorphic definitions
+        foreach ($types as $type) {
+            $definition = $endpoint->getType($type);
+            if ($definition instanceof PolymorphicDefinitionInterface) {
+                return self::resolveConcreteType($endpoint, $definition, $node);
+            }
+        }
+
+        //as fallback use the first type in the list
+        return $types[0];
+    }
+
+    /**
+     * Resolve the node type for given node instance when node use polymorphic definitions
+     *
+     * @param Endpoint                       $endpoint
+     * @param PolymorphicDefinitionInterface $definition
+     * @param string                         $node
+     *
+     * @return null|string
+     */
+    public static function resolveConcreteType(Endpoint $endpoint, PolymorphicDefinitionInterface $definition, $node)
+    {
+        //if discriminator map is set is used to get the value type
+        if ($map = $definition->getDiscriminatorMap()) {
+            //get concrete type based on property
+            if ($definition->getDiscriminatorProperty()) {
+                $property = $definition->getDiscriminatorProperty();
+                $accessor = new PropertyAccessor();
+                $propValue = $accessor->getValue($node, $property);
+                $resolvedType = $map[$propValue] ?? null;
+            }
+
+            //get concrete type based on class
+            if (!$resolvedType) {
+                $class = DoctrineClassUtils::getClass($node);
+                $resolvedType = $map[$class] ?? null;
+            }
+        }
+
+        //final solution in case of not mapping is guess type based on class
+        if (!$resolvedType && $definition instanceof InterfaceDefinition) {
+            foreach ($definition->getImplementors() as $implementor) {
+                $implementorDef = $endpoint->getType($implementor);
+                if ($implementorDef instanceof ClassAwareDefinitionInterface
+                    && $implementorDef->getClass() === DoctrineClassUtils::getClass($node)) {
+                    $resolvedType = $implementorDef->getName();
+                }
+            }
+        }
+
+        if ($endpoint->hasType($resolvedType)) {
+            $resolvedTypeDefinition = $endpoint->getType($resolvedType);
+            if ($resolvedTypeDefinition instanceof PolymorphicDefinitionInterface) {
+                $resolvedType = self::resolveConcreteType($endpoint, $resolvedTypeDefinition, $node);
+            }
+        }
+
+        return $resolvedType;
+    }
+
     /**
      * @param string $type
      *

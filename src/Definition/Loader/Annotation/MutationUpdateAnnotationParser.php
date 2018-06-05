@@ -52,7 +52,7 @@ class MutationUpdateAnnotationParser extends MutationAnnotationParser
         if (!$annotation->payload) {
             //deep cloning
             /** @var ObjectDefinitionInterface $payload */
-            $payload = unserialize(serialize($endpoint->getType(UpdateNodePayload::class)), [DefinitionInterface::class]);
+            $payload = unserialize(serialize($endpoint->getType(UpdateNodePayload::class)), ['allowed_classes' => true]);
             $payload->setName(ucfirst($annotation->name.'Payload'));
 
             if (!$endpoint->hasType($payload->getName())) {

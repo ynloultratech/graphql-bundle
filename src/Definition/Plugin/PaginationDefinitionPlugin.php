@@ -226,48 +226,49 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin
 
     public function addFilters(ExecutableDefinitionInterface $definition, string $targetType, Endpoint $endpoint)
     {
-        $filters = new InputObjectDefinition();
-        $filters->setName(ucfirst($definition->getName()).'Filter');
-        if ($endpoint->hasType($filters->getName())) {
-            return;
-        }
+        $filterName = ucfirst($definition->getName()).'Filter';
+        if ($endpoint->hasType($filterName)) {
+            $filters = $endpoint->getType($filterName);
+        } else {
+            $filters = new InputObjectDefinition();
+            $filters->setName($filterName);
+            $endpoint->add($filters);
 
-        $endpoint->add($filters);
-
-        $object = $endpoint->getType($targetType);
-        if ($object instanceof FieldsAwareDefinitionInterface) {
-            foreach ($object->getFields() as $field) {
-                if ('id' === $field->getName()
-                    || !$field->getOriginName()
-                    || \ReflectionProperty::class !== $field->getOriginType()) {
-                    continue;
-                }
-
-                $filter = new FieldDefinition();
-                $filter->setName($field->getName());
-                $type = $field->getType();
-                if ($endpoint->hasType($type)) {
-                    $typeDefinition = $endpoint->getType($type);
-                    if (!$typeDefinition instanceof EnumDefinition) {
-                        $type = 'ID';
+            $object = $endpoint->getType($targetType);
+            if ($object instanceof FieldsAwareDefinitionInterface) {
+                foreach ($object->getFields() as $field) {
+                    if ('id' === $field->getName()
+                        || !$field->getOriginName()
+                        || \ReflectionProperty::class !== $field->getOriginType()) {
+                        continue;
                     }
-                    $filter->setList(true);
-                }
 
-                // fields using custom object as type
-                // are not available for filters
-                if (TypeRegistry::getTypeMapp()) {
-                    if (isset(TypeRegistry::getTypeMapp()[$type])) {
-                        $class = TypeRegistry::getTypeMapp()[$type];
-                        $ref = new \ReflectionClass($class);
-                        if ($ref->isSubclassOf(ObjectType::class)) {
-                            continue;
+                    $filter = new FieldDefinition();
+                    $filter->setName($field->getName());
+                    $type = $field->getType();
+                    if ($endpoint->hasType($type)) {
+                        $typeDefinition = $endpoint->getType($type);
+                        if (!$typeDefinition instanceof EnumDefinition) {
+                            $type = 'ID';
+                        }
+                        $filter->setList(true);
+                    }
+
+                    // fields using custom object as type
+                    // are not available for filters
+                    if (TypeRegistry::getTypeMapp()) {
+                        if (isset(TypeRegistry::getTypeMapp()[$type])) {
+                            $class = TypeRegistry::getTypeMapp()[$type];
+                            $ref = new \ReflectionClass($class);
+                            if ($ref->isSubclassOf(ObjectType::class)) {
+                                continue;
+                            }
                         }
                     }
-                }
 
-                $filter->setType($type);
-                $filters->addField($filter);
+                    $filter->setType($type);
+                    $filters->addField($filter);
+                }
             }
         }
 

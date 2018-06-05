@@ -130,3 +130,12 @@ Feature: User
     Then the response is OK
     And "{response.data.users.byLogin[0].login}" should be equal to "{@user1.getUsername()}"
     And "{response.data.users.byLogin[1].login}" should be equal to "admin"
+
+  Scenario: Users by type
+    Given the operation named "UsersByType"
+    When send
+    Then the response is OK
+    And "{response.data.users.all.edges[0].node.__typename}" should be equal to "AdminUser"
+    And "{ search('data.users.all.edges[0].node.posts', response) }" should be null
+    And "{response.data.users.all.edges[1].node.__typename}" should be equal to "CommonUser"
+    And "{ search('data.users.all.edges[1].node.posts', response) }" should not be null

@@ -10,13 +10,12 @@
 
 namespace Ynlo\GraphQLBundle\Type\Definition;
 
-use Doctrine\Common\Util\ClassUtils;
 use GraphQL\Type\Definition\InterfaceType;
-use GraphQL\Type\Definition\Type;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
-use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
+use Ynlo\GraphQLBundle\Util\GraphQLBuilder;
+use Ynlo\GraphQLBundle\Util\TypeUtil;
 
 /**
  * Class InterfaceDefinitionType
@@ -44,51 +43,13 @@ class InterfaceDefinitionType extends InterfaceType implements EndpointAwareInte
             [
                 'name' => $definition->getName(),
                 'description' => $definition->getDescription(),
-                'fields' => function () {
-                    return $this->resolveFields();
+                'fields' => function () use ($definition) {
+                    return GraphQLBuilder::resolveFields($definition);
                 },
                 'resolveType' => function ($value) {
-                    foreach ($this->definition->getImplementors() as $implementor) {
-                        $implementorDef = $this->endpoint->getType($implementor);
-                        //ClassUtils::getClass is required to avoid proxies
-                        if ($implementorDef->getClass() === ClassUtils::getClass($value)) {
-                            return TypeRegistry::get($implementorDef->getName());
-                        }
-                    }
-
-                    return null;
+                    return TypeUtil::resolveNodeType($this->endpoint, $value);
                 },
             ]
         );
-    }
-
-    /**
-     * @return array
-     */
-    private function resolveFields()
-    {
-        $fields = [];
-        foreach ($this->definition->getFields() as $fieldDefinition) {
-            $type = TypeRegistry::get($fieldDefinition->getType());
-
-            if ($fieldDefinition->isList()) {
-                if ($fieldDefinition->isNonNullList()) {
-                    $type = Type::nonNull($type);
-                }
-                $type = Type::listOf($type);
-            }
-
-            if ($fieldDefinition->isNonNull()) {
-                $type = Type::nonNull($type);
-            }
-
-            $fields[$fieldDefinition->getName()] = [
-                'type' => $type,
-                'description' => $fieldDefinition->getDescription(),
-                'deprecationReason' => $fieldDefinition->getDeprecationReason(),
-            ];
-        }
-
-        return $fields;
     }
 }

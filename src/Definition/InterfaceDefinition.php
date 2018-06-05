@@ -15,17 +15,19 @@ use Ynlo\GraphQLBundle\Definition\Traits\DefinitionTrait;
 use Ynlo\GraphQLBundle\Definition\Traits\ExtensionsAwareTrait;
 use Ynlo\GraphQLBundle\Definition\Traits\FieldsAwareDefinitionTrait;
 use Ynlo\GraphQLBundle\Definition\Traits\ObjectDefinitionTrait;
+use Ynlo\GraphQLBundle\Definition\Traits\PolymorphicDefinitionTrait;
 
 /**
  * Class InterfaceDefinition
  */
-class InterfaceDefinition implements ObjectDefinitionInterface, HasExtensionsInterface
+class InterfaceDefinition implements ObjectDefinitionInterface, HasExtensionsInterface, PolymorphicDefinitionInterface
 {
     use DefinitionTrait;
     use FieldsAwareDefinitionTrait;
     use ClassAwareDefinitionTrait;
     use ObjectDefinitionTrait;
     use ExtensionsAwareTrait;
+    use PolymorphicDefinitionTrait;
 
     /**
      * @var string[]
@@ -45,6 +47,11 @@ class InterfaceDefinition implements ObjectDefinitionInterface, HasExtensionsInt
      */
     public function addImplementor($type)
     {
+        //a interface can't be implemented by himself
+        if ($type === $this->name) {
+            return;
+        }
+
         $this->implementors[$type] = $type;
     }
 

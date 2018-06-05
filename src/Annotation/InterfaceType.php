@@ -10,6 +10,8 @@
 
 namespace Ynlo\GraphQLBundle\Annotation;
 
+use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
+
 /**
  * @Annotation()
  *
@@ -26,6 +28,23 @@ final class InterfaceType
      * @var string
      */
     public $description;
+
+    /**
+     * @Enum({"ALL", "NONE"})
+     *
+     * @var string
+     */
+    public $exclusionPolicy = ObjectDefinitionInterface::EXCLUDE_NONE;
+
+    /**
+     * @var array
+     */
+    public $discriminatorMap = [];
+
+    /**
+     * @var string
+     */
+    public $discriminatorProperty;
 
     /**
      * @var array

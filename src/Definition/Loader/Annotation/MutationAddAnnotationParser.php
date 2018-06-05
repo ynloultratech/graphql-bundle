@@ -11,7 +11,6 @@
 namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation;
 
 use Ynlo\GraphQLBundle\Annotation;
-use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Model\AddNodePayload;
@@ -52,7 +51,7 @@ class MutationAddAnnotationParser extends MutationAnnotationParser
         if (!$annotation->payload) {
             //deep cloning
             /** @var ObjectDefinitionInterface $payload */
-            $payload = unserialize(serialize($endpoint->getType(AddNodePayload::class)), [DefinitionInterface::class]);
+            $payload = unserialize(serialize($endpoint->getType(AddNodePayload::class)), ['allowed_classes' => true]);
             $payload->setName(ucfirst($annotation->name.'Payload'));
 
             if (!$endpoint->hasType($payload->getName())) {

@@ -82,6 +82,8 @@ graphql:
 
     endpoint_default: admin
 
+    id_encoder: Ynlo\GraphQLBundle\Encoder\Base64IDEncoder
+
     security:
         validation_rules:
             query_complexity: 200

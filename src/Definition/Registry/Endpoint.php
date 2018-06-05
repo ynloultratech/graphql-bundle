@@ -98,10 +98,37 @@ class Endpoint
      */
     public function hasTypeForClass(string $class): bool
     {
-        return in_array($class, $this->typeMap);
+        return \in_array($class, $this->typeMap);
     }
 
     /**
+     * @param string $class
+     *
+     * @return array|string[]
+     */
+    public function getTypesForClass(string $class): array
+    {
+        $types = array_filter(
+            $this->typeMap,
+            function ($val) use ($class) {
+                return $val === $class;
+            }
+        );
+
+        if (empty($types)) {
+            $error = sprintf('Does not exist any valid type for class "%s"', $class);
+            throw new \UnexpectedValueException($error);
+        }
+
+        return array_keys($types);
+    }
+
+    /**
+     * Return the first type representing this class
+     *
+     * NOTE! a class can be represented by many types use `getTypesForClass`
+     * to get all possible types.
+     *
      * @param string $class
      *
      * @return string
@@ -110,13 +137,7 @@ class Endpoint
      */
     public function getTypeForClass(string $class): string
     {
-        $typeMap = array_flip($this->typeMap);
-        if (isset($typeMap[$class])) {
-            return $typeMap[$class];
-        }
-
-        $error = sprintf('Does not exist any valid type for class "%s"', $class);
-        throw new \UnexpectedValueException($error);
+        return $this->getTypesForClass($class)[0];
     }
 
     /**
@@ -187,9 +208,10 @@ class Endpoint
      */
     public function hasType($name): bool
     {
+        //in case pass FQN class name resolve the first matching type
         if (class_exists($name) || interface_exists($name)) {
             if ($this->hasTypeForClass($name)) {
-                $name = $this->getTypeForClass($name);
+                $name = $this->getTypesForClass($name)[0];
             }
         }
 
