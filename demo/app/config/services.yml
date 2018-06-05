@@ -3,5 +3,9 @@ services:
         public: false
         tags: ['doctrine.event_subscriber']
 
+    Ynlo\GraphQLBundle\Demo\AppBundle\Query\User\Field\isCurrent:
+        public: true
+        arguments: ['@security.token_storage']
+
 
 

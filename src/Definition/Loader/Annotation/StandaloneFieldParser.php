@@ -12,6 +12,8 @@ namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation;
 
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
+use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
+use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Util\ClassUtils;
@@ -79,6 +81,16 @@ class StandaloneFieldParser extends QueryAnnotationParser
 
         foreach ($annotation->options as $option => $value) {
             $field->setMeta($option, $value);
+        }
+
+        if ($objectDefinition instanceof InterfaceDefinition) {
+            $implementors = $objectDefinition->getImplementors();
+            foreach ($implementors as $implementor) {
+                $childType = $endpoint->getType($implementor);
+                if ($childType instanceof FieldsAwareDefinitionInterface) {
+                    $childType->addField($field);
+                }
+            }
         }
     }
 }

@@ -136,8 +136,10 @@ Feature: User
     When send
     Then the response is OK
     And "{response.data.users.all.edges[0].node.__typename}" should be equal to "AdminUser"
+    And "{response.data.users.all.edges[0].node.isCurrent}" should be true
     And "{ search('data.users.all.edges[0].node.posts', response) }" should be null
     And "{response.data.users.all.edges[1].node.__typename}" should be equal to "CommonUser"
+    And "{response.data.users.all.edges[1].node.isCurrent}" should be false
     And "{ search('data.users.all.edges[1].node.posts', response) }" should not be null
 
   Scenario: Admin users
