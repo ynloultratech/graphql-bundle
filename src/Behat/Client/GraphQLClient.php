@@ -216,12 +216,27 @@ class GraphQLClient extends Client
         $content = json_encode($data);
         $this->insulated = $this->config['insulated'] ?? false;
 
-        $this->request(Request::METHOD_POST, $this->getEndpoint(), $this->getRequestsParameters(), [], $this->getServerParameters(), $content);
+        $this->sendRequest(Request::METHOD_POST, $this->getEndpoint(), $this->getRequestsParameters(), [], $this->getServerParameters(), $content);
 
         return $this->response = $this->getResponse();
     }
 
-    public function request($method, $uri, array $parameters = [], array $files = [], array $server = [], $content = null, $changeHistory = true)
+    /**
+     * This method works like `request` in the parent class, but has a error handler to catch all deprecation notices.
+     * Can`t be named `request` to override the parent because in projects using symfony4 the signature for this method has been changed
+     * using strict types on each argument.
+     *
+     * @param string $method
+     * @param string $uri
+     * @param array  $parameters
+     * @param array  $files
+     * @param array  $server
+     * @param null   $content
+     * @param bool   $changeHistory
+     *
+     * @return \Symfony\Component\DomCrawler\Crawler
+     */
+    public function sendRequest($method, $uri, array $parameters = [], array $files = [], array $server = [], $content = null, $changeHistory = true)
     {
         set_error_handler(
             function ($level, $message, $errFile, $errLine) {
