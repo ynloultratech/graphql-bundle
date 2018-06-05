@@ -108,6 +108,10 @@ Ensure you have "Behat\Symfony2Extension" inside your behat config file.'
         $references = $this->processor->findAndSortTaggedServices($container, 'graphql.expression_preprocessor');
         $definition = $container->getDefinition(TransformStringToExpression::class);
 
+        if (!class_exists('Doctrine\Common\DataFixtures\Loader')) {
+            $container->removeDefinition('Ynlo\GraphQLBundle\Behat\Fixtures\LoadFixturesSubscriber');
+        }
+
         foreach ($references as $reference) {
             $definition->addMethodCall('registerPreprocessor', array($reference));
         }
