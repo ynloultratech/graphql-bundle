@@ -1,4 +1,4 @@
-@admin
+@user:admin
 Feature: Category
 
   Scenario: List Categories with posts

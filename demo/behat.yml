@@ -1,8 +1,9 @@
 default:
     extensions:
         Ynlo\GraphQLBundle\Behat\GraphQLApiExtension:
-            jwt:
-              users: [admin]
+            authentication:
+              jwt:
+                users: [admin]
 
         Behat\Symfony2Extension:
             kernel:

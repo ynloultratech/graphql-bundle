@@ -8,14 +8,15 @@ behat extension to generate a token before each feature is executed.
 default:
     extensions:
         Ynlo\GraphQLBundle\Behat\GraphQLApiExtension:
-            jwt:
-              users: [admin, customer]
+            authentication:
+                jwt:
+                    users: [admin, customer]
 ````
 
-After this you can use `tags` in features with the username to use.
+After this you can use `tags` in features with the username to use. The prefix `user:` must be used to identify the type of tag.
 
 ````
-@admin
+@user:admin
 Feature: Post
   Scenario: Add Post
     Given the operation named "AddPost"
@@ -24,17 +25,18 @@ Feature: Post
 
 > By default the authentication works with FosUserBundle and LexikJWTAuthenticationBundle.
 
-If your need a custom token generator or another way to resolve the user
+If you need a custom token generator or another way to resolve the user
 must create your own resolver and token generator.
 
 ````yaml
 default:
     extensions:
         Ynlo\GraphQLBundle\Behat\GraphQLApiExtension:
-            jwt:
-              users: [admin, customer]
-              user_resolver: App\Behat\ResolveUserByEmail
-              generator: App\Behat\OAuth2TokenGenerator
+            authentication
+                jwt:
+                  users: [admin, customer]
+                  user_resolver: App\Behat\ResolveUserByEmail
+                  generator: App\Behat\OAuth2TokenGenerator
               
 ````
 

@@ -1,4 +1,4 @@
-@admin
+@user:admin
 Feature: Post
 
   Scenario: Add Post

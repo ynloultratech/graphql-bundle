@@ -1,4 +1,4 @@
-@admin
+@user:admin
 Feature: Read Nodes
 
   Scenario: Get Node

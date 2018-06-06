@@ -61,7 +61,7 @@ final class JWTContext implements Context, KernelAwareContext, ClientAwareInterf
     public function beforeStep(BeforeStepScope $scope)
     {
         $config = GraphQLApiExtension::getConfig();
-        if (!isset($config['jwt']['users'])) {
+        if (!isset($config['authentication']['jwt']['users'])) {
             return;
         }
 
@@ -71,16 +71,24 @@ final class JWTContext implements Context, KernelAwareContext, ClientAwareInterf
             return;
         }
 
-        foreach ($config['jwt']['users'] as $username) {
-            if (\in_array($username, $scope->getFeature()->getTags())) {
+        $tags = $scope->getFeature()->getTags();
+        $users = [];
+        foreach ($tags as $tag) {
+            if (preg_match('/^user:/', $tag)) {
+                $users[] = preg_replace('/^user:/', null, $tag);
+            }
+        }
+
+        foreach ($config['authentication']['jwt']['users'] as $username) {
+            if (\in_array($username, $users)) {
                 if (isset(self::$tokens[$username])) {
                     $this->token = self::$tokens[$username];
                     $this->setToken($this->token);
                     break;
                 }
 
-                $resolverClass = $config['jwt']['user_resolver'];
-                $tokenGeneratorClass = $config['jwt']['generator'];
+                $resolverClass = $config['authentication']['jwt']['user_resolver'];
+                $tokenGeneratorClass = $config['authentication']['jwt']['generator'];
 
                 /** @var UserResolverInterface $resolver */
                 $resolver = new $resolverClass($this->kernel);
@@ -103,9 +111,9 @@ final class JWTContext implements Context, KernelAwareContext, ClientAwareInterf
 
     protected function setToken($token)
     {
-        $tokenIn = $config['jwt']['token_in'] ?? 'header';
-        $tokenName = $config['jwt']['token_name'] ?? 'Authorization';
-        $tokenTemplate = $config['jwt']['token_template'] ?? 'Bearer {token}';
+        $tokenIn = $config['authentication']['jwt']['token_in'] ?? 'header';
+        $tokenName = $config['authentication']['jwt']['token_name'] ?? 'Authorization';
+        $tokenTemplate = $config['authentication']['jwt']['token_template'] ?? 'Bearer {token}';
 
         if ($token) {
             $tokenValue = str_replace('{token}', $token, $tokenTemplate);

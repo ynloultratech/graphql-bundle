@@ -81,7 +81,7 @@ class GraphQLClient extends Client
     {
         parent::restart();
 
-        $this->endpoint = '';
+        $this->endpoint = $this->kernel->getContainer()->get('router')->generate('api_root');
         $this->graphQL = null;
         $this->operationName = null;
         $this->variables = [];
