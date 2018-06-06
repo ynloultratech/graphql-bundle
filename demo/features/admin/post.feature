@@ -1,4 +1,4 @@
-@user:admin
+@jwt:admin
 Feature: Post
 
   Scenario: Add Post

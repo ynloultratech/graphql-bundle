@@ -69,26 +69,14 @@ Ensure you have "Behat\Symfony2Extension" inside your behat config file.'
 
         $root->scalarNode('route');
 
-        $authentication = $root->arrayNode('authentication')->children();
-        $jwt = $authentication->arrayNode('jwt')->canBeEnabled()->children();
+        $authentication = $root->arrayNode('authentication')->addDefaultsIfNotSet()->children();
+        $jwt = $authentication->arrayNode('jwt')->addDefaultsIfNotSet()->canBeEnabled()->children();
 
         $jwt->scalarNode('generator')
             ->defaultValue(LexikJWTGenerator::class);
 
         $jwt->scalarNode('user_resolver')
             ->defaultValue(FosUserResolver::class);
-
-        $jwt->arrayNode('users')
-                  ->beforeNormalization()
-                  ->ifString()
-                  ->then(
-                      function ($v) {
-                          return preg_split('/\s*,\s*/', $v);
-                      }
-                  )
-                  ->end()
-                  ->prototype('scalar')
-                  ->end();
     }
 
     public function process(ContainerBuilder $container)

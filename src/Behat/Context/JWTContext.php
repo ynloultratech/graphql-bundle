@@ -61,9 +61,6 @@ final class JWTContext implements Context, KernelAwareContext, ClientAwareInterf
     public function beforeStep(BeforeStepScope $scope)
     {
         $config = GraphQLApiExtension::getConfig();
-        if (!isset($config['authentication']['jwt']['users'])) {
-            return;
-        }
 
         if ($this->token) {
             $this->setToken($this->token);
@@ -72,40 +69,39 @@ final class JWTContext implements Context, KernelAwareContext, ClientAwareInterf
         }
 
         $tags = $scope->getFeature()->getTags();
-        $users = [];
+        $featureUser = null;
         foreach ($tags as $tag) {
-            if (preg_match('/^user:/', $tag)) {
-                $users[] = preg_replace('/^user:/', null, $tag);
+            if (preg_match('/^jwt:/', $tag)) {
+                $featureUser = preg_replace('/^jwt:/', null, $tag);
+                break;
             }
         }
 
-        foreach ($config['authentication']['jwt']['users'] as $username) {
-            if (\in_array($username, $users)) {
-                if (isset(self::$tokens[$username])) {
-                    $this->token = self::$tokens[$username];
-                    $this->setToken($this->token);
-                    break;
-                }
-
-                $resolverClass = $config['authentication']['jwt']['user_resolver'];
-                $tokenGeneratorClass = $config['authentication']['jwt']['generator'];
-
-                /** @var UserResolverInterface $resolver */
-                $resolver = new $resolverClass($this->kernel);
-                $user = $resolver->findByUsername($username);
-
-                /** @var TokenGeneratorInterface $tokenGenerator */
-                $tokenGenerator = new $tokenGeneratorClass($this->kernel);
-                $this->token = $tokenGenerator->generate($user);
-
-                if (!$this->token) {
-                    throw new \RuntimeException('Cant resolve a token using given credentials');
-                }
-
-                self::$tokens[$username] = $this->token;
+        if ($featureUser) {
+            if (isset(self::$tokens[$featureUser])) {
+                $this->token = self::$tokens[$featureUser];
                 $this->setToken($this->token);
-                break;
+
+                return;
             }
+
+            $resolverClass = $config['authentication']['jwt']['user_resolver'];
+            $tokenGeneratorClass = $config['authentication']['jwt']['generator'];
+
+            /** @var UserResolverInterface $resolver */
+            $resolver = new $resolverClass($this->kernel);
+            $user = $resolver->findByUsername($featureUser);
+
+            /** @var TokenGeneratorInterface $tokenGenerator */
+            $tokenGenerator = new $tokenGeneratorClass($this->kernel);
+            $this->token = $tokenGenerator->generate($user);
+
+            if (!$this->token) {
+                throw new \RuntimeException('Cant resolve a token using given credentials');
+            }
+
+            self::$tokens[$featureUser] = $this->token;
+            $this->setToken($this->token);
         }
     }
 

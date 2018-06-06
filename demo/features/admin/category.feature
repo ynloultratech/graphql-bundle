@@ -1,4 +1,4 @@
-@user:admin
+@jwt:admin
 Feature: Category
 
   Scenario: List Categories with posts

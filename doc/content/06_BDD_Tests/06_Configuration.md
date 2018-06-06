@@ -27,23 +27,10 @@ Feature: Post
 
 # JWT Authentication
 
-If your API require JWT authentication must configure the 
-behat extension to generate a token before each feature is executed.
-
-`behat.yml`
-````yaml
-default:
-    extensions:
-        Ynlo\GraphQLBundle\Behat\GraphQLApiExtension:
-            authentication:
-                jwt:
-                    users: [admin, customer]
-````
-
-After this you can use `tags` in features with the username to use. The prefix `user:` must be used to identify the type of tag.
+If your API require JWT authentication, can use tags to define the username of the user to generate the token.
 
 ````
-@user:admin
+@jwt:admin
 Feature: Post
   Scenario: Add Post
     Given the operation named "AddPost"
@@ -61,7 +48,6 @@ default:
         Ynlo\GraphQLBundle\Behat\GraphQLApiExtension:
             authentication
                 jwt:
-                  users: [admin, customer]
                   user_resolver: App\Behat\ResolveUserByEmail
                   generator: App\Behat\OAuth2TokenGenerator
               
