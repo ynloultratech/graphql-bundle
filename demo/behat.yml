@@ -1,6 +1,7 @@
 default:
     extensions:
         Ynlo\GraphQLBundle\Behat\GraphQLApiExtension:
+            route: api_root
             authentication:
               jwt:
                 users: [admin]

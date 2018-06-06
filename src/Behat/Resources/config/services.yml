@@ -11,6 +11,7 @@ parameters:
         - Ynlo\GraphQLBundle\Behat\Context\ResponseContext
         - Ynlo\GraphQLBundle\Behat\Context\StorageContext
         - Ynlo\GraphQLBundle\Behat\Context\JWTContext
+        - Ynlo\GraphQLBundle\Behat\Context\RouteContext
 
 services:
   Ynlo\GraphQLBundle\Behat\Fixtures\FixtureManager:

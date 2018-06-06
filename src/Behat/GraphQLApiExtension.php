@@ -67,6 +67,8 @@ Ensure you have "Behat\Symfony2Extension" inside your behat config file.'
         $client = $root->arrayNode('client')->addDefaultsIfNotSet()->children();
         $client->booleanNode('insulated')->defaultFalse();
 
+        $root->scalarNode('route');
+
         $authentication = $root->arrayNode('authentication')->children();
         $jwt = $authentication->arrayNode('jwt')->canBeEnabled()->children();
 

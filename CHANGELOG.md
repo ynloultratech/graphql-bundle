@@ -38,6 +38,7 @@
  * Add support to ignore implemented interfaces on objects and child interfaces
  * Add support to load symfony4 data fixtures in path 'src/DataFixtures'
  * Add command to export schema to standard output or file, as json or graphql format
+ * Add support to use custom routes for all or specific scenarios on behat tests
  
 1.0.6 - 18-03-23
 ----
