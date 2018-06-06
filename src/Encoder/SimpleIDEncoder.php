@@ -43,7 +43,7 @@ class SimpleIDEncoder implements IDEncoderInterface
      */
     public function encode(NodeInterface $node): ?string
     {
-        $nodeType = TypeUtil::resolveNodeType($this->definitionRegistry->getEndpoint(), $node);
+        $nodeType = TypeUtil::resolveObjectType($this->definitionRegistry->getEndpoint(), $node);
 
         return sprintf('%s%s%s', $nodeType, self::DIVIDER, $node->getId());
     }
@@ -60,7 +60,7 @@ class SimpleIDEncoder implements IDEncoderInterface
             $manager = $this->doctrine->getManager();
             if ($manager instanceof EntityManagerInterface) {
                 $reference = $manager->getReference($class, $databaseId);
-                $resolvedType = TypeUtil::resolveNodeType($this->definitionRegistry->getEndpoint(), $reference);
+                $resolvedType = TypeUtil::resolveObjectType($this->definitionRegistry->getEndpoint(), $reference);
 
                 //compare the given type encoded in the globalID with the type resolved by the object instance
                 //This is important to avoid get a node using different type when use the same entity class

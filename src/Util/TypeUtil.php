@@ -17,7 +17,6 @@ use Ynlo\GraphQLBundle\Definition\ClassAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\PolymorphicDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
-use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Type\Types;
 
 /**
@@ -26,18 +25,18 @@ use Ynlo\GraphQLBundle\Type\Types;
 final class TypeUtil
 {
     /**
-     * Resolve the node type for given node instance
+     * Resolve the object type for given object instance
      *
-     * @param Endpoint      $endpoint
-     * @param NodeInterface $node
+     * @param Endpoint $endpoint
+     * @param mixed    $object
      *
      * @return null|string
      */
-    public static function resolveNodeType(Endpoint $endpoint, NodeInterface $node): ?string
+    public static function resolveObjectType(Endpoint $endpoint, $object): ?string
     {
-        $types = $endpoint->getTypesForClass(DoctrineClassUtils::getClass($node));
+        $types = $endpoint->getTypesForClass(DoctrineClassUtils::getClass($object));
 
-        //if only one type for given node class return the type
+        //if only one type for given object class return the type
         if (count($types) === 1) {
             return $types[0];
         }
@@ -46,7 +45,7 @@ final class TypeUtil
         foreach ($types as $type) {
             $definition = $endpoint->getType($type);
             if ($definition instanceof PolymorphicDefinitionInterface) {
-                return self::resolveConcreteType($endpoint, $definition, $node);
+                return self::resolveConcreteType($endpoint, $definition, $object);
             }
         }
 
@@ -55,15 +54,15 @@ final class TypeUtil
     }
 
     /**
-     * Resolve the node type for given node instance when node use polymorphic definitions
+     * Resolve the object type for given object instance when object use polymorphic definitions
      *
      * @param Endpoint                       $endpoint
      * @param PolymorphicDefinitionInterface $definition
-     * @param string                         $node
+     * @param mixed                          $object
      *
      * @return null|string
      */
-    public static function resolveConcreteType(Endpoint $endpoint, PolymorphicDefinitionInterface $definition, $node)
+    public static function resolveConcreteType(Endpoint $endpoint, PolymorphicDefinitionInterface $definition, $object)
     {
         //if discriminator map is set is used to get the value type
         if ($map = $definition->getDiscriminatorMap()) {
@@ -71,13 +70,13 @@ final class TypeUtil
             if ($definition->getDiscriminatorProperty()) {
                 $property = $definition->getDiscriminatorProperty();
                 $accessor = new PropertyAccessor();
-                $propValue = $accessor->getValue($node, $property);
+                $propValue = $accessor->getValue($object, $property);
                 $resolvedType = $map[$propValue] ?? null;
             }
 
             //get concrete type based on class
             if (!$resolvedType) {
-                $class = DoctrineClassUtils::getClass($node);
+                $class = DoctrineClassUtils::getClass($object);
                 $resolvedType = $map[$class] ?? null;
             }
         }
@@ -87,7 +86,7 @@ final class TypeUtil
             foreach ($definition->getImplementors() as $implementor) {
                 $implementorDef = $endpoint->getType($implementor);
                 if ($implementorDef instanceof ClassAwareDefinitionInterface
-                    && $implementorDef->getClass() === DoctrineClassUtils::getClass($node)) {
+                    && $implementorDef->getClass() === DoctrineClassUtils::getClass($object)) {
                     $resolvedType = $implementorDef->getName();
                 }
             }
@@ -96,7 +95,7 @@ final class TypeUtil
         if ($endpoint->hasType($resolvedType)) {
             $resolvedTypeDefinition = $endpoint->getType($resolvedType);
             if ($resolvedTypeDefinition instanceof PolymorphicDefinitionInterface) {
-                $resolvedType = self::resolveConcreteType($endpoint, $resolvedTypeDefinition, $node);
+                $resolvedType = self::resolveConcreteType($endpoint, $resolvedTypeDefinition, $object);
             }
         }
 

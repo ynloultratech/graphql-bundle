@@ -47,7 +47,7 @@ class InterfaceDefinitionType extends InterfaceType implements EndpointAwareInte
                     return GraphQLBuilder::resolveFields($definition);
                 },
                 'resolveType' => function ($value) {
-                    return TypeUtil::resolveNodeType($this->endpoint, $value);
+                    return TypeUtil::resolveObjectType($this->endpoint, $value);
                 },
             ]
         );
