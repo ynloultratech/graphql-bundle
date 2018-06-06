@@ -15,7 +15,6 @@ use Doctrine\ORM\EntityRepository;
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
-use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
 
@@ -28,7 +27,7 @@ class Nodes extends AbstractResolver
     protected $fetchBy = 'id';
 
     /**
-     * @param ID[]|mixed[] $nodes
+     * @param mixed[] $nodes
      *
      * @return mixed
      */

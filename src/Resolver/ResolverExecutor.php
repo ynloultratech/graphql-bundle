@@ -30,7 +30,6 @@ use Ynlo\GraphQLBundle\Events\EventDispatcherAwareInterface;
 use Ynlo\GraphQLBundle\Extension\ExtensionInterface;
 use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Extension\ExtensionsAwareInterface;
-use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Type\Types;
 use Ynlo\GraphQLBundle\Util\IDEncoder;
 
@@ -247,47 +246,12 @@ class ResolverExecutor implements ContainerAwareInterface
                 $normalizedArguments[$argument->getInternalName()] = $normalizedValue;
             }
         }
-        $this->applyArgumentsNamingConventions($normalizedArguments);
         $normalizedArguments['args'] = $normalizedArguments;
         $normalizedArguments['root'] = $this->root;
         $indexedArguments = $this->resolveMethodArguments($refMethod, $normalizedArguments);
         ksort($indexedArguments);
 
         return $indexedArguments;
-    }
-
-    /**
-     * Apply some conventions to given arguments
-     *
-     * @param array $args
-     */
-    protected function applyArgumentsNamingConventions(&$args)
-    {
-        //TODO: move this behavior to some configurable external service or middleware
-        //Automatically resolve parameters of type ID to real object
-        //except if the parameter name is 'id' or 'ids', in that case a object of type ID or ID[] is given
-        foreach ($args as $name => &$value) {
-            if ($value instanceof ID && 'id' !== $name) {
-                $definition = $this->endpoint->getType($value->getNodeType());
-                if ($definition instanceof ObjectDefinition && $definition->getClass()) {
-                    /** @var EntityManager $em */
-                    $em = $this->container->get('doctrine')->getManager();
-                    $value = $em->getRepository($definition->getClass())->find($value->getDatabaseId());
-                }
-            }
-            if (is_array($value)) {
-                foreach ($value as &$val) {
-                    if ($val instanceof ID && 'ids' !== $name) {
-                        $definition = $this->endpoint->getType($val->getNodeType());
-                        if ($definition instanceof ObjectDefinition && $definition->getClass()) {
-                            /** @var EntityManager $em */
-                            $em = $this->container->get('doctrine')->getManager();
-                            $val = $em->getRepository($definition->getClass())->find($val->getDatabaseId());
-                        }
-                    }
-                }
-            }
-        }
     }
 
     /**

@@ -15,7 +15,6 @@ use Doctrine\ORM\QueryBuilder;
 use GraphQL\Error\Error;
 use Ynlo\GraphQLBundle\Definition\Plugin\PaginationDefinitionPlugin;
 use Ynlo\GraphQLBundle\Model\ConnectionInterface;
-use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Model\NodeConnection;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Pagination\DoctrineCursorPaginatorInterface;
