@@ -29,7 +29,7 @@ services:
     Ynlo\GraphQLBundle\Controller\SchemaController:
         public: true
         arguments:
-          - '@Ynlo\GraphQLBundle\Schema\SchemaCompiler'
+          - '@Ynlo\GraphQLBundle\Schema\SchemaExporter'
           - '@Ynlo\GraphQLBundle\Security\EndpointResolver'
 
     Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices:
@@ -52,6 +52,9 @@ services:
         arguments: ['@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry']
         calls:
             - [ setContainer, ['@service_container']]
+
+    Ynlo\GraphQLBundle\Schema\SchemaExporter:
+        arguments: ['@Ynlo\GraphQLBundle\Schema\SchemaCompiler']
 
     Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry:
         public: true
@@ -336,3 +339,10 @@ services:
             - '@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry'
             - '@doctrine'
             - '%kernel.secret%'
+
+
+    Ynlo\GraphQLBundle\Command\SchemaExportCommand:
+        arguments:
+            - '@Ynlo\GraphQLBundle\Schema\SchemaExporter'
+        tags:
+            - 'console.command'
