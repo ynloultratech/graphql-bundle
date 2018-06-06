@@ -24,6 +24,28 @@
     The solution is set manually the name with the prefix in all existent affected methods in order to 
     keep your API functional.
 
+* **Minor BC BREAK:** Plugins configuration has been moved out of `definitions`
+
+In your `config.yaml` must change:
+
+Before:
+
+````yaml
+graphql:
+    definitions:
+        plugins:
+            pagination:
+                limit: 100
+````
+
+After:
+
+````yaml
+graphql:
+    pagination:
+        limit: 100
+````
+
 * **Minor BC BREAK:** Removed `getPriority` method in CRUD extensions
 
     In order to prioritize CRUD extensions must use tags priorities. 

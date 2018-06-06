@@ -87,9 +87,9 @@ graphql:
     security:
         validation_rules:
             query_complexity: 200
-    definitions:
-        plugins:
-            namespaces: true
+
+    namespaces: true
+
     graphiql:
         authentication:
             required: false

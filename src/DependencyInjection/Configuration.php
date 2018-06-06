@@ -34,7 +34,7 @@ class Configuration implements ConfigurationInterface
         $this->configureEndpoints($rootNode);
         $this->configureCORS($rootNode);
         $this->configureGraphiQL($rootNode);
-        $this->configureDefinition($rootNode);
+        $this->configurePlugins($rootNode);
         $this->configureSecurity($rootNode);
         $this->configureOthers($rootNode);
 
@@ -176,13 +176,10 @@ if this value is FALSE and a provider is specified the authentication is optiona
         $cors->variableNode('allow_origins')->defaultValue(['*']);
     }
 
-    protected function configureDefinition(NodeBuilder $root)
+    protected function configurePlugins(NodeBuilder $root)
     {
-        $definitions = $root->arrayNode('definitions')->addDefaultsIfNotSet()->children();
-
-        $plugins = $definitions->arrayNode('plugins')->addDefaultsIfNotSet();
-        $this->configurePluginPaginationGlobalConfig($plugins->children());
-        $this->configurePluginNamespaceGlobalConfig($plugins->children());
+        $this->configurePluginPaginationGlobalConfig($root);
+        $this->configurePluginNamespaceGlobalConfig($root);
     }
 
     protected function configurePluginPaginationGlobalConfig(NodeBuilder $root)

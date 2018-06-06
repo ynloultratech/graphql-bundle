@@ -32,18 +32,13 @@ class YnloGraphQLExtension extends Extension
         $configuration = new Configuration();
         $config = $this->processConfiguration($configuration, $configs);
 
-        if (!isset($config['definitions']['plugins']['namespaces']['bundles']['aliases']['GraphQLBundle'])) {
-            $config['definitions']['plugins']['namespaces']['bundles']['aliases']['GraphQLBundle'] = 'AppBundle';
+        if (!isset($config['namespaces']['bundles']['aliases']['GraphQLBundle'])) {
+            $config['namespaces']['bundles']['aliases']['GraphQLBundle'] = 'AppBundle';
         }
 
         $container->setParameter('graphql.config', $config);
-        if (isset($config['definitions']['plugins'])) {
-            foreach ($config['definitions']['plugins'] as $plugin => $pluginConfig) {
-                $pluginConfig = isset($pluginConfig['enabled']) && $pluginConfig['enabled'] ? $pluginConfig : [];
-                $container->setParameter('graphql.plugin_config.'.$plugin, $pluginConfig ?? []);
-            }
-        }
-
+        $container->setParameter('graphql.pagination', $config['pagination'] ?? []);
+        $container->setParameter('graphql.namespaces', $config['namespaces'] ?? []);
         $container->setParameter('graphql.cors_config', $config['cors'] ?? []);
         $container->setParameter('graphql.graphiql', $config['graphiql'] ?? []);
         $container->setParameter('graphql.graphiql_auth_jwt', $config['graphiql']['authentication']['provider']['jwt'] ?? []);

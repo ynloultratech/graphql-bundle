@@ -221,7 +221,7 @@ services:
 
     Ynlo\GraphQLBundle\Definition\Plugin\PaginationDefinitionPlugin:
         public: true
-        arguments: ['@annotations.reader','%graphql.plugin_config.pagination%']
+        arguments: ['@annotations.reader','%graphql.pagination%']
         tags:
             - { name: 'graphql.definition_plugin'}
 
@@ -270,7 +270,7 @@ services:
 
     Ynlo\GraphQLBundle\Definition\Plugin\NamespaceDefinitionPlugin:
         public: true
-        arguments: ['%graphql.plugin_config.namespaces%']
+        arguments: ['%graphql.namespaces%']
         tags:
             - { name: 'graphql.definition_plugin', priority: -200}
 
