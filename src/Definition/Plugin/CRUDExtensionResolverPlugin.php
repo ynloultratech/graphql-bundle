@@ -66,6 +66,7 @@ class CRUDExtensionResolverPlugin extends AbstractDefinitionPlugin
         $extensionClass = ClassUtils::applyNamingConvention($bundleNamespace, 'Extension', null, $definition->getName().'Extension');
         if (class_exists($extensionClass)) {
             foreach ($definition->getImplementors() as $implementor) {
+                $definition->addExtension($extensionClass);
                 $object = $endpoint->getType($implementor);
                 if ($object instanceof HasExtensionsInterface) {
                     $object->addExtension($extensionClass);

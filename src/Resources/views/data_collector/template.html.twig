@@ -288,9 +288,9 @@
                                     <th>extensions</th>
                                     <td>
                                         <ul>
-                                            {% for name in object.extensions %}
+                                            {% for extension in object.extensions %}
                                                 <li>
-                                                    name
+                                                    {{ extension.class }}
                                                 </li>
                                             {% endfor %}
                                         </ul>
