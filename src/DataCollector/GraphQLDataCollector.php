@@ -98,9 +98,17 @@ class GraphQLDataCollector extends DataCollector
     /**
      * @return Endpoint
      */
-    public function getEndpoint()
+    public function getDefaultEndpoint()
     {
         return $this->data['defaultEndpoint'] ?? null;
+    }
+
+    /**
+     * @return Endpoint
+     */
+    public function getEndpoint()
+    {
+        return $this->data['endpoint'] ?? null;
     }
 
     public function isInputObject($definition)

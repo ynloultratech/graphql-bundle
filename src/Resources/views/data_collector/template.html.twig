@@ -30,15 +30,15 @@
             {% endif %}
         </div>
 
-        {% if collector.endpoint %}
+        {% if collector.defaultEndpoint %}
             <div class="sf-toolbar-info-piece">
                 <b>Queries</b>
-                <span class="sf-toolbar-status sf-toolbar-status-">{{ collector.endpoint.allQueries|length }}</span>
+                <span class="sf-toolbar-status sf-toolbar-status-">{{ collector.defaultEndpoint.allQueries|length }}</span>
             </div>
 
             <div class="sf-toolbar-info-piece">
                 <b>Mutations</b>
-                <span class="sf-toolbar-status sf-toolbar-status-">{{ collector.endpoint.allMutations|length }}</span>
+                <span class="sf-toolbar-status sf-toolbar-status-">{{ collector.defaultEndpoint.allMutations|length }}</span>
             </div>
         {% endif %}
     {% endset %}
@@ -59,20 +59,20 @@
 
 {% block menu %}
     {# This left-hand menu appears when using the full-screen profiler. #}
-    <span class="label {% if not collector.endpoint %}disabled{% endif %}">
+    <span class="label {% if not collector.defaultEndpoint %}disabled{% endif %}">
         <span class="icon"> {{ block('icon') }}</span>
         <strong>GraphQL</strong>
     </span>
 {% endblock %}
 
 {% block panel %}
-    {% if collector.endpoint %}
-        {# @var endpoint \Ynlo\GraphQLBundle\Definition\Registry\Endpoint #}
-        {% set endpoint = collector.endpoint %}
+    {% if collector.defaultEndpoint %}
+        {# @var defaultEndpoint \Ynlo\GraphQLBundle\Definition\Registry\defaultEndpoint #}
+        {% set defaultEndpoint = collector.defaultEndpoint %}
 
         <div class="metrics">
             <div class="metric">
-                <span class="value">{{ endpoint.name }}</span>
+                <span class="value">{{ collector.endpoint.name }}</span>
                 <span class="label">Endpoint</span>
             </div>
         </div>
@@ -80,21 +80,21 @@
         <h2>Schema</h2>
 
         <div class="tab">
-            <h3 class="tab-title">Queries <span class="badge status-">{{ endpoint.allQueries|length }}</span></h3>
+            <h3 class="tab-title">Queries <span class="badge status-">{{ defaultEndpoint.allQueries|length }}</span></h3>
             <div class="tab-content">
-                {{ operations_table(collector, endpoint.allQueries) }}
+                {{ operations_table(collector, defaultEndpoint.allQueries) }}
             </div>
         </div>
 
         <div class="tab">
-            <h3 class="tab-title">Mutations <span class="badge status-">{{ endpoint.allMutations|length }}</span></h3>
+            <h3 class="tab-title">Mutations <span class="badge status-">{{ defaultEndpoint.allMutations|length }}</span></h3>
             <div class="tab-content">
                 <div class="tab-content">
-                    {{ operations_table(collector, endpoint.allMutations) }}
+                    {{ operations_table(collector, defaultEndpoint.allMutations) }}
                 </div>
             </div>
         </div>
-        {% set types = endpoint.allTypes %}
+        {% set types = defaultEndpoint.allTypes %}
         {% set objects = [] %}
         {% set inputObjects = [] %}
         {% set interfaces = [] %}
@@ -130,15 +130,15 @@
         </div>
     {% else %}
         <div class="empty">
-            <p>No API endpoint has been loaded.</p>
+            <p>No API defaultEndpoint has been loaded.</p>
         </div>
     {% endif %}
 {% endblock %}
 
 {% macro operations_table(collector, operations) %}
     {# @var collector \Ynlo\GraphQLBundle\DataCollector\GraphQLDataCollector #}
-    {# @var endpoint \Ynlo\GraphQLBundle\Definition\Registry\Endpoint #}
-    {% set endpoint = collector.endpoint %}
+    {# @var defaultEndpoint \Ynlo\GraphQLBundle\Definition\Registry\defaultEndpoint #}
+    {% set defaultEndpoint = collector.defaultEndpoint %}
     {% from '@YnloGraphQL/data_collector/template.html.twig' import fields_table, link_type, plugins_table %}
     <table class="logs">
         <thead>
@@ -160,7 +160,7 @@
                     </a>
                 </td>
                 <td>
-                    {{ link_type(endpoint, operation.type) }}
+                    {{ link_type(defaultEndpoint, operation.type) }}
                 </td>
             </tr>
             <tr id="operation-{{ operation.name }}-{{ id }}" class="context sf-toggle-content sf-toggle-hidden">
@@ -184,7 +184,7 @@
                             </tr>
                         {% endif %}
 
-                        {{ fields_table(endpoint, operation) }}
+                        {{ fields_table(defaultEndpoint, operation) }}
                         {{ plugins_table(operation) }}
                         </tbody>
                     </table>
@@ -197,8 +197,8 @@
 
 {% macro objects_table(collector, objects) %}
     {# @var collector \Ynlo\GraphQLBundle\DataCollector\GraphQLDataCollector #}
-    {# @var endpoint \Ynlo\GraphQLBundle\Definition\Registry\Endpoint #}
-    {% set endpoint = collector.endpoint %}
+    {# @var defaultEndpoint \Ynlo\GraphQLBundle\Definition\Registry\defaultEndpoint #}
+    {% set defaultEndpoint = collector.defaultEndpoint %}
     {% from '@YnloGraphQL/data_collector/template.html.twig' import fields_table, link_type, plugins_table %}
     <table>
         <thead>
@@ -259,7 +259,7 @@
                                             <ul>
                                                 {% for type in object.implementors %}
                                                     <li>
-                                                        {{ link_type(endpoint, type) }}
+                                                        {{ link_type(defaultEndpoint, type) }}
                                                     </li>
                                                 {% endfor %}
                                             </ul>
@@ -276,7 +276,7 @@
                                         <ul>
                                             {% for type in object.interfaces %}
                                                 <li>
-                                                    {{ link_type(endpoint, type) }}
+                                                    {{ link_type(defaultEndpoint, type) }}
                                                 </li>
                                             {% endfor %}
                                         </ul>
@@ -298,7 +298,7 @@
                                 </tr>
                             {% endif %}
 
-                            {{ fields_table(endpoint, object) }}
+                            {{ fields_table(defaultEndpoint, object) }}
 
                             {{ plugins_table(object) }}
                             </tbody>
@@ -345,7 +345,7 @@
     {% endif %}
 {% endmacro %}
 
-{% macro fields_table(endpoint, definition) %}
+{% macro fields_table(defaultEndpoint, definition) %}
     {% from '@YnloGraphQL/data_collector/template.html.twig' import link_type, plugins_table %}
 
     {% if definition.fields is defined %}
@@ -387,7 +387,7 @@
                                     </a>
                                 </th>
                                 <td>
-                                    {{ link_type(endpoint, field.type) }}
+                                    {{ link_type(defaultEndpoint, field.type) }}
                                 </td>
                             </tr>
                             <tr id="field-{{ definition.name }}-{{ field.name }}-{{ id }}" class="context sf-toggle-content sf-toggle-hidden">
@@ -472,12 +472,12 @@
     {% endif %}
 {% endmacro %}
 
-{% macro link_type(endpoint, type) %}
-    {% if type and endpoint.hasTypeForClass(type) %}
-        {% set type = endpoint.typeForClass(type) %}
+{% macro link_type(defaultEndpoint, type) %}
+    {% if type and defaultEndpoint.hasTypeForClass(type) %}
+        {% set type = defaultEndpoint.typeForClass(type) %}
     {% endif %}
 
-    {% if type and endpoint.hasType(type) %}
+    {% if type and defaultEndpoint.hasType(type) %}
         <a href="#{{ type }}">
             {{ type }}
         </a>
