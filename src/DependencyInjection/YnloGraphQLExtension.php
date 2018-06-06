@@ -69,7 +69,7 @@ class YnloGraphQLExtension extends Extension
         $loader = new YamlFileLoader($container, new FileLocator($configDir));
         $loader->load('services.yml');
 
-        if (!$container->getParameter('kernel.debug')) {
+        if ($container->getParameter('kernel.environment') !== 'dev') {
             $container->getDefinition(DefinitionCacheWarmer::class)->clearTag('kernel.event_subscriber');
         }
 
