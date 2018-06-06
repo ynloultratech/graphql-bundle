@@ -20,6 +20,7 @@ use Ynlo\GraphQLBundle\Definition\ImplementorInterface;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\MutationDefinition;
 use Ynlo\GraphQLBundle\Definition\NodeAwareDefinitionInterface;
+use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
@@ -90,7 +91,7 @@ class EndpointsDefinitionPlugin extends AbstractDefinitionPlugin
         //apply default endpoint to all operations
         $endpoints = $this->normalizeConfig($definition, $definition->getMeta('endpoints'));
         if (!$endpoints && $this->endpointDefault) {
-            if ($definition instanceof ExecutableDefinitionInterface
+            if ($definition instanceof QueryDefinition
                 || ($definition instanceof ClassAwareDefinitionInterface
                     && is_subclass_of($definition->getClass(), NodeInterface::class, true))
             ) {
@@ -135,6 +136,12 @@ class EndpointsDefinitionPlugin extends AbstractDefinitionPlugin
             if ($type instanceof FieldsAwareDefinitionInterface) {
                 if ($type->getFields()) {
                     foreach ($type->getFields() as $field) {
+                        //remove forbidden field
+                        if (!$this->isGranted($endpoint, $field)) {
+                            $type->removeField($field->getName());
+                        }
+
+                        //remove field related to forbidden type
                         $fieldType = $endpoint->hasType($field->getType()) ? $endpoint->getType($field->getType()) : null;
                         $fieldNodeType = $endpoint->hasType($field->getMeta('node')) ? $endpoint->getType($field->getMeta('node')) : null;
                         if (($fieldType && in_array($fieldType->getName(), $forbiddenTypes))
