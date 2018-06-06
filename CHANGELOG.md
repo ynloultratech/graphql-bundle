@@ -39,6 +39,7 @@
  * Add support to load symfony4 data fixtures in path 'src/DataFixtures'
  * Add command to export schema to standard output or file, as json or graphql format
  * Add support to use custom routes for all or specific scenarios on behat tests
+ * Added clean-up definition plugin in order to remove non used definitions of each endpoint
  
 1.0.6 - 18-03-23
 ----

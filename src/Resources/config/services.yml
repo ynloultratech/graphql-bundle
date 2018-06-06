@@ -242,6 +242,10 @@ services:
         tags:
             - { name: 'graphql.definition_plugin', priority: 200 }
 
+    Ynlo\GraphQLBundle\Definition\Plugin\CleanUpDefinitionPlugin:
+        tags:
+            - { name: 'graphql.definition_plugin', priority: -250 }
+
     Ynlo\GraphQLBundle\Definition\Plugin\CRUDExtensionResolverPlugin:
         public: true
         arguments: ['@service_container']
