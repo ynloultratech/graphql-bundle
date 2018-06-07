@@ -14,6 +14,7 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\FormError;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Exception\RouteNotFoundException;
 use Ynlo\GraphQLBundle\GraphiQL\AuthenticationFailedException;
 use Ynlo\GraphQLBundle\GraphiQL\GraphiQLAuthenticationProviderInterface;
 use Ynlo\GraphQLBundle\GraphiQL\GraphiQLRequest;
@@ -68,9 +69,20 @@ class ExplorerController extends AbstractController
             $isAuthenticated = $this->provider->isAuthenticated();
         }
 
+        if ($this->config['documentation']['link'] ?? null) {
+            try {
+                $this->config['documentation']['link'] = $this->container
+                    ->get('router')
+                    ->generate($this->config['documentation']['link']);
+            } catch (RouteNotFoundException $exception) {
+                //do nothing, use the link as is
+            }
+        }
+
         return $this->render($this->config['template'], [
             'form' => $form ? $form->createView() : null,
             'favicon' => $this->config['favicon'] ?? null,
+            'documentation' => $this->config['documentation'] ?? [],
             'isAuthenticated' => $isAuthenticated,
             'title' => $this->config['title'],
             'authenticationEnabled' => (bool) $this->provider,

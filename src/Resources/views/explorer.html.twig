@@ -32,6 +32,10 @@
             box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1), 0 8px 32px rgba(0, 0, 0, 0.12)
         }
 
+        #documentation-btn {
+            margin-right: 10px;
+        }
+
         {% endblock %}
     </style>
 
@@ -53,7 +57,12 @@
     </a>
     <ul class="navbar-nav ml-auto">
         <li class="nav-item">
-            <div class="input-group  justify-content-end">
+            <div class="input-group justify-content-end">
+                {% if documentation and documentation.link is defined and documentation.link %}
+                    <a id="documentation-btn" class="{{ documentation.btn_class }}" target="_blank" href="{{ documentation.link }}">
+                        {{ documentation.btn_label }}
+                    </a>
+                {% endif %}
                 {% if authenticationEnabled %}
                     {% if not isAuthenticated %}
                         {% if not authenticationRequired %}

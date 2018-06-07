@@ -105,6 +105,11 @@ class Configuration implements ConfigurationInterface
 
         $graphiql->scalarNode('favicon')->info('Url or path to favicon');
 
+        $docs = $graphiql->arrayNode('documentation')->info('Display external API documentation link')->addDefaultsIfNotSet()->children();
+        $docs->scalarNode('link')->info('Url, route or path.');
+        $docs->scalarNode('btn_label')->defaultValue('Documentation');
+        $docs->scalarNode('btn_class')->defaultValue('btn btn-outline-success');
+
         $authentication = $graphiql->arrayNode('authentication')->addDefaultsIfNotSet()->children();
         $authentication
             ->booleanNode('required')
