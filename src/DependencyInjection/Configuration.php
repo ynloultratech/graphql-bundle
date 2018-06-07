@@ -103,6 +103,8 @@ class Configuration implements ConfigurationInterface
         $graphiql->scalarNode('template')
                  ->defaultValue('@YnloGraphQL/explorer.html.twig');
 
+        $graphiql->scalarNode('favicon')->info('Url or path to favicon');
+
         $authentication = $graphiql->arrayNode('authentication')->addDefaultsIfNotSet()->children();
         $authentication
             ->booleanNode('required')

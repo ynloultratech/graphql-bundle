@@ -70,6 +70,7 @@ class ExplorerController extends AbstractController
 
         return $this->render($this->config['template'], [
             'form' => $form ? $form->createView() : null,
+            'favicon' => $this->config['favicon'] ?? null,
             'isAuthenticated' => $isAuthenticated,
             'title' => $this->config['title'],
             'authenticationEnabled' => (bool) $this->provider,

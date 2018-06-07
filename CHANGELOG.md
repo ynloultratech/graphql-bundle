@@ -41,6 +41,7 @@
  * Add support to use custom routes for all or specific scenarios on behat tests
  * Added clean-up definition plugin in order to remove non used definitions of each endpoint
  * **[BC BREAK]** Moved plugins configuration out of `definitions`
+ * Added option to set custom favicon in the GraphiQL Explorer
  
 1.0.6 - 18-03-23
 ----

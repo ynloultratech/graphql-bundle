@@ -1,6 +1,9 @@
 <!DOCTYPE html>
 <html>
 <head>
+    {% if favicon %}
+        <link rel="icon" href="{{ favicon }}">
+    {% endif %}
     <style>
         {% block inline_styles %}
         html, body {
