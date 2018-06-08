@@ -10,7 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Model;
 
-trigger_error(
+@trigger_error(
     'ID class: has been deprecated since v1.1 and will be removed in v2.0, use IDEncoder util instead',
     E_USER_DEPRECATED
 );
@@ -76,7 +76,7 @@ class ID
      */
     public static function createFromString($globalIdentifier)
     {
-        trigger_error(
+        @trigger_error(
             'IDEncoder::createFromString has been deprecated since v1.1 and will be removed v2.0, use IDEncoder::decode() instead',
             E_USER_DEPRECATED
         );
@@ -100,7 +100,7 @@ class ID
      */
     public static function encode($nodeType, $databaseId)
     {
-        trigger_error(
+        @trigger_error(
             'IDEncoder::encode has been deprecated since v1.1 and will be removed in v2.0, use IDEncoder::encode() instead',
             E_USER_DEPRECATED
         );
