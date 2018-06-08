@@ -344,9 +344,21 @@ services:
             - '@doctrine'
             - '%kernel.secret%'
 
-
     Ynlo\GraphQLBundle\Command\SchemaExportCommand:
         arguments:
             - '@Ynlo\GraphQLBundle\Schema\SchemaExporter'
+        tags:
+            - 'console.command'
+
+    Ynlo\GraphQLBundle\Schema\SchemaSnapshot:
+        public: true
+        arguments:
+            - '@Ynlo\GraphQLBundle\Schema\SchemaCompiler'
+
+    Ynlo\GraphQLBundle\Command\SchemaSnapshotCommand:
+        arguments:
+            - '@Ynlo\GraphQLBundle\Schema\SchemaSnapshot'
+            - '%graphql.endpoints_list%'
+            - '%kernel.project_dir%'
         tags:
             - 'console.command'

@@ -1,0 +1,1347 @@
+{
+    "AddCommentInput": {
+        "inputFields": {
+            "body": {
+                "type": "String!"
+            },
+            "clientMutationId": {
+                "type": "String"
+            },
+            "commentable": {
+                "type": "ID!"
+            }
+        }
+    },
+    "AddCommentPayload": {
+        "fields": {
+            "clientMutationId": {
+                "type": "String"
+            },
+            "constraintViolations": {
+                "type": "[ConstraintViolation]"
+            },
+            "node": {
+                "type": "Comment"
+            }
+        }
+    },
+    "AddPostInput": {
+        "inputFields": {
+            "body": {
+                "type": "String"
+            },
+            "categories": {
+                "type": "[ID]!"
+            },
+            "clientMutationId": {
+                "type": "String"
+            },
+            "futurePublishDate": {
+                "type": "DateTime"
+            },
+            "status": {
+                "type": "PostStatus!"
+            },
+            "tags": {
+                "type": "[String]"
+            },
+            "title": {
+                "type": "String!"
+            }
+        }
+    },
+    "AddPostPayload": {
+        "fields": {
+            "clientMutationId": {
+                "type": "String"
+            },
+            "constraintViolations": {
+                "type": "[ConstraintViolation]"
+            },
+            "node": {
+                "type": "Post"
+            }
+        }
+    },
+    "AddUserInput": {
+        "inputFields": {
+            "clientMutationId": {
+                "type": "String"
+            },
+            "email": {
+                "type": "String!"
+            },
+            "enabled": {
+                "type": "Boolean"
+            },
+            "login": {
+                "type": "String!"
+            },
+            "password": {
+                "type": "String!"
+            },
+            "profile": {
+                "type": "AddUserProfileInput!"
+            }
+        }
+    },
+    "AddUserPayload": {
+        "fields": {
+            "clientMutationId": {
+                "type": "String"
+            },
+            "constraintViolations": {
+                "type": "[ConstraintViolation]"
+            },
+            "node": {
+                "type": "User"
+            }
+        }
+    },
+    "AddUserProfileInput": {
+        "inputFields": {
+            "email": {
+                "type": "String!"
+            },
+            "phone": {
+                "type": "String"
+            }
+        }
+    },
+    "Address": {
+        "fields": {
+            "city": {
+                "type": "String"
+            },
+            "state": {
+                "type": "String"
+            },
+            "street": {
+                "type": "String"
+            },
+            "zipCode": {
+                "type": "String"
+            }
+        }
+    },
+    "AdminUser": {
+        "fields": {
+            "email": {
+                "type": "String"
+            },
+            "enabled": {
+                "type": "Boolean"
+            },
+            "id": {
+                "type": "ID!"
+            },
+            "isCurrent": {
+                "type": "Boolean"
+            },
+            "login": {
+                "type": "String"
+            },
+            "posts": {
+                "args": {
+                    "after": {
+                        "type": "String"
+                    },
+                    "before": {
+                        "type": "String"
+                    },
+                    "filters": {
+                        "type": "PostsFilter"
+                    },
+                    "first": {
+                        "type": "Int"
+                    },
+                    "last": {
+                        "type": "Int"
+                    },
+                    "orderBy": {
+                        "type": "[OrderBy]"
+                    },
+                    "search": {
+                        "type": "String"
+                    }
+                },
+                "type": "PostConnection"
+            },
+            "profile": {
+                "type": "Profile"
+            }
+        },
+        "interfaces": [
+            "Node",
+            "User"
+        ]
+    },
+    "AdminUserConnection": {
+        "fields": {
+            "edges": {
+                "type": "[AdminUserEdge]"
+            },
+            "pageInfo": {
+                "type": "PageInfo!"
+            },
+            "totalCount": {
+                "type": "Int!"
+            }
+        }
+    },
+    "AdminUserEdge": {
+        "fields": {
+            "cursor": {
+                "type": "String!"
+            },
+            "node": {
+                "type": "AdminUser!"
+            }
+        }
+    },
+    "AllAdminUserFilter": {
+        "inputFields": {
+            "email": {
+                "type": "String"
+            },
+            "enabled": {
+                "type": "Boolean"
+            },
+            "login": {
+                "type": "String"
+            },
+            "posts": {
+                "type": "[ID]"
+            },
+            "profile": {
+                "type": "[ID]"
+            }
+        }
+    },
+    "AllCategoriesFilter": {
+        "inputFields": {
+            "name": {
+                "type": "String"
+            },
+            "posts": {
+                "type": "[ID]"
+            },
+            "slug": {
+                "type": "String"
+            }
+        }
+    },
+    "AllPostsFilter": {
+        "inputFields": {
+            "author": {
+                "type": "[ID]"
+            },
+            "body": {
+                "type": "String"
+            },
+            "categories": {
+                "type": "[ID]"
+            },
+            "comments": {
+                "type": "[ID]"
+            },
+            "createdAt": {
+                "type": "DateTime"
+            },
+            "futurePublishDate": {
+                "type": "DateTime"
+            },
+            "slug": {
+                "type": "String"
+            },
+            "status": {
+                "type": "[PostStatus]"
+            },
+            "tags": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            },
+            "updatedAt": {
+                "type": "DateTime"
+            }
+        }
+    },
+    "AllUsersFilter": {
+        "inputFields": {
+            "email": {
+                "type": "String"
+            },
+            "enabled": {
+                "type": "Boolean"
+            },
+            "login": {
+                "type": "String"
+            },
+            "posts": {
+                "type": "[ID]"
+            },
+            "profile": {
+                "type": "[ID]"
+            }
+        }
+    },
+    "Boolean": null,
+    "Category": {
+        "fields": {
+            "id": {
+                "type": "ID!"
+            },
+            "name": {
+                "type": "String!"
+            },
+            "posts": {
+                "args": {
+                    "after": {
+                        "type": "String"
+                    },
+                    "before": {
+                        "type": "String"
+                    },
+                    "filters": {
+                        "type": "PostsFilter"
+                    },
+                    "first": {
+                        "type": "Int"
+                    },
+                    "last": {
+                        "type": "Int"
+                    },
+                    "orderBy": {
+                        "type": "[OrderBy]"
+                    },
+                    "search": {
+                        "type": "String"
+                    }
+                },
+                "type": "PostConnection"
+            },
+            "postsByStatus": {
+                "args": {
+                    "after": {
+                        "type": "String"
+                    },
+                    "before": {
+                        "type": "String"
+                    },
+                    "filters": {
+                        "type": "PostsByStatusFilter"
+                    },
+                    "first": {
+                        "type": "Int"
+                    },
+                    "last": {
+                        "type": "Int"
+                    },
+                    "orderBy": {
+                        "type": "[OrderBy]"
+                    },
+                    "search": {
+                        "type": "String"
+                    },
+                    "status": {
+                        "type": "PostStatus!"
+                    }
+                },
+                "type": "PostConnection"
+            },
+            "slug": {
+                "type": "String!"
+            }
+        },
+        "interfaces": [
+            "Node"
+        ]
+    },
+    "CategoryConnection": {
+        "fields": {
+            "edges": {
+                "type": "[CategoryEdge]"
+            },
+            "pageInfo": {
+                "type": "PageInfo!"
+            },
+            "totalCount": {
+                "type": "Int!"
+            }
+        }
+    },
+    "CategoryEdge": {
+        "fields": {
+            "cursor": {
+                "type": "String!"
+            },
+            "node": {
+                "type": "Category!"
+            }
+        }
+    },
+    "CategoryQuery": {
+        "fields": {
+            "all": {
+                "args": {
+                    "after": {
+                        "type": "String"
+                    },
+                    "before": {
+                        "type": "String"
+                    },
+                    "filters": {
+                        "type": "AllCategoriesFilter"
+                    },
+                    "first": {
+                        "type": "Int"
+                    },
+                    "last": {
+                        "type": "Int"
+                    },
+                    "orderBy": {
+                        "type": "[OrderBy]"
+                    },
+                    "search": {
+                        "type": "String"
+                    }
+                },
+                "type": "CategoryConnection"
+            }
+        }
+    },
+    "Comment": {
+        "fields": {
+            "author": {
+                "type": "User!"
+            },
+            "body": {
+                "type": "String!"
+            },
+            "commentable": {
+                "type": "Commentable!"
+            },
+            "createdAt": {
+                "type": "DateTime!"
+            },
+            "id": {
+                "type": "ID!"
+            },
+            "updatedAt": {
+                "type": "DateTime!"
+            }
+        },
+        "possibleTypes": {
+            "PostComment": null
+        }
+    },
+    "CommentMutation": {
+        "fields": {
+            "add": {
+                "args": {
+                    "input": {
+                        "type": "AddCommentInput!"
+                    }
+                },
+                "type": "AddCommentPayload"
+            },
+            "delete": {
+                "args": {
+                    "input": {
+                        "type": "DeleteCommentInput!"
+                    }
+                },
+                "type": "DeleteNodePayload"
+            }
+        }
+    },
+    "Commentable": {
+        "fields": {
+            "comments": {
+                "type": "[Comment]"
+            }
+        },
+        "possibleTypes": {
+            "Post": null,
+            "PostComment": null
+        }
+    },
+    "CommonUser": {
+        "fields": {
+            "createdAt": {
+                "type": "DateTime!"
+            },
+            "email": {
+                "type": "String"
+            },
+            "enabled": {
+                "type": "Boolean"
+            },
+            "fullName": {
+                "type": "String"
+            },
+            "id": {
+                "type": "ID!"
+            },
+            "isCurrent": {
+                "type": "Boolean"
+            },
+            "login": {
+                "type": "String"
+            },
+            "posts": {
+                "args": {
+                    "after": {
+                        "type": "String"
+                    },
+                    "before": {
+                        "type": "String"
+                    },
+                    "filters": {
+                        "type": "PostsFilter"
+                    },
+                    "first": {
+                        "type": "Int"
+                    },
+                    "last": {
+                        "type": "Int"
+                    },
+                    "orderBy": {
+                        "type": "[OrderBy]"
+                    },
+                    "search": {
+                        "type": "String"
+                    }
+                },
+                "type": "PostConnection"
+            },
+            "profile": {
+                "type": "Profile"
+            },
+            "updatedAt": {
+                "type": "DateTime!"
+            }
+        },
+        "interfaces": [
+            "Node",
+            "Timestampable",
+            "User"
+        ]
+    },
+    "Connection": {
+        "fields": {
+            "edges": {
+                "type": "[Edge]"
+            },
+            "pageInfo": {
+                "type": "PageInfo"
+            },
+            "totalCount": {
+                "type": "Int!"
+            }
+        },
+        "possibleTypes": {
+            "NodeConnection": null
+        }
+    },
+    "ConstraintViolation": {
+        "fields": {
+            "code": {
+                "type": "String!"
+            },
+            "invalidValue": {
+                "type": "String"
+            },
+            "message": {
+                "type": "String!"
+            },
+            "messageTemplate": {
+                "type": "String!"
+            },
+            "parameters": {
+                "type": "[ConstraintViolationParameter]"
+            },
+            "plural": {
+                "type": "Int"
+            },
+            "propertyPath": {
+                "type": "String"
+            }
+        }
+    },
+    "ConstraintViolationParameter": {
+        "fields": {
+            "name": {
+                "type": "String!"
+            },
+            "value": {
+                "type": "String!"
+            }
+        }
+    },
+    "DateTime": null,
+    "DeleteBatchNodePayload": {
+        "fields": {
+            "clientMutationId": {
+                "type": "String"
+            },
+            "ids": {
+                "type": "[ID!]!"
+            }
+        }
+    },
+    "DeleteBatchPostInput": {
+        "inputFields": {
+            "clientMutationId": {
+                "type": "String"
+            },
+            "ids": {
+                "type": "[ID]!"
+            }
+        }
+    },
+    "DeleteCommentInput": {
+        "inputFields": {
+            "clientMutationId": {
+                "type": "String"
+            },
+            "id": {
+                "type": "ID!"
+            }
+        }
+    },
+    "DeleteNodePayload": {
+        "fields": {
+            "clientMutationId": {
+                "type": "String"
+            },
+            "id": {
+                "type": "ID!"
+            }
+        }
+    },
+    "DeletePostInput": {
+        "inputFields": {
+            "clientMutationId": {
+                "type": "String"
+            },
+            "id": {
+                "type": "ID!"
+            }
+        }
+    },
+    "DeleteUserInput": {
+        "inputFields": {
+            "clientMutationId": {
+                "type": "String"
+            },
+            "id": {
+                "type": "ID!"
+            }
+        }
+    },
+    "Edge": {
+        "fields": {
+            "cursor": {
+                "type": "String!"
+            },
+            "node": {
+                "type": "Node!"
+            }
+        },
+        "possibleTypes": {
+            "NodeConnectionEdge": null
+        }
+    },
+    "Float": null,
+    "HasAuthor": {
+        "fields": {
+            "author": {
+                "type": "User"
+            }
+        },
+        "possibleTypes": {
+            "Post": null,
+            "PostComment": null
+        }
+    },
+    "ID": null,
+    "Int": null,
+    "Mutation": {
+        "fields": {
+            "comments": {
+                "type": "CommentMutation"
+            },
+            "posts": {
+                "type": "PostMutation"
+            },
+            "users": {
+                "type": "UserMutation"
+            }
+        }
+    },
+    "Node": {
+        "fields": {
+            "id": {
+                "type": "ID!"
+            }
+        },
+        "possibleTypes": {
+            "AdminUser": null,
+            "Category": null,
+            "CommonUser": null,
+            "Post": null,
+            "PostComment": null,
+            "Profile": null
+        }
+    },
+    "NodeConnection": {
+        "fields": {
+            "edges": {
+                "type": "[Edge]"
+            },
+            "pageInfo": {
+                "type": "PageInfo"
+            },
+            "totalCount": {
+                "type": "Int!"
+            }
+        },
+        "interfaces": [
+            "Connection"
+        ]
+    },
+    "NodeConnectionEdge": {
+        "fields": {
+            "cursor": {
+                "type": "String!"
+            },
+            "node": {
+                "type": "Node!"
+            }
+        },
+        "interfaces": [
+            "Edge"
+        ]
+    },
+    "OrderBy": {
+        "inputFields": {
+            "direction": {
+                "type": "OrderDirection"
+            },
+            "field": {
+                "type": "String!"
+            }
+        }
+    },
+    "OrderDirection": {
+        "enumValues": [
+            "ASC",
+            "DESC"
+        ]
+    },
+    "PageInfo": {
+        "fields": {
+            "endCursor": {
+                "type": "String"
+            },
+            "hasNextPage": {
+                "type": "Boolean!"
+            },
+            "hasPreviousPage": {
+                "type": "Boolean!"
+            },
+            "startCursor": {
+                "type": "String"
+            }
+        }
+    },
+    "Post": {
+        "fields": {
+            "author": {
+                "type": "User"
+            },
+            "body": {
+                "type": "String"
+            },
+            "categories": {
+                "type": "[Category]"
+            },
+            "comments": {
+                "type": "[Comment]"
+            },
+            "createdAt": {
+                "type": "DateTime!"
+            },
+            "futurePublishDate": {
+                "type": "DateTime"
+            },
+            "id": {
+                "type": "ID!"
+            },
+            "slug": {
+                "type": "String!"
+            },
+            "status": {
+                "type": "PostStatus!"
+            },
+            "tags": {
+                "type": "[String]"
+            },
+            "title": {
+                "type": "String!"
+            },
+            "updatedAt": {
+                "type": "DateTime!"
+            }
+        },
+        "interfaces": [
+            "Node",
+            "Commentable",
+            "Timestampable",
+            "HasAuthor"
+        ]
+    },
+    "PostComment": {
+        "fields": {
+            "author": {
+                "type": "User!"
+            },
+            "body": {
+                "type": "String!"
+            },
+            "commentable": {
+                "type": "Commentable!"
+            },
+            "comments": {
+                "type": "[Comment]"
+            },
+            "createdAt": {
+                "type": "DateTime!"
+            },
+            "id": {
+                "type": "ID!"
+            },
+            "updatedAt": {
+                "type": "DateTime!"
+            }
+        },
+        "interfaces": [
+            "Node",
+            "Comment",
+            "Timestampable",
+            "HasAuthor",
+            "Commentable"
+        ]
+    },
+    "PostConnection": {
+        "fields": {
+            "edges": {
+                "type": "[PostEdge]"
+            },
+            "pageInfo": {
+                "type": "PageInfo!"
+            },
+            "totalCount": {
+                "type": "Int!"
+            }
+        }
+    },
+    "PostEdge": {
+        "fields": {
+            "cursor": {
+                "type": "String!"
+            },
+            "node": {
+                "type": "Post!"
+            }
+        }
+    },
+    "PostMutation": {
+        "fields": {
+            "add": {
+                "args": {
+                    "input": {
+                        "type": "AddPostInput!"
+                    }
+                },
+                "type": "AddPostPayload"
+            },
+            "delete": {
+                "args": {
+                    "input": {
+                        "type": "DeletePostInput!"
+                    }
+                },
+                "type": "DeleteNodePayload"
+            },
+            "deleteBatch": {
+                "args": {
+                    "input": {
+                        "type": "DeleteBatchPostInput!"
+                    }
+                },
+                "type": "DeleteBatchNodePayload"
+            },
+            "update": {
+                "args": {
+                    "input": {
+                        "type": "UpdatePostInput!"
+                    }
+                },
+                "type": "UpdatePostPayload"
+            }
+        }
+    },
+    "PostQuery": {
+        "fields": {
+            "all": {
+                "args": {
+                    "after": {
+                        "type": "String"
+                    },
+                    "before": {
+                        "type": "String"
+                    },
+                    "filters": {
+                        "type": "AllPostsFilter"
+                    },
+                    "first": {
+                        "type": "Int"
+                    },
+                    "last": {
+                        "type": "Int"
+                    },
+                    "orderBy": {
+                        "type": "[OrderBy]"
+                    },
+                    "search": {
+                        "type": "String"
+                    }
+                },
+                "type": "PostConnection"
+            }
+        }
+    },
+    "PostStatus": {
+        "enumValues": [
+            "PUBLISHED",
+            "FUTURE",
+            "DRAFT",
+            "PENDING",
+            "TRASH",
+            "DELETED"
+        ]
+    },
+    "PostsByStatusFilter": {
+        "inputFields": {
+            "author": {
+                "type": "[ID]"
+            },
+            "body": {
+                "type": "String"
+            },
+            "categories": {
+                "type": "[ID]"
+            },
+            "comments": {
+                "type": "[ID]"
+            },
+            "createdAt": {
+                "type": "DateTime"
+            },
+            "futurePublishDate": {
+                "type": "DateTime"
+            },
+            "slug": {
+                "type": "String"
+            },
+            "status": {
+                "type": "[PostStatus]"
+            },
+            "tags": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            },
+            "updatedAt": {
+                "type": "DateTime"
+            }
+        }
+    },
+    "PostsFilter": {
+        "inputFields": {
+            "author": {
+                "type": "[ID]"
+            },
+            "body": {
+                "type": "String"
+            },
+            "categories": {
+                "type": "[ID]"
+            },
+            "comments": {
+                "type": "[ID]"
+            },
+            "createdAt": {
+                "type": "DateTime"
+            },
+            "futurePublishDate": {
+                "type": "DateTime"
+            },
+            "slug": {
+                "type": "String"
+            },
+            "status": {
+                "type": "[PostStatus]"
+            },
+            "tags": {
+                "type": "String"
+            },
+            "title": {
+                "type": "String"
+            },
+            "updatedAt": {
+                "type": "DateTime"
+            }
+        }
+    },
+    "Profile": {
+        "fields": {
+            "address": {
+                "type": "Address"
+            },
+            "email": {
+                "type": "String!"
+            },
+            "facebook": {
+                "type": "String"
+            },
+            "firstName": {
+                "type": "String"
+            },
+            "id": {
+                "type": "ID!"
+            },
+            "lastName": {
+                "type": "String"
+            },
+            "phone": {
+                "type": "String"
+            },
+            "twitter": {
+                "type": "String"
+            },
+            "user": {
+                "type": "User"
+            }
+        },
+        "interfaces": [
+            "Node"
+        ]
+    },
+    "Query": {
+        "fields": {
+            "categories": {
+                "type": "CategoryQuery"
+            },
+            "node": {
+                "args": {
+                    "id": {
+                        "type": "ID!"
+                    }
+                },
+                "type": "Node"
+            },
+            "nodes": {
+                "args": {
+                    "ids": {
+                        "type": "[ID!]!"
+                    }
+                },
+                "type": "[Node]"
+            },
+            "posts": {
+                "type": "PostQuery"
+            },
+            "users": {
+                "type": "UserQuery"
+            }
+        }
+    },
+    "String": null,
+    "Timestampable": {
+        "fields": {
+            "createdAt": {
+                "type": "DateTime!"
+            },
+            "updatedAt": {
+                "type": "DateTime!"
+            }
+        },
+        "possibleTypes": {
+            "CommonUser": null,
+            "Post": null,
+            "PostComment": null
+        }
+    },
+    "UpdatePostInput": {
+        "inputFields": {
+            "body": {
+                "type": "String"
+            },
+            "categories": {
+                "type": "[ID]"
+            },
+            "clientMutationId": {
+                "type": "String"
+            },
+            "futurePublishDate": {
+                "type": "DateTime"
+            },
+            "id": {
+                "type": "ID!"
+            },
+            "status": {
+                "type": "PostStatus"
+            },
+            "tags": {
+                "type": "[String]"
+            },
+            "title": {
+                "type": "String"
+            }
+        }
+    },
+    "UpdatePostPayload": {
+        "fields": {
+            "clientMutationId": {
+                "type": "String"
+            },
+            "constraintViolations": {
+                "type": "[ConstraintViolation]"
+            },
+            "node": {
+                "type": "Post"
+            }
+        }
+    },
+    "UpdateUserInput": {
+        "inputFields": {
+            "clientMutationId": {
+                "type": "String"
+            },
+            "email": {
+                "type": "String"
+            },
+            "enabled": {
+                "type": "Boolean"
+            },
+            "id": {
+                "type": "ID!"
+            },
+            "login": {
+                "type": "String"
+            },
+            "password": {
+                "type": "String"
+            },
+            "profile": {
+                "type": "UpdateUserProfileInput"
+            }
+        }
+    },
+    "UpdateUserPayload": {
+        "fields": {
+            "clientMutationId": {
+                "type": "String"
+            },
+            "constraintViolations": {
+                "type": "[ConstraintViolation]"
+            },
+            "node": {
+                "type": "User"
+            }
+        }
+    },
+    "UpdateUserProfileInput": {
+        "inputFields": {
+            "email": {
+                "type": "String"
+            },
+            "phone": {
+                "type": "String"
+            }
+        }
+    },
+    "User": {
+        "fields": {
+            "email": {
+                "type": "String"
+            },
+            "enabled": {
+                "type": "Boolean"
+            },
+            "id": {
+                "type": "ID!"
+            },
+            "isCurrent": {
+                "type": "Boolean"
+            },
+            "login": {
+                "type": "String"
+            },
+            "posts": {
+                "args": {
+                    "after": {
+                        "type": "String"
+                    },
+                    "before": {
+                        "type": "String"
+                    },
+                    "filters": {
+                        "type": "PostsFilter"
+                    },
+                    "first": {
+                        "type": "Int"
+                    },
+                    "last": {
+                        "type": "Int"
+                    },
+                    "orderBy": {
+                        "type": "[OrderBy]"
+                    },
+                    "search": {
+                        "type": "String"
+                    }
+                },
+                "type": "PostConnection"
+            },
+            "profile": {
+                "type": "Profile"
+            }
+        },
+        "possibleTypes": {
+            "AdminUser": null,
+            "CommonUser": null
+        }
+    },
+    "UserConnection": {
+        "fields": {
+            "edges": {
+                "type": "[UserEdge]"
+            },
+            "pageInfo": {
+                "type": "PageInfo!"
+            },
+            "totalCount": {
+                "type": "Int!"
+            }
+        }
+    },
+    "UserEdge": {
+        "fields": {
+            "cursor": {
+                "type": "String!"
+            },
+            "node": {
+                "type": "User!"
+            }
+        }
+    },
+    "UserMutation": {
+        "fields": {
+            "add": {
+                "args": {
+                    "input": {
+                        "type": "AddUserInput!"
+                    }
+                },
+                "type": "AddUserPayload"
+            },
+            "delete": {
+                "args": {
+                    "input": {
+                        "type": "DeleteUserInput!"
+                    }
+                },
+                "type": "DeleteNodePayload"
+            },
+            "update": {
+                "args": {
+                    "input": {
+                        "type": "UpdateUserInput!"
+                    }
+                },
+                "type": "UpdateUserPayload"
+            }
+        }
+    },
+    "UserQuery": {
+        "fields": {
+            "all": {
+                "args": {
+                    "after": {
+                        "type": "String"
+                    },
+                    "before": {
+                        "type": "String"
+                    },
+                    "filters": {
+                        "type": "AllUsersFilter"
+                    },
+                    "first": {
+                        "type": "Int"
+                    },
+                    "last": {
+                        "type": "Int"
+                    },
+                    "orderBy": {
+                        "type": "[OrderBy]"
+                    },
+                    "search": {
+                        "type": "String"
+                    }
+                },
+                "type": "UserConnection"
+            },
+            "allAdmin": {
+                "args": {
+                    "after": {
+                        "type": "String"
+                    },
+                    "before": {
+                        "type": "String"
+                    },
+                    "filters": {
+                        "type": "AllAdminUserFilter"
+                    },
+                    "first": {
+                        "type": "Int"
+                    },
+                    "last": {
+                        "type": "Int"
+                    },
+                    "orderBy": {
+                        "type": "[OrderBy]"
+                    },
+                    "search": {
+                        "type": "String"
+                    }
+                },
+                "type": "AdminUserConnection"
+            },
+            "byLogin": {
+                "args": {
+                    "logins": {
+                        "type": "[String!]"
+                    }
+                },
+                "type": "[User]"
+            }
+        }
+    }
+}

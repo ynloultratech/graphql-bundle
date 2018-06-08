@@ -44,6 +44,7 @@
  * Added option to set custom favicon in the GraphiQL Explorer
  * Added option to set custom API documentation link in the GraphiQL Explorer
  * Fixed max limit reached when use a field with limited concurrent usage in tests
+ * Added `snapshot` feature tests to verify the schema stability
  
 1.0.6 - 18-03-23
 ----

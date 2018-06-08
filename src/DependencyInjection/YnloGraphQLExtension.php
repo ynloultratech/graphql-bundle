@@ -50,6 +50,7 @@ class YnloGraphQLExtension extends Extension
         $endpointsConfig['alias'] = $config['endpoint_alias'] ?? [];
 
         $container->setParameter('graphql.endpoints', $endpointsConfig);
+        $container->setParameter('graphql.endpoints_list', array_keys($endpointsConfig['endpoints']));
 
         $graphiQLAuthProvider = null;
         if ($config['graphiql']['authentication']['provider']['jwt']['enabled'] ?? false) {
