@@ -252,6 +252,7 @@ final class AssertContext implements Context
      */
     public function shouldContainsASubset($actual, YamlStringNode $subset)
     {
+        $actual = json_decode(json_encode($actual), true);
         Assert::assertArraySubset($subset->toArray(), $actual);
     }
 }
