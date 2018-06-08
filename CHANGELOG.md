@@ -43,6 +43,7 @@
  * **[BC BREAK]** Moved plugins configuration out of `definitions`
  * Added option to set custom favicon in the GraphiQL Explorer
  * Added option to set custom API documentation link in the GraphiQL Explorer
+ * Fixed max limit reached when use a field with limited concurrent usage in tests
  
 1.0.6 - 18-03-23
 ----

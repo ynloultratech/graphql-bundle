@@ -91,7 +91,7 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
             return $event->getValue();
         }
 
-        $this->verifyConcurrentUsage($fieldDefinition);
+        $this->verifyConcurrentUsage($context, $fieldDefinition);
         $this->denyAccessUnlessGranted($fieldDefinition);
 
         //when use external resolver or use a object method with arguments
@@ -149,15 +149,16 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
     }
 
     /**
-     * @param FieldDefinition $definition
+     * @param QueryExecutionContext $context
+     * @param FieldDefinition       $definition
      *
      * @throws Error
      */
-    private function verifyConcurrentUsage(FieldDefinition $definition)
+    private function verifyConcurrentUsage(QueryExecutionContext $context, FieldDefinition $definition)
     {
         if ($maxConcurrentUsage = $definition->getMaxConcurrentUsage()) {
             $oid = spl_object_hash($definition);
-            $usages = static::$concurrentUsages[$oid] ?? 1;
+            $usages = static::$concurrentUsages[$context->getQueryId()][$oid] ?? 1;
             if ($usages > $maxConcurrentUsage) {
                 if (1 === $maxConcurrentUsage) {
                     $error = sprintf(
@@ -173,7 +174,7 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
                 }
                 throw new Error($error);
             }
-            static::$concurrentUsages[$oid] = $usages + 1;
+            static::$concurrentUsages[$context->getQueryId()][$oid] = $usages + 1;
         }
     }
 

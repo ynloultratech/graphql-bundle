@@ -24,6 +24,7 @@ use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Ynlo\GraphQLBundle\Request\ExecuteQuery;
 use Ynlo\GraphQLBundle\Request\RequestMiddlewareInterface;
+use Ynlo\GraphQLBundle\Resolver\QueryExecutionContext;
 use Ynlo\GraphQLBundle\Schema\SchemaCompiler;
 use Ynlo\GraphQLBundle\Security\EndpointResolver;
 
@@ -82,7 +83,7 @@ class GraphQLEndpointController
             }
         }
 
-        $context = null;
+        $context = new QueryExecutionContext();
         $validationRules = null;
 
         try {
