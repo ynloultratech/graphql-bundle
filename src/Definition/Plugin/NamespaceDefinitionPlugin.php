@@ -172,6 +172,8 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
             if ($root && $parent) {
                 $this->addDefinitionToNamespace($parent, $definition);
                 $namespacedDefinitions[$root->getName()] = $root;
+            } else {
+                $namespacedDefinitions[$definition->getName()] = $definition;
             }
         }
 
