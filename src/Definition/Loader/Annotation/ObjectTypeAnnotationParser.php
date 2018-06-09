@@ -461,19 +461,6 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
             }
         }
 
-        if (!$exposed) {
-            //verify if the field belong to a interface
-            //in this case is always exposed
-            $inheritedInterfaceFields = [];
-            foreach ($definition->getFields() as $field) {
-                if ($field->getInheritedFrom()) {
-                    $inheritedInterfaceFields[] = lcfirst(preg_replace('/^(get|set|has|is)/', null, $field->getOriginName()));
-                }
-            }
-
-            $exposed = \in_array($prop->name, $inheritedInterfaceFields, true);
-        }
-
         return $exposed;
     }
 

@@ -47,6 +47,7 @@
  * Added `snapshot` feature tests to verify the schema stability
  * Fixed missing operation when namespace has been disabled for that operation
  * Added `default_query` config to define custom default query when load the explorer
+ * Fixed duplicate field definition when interface publish a field with different name
  
 1.0.6 - 18-03-23
 ----
