@@ -46,6 +46,7 @@
  * Fixed max limit reached when use a field with limited concurrent usage in tests
  * Added `snapshot` feature tests to verify the schema stability
  * Fixed missing operation when namespace has been disabled for that operation
+ * Added `default_query` config to define custom default query when load the explorer
  
 1.0.6 - 18-03-23
 ----

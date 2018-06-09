@@ -126,7 +126,8 @@
             operationName: parameters.operationName,
             onEditQuery: onEditQuery,
             onEditVariables: onEditVariables,
-            onEditOperationName: onEditOperationName
+            onEditOperationName: onEditOperationName,
+            defaultQuery: '{{ defaultQuery|raw }}'
         }),
         document.getElementById('graphiql')
     );

@@ -110,10 +110,18 @@ class ExplorerController extends AbstractController
             $this->provider->prepareRequest($request);
         }
 
+        $defaultQuery = $this->config['default_query'];
+        if ($defaultQuery) {
+            //escape any simple quote
+            //and convert newlines to javascript multiline concatenation
+            $defaultQuery = str_replace(["'", "\n"], ["\'", "\\n' + \n'"], $this->config['default_query']);
+        }
+
         return $this->render('@YnloGraphQL/graphiql.html.twig', [
             'url' => $request->getUrl(),
             'method' => 'post',
             'headers' => $request->getHeaders(),
+            'defaultQuery' => $defaultQuery,
         ]);
     }
 }

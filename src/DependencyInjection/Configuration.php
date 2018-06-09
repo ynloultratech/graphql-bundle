@@ -100,8 +100,8 @@ class Configuration implements ConfigurationInterface
         $graphiql->booleanNode('data_warning_dismissible')->defaultTrue();
         $graphiql->enumNode('data_warning_style')->values(['info', 'warning', 'danger'])->defaultValue('danger');
 
-        $graphiql->scalarNode('template')
-                 ->defaultValue('@YnloGraphQL/explorer.html.twig');
+        $graphiql->scalarNode('template')->defaultValue('@YnloGraphQL/explorer.html.twig');
+        $graphiql->scalarNode('default_query')->defaultNull()->info('An optional GraphQL string to use when no query exists from a previous session. If none is provided, GraphiQL will use its own default query.');
 
         $graphiql->scalarNode('favicon')->info('Url or path to favicon');
 
