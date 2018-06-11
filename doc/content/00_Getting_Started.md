@@ -35,7 +35,10 @@ GraphQL use one only endpoint to all queries & mutations to configure it, add th
 api:
   resource: '@YnloGraphQLBundle/Resources/config/routing/root.yml'
   prefix:   /api
+  trailing_slash_on_root: false
 ````
+
+> The `trailing_slash_on_root` option was introduced in Symfony 4.1.
      
 At this point your GraphQL server under the `/api` route is ready, but does not have any data to serve.
   

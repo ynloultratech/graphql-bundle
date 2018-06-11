@@ -8,7 +8,10 @@ the only that you need is add the following route to your `routing.yml`
 api_explore:
       resource: '@YnloGraphQLBundle/Resources/config/routing/explorer.yml'
       prefix:   /explorer
+      trailing_slash_on_root: false
 ````
+
+> The trailing_slash_on_root option was introduced in Symfony 4.1.
 
 Install required javascript and stylesheets:
 
