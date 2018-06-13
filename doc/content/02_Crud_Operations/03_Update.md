@@ -13,7 +13,7 @@ In this case the form should be named `UpdateUserInput`
 The following example shows how create a update form using inheritance with the previously created **AddUserInput** form.
 
 ````php
-namespace AppBundle\Form\Input\User;
+namespace App\Form\Input\User;
 
 use Symfony\Component\Form\FormBuilderInterface;
 
@@ -41,12 +41,12 @@ Create a form only with the name of the Node
 followed by the input prefix, in this case `UserInput`.
 
 ````php
-namespace AppBundle\Form\Input\User;
+namespace App\Form\Input\User;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use AppBundle\Entity\User;
+use App\Entity\User;
 
 class UserInput extends AbstractType
 {

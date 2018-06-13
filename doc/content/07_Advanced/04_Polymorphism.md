@@ -4,7 +4,7 @@ Imagine you have a `User` entity, but you has admin users and customers users, s
 Commonly customers have different properties than admin users. Example, customer user can have a field called `orders`
 to get the list of all Orders and/or field called `payments` to get payments.
 
-To convert a node to polymorphic object use `InterfaceType`:
+To convert a node to polymorphic object use `InterfaceType` to the main object instead of `ObjectType`.
 
 ````php
 <?php
@@ -68,7 +68,10 @@ A query to fetch `allUsers` is created too.
 - `discriminatorProperty`: The object property to get the object type. Can be exposed in the API or not.
 - `discriminatorMap`: Specifies which values of the discriminator property identify a object as being of which type.
 
-The following example fetch all users and display the latest 10 orders for customers users.
+The following example fetch all users and display latest orders for customers users.
+
+<div class="graphiql">
+<div class="request">
 
 ````graphql
 query users {
@@ -93,6 +96,102 @@ query users {
   }
 }
 ````
+
+</div>
+<div class="response">
+
+````
+{
+  "data": {
+    "users": {
+      "all": {
+        "edges": [
+          {
+            "node": {
+              "__typename": "Admin",
+              "id": "QWRt2VyOjE="
+            }
+          },
+          {
+            "node": {
+              "__typename": "Customer",
+              "id": "Q29tbVXNlcjoy",
+              "orders": {
+                "edges": [
+                  {
+                    "node": {
+                      "amount": 100
+                    }
+                  },
+                  {
+                    "node": {
+                      "amount": 23
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "node": {
+              "__typename": "Customer",
+              "id": "Q29tbVXNlcjoz",
+              "orders": {
+                "edges": [
+                  {
+                    "node": {
+                      "amount": 50
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "node": {
+              "__typename": "Customer",
+              "id": "Q29tbVXNlcjo0",
+              "orders": {
+                "edges": [
+                  {
+                    "node": {
+                      "amount": 40
+                    }
+                  },
+                  {
+                    "node": {
+                      "amount": 55
+                    }
+                  }
+                ]
+              }
+            }
+          },
+          {
+            "node": {
+              "__typename": "Customer",
+              "id": "Q29tbVXNlcjo1",
+              "orders": {
+                "edges": [
+                  {
+                    "node": {
+                      "amount": 20
+                    }
+                  }
+                ]
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+}
+````
+
+</div>
+</div>
+
 ## Properties for specific objects
 
 For each property in the class can define `in` and `notIn` in the field annotation to use

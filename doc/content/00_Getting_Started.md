@@ -17,7 +17,7 @@ Add the bundle in the kernel
 $bundles = [
     ...
     new Ynlo\GraphQLBundle\YnloGraphQLBundle(),
-    new AppBundle\AppBundle(),
+    new App\AppBundle(),
  ];
 ````
 

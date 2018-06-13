@@ -20,12 +20,12 @@ You can check if the user has proper permissions before execute the operation,
 but this is not the best solution, because the schema still displaying these operations.
 If your security check fails or is missing, you are exposing functional and dangerous operations.
 
-In the other hand, `endpoints` hide this sensitive operations for users with proper access,
+In the other hand, `endpoints` hide this sensitive operations for users without proper access,
 and the GraphQL schema works like a firewall because can't execute a non existent operation. 
 
 # Configuration
 
-To activate endpoints go to your `config.yml` add the following config:
+To activate endpoints go to your `config.yml` and add the following config:
 
 ````yaml
 graphql:
@@ -53,8 +53,8 @@ Alternatively you can expose your endpoints on different hosts or paths.
              path: /
  ````
 
-> The order of endpoints matter, endpoints works like routes, and the first endpoint matching
-the given criteria with current request is used.
+>>> The order of endpoints matter, endpoints works like routes, 
+and the first endpoint matching with the given criteria and the incoming request will be used.
 
 # Usage
 
@@ -185,6 +185,6 @@ as default endpoint for all operations and objects.
 All operations and object without specific `endpoints` only will be available in
 `admin_user` and `admin_system` endpoints.
 
-> NOTE! default endpoint works as a security layer to avoid expose objects and operations
+>>> Default endpoint can works as a security layer to avoid expose objects and operations
 accidentally. Is recommended always define the most restricted endpoint as your
 default endpoint.

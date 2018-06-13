@@ -27,7 +27,7 @@ is similar to:
  */
  protected $author;
 ````
-> Type names should be unique in the entire schema
+>>> Type names should be unique in the entire schema
 
 # List & NonNull
 

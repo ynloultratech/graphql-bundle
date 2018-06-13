@@ -17,7 +17,7 @@ Mutations Resolvers:
 Then, if you need override the action `addUser` must create the following class:
 
 ````php
-namespace AppBundle\Mutation\User;
+namespace App\Mutation\User;
 
 class AddUser
 {
@@ -45,7 +45,7 @@ Query Resolvers:
 Then, if you need override the action `users` must create the following class:
 
 ````php
-namespace AppBundle\Query\User;
+namespace App\Query\User;
 
 class Users
 {
@@ -73,7 +73,7 @@ GraphQL comes with a default resolver for each CRUD operation:
 Each resolver expose some helpful methods in order to customize some behaviors.
 
 ````php
-namespace AppBundle\Query\User;
+namespace App\Query\User;
 
 use Doctrine\ORM\QueryBuilder;
 use Ynlo\GraphQLBundle\Query\Node\AllNodesWithPagination;

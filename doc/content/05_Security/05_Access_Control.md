@@ -52,7 +52,7 @@ class Post implements NodeInterface
 {
 ````
 
-> If unauthorized access is detected a exception is thrown and the consumer view a **security** error. 
+>> If unauthorized access is detected a exception is thrown and the consumer view a **security** error. 
 In this case the query fails and not data is returned in any way.
 
 The following functions and variables are available:
@@ -89,6 +89,6 @@ class Book implements NodeInterface
 {
 ````
 
-> IMPORTANT!: access control does not hide object, fields or operations, only restrict the access.
+>>> Access control does not hide object, fields or operations, only restrict the access.
 The GraphQL schema still displaying all these definitions.
 In order to hide definitions based on user roles must use [endpoints](../07_Advanced/03_Endpoints.md).

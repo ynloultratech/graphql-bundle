@@ -15,14 +15,14 @@ To define a GraphQL object must use the `@GraphQL\ObjectType()`
 class User
 {
 ````
-> To define a object as **Node** the object must implements `Ynlo\GraphQLBundle\Model\NodeInterface`.
- See this documentation to know when is required the use of *NodeInterface*
+>> To define a object as **Node** the object must implements `Ynlo\GraphQLBundle\Model\NodeInterface`.
+ See [this documentation](../08_Reference/01_Object_ID.md) to know more about nodes.
  
 Options:
 - **name**: Name to expose the object, if not set will be automatically resolved.
 - **description**: Object description to expose in the documentation
 - **exclusionPolicy**: Hide or show all fields by default
-- **options**: Options are used by [Definitions Plugins](../07_Advanced/99_Definitions_Plugins.md) to provide extra features
+- **options**: Options are used by [plugins](../07_Advanced/99_Definitions_Plugins.md) to provide extra features
 
 By default when a object is annotated with `@GraphQL\ObjectType` annotation all properties are exposed. 
 If you need exclude some properties can use the `@GraphQL\Exclude()` annotation.

@@ -44,12 +44,12 @@ Mutations Forms:
 Then must create the following form class:
 
 ````php
-namespace AppBundle\Form\Input\User;
+namespace App\Form\Input\User;
 
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
-use AppBundle\Entity\User;
+use App\Entity\User;
 
 class AddUserInput extends AbstractType
 {

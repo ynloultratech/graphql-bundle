@@ -16,7 +16,8 @@ Scalar types use [naming convention](../08_Reference/02_Naming_Conventions.md) a
 
 `Type\{Name}Type`
 
->If the name of the class does not match with desired object name can use the property name or pass the `name` argument in the parent constructor.
+> If the name of the class does not match with desired object name can use the property name or pass the `name`
+ argument in the parent constructor.
 
 ````php
 public function __construct(array $config = [])
@@ -30,7 +31,7 @@ public function __construct(array $config = [])
 ### Example:
 
 ````php
-namespace AppBundle\Type;
+namespace App\Type;
 
 use GraphQL\Type\Definition\ScalarType;
 

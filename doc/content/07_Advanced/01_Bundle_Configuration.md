@@ -18,6 +18,38 @@ graphql:
 
     # Endpoint to apply to all definitions without explicit endpoint.
     endpoint_default:     ~
+
+    # It is important to handle errors and when possible, report these errors back to your users for information. 
+    error_handling:
+
+        # Show error trace in debug mode
+        show_trace:           true
+
+        # Formatter is responsible for converting instances of Error to an array
+        formatter:            Ynlo\GraphQLBundle\Error\DefaultErrorFormatter
+
+        # Handler is useful for error filtering and logging.
+        handler:              Ynlo\GraphQLBundle\Error\DefaultErrorHandler
+
+        # Where to find for controlled errors
+        controlled_errors:
+
+            # Default folder to find exceptions and errors implementing controlled interface.
+            locations:
+
+                # Defaults:
+                - Exception
+                - Error
+
+            # White listed classes
+            whitelist:
+
+                # Defaults:
+                - /App\\[Exception|Error]/
+                - /\w+Bundle\\[Exception|Error]/
+
+            # Black listed classes
+            blacklist:            ~
     cors:
         enabled:              false
         allow_credentials:    true
@@ -45,6 +77,20 @@ graphql:
         data_warning_dismissible: true
         data_warning_style:   danger # One of "info"; "warning"; "danger"
         template:             '@YnloGraphQL/explorer.html.twig'
+
+        # An optional GraphQL string to use when no query exists from a previous session. If none is provided, GraphiQL will use its own default query.
+        default_query:        null
+
+        # Url or path to favicon
+        favicon:              ~
+
+        # Display external API documentation link
+        documentation:
+
+            # Url, route or path.
+            link:                 ~
+            btn_label:            Documentation
+            btn_class:            'btn btn-outline-success'
         authentication:
 
             # The API require credentials to make any requests, 
@@ -81,63 +127,61 @@ graphql:
 
                 # Configure custom service to use as authentication provider
                 custom:               null
-    definitions:
-        plugins:
-            pagination:
+    pagination:
 
-                # Maximum limit allowed for all paginations
-                limit:                100
+        # Maximum limit allowed for all paginations
+        limit:                100
 
-            # Group GraphQL schema using namespaced schemas. 
-            # On large schemas is  helpful to keep schemas grouped by bundle and node
-            namespaces:
-                enabled:              false
+    # Group GraphQL schema using namespaced schemas. 
+    # On large schemas is  helpful to keep schemas grouped by bundle and node
+    namespaces:
+        enabled:              false
 
-                # Group each bundle into a separate schema definition
-                bundles:
-                    enabled:              true
+        # Group each bundle into a separate schema definition
+        bundles:
+            enabled:              true
 
-                    # The following suffix will be used for bundle query groups
-                    query_suffix:         BundleQuery
+            # The following suffix will be used for bundle query groups
+            query_suffix:         BundleQuery
 
-                    # The following suffix will be used for bundle mutation groups
-                    mutation_suffix:      BundleMutation
+            # The following suffix will be used for bundle mutation groups
+            mutation_suffix:      BundleMutation
 
-                    # The following bundles will be ignore for grouping, all definitions will be placed in the root query or mutation
-                    ignore:
+            # The following bundles will be ignore for grouping, all definitions will be placed in the root query or mutation
+            ignore:
 
-                        # Default:
-                        - AppBundle
+                # Default:
+                - AppBundle
 
-                    # Define aliases for bundles to set definitions inside other desired bundle name. 
-                    # Can be used to group multiple bundles or publish a bundle with a different name
-                    aliases:              # Example: SecurityBundle: AppBundle
+            # Define aliases for bundles to set definitions inside other desired bundle name. 
+            # Can be used to group multiple bundles or publish a bundle with a different name
+            aliases:              # Example: SecurityBundle: AppBundle
 
-                        # Prototype
-                        name:                 ~
+                # Prototype
+                name:                 ~
 
-                # Group queries and mutations of the same node into a node specific schema definition.
-                nodes:
-                    enabled:              true
+        # Group queries and mutations of the same node into a node specific schema definition.
+        nodes:
+            enabled:              true
 
-                    # The following suffix will be used to create the name for queries to the same node
-                    query_suffix:         Query
+            # The following suffix will be used to create the name for queries to the same node
+            query_suffix:         Query
 
-                    # The following suffix will be used to create the name for mutations to the same node
-                    mutation_suffix:      Mutation
+            # The following suffix will be used to create the name for mutations to the same node
+            mutation_suffix:      Mutation
 
-                    # The following nodes will be ignore for grouping, all definitions will be placed in the root query or mutation
-                    ignore:
+            # The following nodes will be ignore for grouping, all definitions will be placed in the root query or mutation
+            ignore:
 
-                        # Default:
-                        - Node
+                # Default:
+                - Node
 
-                    # Define aliases for nodes to set definitions inside other desired node name. 
-                    # Can be used to group multiple nodes or publish a node with a different group name
-                    aliases:              # Example: InvoiceItem: Invoice
+            # Define aliases for nodes to set definitions inside other desired node name. 
+            # Can be used to group multiple nodes or publish a node with a different group name
+            aliases:              # Example: InvoiceItem: Invoice
 
-                        # Prototype
-                        name:                 ~
+                # Prototype
+                name:                 ~
     security:
         enabled:              false
         validation_rules:
@@ -148,4 +192,7 @@ graphql:
             # Max depth of the query. (Recommended >= 11)
             query_depth:          0
             disable_introspection: false
+
+    # Service used to encode nodes identifiers, must implements IDEncoderInterface
+    id_encoder:           Ynlo\GraphQLBundle\Encoder\SecureIDEncoder
 ````

@@ -6,7 +6,7 @@ this feature with the special annotation `@GraphQL\InterfaceType`
 
 ### Example:
 ````php
-namespace AppBundle\Model;
+namespace App\Model;
 
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
 
@@ -58,4 +58,4 @@ interface TimestampableInterface
 The above interface publish `createdAt` and `updatedAt` fields. 
 The `Field` annotation must be used on every required method to expose in the interface.
 
-> Setters method should not be exposed on interfaces, because interfaces are only used for **reading** purposes.
+>>> Setters method should not be exposed on interfaces, because interfaces are only used for **reading** purposes.

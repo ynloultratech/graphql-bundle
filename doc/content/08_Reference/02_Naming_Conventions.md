@@ -15,7 +15,7 @@ Some files require special locations to works without specific configuration
 - **Types:**  `Type\{Name}Type` **e.g.** *Type\OrderStatusType*
 - **Extensions:**  `Extension\{InterfaceName}Extension` **e.g.** *Extension\HasAuthorExtension*
 
-> `{Node}` refer to the public node name and not the class name, 
+>> `{Node}` refer to the public node name and not the class name, 
 if the class name is `User` and the public name is `Customer` the node name is the last one.
 
 

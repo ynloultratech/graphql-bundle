@@ -6,7 +6,7 @@ The best way to keep backward compatibility while your system grows
 is verifying that your schema is the expected. GraphQLBundles comes
 with a test feature and command to help you with this task.
 
-> To use Snapshots must have Behat tests configured and working.
+>> To use Snapshots must have Behat tests configured and working.
 
 Execute the following command:
 

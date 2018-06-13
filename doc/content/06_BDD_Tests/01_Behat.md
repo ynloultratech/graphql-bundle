@@ -144,7 +144,7 @@ and run:
     
 That's all, you have created your first feature test.
 
-> Ensure replace `VXNlcjox` with a real [encoded object id](../08_Reference/01_Object_ID.md)
+>> Ensure replace `VXNlcjox` with a real [encoded object id](../08_Reference/01_Object_ID.md)
 
 > This example assume you have a test database configured 
 with at least one existent record to fetch. 

@@ -11,7 +11,7 @@ To define a field inside a object must use the `@GraphQL\Field()`
 protected $username;
 ````
 
-> The `type` option is required unless the object is a doctrine entity and the field is a column or relation,
+>> The `type` option is required unless the object is a doctrine entity and the field is a column or relation,
  in this case will be resolved automatically.
  
  Options:
@@ -26,7 +26,7 @@ protected $username;
       as arguments and it must return an integer value (score).
       * **expression**: Custom expression language. Context variables: `children_complexity` and the exposed in `$args`.
  - **maxConcurrentUsage**: *default: 0* How many times a field can be fetched in a query. Disabled by default. (see below) 
- - **options**: Options are used by [Definitions Plugins](../07_Advanced/99_Definitions_Plugins.md) to provide extra features.
+ - **options**: Options are used by [plugins](../07_Advanced/99_Definitions_Plugins.md) to provide extra features.
  
 
 # Methods as Fields
@@ -80,12 +80,12 @@ and should be created in:
 To create a custom field called isCurrent for User node must create the following class.
 
 ````php
-namespace AppBundle\Query\User\Field;
+namespace App\Query\User\Field;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
-use AppBundle\Entity\User;
+use App\Entity\User;
 
 /**
  * @GraphQL\Field(type="bool")
@@ -101,7 +101,19 @@ class IsCurrent implements ContainerAwareInterface
 }
 
 ````
-The argument `$root` is automatically injected and contains the current Node.
+>> The argument `$root` is required, the type can be changed, anyway
+   the field is created under the Node that belongs, and always receive current node instance as `root`argument.
+
+Now you are able to execute a query like this:
+
+````
+query {
+  users(first: 10) {
+    login
+    isCurrent
+  }
+}
+````
 
 # Max Concurrent Usage
 
@@ -156,7 +168,7 @@ node(id: 'VXNlcjox') {
     hasValidEmail
 }
 ````
-> This option restrict API consumers to use some 
+>> This option restrict API consumers to use some 
 fields only on specific amount of records or one record, to avoid performance issues.
 
 Now the following query will trow a error:

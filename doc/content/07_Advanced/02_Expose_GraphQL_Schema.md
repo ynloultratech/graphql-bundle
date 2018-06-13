@@ -33,5 +33,5 @@ security:
         - { path: ^/,       roles: IS_AUTHENTICATED_FULLY }
 ````
 
-> Note the `allow_if: %kernel.debug%` in the schema access_control rule, 
+>>> Note the `allow_if: %kernel.debug%` in the schema access_control rule, 
 is very important to avoid publish your schema without credentials in production too.

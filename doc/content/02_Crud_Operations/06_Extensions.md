@@ -19,7 +19,7 @@ class Post implements NodeInterface
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User", inversedBy="posts")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="posts")
      * @ORM\JoinColumn(onDelete="CASCADE")
      */
     protected $author;
@@ -41,7 +41,7 @@ class Comment implements NodeInterface
     /**
      * @var User
      *
-     * @ORM\ManyToOne(targetEntity="AppBundle\Entity\User", inversedBy="posts")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="posts")
      * @ORM\JoinColumn(onDelete="CASCADE")
      */
     protected $author;
@@ -59,10 +59,10 @@ First of all you need detect this type of scenarios and take proper actions. For
 in this case must create a new interface.
 
 ````php
-namespace AppBundle\Model;
+namespace App\Model;
 
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
-use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\User;
+use Ynlo\GraphQLBundle\Demo\App\Entity\User;
 
 /**
  * @GraphQL\InterfaceType()
@@ -70,7 +70,7 @@ use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\User;
 interface HasAuthorInterface
 {
     /**
-     * @GraphQL\Field(type="AppBundle\Entity\User")
+     * @GraphQL\Field(type="App\Entity\User")
      *
      * @return null|User
      */
@@ -116,7 +116,7 @@ Extensions use [naming convention](../08_Reference/02_Naming_Conventions.md) and
 Then, to create the extension for the above example the class should be:
 
 ````php
-namespace AppBundle\Extension;
+namespace App\Extension;
 
 use Ynlo\GraphQLBundle\Extension\AbstractExtension;
 
@@ -150,7 +150,7 @@ At this point your extension is ready but it does not do anything yet.
 In this case whe need set the current user as author of every created `Pos` or `Comment`.
 
 ````php
-namespace AppBundle\Extension;
+namespace App\Extension;
 
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;

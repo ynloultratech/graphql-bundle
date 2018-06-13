@@ -30,7 +30,7 @@ The following example demostrate the use case of input object in a query argumen
 
 ### Input Object Definition:
 ````php
-namespace AppBundle\Model\Argument;
+namespace App\Model\Argument;
 
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
 

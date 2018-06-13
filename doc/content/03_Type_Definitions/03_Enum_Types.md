@@ -4,9 +4,9 @@ Enum types should be created like [scalar types](02_Scalar_Types.md) in:
 
 `Type\{Name}Type`
 
-###Example:
+### Example:
 ````php
-namespace AppBundle\Type;
+namespace App\Type;
 
 use GraphQL\Type\Definition\EnumType;
 
@@ -55,7 +55,7 @@ instead of the DoctrineENUMBundle type.
 
 ### Example:
 ````php
-namespace AppBundle\DBAL\Types;
+namespace App\DBAL\Types;
 
 use Ynlo\GraphQLBundle\Doctrine\DBAL\Types\AbstractEnumType;
 
@@ -102,7 +102,7 @@ class PostStatusType extends AbstractEnumType
 -  **publicNames:** Publish internal values with other names, 
 in the above example **PUBLISH** is the internal value, but **PUBLISHED** is de public one for API consumers.
 
-> IMPORTANT!: GraphQL Bundle override the symfony form type for Doctrine ENUM Types. 
+>>> GraphQL Bundle override the symfony form type for Doctrine ENUM Types. 
 For that reason a graphical interface using 
 symfony forms and DoctrineENUMBundle may does not work as expected. 
 A best practice to avoid this type of issues is build API services separate of any other application logic,
