@@ -32,7 +32,7 @@ the codes will stay the same.
 - **1004:** You attempted to reply to a message that is deleted or not visible to you.
 
 Is easier for API consumers when know all possible errors and his code to
-take appropriate actions; display a error message to final user, redirect or
+take appropriate actions; display a error message to final user, do a redirect or
 any other action.
 
 >>> Error handling on clients should be done using only the Error Codes. 
@@ -79,7 +79,11 @@ Then, your API consumers receive a error like this:
     }
   ]
 }
-````          
+````
+
+> The description is only for documentation purposes, and is recommended if you wat to export this list of errors
+to keep your error codes in the documentation up to date.
+
 # Keep yours errors documented
 
 A important thing of controlled errors is share with API consumers, 
@@ -140,5 +144,51 @@ Currently the following exporters are available:
 - **console** (default): Pretty table to view and check in console
 - **markdown** : Table in markdown format, ready to add to any markdown based documentation.
 
-> You can create your own exporter implementing `Ynlo\GraphQLBundle\Error\Exporter\ErrorListExporterInterface` and registering as a service with this tag: `graphql.error_list_exporter`
+> You can create your own exporter implementing `ErrorListExporterInterface` and registering as a service with this tag: `graphql.error_list_exporter`. If you
+have service autowiring enabled the service is automatically registered as exporter without the need of add the tag.
 
+Example:
+
+````php
+<?php
+
+namespace App\Error\Exporter;
+
+use Symfony\Component\Console\Output\OutputInterface;
+use Ynlo\GraphQLBundle\Error\Exporter\MarkdownTableExporter;
+
+class MyCustomErrorExporter extends MarkdownTableExporter
+{
+    /**
+     * @inheritDoc
+     */
+    public function getName(): string
+    {
+        return 'custom';
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function export($errors, OutputInterface $output): void
+    {
+        $output->writeln(
+            <<<MARKDOWN
+A API operation can return multiple error and warning codes. 
+Error codes and associated messages are sorted in ascending order by error code number.
+
+> While the text for an error message may change, the codes will stay the same. 
+Error handling on clients should be done using **ONLY** the Error Codes. 
+The message string should be subject to change without prior notice.
+
+MARKDOWN
+        );
+        
+        $output->writeln('<div class="error-table">');
+        parent::export($errors, $output);
+        $output->writeln('</div>');
+    }
+}
+````
+The above custom exporter extends from markdown exporter to add custom header, 
+and wrap the error table inside a div with `error-table` class.

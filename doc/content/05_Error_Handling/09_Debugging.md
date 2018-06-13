@@ -3,7 +3,7 @@ A bad API error handling will cause an increase in blood pressure,
 along with a high number of support tickets and wasted time.
 
 In most cases, sending error messages to the client without supervision is a bad idea since 
-those might leak sensitive information. For that reasons only [controlled errors](02_Controlled_Errors.md)
+those might leak sensitive information. For that reasons only [controlled errors](03_Controlled_Errors.md)
 display the real message to final users, on the other hand uncaught exceptions always display `Internal Server Error`.
 
 All are OK, but then, how can we know the error that actually happen in a certain request to be able to correct it?
@@ -43,7 +43,7 @@ logged together with the stack trace, making it easy to cross-reference user bug
 
 - Errors when query fails due to GraphQL internal validation (syntax, schema logic, etc.). will
 be treated as **DEBUG** message.
-- User [controlled errors](./02_Controlled_Errors.md) will be treated as **NOTICE**.
+- User [controlled errors](03_Controlled_Errors.md) will be treated as **NOTICE**.
 - Uncaught exceptions will be treated as **CRITICAL**
 
 This is important because using the default logger configurations only **ERROR** and **CRITICAL** messages are logged
