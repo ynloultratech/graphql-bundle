@@ -13,7 +13,6 @@ namespace Ynlo\GraphQLBundle\Encoder;
 use Doctrine\Bundle\DoctrineBundle\Registry;
 use Doctrine\ORM\EntityManagerInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
-use Ynlo\GraphQLBundle\Error\NodeNotFoundException;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Util\TypeUtil;
 

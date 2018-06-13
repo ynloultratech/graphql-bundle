@@ -12,9 +12,8 @@ namespace Ynlo\GraphQLBundle\Mutation;
 
 use GraphQL\Error\UserError;
 use Symfony\Component\Form\FormEvent;
-use Ynlo\GraphQLBundle\Error\NodeNotFoundException;
+use Ynlo\GraphQLBundle\Exception\Controlled\NotFoundError;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
-use Ynlo\GraphQLBundle\Util\IDEncoder;
 use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
 
 /**
@@ -73,7 +72,7 @@ class DeleteBatchNode extends AbstractMutationResolver
         if ($event->getForm()->get('ids') && is_array($event->getForm()->get('ids')->getData())) {
             foreach ($event->getForm()->get('ids')->getData() as $node) {
                 if (!$node instanceof NodeInterface || !$node->getId() || !is_a($node, $class)) {
-                    throw new NodeNotFoundException();
+                    throw new NotFoundError();
                 }
             }
         } else {

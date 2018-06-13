@@ -16,6 +16,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Ynlo\GraphQLBundle\Cache\DefinitionCacheWarmer;
+use Ynlo\GraphQLBundle\Controller\GraphQLEndpointController;
 use Ynlo\GraphQLBundle\Encoder\IDEncoderManager;
 use Ynlo\GraphQLBundle\GraphiQL\JWTGraphiQLAuthentication;
 
@@ -38,6 +39,8 @@ class YnloGraphQLExtension extends Extension
 
         $container->setParameter('graphql.config', $config);
         $container->setParameter('graphql.pagination', $config['pagination'] ?? []);
+        $container->setParameter('graphql.error_handling', $config['error_handling'] ?? []);
+        $container->setParameter('graphql.error_handling.controlled_errors', $config['error_handling']['controlled_errors'] ?? []);
         $container->setParameter('graphql.namespaces', $config['namespaces'] ?? []);
         $container->setParameter('graphql.cors_config', $config['cors'] ?? []);
         $container->setParameter('graphql.graphiql', $config['graphiql'] ?? []);
@@ -73,6 +76,12 @@ class YnloGraphQLExtension extends Extension
         $container->getDefinition(IDEncoderManager::class)
                   ->setPublic(true)
                   ->replaceArgument(0, $container->getDefinition($config['id_encoder']));
+
+
+        //endpoint definition
+        $container->getDefinition(GraphQLEndpointController::class)
+                  ->addMethodCall('setErrorFormatter', [$container->getDefinition($config['error_handling']['formatter'])])
+                  ->addMethodCall('setErrorHandler', [$container->getDefinition($config['error_handling']['handler'])]);
     }
 
     /**

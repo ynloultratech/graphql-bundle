@@ -8,17 +8,17 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Exception\GraphQL;
+namespace Ynlo\GraphQLBundle\Exception;
 
-use GraphQL\Error\UserError;
+use GraphQL\Error\ClientAware;
 
-class SecurityException extends UserError
+interface ControlledErrorInterface extends \Throwable, ClientAware
 {
     /**
-     * {@inheritDoc}
+     * The description will be only used for documentation purposes
+     * and is not available in the response.
+     *
+     * @return string
      */
-    public function getCategory()
-    {
-        return 'security';
-    }
+    public function getDescription(): ?string;
 }

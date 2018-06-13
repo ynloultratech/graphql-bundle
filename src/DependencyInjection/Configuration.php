@@ -17,6 +17,8 @@ use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Ynlo\GraphQLBundle\Encoder\SecureIDEncoder;
+use Ynlo\GraphQLBundle\Error\DefaultErrorFormatter;
+use Ynlo\GraphQLBundle\Error\DefaultErrorHandler;
 
 /**
  * Class Configuration
@@ -32,6 +34,7 @@ class Configuration implements ConfigurationInterface
         /** @var NodeBuilder $rootNode */
         $rootNode = $treeBuilder->root('graphql')->addDefaultsIfNotSet()->children();
         $this->configureEndpoints($rootNode);
+        $this->configureErrorHandling($rootNode);
         $this->configureCORS($rootNode);
         $this->configureGraphiQL($rootNode);
         $this->configurePlugins($rootNode);
@@ -39,6 +42,92 @@ class Configuration implements ConfigurationInterface
         $this->configureOthers($rootNode);
 
         return $treeBuilder;
+    }
+
+    protected function configureErrorHandling(NodeBuilder $root)
+    {
+        $errorHandling = $root->arrayNode('error_handling')
+                              ->info('It is important to handle errors and when possible, report these errors back to your users for information. ')
+                              ->addDefaultsIfNotSet()
+                              ->children();
+
+        $errorHandling->booleanNode('show_trace')->info('Show error trace in debug mode')->defaultTrue();
+
+        $errorHandling->scalarNode('formatter')
+                      ->info('Formatter is responsible for converting instances of Error to an array')
+                      ->defaultValue(DefaultErrorFormatter::class);
+
+        $errorHandling->scalarNode('handler')
+                      ->info('Handler is useful for error filtering and logging.')
+                      ->defaultValue(DefaultErrorHandler::class);
+
+        $controlledErrors = $errorHandling
+            ->arrayNode('controlled_errors')
+            ->info('Where to find for controlled errors')
+            ->addDefaultsIfNotSet()
+            ->children();
+
+        $controlledErrors
+            ->variableNode('locations')
+            ->defaultValue(['Exception', 'Error'])
+            ->info('Default folder to find exceptions and errors implementing controlled interface.')
+            ->beforeNormalization()
+            ->ifString()
+            ->then(
+                function ($v) {
+                    return [$v];
+                }
+            )
+            ->end();
+
+        $controlledErrors
+            ->variableNode('whitelist')
+            ->info('White listed classes')
+            ->defaultValue(['/App\\\\[Exception|Error]/', '/\w+Bundle\\\\[Exception|Error]/'])
+            ->beforeNormalization()
+            ->ifString()
+            ->then(
+                function ($v) {
+                    return [$v];
+                }
+            )
+            ->end()
+            ->validate()
+            ->ifTrue(
+                function (array $value) {
+                    foreach ($value as $val) {
+                        try {
+                            preg_match($val, null);
+                        } catch (\Exception $exception) {
+                            return true;
+                        }
+                    }
+                }
+            )->thenInvalid('Invalid regular expression');
+
+        $controlledErrors
+            ->variableNode('blacklist')
+            ->info('Black listed classes')
+            ->beforeNormalization()
+            ->ifString()
+            ->then(
+                function ($v) {
+                    return [$v];
+                }
+            )
+            ->end()
+            ->validate()
+            ->ifTrue(
+                function (array $value) {
+                    foreach ($value as $val) {
+                        try {
+                            preg_match($val, null);
+                        } catch (\Exception $exception) {
+                            return true;
+                        }
+                    }
+                }
+            )->thenInvalid('Invalid regular expression');
     }
 
     protected function configureEndpoints(NodeBuilder $root)

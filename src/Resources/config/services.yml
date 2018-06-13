@@ -4,11 +4,12 @@ services:
         arguments:
             - '@Ynlo\GraphQLBundle\Security\EndpointResolver'
             - '@Ynlo\GraphQLBundle\Schema\SchemaCompiler'
-            - !tagged graphql.middleware
-            - '%kernel.debug%'
-            - '@?logger'
         calls:
             - [ addGlobalValidationRules, ['%graphql.security.validation_rules%'] ]
+            - [ setDebug, ['%kernel.debug%'] ]
+            - [ setMiddlewares, [!tagged graphql.middleware] ]
+            - [ setLogger, ['@?monolog.logger'] ]
+            - [ setConfig, ['%graphql.config%'] ]
 
     Ynlo\GraphQLBundle\Request\StandardGraphQLRequestMiddleware:
          public: true
@@ -362,3 +363,35 @@ services:
             - '%kernel.project_dir%'
         tags:
             - 'console.command'
+
+    Ynlo\GraphQLBundle\Error\DefaultErrorFormatter:
+
+    Ynlo\GraphQLBundle\Error\ErrorFormatterInterface:
+       alias: Ynlo\GraphQLBundle\Error\DefaultErrorFormatter
+
+    Ynlo\GraphQLBundle\Error\DefaultErrorHandler:
+       arguments:
+          - '@?monolog.logger'
+
+    Ynlo\GraphQLBundle\Error\ErrorHandlerInterface:
+       alias: Ynlo\GraphQLBundle\Error\DefaultErrorHandler
+
+    Ynlo\GraphQLBundle\Command\ControlledErrorCommand:
+        arguments:
+            - '@Ynlo\GraphQLBundle\Error\ControlledErrorsManager'
+            - !tagged graphql.error_list_exporter
+        tags:
+            - 'console.command'
+
+    Ynlo\GraphQLBundle\Error\Exporter\ConsoleTableExporter:
+        tags:
+            - graphql.error_list_exporter
+
+    Ynlo\GraphQLBundle\Error\Exporter\MarkdownTableExporter:
+        tags:
+            - graphql.error_list_exporter
+
+    Ynlo\GraphQLBundle\Error\ControlledErrorsManager:
+        arguments:
+          - '@kernel'
+          - '%graphql.error_handling.controlled_errors%'

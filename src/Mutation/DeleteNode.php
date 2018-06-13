@@ -11,7 +11,7 @@
 namespace Ynlo\GraphQLBundle\Mutation;
 
 use Symfony\Component\Form\FormEvent;
-use Ynlo\GraphQLBundle\Error\NodeNotFoundException;
+use Ynlo\GraphQLBundle\Exception\Controlled\NotFoundError;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
 
@@ -68,7 +68,7 @@ class DeleteNode extends AbstractMutationResolver
         $class = $this->context->getEndpoint()->getClassForType($node);
 
         if (!$event->getData() instanceof NodeInterface || !$event->getData()->getId() || !is_a($event->getData(), $class)) {
-            throw new NodeNotFoundException();
+            throw new NotFoundError();
         }
     }
 

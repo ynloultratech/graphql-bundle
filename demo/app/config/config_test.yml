@@ -9,6 +9,8 @@ framework:
         collect: false
 
 graphql:
+    error_handling:
+        show_trace: false
     security:
         validation_rules:
             query_complexity: 303

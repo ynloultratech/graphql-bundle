@@ -13,6 +13,7 @@ namespace Ynlo\GraphQLBundle\Controller;
 
 use GraphQL\Error\ClientAware;
 use GraphQL\Error\Debug;
+use GraphQL\Error\Error;
 use GraphQL\GraphQL;
 use GraphQL\Validator\DocumentValidator;
 use GraphQL\Validator\Rules;
@@ -22,6 +23,11 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Ynlo\GraphQLBundle\Error\DefaultErrorFormatter;
+use Ynlo\GraphQLBundle\Error\DefaultErrorHandler;
+use Ynlo\GraphQLBundle\Error\ErrorFormatterInterface;
+use Ynlo\GraphQLBundle\Error\ErrorHandlerInterface;
+use Ynlo\GraphQLBundle\Error\ErrorQueue;
 use Ynlo\GraphQLBundle\Request\ExecuteQuery;
 use Ynlo\GraphQLBundle\Request\RequestMiddlewareInterface;
 use Ynlo\GraphQLBundle\Resolver\QueryExecutionContext;
@@ -41,9 +47,26 @@ class GraphQLEndpointController
     protected $compiler;
 
     /**
+     * App Config
+     *
+     * @var array
+     */
+    protected $config = [];
+
+    /**
+     * @var ErrorFormatterInterface
+     */
+    protected $errorFormatter;
+
+    /**
+     * @var ErrorHandlerInterface
+     */
+    protected $errorHandler;
+
+    /**
      * @var bool
      */
-    protected $debug;
+    protected $debug = false;
 
     /**
      * @var LoggerInterface
@@ -55,19 +78,64 @@ class GraphQLEndpointController
      */
     protected $middlewares = [];
 
-    public function __construct(
-        EndpointResolver $endpointResolver,
-        SchemaCompiler $compiler,
-        iterable $middlewares = [],
-        bool $debug = false,
-        LoggerInterface $logger = null
-    )
+    /**
+     * GraphQLEndpointController constructor.
+     *
+     * @param EndpointResolver $endpointResolver
+     * @param SchemaCompiler   $compiler
+     */
+    public function __construct(EndpointResolver $endpointResolver, SchemaCompiler $compiler)
     {
         $this->resolver = $endpointResolver;
-        $this->middlewares = $middlewares;
         $this->compiler = $compiler;
+    }
+
+    /**
+     * @param ErrorFormatterInterface $errorFormatter
+     */
+    public function setErrorFormatter(ErrorFormatterInterface $errorFormatter): void
+    {
+        $this->errorFormatter = $errorFormatter;
+    }
+
+    /**
+     * @param ErrorHandlerInterface $errorHandler
+     */
+    public function setErrorHandler(ErrorHandlerInterface $errorHandler): void
+    {
+        $this->errorHandler = $errorHandler;
+    }
+
+    /**
+     * @param bool $debug
+     */
+    public function setDebug(bool $debug): void
+    {
         $this->debug = $debug;
+    }
+
+    /**
+     * @param LoggerInterface|null $logger
+     */
+    public function setLogger(?LoggerInterface $logger): void
+    {
         $this->logger = $logger;
+    }
+
+    /**
+     * @param array $config
+     */
+    public function setConfig(array $config): void
+    {
+        $this->config = $config;
+    }
+
+    /**
+     * @param iterable $middlewares
+     */
+    public function setMiddlewares(iterable $middlewares): void
+    {
+        $this->middlewares = $middlewares;
     }
 
     public function __invoke(Request $request): JsonResponse
@@ -119,27 +187,29 @@ class GraphQLEndpointController
 
             $debugFlags = false;
             if ($this->debug) {
-                $debugFlags = Debug::INCLUDE_DEBUG_MESSAGE | Debug::INCLUDE_TRACE;
-            }
-
-            foreach ($result->errors as $error) {
-                if (null !== $this->logger) {
-                    $originError = $error->getTrace()[0]['args'][0] ?? null;
-                    $context = [];
-                    if ($originError instanceof \Exception) {
-                        $context = [
-                            'file' => $originError->getFile(),
-                            'line' => $originError->getLine(),
-                            'error' => get_class($originError),
-                        ];
-                    }
-                    if ($error->isClientSafe()) {
-                        $this->logger->notice($error->getMessage(), $context);
-                    } else {
-                        $this->logger->error($error->getMessage(), $context);
-                    }
+                if ($this->config['error_handling']['show_trace'] ?? true) {
+                    $debugFlags = Debug::INCLUDE_DEBUG_MESSAGE | Debug::INCLUDE_TRACE;
+                } else {
+                    $debugFlags = Debug::INCLUDE_DEBUG_MESSAGE;
                 }
             }
+
+            //https://webonyx.github.io/graphql-php/error-handling/
+            $formatter = $this->errorFormatter ?? new DefaultErrorFormatter();
+            $handler = $this->errorHandler ?? new DefaultErrorHandler($this->logger);
+
+            //get queued errors
+            $exceptions = ErrorQueue::all();
+            foreach ($exceptions as $exception) {
+                $result->errors[] = Error::createLocatedError($exception);
+            }
+
+            $result->setErrorFormatter([$formatter, 'format']);
+            $result->setErrorsHandler(
+                function ($errors) use ($handler, $formatter, $debugFlags) {
+                    return $handler->handle($errors, $formatter, $debugFlags);
+                }
+            );
 
             $output = $result->toArray($debugFlags);
             $statusCode = Response::HTTP_OK;

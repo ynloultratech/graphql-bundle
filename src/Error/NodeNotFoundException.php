@@ -13,8 +13,10 @@ namespace Ynlo\GraphQLBundle\Error;
 use GraphQL\Error\UserError;
 use Throwable;
 
+@trigger_error('NodeNotFoundException has been deprecated since v1.1 and will be removed in v2.0, use "Ynlo\GraphQLBundle\Exception\Controlled\NotFoundError" instead', E_USER_DEPRECATED);
+
 /**
- * Class NodeNotFoundException
+ * @deprecated since v1.1 and will be removed in v2.0, use Ynlo\GraphQLBundle\Exception\Controlled\NotFoundError instead
  */
 class NodeNotFoundException extends UserError
 {

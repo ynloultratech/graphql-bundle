@@ -11,7 +11,7 @@
 namespace Ynlo\GraphQLBundle\Query\Node;
 
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
-use Ynlo\GraphQLBundle\Error\NodeNotFoundException;
+use Ynlo\GraphQLBundle\Exception\Controlled\NotFoundError;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
 
@@ -31,7 +31,7 @@ class Node extends AbstractResolver
     public function __invoke($node)
     {
         if (!$node) {
-            throw new NodeNotFoundException();
+            throw new NotFoundError();
         }
 
         if ($node instanceof NodeInterface) {
