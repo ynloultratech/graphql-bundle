@@ -16,11 +16,14 @@ use Symfony\Component\Form\FormEvent;
 use Symfony\Component\Form\FormEvents;
 use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Validator\ConstraintViolation as SymfonyConstraintViolation;
+use Ynlo\GraphQLBundle\Error\ErrorQueue;
 use Ynlo\GraphQLBundle\Events\GraphQLEvents;
 use Ynlo\GraphQLBundle\Events\GraphQLMutationEvent;
+use Ynlo\GraphQLBundle\Exception\Controlled\ValidationError;
 use Ynlo\GraphQLBundle\Model\ConstraintViolation;
 use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
 use Ynlo\GraphQLBundle\Util\IDEncoder;
+use Ynlo\GraphQLBundle\Util\Uuid;
 use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
 
 /**
@@ -81,6 +84,13 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
         }
 
         $dryRun = $input['dryRun'] ?? false;
+
+        if ($violations->count()) {
+            $errorHandling = $this->container->getParameter('graphql.error_handling');
+            if (\in_array($errorHandling['validation_messages'] ?? null, ['both', 'error'])) {
+                ErrorQueue::throw(new ValidationError($violations));
+            }
+        }
 
         if ($dryRun) {
             $data = null;
@@ -269,7 +279,7 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
 
             $cause = $error->getCause();
             if ($cause instanceof SymfonyConstraintViolation) {
-                $violation->setCode($cause->getCode() ?? md5($violation->getMessageTemplate()));
+                $violation->setCode($cause->getCode() ?? Uuid::createFromData($violation->getMessageTemplate()));
                 $violation->setInvalidValue($cause->getInvalidValue());
                 $violation->setPlural($cause->getPlural());
 

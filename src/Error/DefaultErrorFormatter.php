@@ -15,6 +15,7 @@ use GraphQL\Error\Error;
 use GraphQL\Error\FormattedError;
 use GraphQL\Language\AST\FieldNode;
 use Symfony\Component\HttpFoundation\Response;
+use Ynlo\GraphQLBundle\Exception\Controlled\ValidationError;
 use Ynlo\GraphQLBundle\Exception\ControlledErrorInterface;
 use Ynlo\GraphQLBundle\Util\Uuid;
 
@@ -56,6 +57,10 @@ class DefaultErrorFormatter implements ErrorFormatterInterface
 
                 } elseif ($originError instanceof ClientAware && $originError->isClientSafe()) {
                     $errorCode = null;
+                }
+
+                if ($originError instanceof ValidationError) {
+                    $formattedError['constraintViolations'] = $originError->getViolationsArray();
                 }
 
                 $trackingId = Uuid::createFromData(

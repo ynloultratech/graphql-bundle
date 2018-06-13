@@ -51,6 +51,11 @@ class Configuration implements ConfigurationInterface
                               ->addDefaultsIfNotSet()
                               ->children();
 
+        $errorHandling->enumNode('validation_messages')
+                      ->values(['error', 'payload', 'both'])
+                      ->info('Where should be displayed validation messages.')
+                      ->defaultValue('error');
+
         $errorHandling->booleanNode('show_trace')->info('Show error trace in debug mode')->defaultTrue();
 
         $errorHandling->scalarNode('formatter')

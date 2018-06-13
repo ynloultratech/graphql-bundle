@@ -49,6 +49,7 @@
  * Added `default_query` config to define custom default query when load the explorer
  * Fixed duplicate field definition when interface publish a field with different name
  * Improve error handling, Add controlled errors, custom error formatter and handlers
+ * Added support to display validation messages as errors
  
 1.0.6 - 18-03-23
 ----

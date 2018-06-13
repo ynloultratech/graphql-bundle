@@ -126,12 +126,16 @@ class Post implements NodeInterface, CommentableInterface, TimestampableInterfac
     /**
      * @var string
      *
+     * @Assert\NotBlank()
+     *
      * @ORM\Column(name="title", type="string")
      */
     protected $title;
 
     /**
      * @var string
+     *
+     * @Assert\NotBlank()
      *
      * @ORM\Column(name="body", type="string", nullable=true)
      */

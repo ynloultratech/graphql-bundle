@@ -269,6 +269,12 @@ services:
         tags:
             - { name: 'graphql.definition_plugin', priority: -250}
 
+    Ynlo\GraphQLBundle\Definition\Plugin\ConstraintViolationsDefinitionPlugin:
+        public: true
+        arguments: ['%graphql.error_handling%']
+        tags:
+            - { name: 'graphql.definition_plugin', priority: 300}
+
     Ynlo\GraphQLBundle\Definition\Plugin\NamespaceDefinitionPlugin:
         public: true
         arguments: ['%graphql.namespaces%']

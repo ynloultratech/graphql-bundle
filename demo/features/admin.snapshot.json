@@ -28,7 +28,7 @@
     "AddPostInput": {
         "inputFields": {
             "body": {
-                "type": "String"
+                "type": "String!"
             },
             "categories": {
                 "type": "[ID]!"

@@ -91,6 +91,7 @@ graphql:
     namespaces: true
 
     error_handling:
+      validation_messages: 'both'
       controlled_errors:
           map:
             1022:

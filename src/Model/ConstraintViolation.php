@@ -220,4 +220,24 @@ class ConstraintViolation
 
         return $this;
     }
+
+    /**
+     * @return array
+     */
+    public function toArray()
+    {
+        $params = [];
+        foreach ($this->getParameters() as $parameter) {
+            $params[$parameter->getName()] = $parameter->getValue();
+        }
+
+        return [
+            'code' => $this->getCode(),
+            'message' => $this->getMessage(),
+            'messageTemplate' => $this->getMessageTemplate(),
+            'propertyPath' => $this->getPropertyPath(),
+            'parameters' => $params,
+            'invalidValue' => $this->getInvalidValue(),
+        ];
+    }
 }

@@ -23,6 +23,84 @@ name manually configured.
 The solution is set manually the name with the prefix in all existent affected methods in order to 
 keep your API functional.
 
+## **BC BREAK:** Constraint violations are displayed in the list of errors by default.
+
+Before:
+
+````json
+{
+  "data": {
+    "posts": {
+      "add": {
+        "node": null,
+        "constraintViolations": [
+          {
+            "code": "c1051bb4-d103-4f74-8988-acbcafc7fdc3",
+            "message": "This value should not be blank.",
+            "messageTemplate": "This value should not be blank.",
+            "propertyPath": "title",
+            "parameters": [
+              {
+                "name": "{{ value }}",
+                "value": "null"
+              }
+            ],
+            "invalidValue": null
+          }
+        ]
+      }
+    }
+  }
+}
+````
+
+After:
+
+````json
+{
+  "errors": [
+    {
+      "code": 422,
+      "tracking_id": "B6DEE59D-16F9-98F9-F086-ADC79148",
+      "message": "Unprocessable Entity",
+      "category": "user",
+      "constraintViolations": [
+        {
+          "code": "c1051bb4-d103-4f74-8988-acbcafc7fdc3",
+          "message": "This value should not be blank.",
+          "messageTemplate": "This value should not be blank.",
+          "propertyPath": "body",
+          "parameters": {
+            "{{ value }}": "null"
+          },
+          "invalidValue": null
+        }
+      ]
+    }
+  ],
+  "data": {
+    "posts": {
+      "add": {
+        "node": null
+      }
+    }
+  }
+}
+````
+
+This is now the default behavior, in order to keep your API functional must change the following configuration:
+
+````yaml
+graphql:
+    error_handling:
+        # Where should be displayed validation messages.
+        validation_messages: ~ # One of "error"; "payload"; "both"
+````
+
+> Before `v1.1` the default is `payload` you can use that value or use `both` if you want to  keep the old approach or migrate your clients to this new approach progressively.
+
+>> Return constraint violations in the mutation payload, it will remain an option, just that keeping all types of errors in the same place becomes clearer and easier to use.
+
 ## **Minor BC BREAK:** Plugins configuration has been moved out of `definitions`
 
 In your `config.yaml` must change:

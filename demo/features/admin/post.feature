@@ -30,6 +30,31 @@ Feature: Post
       body: "{response.data.posts.add.node.body}"
       """
 
+  Scenario: Add Post (Validate using Payload and Errors)
+    Given the operation named "AddPost"
+    And variables:
+    """
+    input:
+      clientMutationId: "'{faker.randomNumber}'"
+      status: PUBLISHED
+      title: ""
+      body: ""
+      tags: ['asd', 'asdsd']
+      categories:
+        - "#category1"
+        - "#category2"
+    """
+    When send
+    And "{response.data.posts.add.constraintViolations[0].message}" should be equal to "This value should not be blank."
+    And "{response.data.posts.add.constraintViolations[0].propertyPath}" should be equal to "title"
+    And "{response.data.posts.add.constraintViolations[1].message}" should be equal to "This value should not be blank."
+    And "{response.data.posts.add.constraintViolations[1].propertyPath}" should be equal to "body"
+    #errors
+    And "{response.errors[0].constraintViolations[0].message}" should be equal to "This value should not be blank."
+    And "{response.errors[0].constraintViolations[0].propertyPath}" should be equal to "title"
+    And "{response.errors[0].constraintViolations[1].message}" should be equal to "This value should not be blank."
+    And "{response.errors[0].constraintViolations[1].propertyPath}" should be equal to "body"
+
   Scenario: Add Post with a Future Date
     Given the operation named "AddPost"
     And variables:

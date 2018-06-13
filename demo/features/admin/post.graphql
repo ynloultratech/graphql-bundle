@@ -1,6 +1,10 @@
 mutation AddPost($input: AddPostInput!){
     posts {
         add(input: $input){
+            constraintViolations{
+                message
+                propertyPath
+            }
             node {
                 title
                 body
