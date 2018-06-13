@@ -1,0 +1,305 @@
+/*!******************************************************************************
+ *  This file is part of the GraphQL Bundle package.
+ *
+ *  (c) YnloUltratech <support@ynloultratech.com>
+ *
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ ******************************************************************************/
+/*!******************************************************************************
+ *  This file is part of the GraphQL Bundle package.
+ *
+ *  (c) YnloUltratech <support@ynloultratech.com>
+ *
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ ******************************************************************************/
+h1, h2, h3, h4, h5, h6 {
+  font-weight: 500; }
+
+.s-content h1 {
+  margin-top: 30px;
+  border-bottom: 1px solid #ddd; }
+.s-content h2, .s-content h3, .s-content h4, .s-content h5 {
+  margin-top: 10px; }
+
+a {
+  font-weight: 400;
+  color: #333; }
+
+.PoweredBy {
+  font-size: 0.65rem;
+  color: #777; }
+
+/*!******************************************************************************
+ *  This file is part of the GraphQL Bundle package.
+ *
+ *  (c) YnloUltratech <support@ynloultratech.com>
+ *
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ ******************************************************************************/
+@media screen and (min-width: 769px) {
+  .Container {
+    width: 960px; } }
+.Homepage .HomepageTitle h2 {
+  font-size: 25px; }
+.Homepage .HomepageImage img {
+  margin-bottom: 30px;
+  width: 150px;
+  opacity: 1;
+  background: #3f4657;
+  border-radius: 10px;
+  padding: 8px;
+  border: 4px solid #fff;
+  box-shadow: 5px 5px 0 #3f4657, -5px 5px 0 #3f4657, 5px -5px 0 #3f4657, -5px -5px 0 #3f4657; }
+.Homepage .HomepageButtons .Button--hero {
+  border-radius: 10px;
+  opacity: 1;
+  border-color: #3f4657; }
+  .Homepage .HomepageButtons .Button--hero:hover {
+    border-color: #2b3140;
+    color: #2b3140; }
+  .Homepage .HomepageButtons .Button--hero.Button--primary {
+    background-color: #3f4657; }
+    .Homepage .HomepageButtons .Button--hero.Button--primary:hover {
+      background-color: #2b3140;
+      border-color: #2b3140;
+      color: #fff; }
+
+.HomepageContent {
+  padding: 0; }
+  .HomepageContent .HeroText {
+    text-align: center;
+    margin-top: 20px; }
+    .HomepageContent .HeroText .fa {
+      font-size: 10rem;
+      color: #333; }
+  .HomepageContent .Row__third h1 {
+    margin-top: 0;
+    border: none;
+    font-size: 2rem; }
+    .HomepageContent .Row__third h1 i {
+      font-size: 2rem; }
+  .HomepageContent ol, .HomepageContent ul {
+    padding-left: 0.3em; }
+    .HomepageContent ol li:before,
+    .HomepageContent ol li:before, .HomepageContent ul li:before,
+    .HomepageContent ul li:before {
+      border: none; }
+    .HomepageContent ol li i,
+    .HomepageContent ol li i, .HomepageContent ul li i,
+    .HomepageContent ul li i {
+      margin-right: 5px;
+      width: 20px;
+      text-align: center; }
+    .HomepageContent ol li a,
+    .HomepageContent ol li a, .HomepageContent ul li a,
+    .HomepageContent ul li a {
+      text-decoration: none; }
+      .HomepageContent ol li a:hover,
+      .HomepageContent ol li a:hover, .HomepageContent ul li a:hover,
+      .HomepageContent ul li a:hover {
+        text-decoration: underline; }
+
+.HomepageFooter a {
+  color: #fff; }
+
+/*!******************************************************************************
+ *  This file is part of the GraphQL Bundle package.
+ *
+ *  (c) YnloUltratech <support@ynloultratech.com>
+ *
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ ******************************************************************************/
+body {
+  font-weight: 300;
+  background-color: #fff; }
+
+.Page__header {
+  margin: 0 0 15px;
+  padding: 15px 0 0; }
+
+.Nav .Nav .Nav__item a {
+  padding: 7px 30px;
+  color: #222;
+  opacity: 1;
+  font-size: 0.9rem; }
+
+.Brand {
+  display: block;
+  padding: 1rem 0;
+  font-size: 1.55rem;
+  font-weight: 500;
+  color: #ffffff;
+  text-align: center; }
+
+.Page__header h1 {
+  line-height: 33px;
+  font-size: 1.5rem;
+  margin-bottom: 10px; }
+
+@media screen and (min-width: 769px) {
+  .Columns {
+    display: flex; }
+
+  .Columns__left {
+    width: 350px; }
+
+  .Columns__right {
+    width: 100%;
+    background-color: #eee; }
+
+  .Columns__right__content {
+    max-width: 800px;
+    border-right: 1px solid #e6e6e6;
+    box-shadow: 1px 0 8px rgba(0, 0, 0, 0.05); } }
+.Nav__item--open > a {
+  background-color: transparent; }
+
+/*!******************************************************************************
+ *  This file is part of the GraphQL Bundle package.
+ *
+ *  (c) YnloUltratech <support@ynloultratech.com>
+ *
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ ******************************************************************************/
+/**
+Row and Columns
+ */
+.s-content .graphiql {
+  display: flex;
+  background: #333;
+  height: 500px;
+  font-size: 0.8rem;
+  margin: 0 -20px 20px; }
+  .s-content .graphiql.small {
+    height: 200px; }
+  .s-content .graphiql code {
+    overflow: visible !important; }
+  .s-content .graphiql pre {
+    padding: 0;
+    margin: 0;
+    overflow: visible; }
+    .s-content .graphiql pre code {
+      overflow: visible; }
+  .s-content .graphiql > div {
+    min-height: 200px;
+    max-height: 500px;
+    width: 50%;
+    overflow: hidden;
+    padding-top: 10px;
+    position: relative; }
+    .s-content .graphiql > div pre {
+      padding: 10px; }
+    .s-content .graphiql > div:before {
+      text-transform: uppercase;
+      font-size: 0.65rem;
+      color: #fff;
+      margin-left: 13px;
+      padding: 2px 8px;
+      border-radius: 5px; }
+  .s-content .graphiql .request {
+    border-right: 1px solid #222;
+    width: 300px;
+    padding-right: 20px;
+    height: 100%; }
+    .s-content .graphiql .request:before {
+      content: "Request";
+      background-color: #5280aa; }
+  .s-content .graphiql .variables {
+    margin: 10px -10px -10px -10px;
+    padding: 10px;
+    border-top: 1px dashed #222; }
+    .s-content .graphiql .variables:before {
+      content: "Variables";
+      background-color: #000;
+      text-transform: uppercase;
+      font-size: 0.65rem;
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-left: 10px;
+      margin-top: 10px; }
+  .s-content .graphiql .response {
+    flex-grow: 1;
+    box-shadow: inset 2px 0 5px rgba(0, 0, 0, 0.4);
+    background-color: #252525;
+    min-height: 200px;
+    max-height: 500px; }
+    .s-content .graphiql .response pre {
+      background-color: transparent; }
+    .s-content .graphiql .response:before {
+      content: "Response";
+      background-color: #10aa59; }
+
+/**
+Scroll
+ */
+.ps__rail-x:hover, .ps__rail-x.ps--clicking,
+.ps__rail-y:hover,
+.ps__rail-y.ps--clicking {
+  background-color: rgba(0, 0, 0, 0.3) !important; }
+
+/**
+Tables
+ */
+.s-content table {
+  font-size: 0.9rem; }
+
+/**
+Code
+ */
+.s-content pre {
+  background: #333;
+  color: #eee;
+  font-size: 0.8rem;
+  overflow: hidden;
+  position: relative; }
+  .s-content pre code {
+    overflow: visible; }
+
+.s-content code {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: none;
+  font-size: 0.8rem; }
+
+/*
+Quote
+ */
+.s-content blockquote {
+  padding: 0;
+  border: none;
+  background: none;
+  margin: 0 0 15px; }
+  .s-content blockquote > blockquote {
+    margin: 0; }
+    .s-content blockquote > blockquote > p {
+      border-left: .25em solid #d6b435; }
+      .s-content blockquote > blockquote > p:before {
+        content: "\f10d";
+        color: #d6b435; }
+  .s-content blockquote > blockquote > blockquote {
+    margin: 0; }
+    .s-content blockquote > blockquote > blockquote > p {
+      border-left: .25em solid #d61c1c; }
+      .s-content blockquote > blockquote > blockquote > p:before {
+        content: "\f071";
+        color: #d61c1c; }
+  .s-content blockquote > p {
+    margin: 0;
+    padding: 0.5em 1em;
+    font-style: italic;
+    border-left: .25em solid #3ebfd6;
+    background: #efefef; }
+    .s-content blockquote > p:before {
+      font: normal normal normal 14px/1 FontAwesome;
+      font-size: 22px;
+      margin: 0 10px 0 -10px;
+      content: "\f0eb";
+      color: #3ebfd6; }
+
+/*# sourceMappingURL=theme.css.map */

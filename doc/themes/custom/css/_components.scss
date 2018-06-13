@@ -1,0 +1,179 @@
+/*!******************************************************************************
+ *  This file is part of the GraphQL Bundle package.
+ *
+ *  (c) YnloUltratech <support@ynloultratech.com>
+ *
+ *  For the full copyright and license information, please view the LICENSE
+ *  file that was distributed with this source code.
+ ******************************************************************************/
+/**
+Row and Columns
+ */
+.s-content .graphiql {
+  display: flex;
+  background: #333;
+  height: 500px;
+  font-size: 0.8rem;
+  margin: 0 -20px 20px;
+  &.small {
+    height: 200px;
+  }
+  code {
+    overflow: visible !important;
+  }
+  pre {
+    padding: 0;
+    margin: 0;
+    overflow: visible;
+    code {
+      overflow: visible;
+    }
+  }
+  > div {
+    min-height: 200px;
+    max-height: 500px;
+    width: 50%;
+    overflow: hidden;
+    padding-top: 10px;
+    position: relative;
+    pre {
+      padding: 10px;
+    }
+    &:before {
+      text-transform: uppercase;
+      font-size: 0.65rem;
+      color: #fff;
+      margin-left: 13px;
+      padding: 2px 8px;
+      border-radius: 5px;
+    }
+  }
+  .request {
+    border-right: 1px solid #222;
+    width: 300px;
+    padding-right: 20px;
+    height: 100%;
+    &:before {
+      content: "Request";
+      background-color: #5280aa;
+    }
+  }
+  .variables {
+    margin: 10px -10px -10px -10px;
+    padding: 10px;
+    border-top: 1px dashed #222;
+    &:before {
+      content: "Variables";
+      background-color: #000;
+      text-transform: uppercase;
+      font-size: 0.65rem;
+      color: #fff;
+      padding: 2px 8px;
+      border-radius: 6px;
+      margin-left: 10px;
+      margin-top: 10px;
+    }
+  }
+  .response {
+    flex-grow: 1;
+    box-shadow: inset 2px 0 5px rgba(0, 0, 0, 0.4);
+    background-color: #252525;
+    min-height: 200px;
+    max-height: 500px;
+    pre {
+      background-color: transparent;
+    }
+    &:before {
+      content: "Response";
+      background-color: #10aa59;
+    }
+  }
+}
+
+/**
+Scroll
+ */
+.ps__rail-x,
+.ps__rail-y {
+  &:hover,
+  &.ps--clicking {
+    background-color: rgba(0, 0, 0, 0.3) !important;
+  }
+}
+
+/**
+Tables
+ */
+.s-content table {
+  font-size: 0.9rem;
+}
+
+/**
+Code
+ */
+.s-content pre {
+  background: #333;
+  color: #eee;
+  font-size: 0.8rem;
+  overflow: hidden;
+  position: relative;
+  code {
+    overflow: visible;
+  }
+}
+
+.s-content code {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-shadow: none;
+  font-size: 0.8rem;
+}
+
+/*
+Quote
+ */
+
+.s-content blockquote {
+  padding: 0;
+  border: none;
+  background: none;
+  margin: 0 0 15px;
+
+  & > blockquote {
+    margin: 0;
+
+    & > p {
+      border-left: .25em solid #d6b435;
+      &:before {
+        content: "\f10d";
+        color: #d6b435;
+      }
+    }
+  }
+  & > blockquote > blockquote {
+    margin: 0;
+
+    & > p {
+      border-left: .25em solid #d61c1c;
+      &:before {
+        content: "\f071";
+        color: #d61c1c;
+      }
+    }
+  }
+  & > p {
+    margin: 0;
+    padding: 0.5em 1em;
+    font-style: italic;
+    border-left: .25em solid #3ebfd6;
+    background: #efefef;
+
+    &:before {
+      font: normal normal normal 14px/1 FontAwesome;
+      font-size: 22px;
+      margin: 0 10px 0 -10px;
+      content: "\f0eb";
+      color: #3ebfd6;
+    }
+  }
+}
