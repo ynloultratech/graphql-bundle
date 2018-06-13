@@ -225,10 +225,6 @@ final class GraphQLContext implements Context, ClientAwareInterface
                 $output = $content;
             }
 
-            if ($error) {
-                $output = substr($output, 0, 1500).' ...';
-            }
-
             print_r($output);
 
             print_r("\n\n");
