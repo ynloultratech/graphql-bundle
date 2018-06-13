@@ -166,5 +166,10 @@ Feature: User
     And "{response.errors[1].message}" should contains "updatedAt"
     And "{response.errors[1].message}" should contains "AdminUser"
 
+  Scenario: Throw Some Error
+    Given the operation named "ThrowSomeError"
+    When send
+    Then the response is GraphQL error with "Some Error"
+
 
 

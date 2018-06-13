@@ -365,6 +365,8 @@ services:
             - 'console.command'
 
     Ynlo\GraphQLBundle\Error\DefaultErrorFormatter:
+       arguments:
+          - '@Ynlo\GraphQLBundle\Error\ControlledErrorManager'
 
     Ynlo\GraphQLBundle\Error\ErrorFormatterInterface:
        alias: Ynlo\GraphQLBundle\Error\DefaultErrorFormatter
@@ -378,7 +380,7 @@ services:
 
     Ynlo\GraphQLBundle\Command\ControlledErrorCommand:
         arguments:
-            - '@Ynlo\GraphQLBundle\Error\ControlledErrorsManager'
+            - '@Ynlo\GraphQLBundle\Error\ControlledErrorManager'
             - !tagged graphql.error_list_exporter
         tags:
             - 'console.command'
@@ -391,7 +393,7 @@ services:
         tags:
             - graphql.error_list_exporter
 
-    Ynlo\GraphQLBundle\Error\ControlledErrorsManager:
+    Ynlo\GraphQLBundle\Error\ControlledErrorManager:
         arguments:
           - '@kernel'
           - '%graphql.error_handling.controlled_errors%'

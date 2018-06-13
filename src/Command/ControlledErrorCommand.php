@@ -15,13 +15,13 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Output\StreamOutput;
-use Ynlo\GraphQLBundle\Error\ControlledErrorsManager;
+use Ynlo\GraphQLBundle\Error\ControlledErrorManager;
 use Ynlo\GraphQLBundle\Error\Exporter\ErrorListExporterInterface;
 
 class ControlledErrorCommand extends Command
 {
     /**
-     * @var ControlledErrorsManager
+     * @var ControlledErrorManager
      */
     protected $errorManager;
 
@@ -33,10 +33,10 @@ class ControlledErrorCommand extends Command
     /**
      * ControlledErrorCommand constructor.
      *
-     * @param ControlledErrorsManager                     $errorManager
+     * @param ControlledErrorManager                      $errorManager
      * @param array|iterable|ErrorListExporterInterface[] $exporters
      */
-    public function __construct(ControlledErrorsManager $errorManager, iterable $exporters)
+    public function __construct(ControlledErrorManager $errorManager, iterable $exporters)
     {
         $this->errorManager = $errorManager;
         $this->exporters = $exporters;

@@ -90,6 +90,13 @@ graphql:
 
     namespaces: true
 
+    error_handling:
+      controlled_errors:
+          map:
+            1022:
+              message: Some Error
+              description: This is some amazing error ;)
+
     graphiql:
         authentication:
             required: false

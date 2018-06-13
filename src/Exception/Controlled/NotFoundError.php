@@ -10,9 +10,9 @@
 
 namespace Ynlo\GraphQLBundle\Exception\Controlled;
 
-use Ynlo\GraphQLBundle\Exception\AbstractControlledError;
+use Ynlo\GraphQLBundle\Exception\ControlledError;
 
-class NotFoundError extends AbstractControlledError
+class NotFoundError extends ControlledError
 {
     protected $code = 404;
 

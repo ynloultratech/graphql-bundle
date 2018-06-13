@@ -15,7 +15,7 @@ use Symfony\Component\Finder\SplFileInfo;
 use Symfony\Component\HttpKernel\Kernel;
 use Ynlo\GraphQLBundle\Exception\ControlledErrorInterface;
 
-class ControlledErrorsManager
+class ControlledErrorManager
 {
     protected $kernel;
 
@@ -35,7 +35,7 @@ class ControlledErrorsManager
     protected $errors = [];
 
     /**
-     * ControlledErrorsManager constructor.
+     * ControlledErrorManager constructor.
      *
      * @param Kernel $kernel
      * @param array  $config
@@ -48,8 +48,6 @@ class ControlledErrorsManager
 
     /**
      * @return array|MappedControlledError[]
-     *
-     * @throws \ReflectionException
      */
     public function all(): array
     {
@@ -62,17 +60,15 @@ class ControlledErrorsManager
 
     /**
      * @param MappedControlledError $error
-     *
-     * @throws \ReflectionException
      */
     public function add(MappedControlledError $error)
     {
         if ($this->has($error->getCode())) {
             $message = sprintf(
-                'Duplicate error definition, the error code "%s" can\'t be used for "%s" because this code is already used in: "%s"',
+                'Duplicate error definition, the error code "%s" can\'t be used for "%s" because this code is already used with: "%s"',
                 $error->getCode(),
-                $error->getClass(),
-                $this->all()[$error->getCode()]->getClass()
+                $error->getDescription(),
+                $this->all()[$error->getCode()]->getDescription()
             );
             throw new \LogicException($message);
         }
@@ -84,12 +80,20 @@ class ControlledErrorsManager
      * @param string $code
      *
      * @return bool
-     *
-     * @throws \ReflectionException
      */
     public function has($code)
     {
         return isset($this->all()[$code]);
+    }
+
+    /**
+     * @param string $code
+     *
+     * @return MappedControlledError
+     */
+    public function get($code)
+    {
+        return $this->all()[$code];
     }
 
     /**
@@ -104,8 +108,6 @@ class ControlledErrorsManager
     }
 
     /**
-     * @throws \ReflectionException
-     *
      * @return void
      */
     private function loadAllErrors(): void
@@ -116,9 +118,39 @@ class ControlledErrorsManager
         }
 
         $loadedErrors = [];
+        foreach ($this->config['map'] as $code => $error) {
+            $loadedErrors[] = new MappedControlledError(
+                $error['category'],
+                $error['message'],
+                $code,
+                $error['description']
+            );
+        }
+
+        if ($this->config['autoload']['enabled'] ?? false) {
+            foreach ($this->controlledExceptions() as $error) {
+                $loadedErrors[] = $error;
+            }
+        }
+
+        $this->loaded = true;
+        foreach ($loadedErrors as $error) {
+            $this->add($error);
+        }
+
+        ksort($this->errors, SORT_NATURAL);
+
+        $this->saveCache();
+    }
+
+    /**
+     * @return MappedControlledError[]|iterable
+     */
+    private function controlledExceptions(): iterable
+    {
         $paths = [];
         if (Kernel::VERSION_ID >= 40000) {
-            foreach ($this->config['locations'] ?? [] as $location) {
+            foreach ($this->config['autoload']['locations'] ?? [] as $location) {
                 $path = $this->kernel->getRootDir().'/'.$location;
                 if (file_exists($path)) {
                     $paths[$path] = 'App\\'.$location;
@@ -127,7 +159,7 @@ class ControlledErrorsManager
         }
 
         foreach ($this->kernel->getBundles() as $bundle) {
-            foreach ($this->config['locations'] ?? [] as $location) {
+            foreach ($this->config['autoload']['locations'] ?? [] as $location) {
                 $path = $bundle->getPath().'/'.$location;
                 if (file_exists($path)) {
                     $paths[$path] = $bundle->getNamespace().'\\'.$location;
@@ -155,7 +187,7 @@ class ControlledErrorsManager
                 );
                 if (class_exists($className)) {
                     $allowed = false;
-                    if ($whitelist = $this->config['whitelist'] ?? []) {
+                    if ($whitelist = $this->config['autoload']['whitelist'] ?? []) {
                         foreach ($whitelist as $exp) {
                             if (preg_match($exp, $className)) {
                                 $allowed = true;
@@ -164,7 +196,7 @@ class ControlledErrorsManager
                         }
                     }
 
-                    if ($blackList = $this->config['blacklist'] ?? []) {
+                    if ($blackList = $this->config['autoload']['blacklist'] ?? []) {
                         foreach ($blackList as $exp) {
                             if (preg_match($exp, $className)) {
                                 $allowed = false;
@@ -181,8 +213,8 @@ class ControlledErrorsManager
                     if ($ref->implementsInterface(ControlledErrorInterface::class) && $ref->isInstantiable()) {
                         /** @var ControlledErrorInterface $error */
                         $error = $ref->newInstanceWithoutConstructor();
-                        $loadedErrors[] = new MappedControlledError(
-                            $className,
+                        yield  new MappedControlledError(
+                            $error->getCategory(),
                             $error->getMessage(),
                             $error->getCode(),
                             $error->getDescription()
@@ -191,15 +223,6 @@ class ControlledErrorsManager
                 }
             }
         }
-
-        $this->loaded = true;
-        foreach ($loadedErrors as $error) {
-            $this->add($error);
-        }
-
-        ksort($this->errors, SORT_NATURAL);
-
-        $this->saveCache();
     }
 
     /**

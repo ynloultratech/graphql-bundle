@@ -11,9 +11,10 @@
 namespace Ynlo\GraphQLBundle\Exception\Controlled;
 
 use GraphQL\Error\Error;
-use Ynlo\GraphQLBundle\Exception\AbstractControlledError;
+use Symfony\Component\HttpFoundation\Response;
+use Ynlo\GraphQLBundle\Exception\ControlledError;
 
-class BadRequestError extends AbstractControlledError
+class BadRequestError extends ControlledError
 {
     protected $code = 400;
 

@@ -11,9 +11,9 @@
 namespace Ynlo\GraphQLBundle\Exception\Controlled;
 
 use GraphQL\Error\Error;
-use Ynlo\GraphQLBundle\Exception\AbstractControlledError;
+use Ynlo\GraphQLBundle\Exception\ControlledError;
 
-class InternalServerError extends AbstractControlledError
+class InternalServerError extends ControlledError
 {
     protected $code = 500;
 

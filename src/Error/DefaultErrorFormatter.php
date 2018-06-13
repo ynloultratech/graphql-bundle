@@ -21,6 +21,21 @@ use Ynlo\GraphQLBundle\Util\Uuid;
 class DefaultErrorFormatter implements ErrorFormatterInterface
 {
     /**
+     * @var ControlledErrorManager
+     */
+    protected $errorManager;
+
+    /**
+     * DefaultErrorFormatter constructor.
+     *
+     * @param ControlledErrorManager $errorManager
+     */
+    public function __construct(ControlledErrorManager $errorManager)
+    {
+        $this->errorManager = $errorManager;
+    }
+
+    /**
      * @inheritDoc
      */
     public function format(Error $error, $debug = false): array
@@ -35,6 +50,10 @@ class DefaultErrorFormatter implements ErrorFormatterInterface
             if ($originError instanceof \Exception) {
                 if ($originError instanceof ControlledErrorInterface) {
                     $errorCode = $originError->getCode();
+                    if (!$originError->getMessage() && $this->errorManager->has($errorCode)) {
+                        $formattedError['message'] = $this->errorManager->get($errorCode)->getMessage();
+                    }
+
                 } elseif ($originError instanceof ClientAware && $originError->isClientSafe()) {
                     $errorCode = null;
                 }

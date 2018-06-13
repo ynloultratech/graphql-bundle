@@ -15,11 +15,6 @@ class MappedControlledError
     /**
      * @var string
      */
-    private $class;
-
-    /**
-     * @var string
-     */
     private $message;
 
     /**
@@ -33,16 +28,21 @@ class MappedControlledError
     private $description;
 
     /**
+     * @var string;
+     */
+    private $category;
+
+    /**
      * MappedControlledError constructor.
      *
-     * @param string $class
+     * @param string $category
      * @param string $message
      * @param string $code
      * @param string $description
      */
-    public function __construct(string $class, string $message, string $code, string $description)
+    public function __construct(string $category, string $message, string $code, string $description)
     {
-        $this->class = $class;
+        $this->category = $category;
         $this->message = $message;
         $this->code = $code;
         $this->description = $description;
@@ -51,9 +51,9 @@ class MappedControlledError
     /**
      * @return string
      */
-    public function getClass(): string
+    public function getCategory(): string
     {
-        return $this->class;
+        return $this->category;
     }
 
     /**

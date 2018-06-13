@@ -40,16 +40,27 @@ The Description string should be subject to change without prior notice.
 
 # Create and Use Controlled Errors
 
-A controlled error must implement `Ynlo\GraphQLBundle\Exception\ControlledErrorInterface`.
-The easy way to create one is extends from `Ynlo\GraphQLBundle\Exception\AbstractControlledError`.
+Yo can register you errors in the bundle configuration:
+
+````
+graphql:
+    error_handling:
+      controlled_errors:
+          map:
+            1101:
+              message: Insufficient funds
+              description: The account does not have sufficient funds to do the requested operation.
+````
+or create a exception implementing `Ynlo\GraphQLBundle\Exception\ControlledErrorInterface` or
+ extends from `Ynlo\GraphQLBundle\Exception\ControlledError`.
 
 ````php
 <?php
 namespace App\Exception;
 
-use Ynlo\GraphQLBundle\Exception\AbstractControlledError;
+use Ynlo\GraphQLBundle\Exception\ControlledError;
 
-class InsufficientFunds extends AbstractControlledError
+class InsufficientFunds extends ControlledError
 {
     protected $code = 1101;
 
@@ -64,6 +75,8 @@ Now in your resolver or any place inside your application logic:
 ...
 if ($user->getBalance() < $order->getAmount()) {
   throw new InsufficientFunds();
+  //or
+  throw ControlledError::create(1101);
 }
 ````
 
@@ -81,7 +94,7 @@ Then, your API consumers receive a error like this:
 }
 ````
 
-> The description is only for documentation purposes, and is recommended if you wat to export this list of errors
+> The description is only for documentation purposes, and is recommended if you want to export this list of errors
 to keep your error codes in the documentation up to date.
 
 # Keep yours errors documented

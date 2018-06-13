@@ -8,22 +8,21 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Exception;
+namespace Ynlo\GraphQLBundle\Demo\AppBundle\Query\User;
 
-use GraphQL\Error\UserError;
+use Ynlo\GraphQLBundle\Annotation as GraphQL;
+use Ynlo\GraphQLBundle\Exception\ControlledError;
 
-abstract class AbstractControlledError extends UserError implements ControlledErrorInterface
+/**
+ * @GraphQL\Query()
+ */
+class ThrowSomeError
 {
     /**
-     * @var string
+     * @inheritDoc
      */
-    protected $description;
-
-    /**
-     * @return string
-     */
-    public function getDescription(): ?string
+    public function __invoke()
     {
-        return $this->description;
+        throw ControlledError::create(1022);
     }
 }

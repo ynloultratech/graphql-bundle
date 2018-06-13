@@ -63,11 +63,23 @@ class Configuration implements ConfigurationInterface
 
         $controlledErrors = $errorHandling
             ->arrayNode('controlled_errors')
-            ->info('Where to find for controlled errors')
+            ->info('List of controlled errors')
             ->addDefaultsIfNotSet()
             ->children();
 
-        $controlledErrors
+        $map = $controlledErrors->arrayNode('map')->useAttributeAsKey('code')->arrayPrototype()->children();
+        $map->scalarNode('message')->isRequired();
+        $map->scalarNode('description')->isRequired();
+        $map->scalarNode('category')->defaultValue('user');
+
+        $autoload = $controlledErrors
+            ->arrayNode('autoload')
+            ->info('Autoload exceptions implementing ControlledErrorInterface')
+            ->addDefaultsIfNotSet()
+            ->canBeDisabled()
+            ->children();
+
+        $autoload
             ->variableNode('locations')
             ->defaultValue(['Exception', 'Error'])
             ->info('Default folder to find exceptions and errors implementing controlled interface.')
@@ -80,7 +92,7 @@ class Configuration implements ConfigurationInterface
             )
             ->end();
 
-        $controlledErrors
+        $autoload
             ->variableNode('whitelist')
             ->info('White listed classes')
             ->defaultValue(['/App\\\\[Exception|Error]/', '/\w+Bundle\\\\[Exception|Error]/'])
@@ -105,7 +117,7 @@ class Configuration implements ConfigurationInterface
                 }
             )->thenInvalid('Invalid regular expression');
 
-        $controlledErrors
+        $autoload
             ->variableNode('blacklist')
             ->info('Black listed classes')
             ->beforeNormalization()

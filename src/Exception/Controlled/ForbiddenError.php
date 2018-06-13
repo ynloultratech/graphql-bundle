@@ -10,9 +10,9 @@
 
 namespace Ynlo\GraphQLBundle\Exception\Controlled;
 
-use Ynlo\GraphQLBundle\Exception\AbstractControlledError;
+use Ynlo\GraphQLBundle\Exception\ControlledError;
 
-class ForbiddenError extends AbstractControlledError
+class ForbiddenError extends ControlledError
 {
     protected $code = 403;
 
