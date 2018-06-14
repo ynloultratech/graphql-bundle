@@ -212,10 +212,6 @@ services:
         tags:
           - { name: form.type_extension, extended_type: Symfony\Component\Form\Extension\Core\Type\FormType }
 
-    Ynlo\GraphQLBundle\Definition\Plugin\GraphQLDefinitionPluginManager:
-        public: true
-        arguments: ['@Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices']
-
     Ynlo\GraphQLBundle\Extension\ExtensionManager:
         public: true
         arguments: [!tagged graphql.extension]
@@ -231,11 +227,6 @@ services:
         arguments: ['@form.factory']
         tags:
             - { name: 'graphql.definition_plugin'}
-
-#    Ynlo\GraphQLBundle\Definition\Plugin\PolymorphicDefinitionPlugin:
-#        public: true
-#        tags:
-#            - { name: 'graphql.definition_plugin', priority: -200 }
 
     Ynlo\GraphQLBundle\Definition\Plugin\EndpointsDefinitionPlugin:
         public: true
