@@ -394,3 +394,13 @@ services:
         arguments:
           - '@kernel'
           - '%graphql.error_handling.controlled_errors%'
+
+    Ynlo\GraphQLBundle\EventListener\JWT\AuthenticationFailureListener:
+        arguments:
+          - '@Ynlo\GraphQLBundle\Error\ErrorFormatterInterface'
+          - '@Ynlo\GraphQLBundle\Error\ErrorHandlerInterface'
+        calls:
+          - [setDebug, ['%kernel.debug%']]
+          - [setJWTCompatibility, ['%graphql.error_handling.jwt_auth_failure_compatibility%']]
+        tags:
+          - kernel.event_subscriber

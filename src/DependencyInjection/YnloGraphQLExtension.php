@@ -41,6 +41,7 @@ class YnloGraphQLExtension extends Extension
         $container->setParameter('graphql.pagination', $config['pagination'] ?? []);
         $container->setParameter('graphql.error_handling', $config['error_handling'] ?? []);
         $container->setParameter('graphql.error_handling.controlled_errors', $config['error_handling']['controlled_errors'] ?? []);
+        $container->setParameter('graphql.error_handling.jwt_auth_failure_compatibility', $config['error_handling']['jwt_auth_failure_compatibility'] ?? false);
         $container->setParameter('graphql.namespaces', $config['namespaces'] ?? []);
         $container->setParameter('graphql.cors_config', $config['cors'] ?? []);
         $container->setParameter('graphql.graphiql', $config['graphiql'] ?? []);

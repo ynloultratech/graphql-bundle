@@ -51,6 +51,7 @@
  * Improve error handling, Add controlled errors, custom error formatter and handlers
  * Added support to display validation messages as errors
  * Deprecated internal `TaggedServices` component in favor of symfony injection using "!tagged tag_name"
+ * Added support to listen LexikJWT authentication failures and display formatted GraphQL errors
  
 1.0.6 - 18-03-23
 ----

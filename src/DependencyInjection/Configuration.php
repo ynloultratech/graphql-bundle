@@ -56,6 +56,12 @@ class Configuration implements ConfigurationInterface
                       ->info('Where should be displayed validation messages.')
                       ->defaultValue('error');
 
+        //@deprecated since v1.1 snd should be deleted in 2.0, this is a compatibility flag
+        $errorHandling->booleanNode('jwt_auth_failure_compatibility')
+                      ->info('Keep BC with oldest version of JWT Authentication errors')
+                      ->setDeprecated('Since v1.1 and will will be removed in the next mayor release')
+                      ->defaultFalse();
+
         $errorHandling->booleanNode('show_trace')->info('Show error trace in debug mode')->defaultTrue();
 
         $errorHandling->scalarNode('formatter')

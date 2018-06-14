@@ -1,5 +1,62 @@
 # Upgrade to 1.1
 
+## **BC BREAK:** LexikJWT authentication failures are displayed using GraphQL error format
+
+Before:
+
+````json
+{
+  "code": 401,
+  "message": "JWT Token not found"
+}
+````
+
+After:
+
+````json
+{
+  "errors": [
+    {
+      "code": 401,
+      "tracking_id": "A133373E-5164-DC6C-75DF-377B8DA2",
+      "message": "JWT Token not found",
+      "category": "user"
+    }
+  ]
+}
+````
+
+This change can affect directly your API clients, in order to make this change progressively in all
+your clients can activate the following option:
+
+````
+graphql:
+    error_handling:
+        jwt_auth_failure_compatibility: true
+
+````
+
+The above option generate a response like this:
+
+````json
+{
+  "code": 401,
+  "message": "JWT Token not found",
+  "errors": [
+    {
+      "code": 401,
+      "tracking_id": "5981C154-3BC7-7640-0097-FB0C3EC5",
+      "message": "JWT Token not found",
+      "category": "user"
+    }
+  ]
+}
+````
+
+>>> The option `jwt_auth_failure_compatibility` is temporal and will be removed in the next mayor release.
+Migrate your clients to the new error format.
+
+---
 ## **BC BREAK:** Removed prefix `is` and `has` on methods without explicit name.
 
 This is a **IMPORTANT** change, you have to update your definitions. 
