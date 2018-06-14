@@ -14,6 +14,10 @@ const pjax = new Pjax({
     cacheBust: false,
 });
 
+document.addEventListener('pjax:success', function(){
+    $(".Columns__right").animate({ scrollTop: 0 }, "slow");
+});
+
 $(function () {
     const config = {
         wheelPropagation: false
