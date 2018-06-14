@@ -18,13 +18,11 @@ use Behat\Testwork\Environment\Environment;
 use Faker\Factory;
 use Mockery;
 use PHPUnit\Framework\TestCase;
-use Symfony\Component\HttpFoundation\Response;
 use Ynlo\GraphQLBundle\Behat\Storage\Storage;
 use Ynlo\GraphQLBundle\Behat\Transformer\ExpressionLanguage\FakerProvider;
 use Ynlo\GraphQLBundle\Behat\Transformer\ExpressionLanguage\JMESPathSearchProvider;
 use Ynlo\GraphQLBundle\Behat\Transformer\ExpressionLanguage\StorageValuesProvider;
 use Ynlo\GraphQLBundle\Behat\Transformer\TransformStringToExpression;
-use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\User;
 
 class TransformStringToExpressionTest extends TestCase
 {
