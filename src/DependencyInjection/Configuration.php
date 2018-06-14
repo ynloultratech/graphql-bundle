@@ -62,7 +62,7 @@ class Configuration implements ConfigurationInterface
                       ->setDeprecated('Since v1.1 and will will be removed in the next mayor release')
                       ->defaultFalse();
 
-        $errorHandling->booleanNode('show_trace')->info('Show error trace in debug mode')->defaultTrue();
+        $errorHandling->booleanNode('show_trace')->info('Show error trace in debug mode')->defaultFalse();
 
         $errorHandling->scalarNode('formatter')
                       ->info('Formatter is responsible for converting instances of Error to an array')
