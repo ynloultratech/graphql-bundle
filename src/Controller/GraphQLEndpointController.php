@@ -11,7 +11,6 @@
 
 namespace Ynlo\GraphQLBundle\Controller;
 
-use GraphQL\Error\ClientAware;
 use GraphQL\Error\Debug;
 use GraphQL\Error\Error;
 use GraphQL\GraphQL;
@@ -23,8 +22,6 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Ynlo\GraphQLBundle\Error\DefaultErrorFormatter;
-use Ynlo\GraphQLBundle\Error\DefaultErrorHandler;
 use Ynlo\GraphQLBundle\Error\ErrorFormatterInterface;
 use Ynlo\GraphQLBundle\Error\ErrorHandlerInterface;
 use Ynlo\GraphQLBundle\Error\ErrorQueue;
@@ -144,17 +141,17 @@ class GraphQLEndpointController
             throw new HttpException(Response::HTTP_BAD_REQUEST, 'The method should be POST to talk with GraphQL API');
         }
 
-        $query = new ExecuteQuery();
-        foreach ($this->middlewares as $middleware) {
-            if ($middleware instanceof RequestMiddlewareInterface) {
-                $middleware->processRequest($request, $query);
-            }
-        }
-
-        $context = new QueryExecutionContext();
-        $validationRules = null;
-
         try {
+            $query = new ExecuteQuery();
+            foreach ($this->middlewares as $middleware) {
+                if ($middleware instanceof RequestMiddlewareInterface) {
+                    $middleware->processRequest($request, $query);
+                }
+            }
+
+            $context = new QueryExecutionContext();
+            $validationRules = null;
+
             $endpoint = $this->resolver->resolveEndpoint($request);
             if (!$endpoint) {
                 throw new AccessDeniedHttpException();
@@ -174,29 +171,9 @@ class GraphQLEndpointController
                 $validationRules
             );
 
-            if (!$this->debug) {
-                // in case of debug = false
-                // If API_DEBUG is passed, output of error formatter is enriched which debugging information.
-                // Helpful for tests to get full error logs without the need of enable full app debug flag
-                if (isset($_ENV['API_DEBUG'])) {
-                    $this->debug = $_ENV['API_DEBUG'];
-                } elseif (isset($_SERVER['API_DEBUG'])) {
-                    $this->debug = $_SERVER['API_DEBUG'];
-                }
-            }
-
-            $debugFlags = false;
-            if ($this->debug) {
-                if ($this->config['error_handling']['show_trace'] ?? true) {
-                    $debugFlags = Debug::INCLUDE_DEBUG_MESSAGE | Debug::INCLUDE_TRACE;
-                } else {
-                    $debugFlags = Debug::INCLUDE_DEBUG_MESSAGE;
-                }
-            }
-
             //https://webonyx.github.io/graphql-php/error-handling/
-            $formatter = $this->errorFormatter ?? new DefaultErrorFormatter();
-            $handler = $this->errorHandler ?? new DefaultErrorHandler($this->logger);
+            $formatter = $this->errorFormatter;
+            $handler = $this->errorHandler;
 
             //get queued errors
             $exceptions = ErrorQueue::all();
@@ -206,35 +183,25 @@ class GraphQLEndpointController
 
             $result->setErrorFormatter([$formatter, 'format']);
             $result->setErrorsHandler(
-                function ($errors) use ($handler, $formatter, $debugFlags) {
-                    return $handler->handle($errors, $formatter, $debugFlags);
+                function ($errors) use ($handler, $formatter) {
+                    return $handler->handle($errors, $formatter, $this->getDebugMode());
                 }
             );
 
-            $output = $result->toArray($debugFlags);
+            $output = $result->toArray($this->getDebugMode());
             $statusCode = Response::HTTP_OK;
         } catch (\Exception $e) {
-            if (null !== $this->logger) {
-                $this->logger->error($e->getMessage(), $e->getTrace());
-            }
-
+            $error = Error::createLocatedError($e);
+            $errors = $this->errorHandler->handle([$error], $this->errorFormatter, $this->debug);
             if ($e instanceof HttpException) {
-                $message = Response::$statusTexts[$e->getStatusCode()];
                 $statusCode = $e->getStatusCode();
             } else {
                 $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
-                $message = 'Internal Server Error';
-                if ($this->debug || ($e instanceof ClientAware && $e->isClientSafe())) {
-                    $message = $e->getMessage();
-                }
             }
 
-            $output['errors']['message'] = $message;
-            $output['errors']['category'] = 'internal';
-
-            if ($this->debug) {
-                $output['errors']['trace'] = $e->getTraceAsString();
-            }
+            $output = [
+                'errors' => $errors,
+            ];
         }
 
         return JsonResponse::create($output, $statusCode);
@@ -253,5 +220,33 @@ class GraphQLEndpointController
             $rules[] = new Rules\DisableIntrospection();
         }
         array_map([DocumentValidator::class, 'addRule'], $rules);
+    }
+
+    /**
+     * @return bool|int
+     */
+    private function getDebugMode()
+    {
+        if (!$this->debug) {
+            // in case of debug = false
+            // If API_DEBUG is passed, output of error formatter is enriched which debugging information.
+            // Helpful for tests to get full error logs without the need of enable full app debug flag
+            if (isset($_ENV['API_DEBUG'])) {
+                $this->debug = $_ENV['API_DEBUG'];
+            } elseif (isset($_SERVER['API_DEBUG'])) {
+                $this->debug = $_SERVER['API_DEBUG'];
+            }
+        }
+
+        $debugFlags = false;
+        if ($this->debug) {
+            if ($this->config['error_handling']['show_trace'] ?? true) {
+                $debugFlags = Debug::INCLUDE_DEBUG_MESSAGE | Debug::INCLUDE_TRACE;
+            } else {
+                $debugFlags = Debug::INCLUDE_DEBUG_MESSAGE;
+            }
+        }
+
+        return $debugFlags;
     }
 }
