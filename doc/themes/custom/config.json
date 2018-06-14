@@ -1,6 +1,7 @@
 {
   "favicon": "<theme_url>img/favicon.png",
   "css": [
+    "<theme_url>css/pace.css",
     "<theme_url>css/theme-blue.min.css",
     "<theme_url>css/font-awesome.min.css",
     "<theme_url>css/androidstudio.css",
@@ -8,6 +9,7 @@
     "<theme_url>css/theme.css"
   ],
   "js": [
+    "<theme_url>js/pace.min.js",
     "<theme_url>js/jquery-1.11.3.min.js",
     "<theme_url>js/highlight.pack.js",
     "<theme_url>js/perfect-scrollbar.min.js",
