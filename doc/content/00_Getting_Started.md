@@ -23,13 +23,14 @@ $bundles = [
 
 > In Symfony4 the bundle is automatically registered after composer installation.
 
-At this point its almost ready
+At this point it's almost ready
 
 # Configuration
      
 ## Endpoint Route
 
-GraphQL use one only endpoint to all queries & mutations to configure it, add the following route in your `routing.yml` or `routes.yaml` in symfony4.
+GraphQL use one only endpoint for all queries & mutations. 
+To configure it, add the following route in your `routing.yml` or `routes.yaml` in symfony4.
 
 ````yaml    
 api:
@@ -40,10 +41,13 @@ api:
 
 > The `trailing_slash_on_root` option was introduced in Symfony 4.1.
      
-At this point your GraphQL server under the `/api` route is ready, but does not have any data to serve.
+Now your GraphQL server under the `/api` route is ready, but does not have any data to serve.
   
 # Configure your first object
   
+GraphQL is based on objects, fields and types, is required al least 
+register one object to has something to serve.
+
 Add the following annotation to a doctrine entity
 
 ````php
@@ -61,14 +65,14 @@ class User
 ....
 ````
 
-And the entity must implements `Ynlo\GraphQLBundle\Model\NodeInterface`.
+The entity must implements `Ynlo\GraphQLBundle\Model\NodeInterface`.
 
 > The node interface is a requirement in order to accomplish 
 with the [Relay Specification](https://facebook.github.io/relay/) 
 to create a [GlobalID](https://facebook.github.io/relay/docs/en/graphql-object-identification.html) for all nodes.
 See [this documentation](08_Reference/01_Object_ID.md) to know when is required the use of NodeInterface
 
-At this point your entity should look like this:
+Your entity should look like this:
 
 ````php
 
