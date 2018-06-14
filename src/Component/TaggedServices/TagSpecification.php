@@ -15,8 +15,10 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\DependencyInjection\Exception\ServiceCircularReferenceException;
 use Symfony\Component\DependencyInjection\Exception\ServiceNotFoundException;
 
+@trigger_error("TaggedServices component has been deprecated since v1.1 and will be deleted in v2.0, use symfony tag injection instead \"!tagged tag_name\"", E_USER_DEPRECATED);
+
 /**
- * Class TagSpecification
+ * @deprecated since v1.1 and will be deleted in v2.0, use symfony tag injection instead "!tagged tag_name"
  */
 class TagSpecification
 {

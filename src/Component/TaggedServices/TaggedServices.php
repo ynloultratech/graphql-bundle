@@ -11,10 +11,12 @@
 
 namespace Ynlo\GraphQLBundle\Component\TaggedServices;
 
+@trigger_error("TaggedServices component has been deprecated since v1.1 and will be deleted in v2.0, use symfony tag injection instead \"!tagged tag_name\"", E_USER_DEPRECATED);
+
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
- * Class TaggedServices
+ * @deprecated since v1.1 and will be deleted in v2.0, use symfony tag injection instead "!tagged tag_name"
  */
 class TaggedServices
 {

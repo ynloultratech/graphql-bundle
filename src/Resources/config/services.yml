@@ -79,7 +79,7 @@ services:
 
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\ObjectTypeAnnotationParser:
         public: true
-        arguments: ['@Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices']
+        arguments: [!tagged graphql.field_definition_decorator]
         calls:
             - [ setReader, ['@annotations.reader']]
         tags:

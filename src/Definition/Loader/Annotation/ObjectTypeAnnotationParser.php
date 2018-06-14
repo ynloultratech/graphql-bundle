@@ -12,7 +12,6 @@ namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation;
 
 use Symfony\Component\DependencyInjection\Definition;
 use Ynlo\GraphQLBundle\Annotation;
-use Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
@@ -35,9 +34,9 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
     use AnnotationReaderAwareTrait;
 
     /**
-     * @var TaggedServices
+     * @var FieldDefinitionDecoratorInterface[]
      */
-    protected $taggedServices;
+    protected $fieldDecorators;
     /**
      * @var Endpoint
      */
@@ -46,11 +45,11 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
     /**
      * ObjectTypeAnnotationParser constructor.
      *
-     * @param TaggedServices $taggedServices
+     * @param iterable|FieldDefinitionDecoratorInterface[] $fieldDecorators
      */
-    public function __construct(TaggedServices $taggedServices)
+    public function __construct(iterable $fieldDecorators = [])
     {
-        $this->taggedServices = $taggedServices;
+        $this->fieldDecorators = $fieldDecorators;
     }
 
     /**
@@ -249,14 +248,13 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
     protected function resolveFields(\ReflectionClass $refClass, ObjectDefinitionInterface $objectDefinition)
     {
         $props = array_merge($this->getClassProperties($refClass), $this->getClassMethods($refClass));
-        $fieldDecorators = $this->getFieldDecorators();
         foreach ($props as $prop) {
             if (!$this->isExposed($objectDefinition, $prop)) {
                 continue;
             }
 
             $field = new FieldDefinition();
-            foreach ($fieldDecorators as $fieldDecorator) {
+            foreach ($this->fieldDecorators as $fieldDecorator) {
                 $fieldDecorator->decorateFieldDefinition($prop, $field, $objectDefinition);
             }
 
@@ -382,46 +380,6 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
                 }
             }
         }
-    }
-
-    /**
-     * @return array|FieldDefinitionDecoratorInterface[]
-     */
-    protected function getFieldDecorators(): array
-    {
-        /** @var Definition $resolversServiceDefinition */
-        $decoratorsDef = $this->taggedServices
-            ->findTaggedServices('graphql.field_definition_decorator');
-
-        $decorators = [];
-        foreach ($decoratorsDef as $decoratorDef) {
-            $attr = $decoratorDef->getAttributes();
-            $priority = 0;
-            if (isset($attr['priority'])) {
-                $priority = $attr['priority'];
-            }
-
-            $decorator = $decoratorDef->getService();
-
-            if ($decorator instanceof EndpointAwareInterface) {
-                $decorator->setEndpoint($this->endpoint);
-            }
-
-            $decorators[] = [$priority, $decorator];
-        }
-
-        //sort by priority
-        usort(
-            $decorators,
-            function ($service1, $service2) {
-                list($priority1) = $service1;
-                list($priority2) = $service2;
-
-                return version_compare($priority2, $priority1);
-            }
-        );
-
-        return array_column($decorators, 1);
     }
 
     /**
