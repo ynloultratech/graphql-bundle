@@ -14,17 +14,14 @@ use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\AfterStepScope;
 use Behat\Behat\Hook\Scope\BeforeFeatureScope;
 use Behat\Gherkin\Node\PyStringNode;
-use Behat\Symfony2Extension\Context\KernelAwareContext;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\KernelInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Symfony\Component\Stopwatch\Stopwatch;
 use Ynlo\GraphQLBundle\Behat\Client\ClientAwareInterface;
 use Ynlo\GraphQLBundle\Behat\Client\ClientAwareTrait;
 use Ynlo\GraphQLBundle\Behat\Gherkin\YamlStringNode;
-use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
 
 /**
  * Context to work with GraphQL
@@ -32,14 +29,9 @@ use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
  *
  * @property File $currentFeatureFile
  */
-final class GraphQLContext implements Context, ClientAwareInterface, KernelAwareContext
+final class GraphQLContext implements Context, ClientAwareInterface
 {
     use ClientAwareTrait;
-
-    /**
-     * @var KernelInterface
-     */
-    private $kernel;
 
     /**
      * @var File
@@ -47,27 +39,11 @@ final class GraphQLContext implements Context, ClientAwareInterface, KernelAware
     private static $currentFeatureFile;
 
     /**
-     * @var bool
-     */
-    private static $cacheCleared = false;
-
-    /**
      * @BeforeFeature
      */
     public static function prepareGraphQLContext(BeforeFeatureScope $scope)
     {
         self::$currentFeatureFile = new File($scope->getFeature()->getFile());
-    }
-
-    /**
-     * @BeforeStep
-     */
-    public function beforeStep()
-    {
-        if (!self::$cacheCleared) {
-            self::$cacheCleared = true;
-            $this->kernel->getContainer()->get(DefinitionRegistry::class)->clearCache();
-        }
     }
 
     /**
@@ -80,14 +56,6 @@ final class GraphQLContext implements Context, ClientAwareInterface, KernelAware
                 $this->debugLastQuery();
             }
         }
-    }
-
-    /**
-     * @param KernelInterface $kernel
-     */
-    public function setKernel(KernelInterface $kernel): void
-    {
-        $this->kernel = $kernel;
     }
 
     /**
