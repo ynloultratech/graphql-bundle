@@ -1,6 +1,10 @@
-# Upgrade to 1.1
+# UPGRADE FROM v1.0 to v1.1
 
-## **BC BREAK:** LexikJWT authentication failures are displayed using GraphQL error format
+>> **Heads up!** Upgrade from `v1.0` requires change some settings and definitions. 
+The following steps explain how migrate to this version and keep your API functional. 
+With all necessary adjustments this version has fully backward compatibility.
+
+## **Update:** LexikJWT authentication failures are displayed using GraphQL error format
 
 Before:
 
@@ -27,7 +31,7 @@ After:
 ````
 
 This change can affect directly your API clients, in order to make this change progressively in all
-your clients can activate the following option:
+your clients must activate the following option:
 
 ````
 graphql:
@@ -57,7 +61,7 @@ The above option generate a response like this:
 Migrate your clients to the new error format.
 
 ---
-## **BC BREAK:** Removed prefix `is` and `has` on methods without explicit name.
+## **Update:** Removed prefix `is` and `has` on methods without explicit name.
 
 This is a **IMPORTANT** change, you have to update your definitions. 
 Before `v1.1` all **METHODS** with prefix `is` and `has`, commonly boolean fields, 
@@ -74,14 +78,16 @@ After:
 - `isActive()` => `active`
 - `hasSomethingToDo()` => `somethingToDo`
 
->>> This change only affect interfaces and methods if the field annotation does not have a field
-name manually configured.
-    
-The solution is set manually the name with the prefix in all existent affected methods in order to 
+The solution can be set manually the old name in all existent affected methods in order to 
 keep your API functional.
 
+>>> This change only affect interfaces and methods if the field annotation does not have a field
+name manually configured.
+
 ---
-## **BC BREAK:** Constraint violations are displayed in the list of errors by default.
+## **Deprecate:** Constraint violations in the mutation payload has been deprecated.
+
+By default in `v1.1` all constraint violations are displayed as errors in the list of errors.
 
 Before:
 
@@ -155,14 +161,14 @@ graphql:
         validation_messages: ~ # One of "error"; "payload"; "both"
 ````
 
-> Before `v1.1` the default is `payload` you can use that value or use `both` if you want to 
-keep the old approach or migrate your clients to this new approach progressively.
+> Before `v1.1` the default is `payload`, now is `error`, we recommend start using `both` in order to
+ migrate your clients to this new approach progressively.
 
->> Return constraint violations in the mutation payload, it will remain an option, just 
-that keeping all types of errors in the same place becomes clearer and easier to use.
+>>> The option `validation_messages` is temporal and will be removed in `v2.0` when all validation
+errors will be displayed always in the list of errors.
 
 ---
-## **Minor BC BREAK:** Plugins configuration has been moved out of `definitions`
+## **Update:** Plugins configuration has been moved out of `definitions`
 
 In your `config.yaml` must change:
 
@@ -183,31 +189,6 @@ graphql:
     pagination:
         limit: 100
 ````
-
----
-## **Minor BC BREAK:** Removed `getPriority` method in CRUD extensions
-
-In order to prioritize CRUD extensions must use tags priorities. 
-Is recommended use [autowiring](http://symfony.com/doc/current/service_container/autowiring.html)
-for all extensions and define priorities only when is needed. 
-
-````yml
-App\Extension\:
-    resource: '../src/Extension/*'
-    tags: ['graphql.extension']
-
-App\Extension\UserExtension:
-    tags: ['graphql.extension', priority: 50]
-````
-
----
-## **Minor BC BREAK:** Internal GraphQL definitions extension has been renamed to plugins
-
-- namespaces: `Ynlo\GraphQLBundle\Definition\Plugin` => `Ynlo\GraphQLBundle\Definition\Plugin`
-- tag: `graphql.definition_extension` => `graphql.definition_plugin`
-
-Update this in your project if you have custom GraphQL extensions.
-
 ---
 ## **Deprecate:** Use of array as config in annotations has been deprecated and will be removed in the next mayor release.
 
@@ -274,4 +255,28 @@ After:
 class Post implements NodeInterface
 {
 ````
+---
+## **Update:** Removed `getPriority` method in CRUD extensions
 
+In order to prioritize CRUD extensions must use tags priorities. 
+Is recommended use [autowiring](http://symfony.com/doc/current/service_container/autowiring.html)
+for all extensions and define priorities only when is needed. 
+
+````yml
+App\Extension\:
+    resource: '../src/Extension/*'
+    tags: ['graphql.extension']
+
+App\Extension\UserExtension:
+    tags: ['graphql.extension', priority: 50]
+````
+
+> Since `v1.1` if you have autowiring configured all extensions are automatically registered.
+
+---
+## **Update:** Internal GraphQL definitions extension has been renamed to plugins
+
+- namespaces: `Ynlo\GraphQLBundle\Definition\Plugin` => `Ynlo\GraphQLBundle\Definition\Plugin`
+- tag: `graphql.definition_extension` => `graphql.definition_plugin`
+
+Update this in your project if you have custom GraphQL extensions.
