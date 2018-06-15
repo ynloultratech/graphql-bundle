@@ -61,7 +61,7 @@ class DeprecationAdviser implements EventSubscriberInterface
 
             foreach ($this->warnings as $message => $warnings) {
                 $count = count($warnings);
-                echo sprintf("%sx: %s\n", $count, $message);
+                print_r(sprintf("\n\033[0;30m\033[43m %sx: %s\033[0m\n", $count, $message));
             }
         }
 
