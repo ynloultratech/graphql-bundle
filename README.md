@@ -3,10 +3,11 @@
 [![Build Status](https://travis-ci.org/ynloultratech/graphql-bundle.svg?branch=master)](https://travis-ci.org/ynloultratech/graphql-bundle)
 [![Code Coverage](https://scrutinizer-ci.com/g/ynloultratech/graphql-bundle/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/ynloultratech/graphql-bundle/?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ynloultratech/graphql-bundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ynloultratech/graphql-bundle/?branch=master)
+[![Latest Stable Version](https://poser.pugx.org/ynloultratech/graphql-bundle/v/stable)](//packagist.org/packages/ynloultratech/graphql-bundle)
 [![Latest Unstable Version](https://poser.pugx.org/ynloultratech/graphql-bundle/v/unstable)](//packagist.org/packages/ynloultratech/graphql-bundle)
 [![License](https://poser.pugx.org/ynloultratech/graphql-bundle/license)](https://packagist.org/packages/ynloultratech/graphql-bundle)
 [![GraphQL](https://img.shields.io/badge/GraphQL-Relay-blue.svg)](http://facebook.github.io/relay/docs/graphql-relay-specification.html)
-[![Symfony](https://img.shields.io/badge/Symfony-3.4%20%7C%204.0-green.svg)](https://symfony.com)
+[![Symfony](https://img.shields.io/badge/Symfony-%5E3.4%20%7C%20%5E4.0-green.svg)](https://symfony.com)
 
  Framework _(Symfony Bundle)_ designed to easily create API projects based on [GraphQL](https://graphql.org/) & [Relay Specification](http://facebook.github.io/relay/docs/en/graphql-relay-specification.html)
 
