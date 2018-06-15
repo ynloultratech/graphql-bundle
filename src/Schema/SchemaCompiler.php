@@ -32,8 +32,21 @@ class SchemaCompiler implements ContainerAwareInterface
         $this->registry = $registry;
     }
 
-    public function compile($name): Schema
+    /**
+     * Compile the given endpoint name and return the current schema
+     *
+     * @param string $name       endpoint name
+     * @param bool   $clearCache force clear cache before compile to get a fresh cache
+     *                           this option should not be used in production environments.
+     *
+     * @return Schema
+     */
+    public function compile($name, $clearCache = false): Schema
     {
+        if ($clearCache) {
+            $this->registry->clearCache();
+        }
+
         $endpoint = $this->registry->getEndpoint($name);
         TypeRegistry::setUp($this->container, $endpoint);
 

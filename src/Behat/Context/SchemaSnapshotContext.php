@@ -18,6 +18,7 @@ use PHPUnit\Framework\ExpectationFailedException;
 use SebastianBergmann\Comparator\ComparisonFailure;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
 use Ynlo\GraphQLBundle\Schema\SchemaSnapshot;
 
 class SchemaSnapshotContext implements Context, KernelAwareContext
@@ -78,10 +79,10 @@ class SchemaSnapshotContext implements Context, KernelAwareContext
      */
     public function compareWithCurrentSchema()
     {
-        $this->currentSnapshot = $this->kernel
-            ->getContainer()
+        $container = $this->kernel->getContainer();
+        $this->currentSnapshot = $container
             ->get(SchemaSnapshot::class)
-            ->createSnapshot($this->endpoint);
+            ->createSnapshot($this->endpoint, true);
     }
 
     /**

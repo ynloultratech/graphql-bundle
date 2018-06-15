@@ -124,16 +124,18 @@ GraphQL;
     }
 
     /**
-     * @param string $endpoint
+     * @param string $endpoint   endpoint name
+     * @param bool   $clearCache force clear cache before compile to get a fresh cache
+     *                           this option should not be used in production environments.
      *
      * @throws \Exception
      *
      * @return array
      */
-    public function createSnapshot(string $endpoint = DefinitionRegistry::DEFAULT_ENDPOINT): array
+    public function createSnapshot(string $endpoint = DefinitionRegistry::DEFAULT_ENDPOINT, $clearCache = true): array
     {
         TypeRegistry::clear();
-        $schema = $this->schemaCompiler->compile($endpoint);
+        $schema = $this->schemaCompiler->compile($endpoint, $clearCache);
         $result = GraphQL::executeQuery($schema, self::SIMPLE_INTROSPECTION_QUERY);
 
         $schemaArray = $result->toArray();
