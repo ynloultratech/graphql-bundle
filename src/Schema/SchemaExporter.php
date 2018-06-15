@@ -130,7 +130,7 @@ GraphQL;
      */
     public function export(string $endpoint, bool $json = false): string
     {
-        $schema = $this->compiler->compile($endpoint, true);
+        $schema = $this->compiler->compile($endpoint);
 
         if ($json) {
             $result = GraphQL::executeQuery($schema, self::INTROSPECTION_QUERY);
