@@ -64,7 +64,12 @@ final class ResponseContext implements Context, ClientAwareInterface
         //success GraphQL response should not contains errors
         if ($this->client->getGraphQL()) {
             if ($this->isValidGraphQLResponse() && $errors = $this->getGraphQLResponseError()) {
-                Assert::assertContains($message, $errors[0]->message ?? null);
+                $errorsStack = '';
+                foreach ($errors as $error) {
+                    $errorsStack .= $error->message."\n";
+                }
+
+                Assert::assertContains($message, $errorsStack);
             } else {
                 $this->graphQLContext->debugLastQuery();
                 throw new AssertionFailedError('The response is not the expected error response.');
@@ -83,7 +88,7 @@ final class ResponseContext implements Context, ClientAwareInterface
         if ($this->client->getGraphQL()) {
             if (!$this->isValidGraphQLResponse() || $this->getGraphQLResponseError()) {
                 $this->graphQLContext->debugLastQuery();
-                throw new AssertionFailedError('The response is not a success response.');
+                throw new AssertionFailedError('The response is not OK, invalid response or contains some error.');
             }
         }
     }
