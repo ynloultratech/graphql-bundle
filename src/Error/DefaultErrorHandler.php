@@ -43,7 +43,7 @@ class DefaultErrorHandler implements ErrorHandlerInterface
                 $originError = $error->getTrace()[0]['args'][0] ?? null;
 
                 $context = [];
-                if ($originError instanceof \Exception) {
+                if ($originError instanceof \Throwable) {
                     $context = [
                         'file' => $originError->getFile(),
                         'line' => $originError->getLine(),
