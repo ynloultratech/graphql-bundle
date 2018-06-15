@@ -10,7 +10,6 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation;
 
-use Symfony\Component\DependencyInjection\Definition;
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
@@ -23,7 +22,6 @@ use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Resolver\FieldExpressionResolver;
-use Ynlo\GraphQLBundle\Type\Definition\EndpointAwareInterface;
 use Ynlo\GraphQLBundle\Util\TypeUtil;
 
 /**
