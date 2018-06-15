@@ -65,11 +65,19 @@ class AnnotationLoader implements DefinitionLoaderInterface
     public function loadDefinitions(Endpoint $endpoint): void
     {
         $classesToLoad = $this->resolveClasses();
+        $annotationsMapping = [];
+        foreach ($classesToLoad as $class) {
+            $refClass = new \ReflectionClass($class);
+            $annotations = $this->reader->getClassAnnotations($refClass);
+            if ($annotations) {
+                $annotationsMapping[$refClass->getName()] = [$refClass, $annotations];
+            }
+        }
+
         foreach ($this->annotationParsers as $parser) {
             if ($parser instanceof AnnotationParserInterface) {
-                foreach ($classesToLoad as $class) {
-                    $refClass = new \ReflectionClass($class);
-                    $annotations = $this->reader->getClassAnnotations($refClass);
+                foreach ($annotationsMapping as $className => $map) {
+                    list($refClass, $annotations) = $map;
                     foreach ($annotations as $annotation) {
                         if ($parser->supports($annotation)) {
                             $parser->parse($annotation, $refClass, $endpoint);
