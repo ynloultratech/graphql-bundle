@@ -1,4 +1,4 @@
-[1.1 - Unreleased]
+v1.1.0 - 2018-06-18
 -----
  * Added `symfony4` support
  * Fixed error in pagination when filters does not have any field to filter
@@ -11,7 +11,7 @@
  * Added graphql scalar type called `DynamicObject` to support custom objects like `key:value` pairs
  * Hide field description in graphiql when a list of fields are displayed _(improve readability)_
  * Update `graphiql` assets to latest version
- * Fixed #11 (Label=false in a form, throws schema error ...Must be named. Unexpected name: (empty string))
+ * Fixed [#11](https://github.com/ynloultratech/graphql-bundle/issues/11) (Label=false in a form, throws schema error ...Must be named. Unexpected name: (empty string))
  * Fixed error when a validation constraint does not have code or message template
  * Fixed log errors correctly and define user errors as notices
  * Resolve mutation payload class automatically for easy override
@@ -54,30 +54,30 @@
  * Added support to listen LexikJWT authentication failures and display formatted GraphQL errors
  * Fixed incorrect error format when error happen in schema or out of resolver
  
-1.0.6 - 18-03-23
+v1.0.6 - 2018-03-23
 ----
  * Resolve array of IDs to real nodes
  * Added `MutationDeleteBatch` to allow delete multiple nodes in batch
  
-1.0.5 - 18-03-22
+v1.0.5 - 2018-03-22
 ----
  * Allow doctrine entities not implementing node interface
  * Mutations can override and use custom initial form data
  
-1.0.4 - 18-03-21
+v1.0.4 - 2018-03-21
 ----
  * Automatically resolve parameters of type ID to real node
  
-1.0.3 - 18-03-20
+v1.0.3 - 2018-03-20
 ----
  * Added support for mutations to return array of objects
  
-1.0.2 - 18-03-19
+v1.0.2 - 2018-03-19
 ----
  * Added support for doctrine GUID type
  * Added request middleware interface to allow customize API requests
  * Added support to upload files using [GraphQL multipart request specification](https://github.com/jaydenseric/graphql-multipart-request-spec)
  
-1.0.1 - 18-02-08
+v1.0.1 - 2018-02-08
 -----
  * Initial Release
