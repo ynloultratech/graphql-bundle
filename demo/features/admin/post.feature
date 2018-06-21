@@ -12,7 +12,7 @@ Feature: Post
       body: "{faker.paragraph}"
       tags: ['asd', 'asdsd']
       categories:
-        - "#category1"
+        - "Gadgets"
         - "#category2"
     """
     When send

@@ -10,6 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Form\DataTransformer;
 
+use Doctrine\Common\Persistence\ObjectRepository;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
@@ -20,6 +21,28 @@ use Ynlo\GraphQLBundle\Util\IDEncoder;
  */
 class IDToNodeTransformer implements DataTransformerInterface
 {
+    /**
+     * @var ObjectRepository|null
+     */
+    protected $repository;
+
+    /**
+     * @var array
+     */
+    protected $findBy = [];
+
+    /**
+     * IDToNodeTransformer constructor.
+     *
+     * @param ObjectRepository $repository
+     * @param string|array     $findBy
+     */
+    public function __construct(ObjectRepository $repository = null, $findBy = null)
+    {
+        $this->repository = $repository;
+        $this->findBy = (array) $findBy;
+    }
+
     /**
      * Transforms an object (issue) to a string (number).
      *
@@ -72,6 +95,15 @@ class IDToNodeTransformer implements DataTransformerInterface
         }
 
         $node = IDEncoder::decode($globalId);
+
+        if (null === $node && $this->repository && $this->findBy) {
+            foreach ($this->findBy as $findBy) {
+                $node = $this->repository->findOneBy([$findBy => $globalId]);
+                if ($node) {
+                    break;
+                }
+            }
+        }
 
         if (null === $node) {
             // causes a validation error

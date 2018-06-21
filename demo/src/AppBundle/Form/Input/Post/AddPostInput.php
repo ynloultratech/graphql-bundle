@@ -13,6 +13,7 @@ namespace Ynlo\GraphQLBundle\Demo\AppBundle\Form\Input\Post;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Category;
 use Ynlo\GraphQLBundle\Demo\AppBundle\Entity\Post;
 
 /**
@@ -31,7 +32,15 @@ class AddPostInput extends AbstractType
             ->add('status')
             ->add('futurePublishDate')
             ->add('tags')
-            ->add('categories');
+            ->add(
+                'categories',
+                null,
+                [
+                    'multiple' => true,
+                    'class' => Category::class,
+                    'alternative_id' => 'name',
+                ]
+            );
     }
 
     /**

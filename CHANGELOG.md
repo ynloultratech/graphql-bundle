@@ -1,3 +1,7 @@
+v1.1.1 - 2018-06-21
+----
+ * Added `alternative_id` option to ID form type to allow find nodes using alternatives columns.
+    
 v1.1.0 - 2018-06-18
 -----
  * Added `symfony4` support
