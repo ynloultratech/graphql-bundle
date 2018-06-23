@@ -1,4 +1,4 @@
-If you need expose GraphiQL in the production most likely your API 
+If you need expose GraphiQL in the production most likely your API
 require some authentication mechanism like OAuth2, JWT, API Key or any other.
 
 Set authentication as required in the graphiql config:
@@ -10,22 +10,39 @@ graphql:
     graphiql:
         authentication:
             required:  true
-```` 
- 
+````
+
 and configure one of the following authentication providers:
 
 > If your API is accessible without any credentials, public API,
- but require credentials to do some advanced tasks, 
- leave `authentication.required:  false` 
+ but require credentials to do some advanced tasks,
+ leave `authentication.required:  false`
  and configure one provider.
 
-# JWT
+# LexikJWT
+
+This provider use [LexikJWTAuthenticationBundle](https://github.com/lexik/LexikJWTAuthenticationBundle) to provide authentication mechanisms to the API explorer.
 
 Add the following config in your `config.yml`:
 
 ````yaml
-#config.yml
+graphql:
+    graphiql:
+        authentication:
+            provider:
+                lexik_jwt:
+                    user_provider: fos_userbundle
+````
 
+> The `user_provider` must match with the user provider you want to use.
+
+# JWT
+
+>> This provider has been deprecated since `v1.1`.
+
+Add the following config in your `config.yml`:
+
+````yaml
 graphql:
     graphiql:
         authentication:
@@ -42,7 +59,7 @@ Full configuration for JWT provider:
 jwt:
     enabled:              false
     login:
-       
+
         # Route name or URI to make the login process to retrieve the token.
         url:                  ~ # Required
         username_parameter:   username
@@ -72,8 +89,8 @@ jwt:
 
 # Custom Provider
 
-The custom provider is used to pass the name of the 
-service to use as authentication provider. 
+The custom provider is used to pass the name of the
+service to use as authentication provider.
 The service must implements `\Ynlo\GraphQLBundle\GraphiQL\GraphiQLAuthenticationProviderInterface`
 ````yaml
 #config.yml
@@ -84,4 +101,3 @@ graphql:
             provider:
                 custom: my_custom_graphiql_auth
 ````
- 

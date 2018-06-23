@@ -11,14 +11,17 @@
 
 namespace Ynlo\GraphQLBundle\DependencyInjection;
 
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Ynlo\GraphQLBundle\Cache\DefinitionCacheWarmer;
 use Ynlo\GraphQLBundle\Controller\GraphQLEndpointController;
 use Ynlo\GraphQLBundle\Encoder\IDEncoderManager;
 use Ynlo\GraphQLBundle\GraphiQL\JWTGraphiQLAuthentication;
+use Ynlo\GraphQLBundle\GraphiQL\LexikJWTGraphiQLAuthenticator;
 
 /**
  * Class YnloGraphQLExtension
@@ -45,7 +48,8 @@ class YnloGraphQLExtension extends Extension
         $container->setParameter('graphql.namespaces', $config['namespaces'] ?? []);
         $container->setParameter('graphql.cors_config', $config['cors'] ?? []);
         $container->setParameter('graphql.graphiql', $config['graphiql'] ?? []);
-        $container->setParameter('graphql.graphiql_auth_jwt', $config['graphiql']['authentication']['provider']['jwt'] ?? []);
+        $container->setParameter('graphql.graphiql_auth_jwt', $config['graphiql']['authentication']['provider']['jwt'] ?? []);//DEPRECATED
+        $container->setParameter('graphql.graphiql_auth_lexik_jwt', $config['graphiql']['authentication']['provider']['lexik_jwt'] ?? []);
         $container->setParameter('graphql.security.validation_rules', $config['security']['validation_rules'] ?? []);
 
         $endpointsConfig = [];
@@ -57,9 +61,20 @@ class YnloGraphQLExtension extends Extension
         $container->setParameter('graphql.endpoints_list', array_keys($endpointsConfig['endpoints']));
 
         $graphiQLAuthProvider = null;
+
+        //DEPRECATED since v1.1
         if ($config['graphiql']['authentication']['provider']['jwt']['enabled'] ?? false) {
             $graphiQLAuthProvider = JWTGraphiQLAuthentication::class;
+            @trigger_error('The option `graphql.graphiql.authentication.provider.jwt` has been deprecated use `graphql.graphiql.authentication.provider.lexik_jwt` instead');
         }
+
+        if ($config['graphiql']['authentication']['provider']['lexik_jwt']['enabled'] ?? false) {
+            $graphiQLAuthProvider = LexikJWTGraphiQLAuthenticator::class;
+            if (!interface_exists(JWTTokenManagerInterface::class)) {
+                throw new \InvalidArgumentException('In order to use `lexik_jwt` authentication in GraphiQL Explorer must install LexikJWTAuthenticationBundle.');
+            }
+        }
+
         if ($config['graphiql']['authentication']['provider']['custom'] ?? false) {
             $graphiQLAuthProvider = $config['graphiql']['authentication']['provider']['custom'];
         }
@@ -71,6 +86,15 @@ class YnloGraphQLExtension extends Extension
 
         if ($container->getParameter('kernel.environment') !== 'dev') {
             $container->getDefinition(DefinitionCacheWarmer::class)->clearTag('kernel.event_subscriber');
+        }
+
+        //configure LexikJWTGraphiQLAuthenticator definition
+        if ($config['graphiql']['authentication']['provider']['lexik_jwt']['enabled'] ?? false) {
+            $providerName = sprintf('security.user.provider.concrete.%s', $config['graphiql']['authentication']['provider']['lexik_jwt']['user_provider']);
+            $container->getDefinition(LexikJWTGraphiQLAuthenticator::class)
+                      ->setArgument(1, new Reference($providerName));
+        } else {
+            $container->removeDefinition(LexikJWTGraphiQLAuthenticator::class);
         }
 
         //build the ID encoder manager with configured encoder

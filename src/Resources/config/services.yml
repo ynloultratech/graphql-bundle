@@ -281,6 +281,16 @@ services:
         public: true
         arguments: ['@router','@session','%graphql.graphiql_auth_jwt%']
 
+    Ynlo\GraphQLBundle\GraphiQL\LexikJWTGraphiQLAuthenticator:
+        public: true
+        arguments:
+            - '@security.user_password_encoder.generic'
+            - ~ # injected in extension
+            - '@lexik_jwt_authentication.jwt_manager'
+            - '@session'
+        calls:
+            - ['setConfig', ['%graphql.graphiql_auth_lexik_jwt%']]
+
     Ynlo\GraphQLBundle\Cache\DefinitionCacheWarmer:
         public: false
         arguments: ['@kernel','@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry']

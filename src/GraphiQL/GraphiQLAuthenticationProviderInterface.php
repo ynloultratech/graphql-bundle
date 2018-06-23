@@ -37,6 +37,7 @@ interface GraphiQLAuthenticationProviderInterface
      * Process the entered used data to login
      *
      * @param null|FormInterface $form
+     *
      * @throws AuthenticationFailedException
      */
     public function login(?FormInterface $form = null);

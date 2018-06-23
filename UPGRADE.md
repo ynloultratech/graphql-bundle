@@ -1,7 +1,38 @@
+# UPGRADE FROM v1.1 to 1.2
+
+## **Deprecate:** The GraphiQL authenticator provider `jwt` has been deprecated.
+
+This provider has been deprecated in favor of a new specific provider `lexik_jwt`. For other cases use custom provider.
+
+Before:
+
+````yaml
+graphql:
+    graphiql:
+        authentication:
+            provider:
+                jwt:
+                  login:
+                      url: api_login
+````
+
+After:
+
+````yaml
+graphql:
+    graphiql:
+        authentication:
+            provider:
+                lexik_jwt:
+                    user_provider: fos_userbundle
+````
+
+---
+
 # UPGRADE FROM v1.0 to v1.1
 
->> **Heads up!** Upgrade from `v1.0` requires change some settings and definitions. 
-The following steps explain how migrate to this version and keep your API functional. 
+>> **Heads up!** Upgrade from `v1.0` requires change some settings and definitions.
+The following steps explain how migrate to this version and keep your API functional.
 With all necessary adjustments this version has fully backward compatibility.
 
 ## **Update:** LexikJWT authentication failures are displayed using GraphQL error format
@@ -63,12 +94,12 @@ Migrate your clients to the new error format.
 ---
 ## **Update:** Removed prefix `is` and `has` on methods without explicit name.
 
-This is a **IMPORTANT** change, you have to update your definitions. 
-Before `v1.1` all **METHODS** with prefix `is` and `has`, commonly boolean fields, 
+This is a **IMPORTANT** change, you have to update your definitions.
+Before `v1.1` all **METHODS** with prefix `is` and `has`, commonly boolean fields,
 are converted to field names as is. Now that prefix is removed.
 
  Before:
-      
+
 - `isActive()` => `isActive`
 - `hasSomethingToDo()` => `hasSomethingToDo`
 
@@ -78,7 +109,7 @@ After:
 - `isActive()` => `active`
 - `hasSomethingToDo()` => `somethingToDo`
 
-The solution can be set manually the old name in all existent affected methods in order to 
+The solution can be set manually the old name in all existent affected methods in order to
 keep your API functional.
 
 >>> This change only affect interfaces and methods if the field annotation does not have a field
@@ -218,7 +249,7 @@ After:
  *     type="[Post]",
  *     options={
  *        @GraphQL\Plugin\Pagination(
- *               parentField="categories", 
+ *               parentField="categories",
  *               parentRelation="MANY_TO_MANY"
  *         )
  *     }
@@ -228,7 +259,7 @@ After:
 
 ---
 ## **Deprecate:** The annotation `CRUDOperations` has been deprecated
-    
+
 The use of `@CRUDOperations` annotation is deprecated and will be removed in v2.0
 
 Before:
@@ -242,7 +273,7 @@ class Post implements NodeInterface
 {
 ````
 
-After: 
+After:
 
 ````
  *
@@ -258,9 +289,9 @@ class Post implements NodeInterface
 ---
 ## **Update:** Removed `getPriority` method in CRUD extensions
 
-In order to prioritize CRUD extensions must use tags priorities. 
+In order to prioritize CRUD extensions must use tags priorities.
 Is recommended use [autowiring](http://symfony.com/doc/current/service_container/autowiring.html)
-for all extensions and define priorities only when is needed. 
+for all extensions and define priorities only when is needed.
 
 ````yml
 App\Extension\:

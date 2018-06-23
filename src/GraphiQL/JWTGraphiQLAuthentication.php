@@ -19,6 +19,8 @@ use function JmesPath\search;
 
 /**
  * JWTGraphiQLAuthentication
+ *
+ * @deprecated since v1.1, removed 2.0 (use LexikJWTGraphiQLAuthenticator instead)
  */
 class JWTGraphiQLAuthentication implements GraphiQLAuthenticationProviderInterface
 {

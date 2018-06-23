@@ -1,6 +1,8 @@
 v1.1.2 - [Unreleased]
 ----
  * Handle symfony HTTP exceptions to display related status code error instead of "Unknown error"
+ * Added build-in LexikJWT authentication for GraphiQL API explorer.
+ * Deprecated the old `jwt` authentication in favor of the new one `lexik_jwt`
  
 v1.1.1 - 2018-06-21
 ----

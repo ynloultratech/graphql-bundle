@@ -236,7 +236,30 @@ if this value is FALSE and a provider is specified the authentication is optiona
 
         $authenticationProvider = $authentication->arrayNode('provider')->children();
 
-        $jwt = $authenticationProvider->arrayNode('jwt')->canBeEnabled()->children();
+        //the updated version of `jwt` to use lexik authentication bundle
+        $lexikJwt = $authenticationProvider->arrayNode('lexik_jwt')
+                                           ->canBeEnabled()
+                                           ->children();
+
+        $lexikJwt->scalarNode('user_provider')
+                 ->isRequired()
+                 ->info('Name of the user provider to use');
+
+        $lexikJwt->scalarNode('username_label')
+                 ->defaultValue('Username');
+
+        $lexikJwt->scalarNode('password_label')
+                 ->defaultValue('Password');
+
+        $authenticationProvider->scalarNode('custom')
+                               ->defaultNull()
+                               ->info('Configure custom service to use as authentication provider');
+
+        //deprecated since v1.1 and should be deleted in v2.0
+        $jwt = $authenticationProvider->arrayNode('jwt')
+                                      ->setDeprecated('Use lexik_jwt instead, this provider will be removed in the next mayor release.')
+                                      ->canBeEnabled()
+                                      ->children();
 
         $jwtLogin = $jwt->arrayNode('login')->children();
 
@@ -280,9 +303,6 @@ if this value is FALSE and a provider is specified the authentication is optiona
                     ->defaultValue('Bearer {token}')
                     ->info('Customize how the token should be send,  use the place holder {token} to replace for current token');
 
-        $authenticationProvider->scalarNode('custom')
-                               ->defaultNull()
-                               ->info('Configure custom service to use as authentication provider');
     }
 
     protected function configureCORS(NodeBuilder $root)
