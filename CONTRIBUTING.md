@@ -30,9 +30,3 @@ PHP Unit Tests:
 ```
 $ ./bin/phpunit
 ```
-
-Behat Tests:
-
-```
-$ ./bin/behat
-```

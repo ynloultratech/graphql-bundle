@@ -3,11 +3,12 @@ v1.1.2 - [Unreleased]
  * Handle symfony HTTP exceptions to display related status code error instead of "Unknown error"
  * Added build-in LexikJWT authentication for GraphiQL API explorer.
  * Deprecated the old `jwt` authentication in favor of the new one `lexik_jwt`
- 
+ * Removed `demo` app inside the project, moved out to another repository.
+
 v1.1.1 - 2018-06-21
 ----
  * Added `alternative_id` option to ID form type to allow find nodes using alternatives columns.
-    
+
 v1.1.0 - 2018-06-18
 -----
  * Added `symfony4` support
@@ -26,7 +27,7 @@ v1.1.0 - 2018-06-18
  * Fixed log errors correctly and define user errors as notices
  * Resolve mutation payload class automatically for easy override
  * Added support tu use CRUD extensions for real PHP interfaces without register a graphql interface type.
- * Removed `getPriority` method in CRUD extensions, must use service tag priority instead. 
+ * Removed `getPriority` method in CRUD extensions, must use service tag priority instead.
  * Add config to set custom labels for GraphiQL JWT Authentication form fields
  * Fixed GraphiQL CORS error when use the `explorer` in a different domain or subdomain
  * **[BC BREAK]** Change definitions "extensions" to "plugins" to avoid confusion with CRUD extensions
@@ -63,31 +64,31 @@ v1.1.0 - 2018-06-18
  * Deprecated internal `TaggedServices` component in favor of symfony injection using "!tagged tag_name"
  * Added support to listen LexikJWT authentication failures and display formatted GraphQL errors
  * Fixed incorrect error format when error happen in schema or out of resolver
- 
+
 v1.0.6 - 2018-03-23
 ----
  * Resolve array of IDs to real nodes
  * Added `MutationDeleteBatch` to allow delete multiple nodes in batch
- 
+
 v1.0.5 - 2018-03-22
 ----
  * Allow doctrine entities not implementing node interface
  * Mutations can override and use custom initial form data
- 
+
 v1.0.4 - 2018-03-21
 ----
  * Automatically resolve parameters of type ID to real node
- 
+
 v1.0.3 - 2018-03-20
 ----
  * Added support for mutations to return array of objects
- 
+
 v1.0.2 - 2018-03-19
 ----
  * Added support for doctrine GUID type
  * Added request middleware interface to allow customize API requests
  * Added support to upload files using [GraphQL multipart request specification](https://github.com/jaydenseric/graphql-multipart-request-spec)
- 
+
 v1.0.1 - 2018-02-08
 -----
  * Initial Release

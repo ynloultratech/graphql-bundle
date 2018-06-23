@@ -20,10 +20,6 @@ install:
 script:
   - mkdir -p build/logs
   - php bin/phpunit -c phpunit.xml.dist --coverage-text --coverage-clover=${clover=build/logs/clover.xml} > /dev/null
-  - cd demo
-  - rm -rf var/cache
-  - php ../bin/behat -f progress --rerun --no-interaction
-  - cd ..
 
 after_success:
  - composer require satooshi/php-coveralls
