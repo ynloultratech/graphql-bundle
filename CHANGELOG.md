@@ -4,6 +4,7 @@ v1.1.2 - [Unreleased]
  * Added build-in LexikJWT authentication for GraphiQL API explorer.
  * Deprecated the old `jwt` authentication in favor of the new one `lexik_jwt`
  * Removed `demo` app inside the project, moved out to another repository.
+ * Fixed API endpoint route to use POST method.
 
 v1.1.1 - 2018-06-21
 ----
