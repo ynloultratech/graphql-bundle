@@ -59,7 +59,7 @@ html, body {
   height: 100vh;
   .graphiql-container {
     &, & button, & input{
-      font-family: "Roboto", sans-serif;
+      font-family: "Roboto", Arial, Helvetica, sans-serif;
       font-weight: normal;
       font-size: 15px;
     }

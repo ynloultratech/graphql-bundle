@@ -45,7 +45,7 @@ html, body {
 #graphiql {
   height: 100vh; }
   #graphiql .graphiql-container, #graphiql .graphiql-container button, #graphiql .graphiql-container input {
-    font-family: "Roboto", sans-serif;
+    font-family: "Roboto", Arial, Helvetica, sans-serif;
     font-weight: normal;
     font-size: 15px; }
   #graphiql .graphiql-container .field-name, #graphiql .graphiql-container .keyword {
