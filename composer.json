@@ -19,14 +19,6 @@
       "Ynlo\\GraphQLBundle\\": "src/"
     }
   },
-  "autoload-dev": {
-    "psr-4": {
-      "Ynlo\\GraphQLBundle\\Demo\\": "demo/src/"
-    },
-    "classmap": [
-      "demo/app/ApiDemoKernel.php"
-    ]
-  },
   "require": {
     "php": ">=7.1",
     "symfony/form": "^3.0 || ^4.0",
@@ -47,7 +39,7 @@
     "mtdowling/jmespath.php": "^2.4"
   },
   "require-dev": {
-    "symfony/symfony": "^3.0",
+    "symfony/symfony": "^3.4",
     "phpunit/phpunit": "^6.2",
     "symfony/phpunit-bridge": "^3.1",
     "lexik/jwt-authentication-bundle": "^2.4",
