@@ -1,0 +1,2540 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:xlink="http://www.w3.org/1999/xlink"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   height="256"
+   width="256"
+   version="1.1"
+   id="svg858"
+   sodipodi:docname="logo3.svg"
+   inkscape:version="0.92.3 (2405546, 2018-03-11)">
+  <metadata
+     id="metadata864">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title></dc:title>
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <defs
+     id="defs862">
+    <linearGradient
+       id="linearGradient1289">
+      <stop
+         id="stop1285"
+         stop-color="#00a199"
+         offset="0"
+         style="stop-color:#00a199;stop-opacity:0" />
+      <stop
+         id="stop1287"
+         stop-opacity=".988235"
+         stop-color="#00f89a"
+         offset="1"
+         style="stop-color:#00f89a;stop-opacity:0" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#a"
+       id="linearGradient5979"
+       x1="407.54022"
+       y1="500.48425"
+       x2="399.27063"
+       y2="552.68719"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#a"
+       id="linearGradient6043"
+       gradientUnits="userSpaceOnUse"
+       x1="420.87756"
+       y1="561.89941"
+       x2="471.59073"
+       y2="587.47357"
+       gradientTransform="matrix(0.59125143,0,0,0.59125143,147.35934,177.62801)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#a"
+       id="linearGradient6055"
+       x1="398.67578"
+       y1="521.47729"
+       x2="396.97195"
+       y2="581.99902"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(0.325793,0,0,0.325793,279.282,348.15399)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#a"
+       id="linearGradient6059"
+       gradientUnits="userSpaceOnUse"
+       x1="417.27509"
+       y1="529.38239"
+       x2="418.05283"
+       y2="556.77509"
+       gradientTransform="translate(1.7985107,-15.564035)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#a"
+       id="linearGradient6085"
+       x1="396.80353"
+       y1="526.53778"
+       x2="421.55527"
+       y2="526.53778"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#a"
+       id="linearGradient8492"
+       x1="404.54251"
+       y1="522.13397"
+       x2="426.8114"
+       y2="522.13397"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.2167186,0,0,1.2167186,-90.476255,-111.6111)" />
+    <linearGradient
+       id="f-1"
+       gradientUnits="userSpaceOnUse"
+       x1="6.7750993"
+       x2="41.058132"
+       xlink:href="#a"
+       y1="24.388876"
+       y2="24.388876"
+       gradientTransform="matrix(0.78079591,0.42951734,-0.42951734,0.78079591,406.51599,492.32483)" />
+    <linearGradient
+       id="linearGradient8519">
+      <stop
+         offset="0"
+         stop-color="#ccc"
+         id="stop2-6" />
+      <stop
+         offset="1"
+         stop-color="#fff"
+         id="stop4-8" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#a"
+       id="linearGradient8546"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(1.2167186,0,0,1.2167186,-90.476255,-111.6111)"
+       x1="404.54251"
+       y1="522.13397"
+       x2="426.8114"
+       y2="522.13397" />
+    <linearGradient
+       id="d-9"
+       gradientUnits="userSpaceOnUse"
+       x1="404.23123"
+       x2="404.23123"
+       xlink:href="#a"
+       y1="537.38159"
+       y2="507.83929"
+       gradientTransform="matrix(-0.0076358,-0.34283114,0.34283114,-0.0076358,247.16426,663.25449)" />
+    <linearGradient
+       id="a-6">
+      <stop
+         offset="0"
+         stop-color="#d8d8d8"
+         id="stop2-7" />
+      <stop
+         offset="1"
+         stop-color="#fff"
+         id="stop4-7" />
+    </linearGradient>
+    <linearGradient
+       gradientTransform="matrix(0.91886908,0,0,0.91886908,45.839842,50.264064)"
+       inkscape:collect="always"
+       xlink:href="#linearGradient8519"
+       id="linearGradient5955-9"
+       x1="386.35794"
+       y1="515.40833"
+       x2="432.76373"
+       y2="537.17493"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#linearGradient8519"
+       id="linearGradient8626-8"
+       x1="431.71793"
+       y1="545.41931"
+       x2="398.8728"
+       y2="498.1619"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(-0.56066505,-0.01934272,0.01934272,-0.56066505,645.22579,818.9349)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#a"
+       id="linearGradient8713"
+       gradientUnits="userSpaceOnUse"
+       x1="407.54022"
+       y1="500.48425"
+       x2="399.27063"
+       y2="552.68719"
+       gradientTransform="translate(8.3008187,-15.540977)" />
+    <linearGradient
+       id="a-0"
+       gradientTransform="matrix(5.0551352,0,0,4.9363907,-1553.7188,-2171.5782)"
+       gradientUnits="userSpaceOnUse"
+       x1="409.57144"
+       x2="409.93887"
+       y1="542.79797"
+       y2="501.2316">
+      <stop
+         offset="0"
+         stop-color="#00a199"
+         id="stop2-69"
+         style="stop-color:#314051;stop-opacity:1" />
+      <stop
+         offset="1"
+         stop-color="#00f89a"
+         stop-opacity=".988235"
+         id="stop4-2"
+         style="stop-color:#314051;stop-opacity:0.98823529" />
+    </linearGradient>
+    <linearGradient
+       id="b-1"
+       gradientUnits="userSpaceOnUse"
+       x1="399.59726"
+       x2="402.03357"
+       y1="677.51233"
+       y2="677.51233"
+       gradientTransform="matrix(5.0551353,0,0,5.0551353,-1243.6292,-2096.7352)">
+      <stop
+         offset="0"
+         stop-color="#e6f3ff"
+         id="stop7-7" />
+      <stop
+         offset="1"
+         stop-color="#dcffe7"
+         id="stop9-7" />
+    </linearGradient>
+    <linearGradient
+       id="a-3"
+       gradientUnits="userSpaceOnUse"
+       x1="23.435539"
+       x2="23.940615"
+       y1="45.979694"
+       y2="2.038059"
+       spreadMethod="pad">
+      <stop
+         offset="0"
+         stop-color="#f60"
+         id="stop2-67" />
+      <stop
+         offset="1"
+         stop-color="#ff7f2a"
+         id="stop4-5" />
+    </linearGradient>
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#a-6"
+       id="linearGradient1366"
+       x1="409.3222"
+       y1="380.08868"
+       x2="611.15308"
+       y2="380.08868"
+       gradientUnits="userSpaceOnUse"
+       gradientTransform="matrix(-0.58759688,-0.45924352,0.45924352,-0.58759688,643.43503,870.7473)" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#b"
+       id="linearGradient1374"
+       x1="2"
+       y1="24.041574"
+       x2="46"
+       y2="24.041574"
+       gradientUnits="userSpaceOnUse" />
+    <linearGradient
+       inkscape:collect="always"
+       xlink:href="#a-0"
+       id="linearGradient2785"
+       gradientUnits="userSpaceOnUse"
+       x1="2"
+       y1="24.041574"
+       x2="46"
+       y2="24.041574" />
+    <linearGradient
+       gradientTransform="matrix(5.2739597,-1.4000486,1.4000486,5.2739597,-2398.7456,-1841.2668)"
+       id="c-7"
+       gradientUnits="userSpaceOnUse"
+       x1="412.03708"
+       x2="412.03708"
+       y1="542.20105"
+       y2="526.20105">
+      <stop
+         offset="0"
+         stop-color="#e3e3e3"
+         id="stop18" />
+      <stop
+         offset="1"
+         stop-color="#fffcff"
+         id="stop20" />
+    </linearGradient>
+    <linearGradient
+       gradientTransform="matrix(0.15321081,0,0,0.15321081,481.90527,369.28757)"
+       id="b-6"
+       gradientUnits="userSpaceOnUse"
+       x1="240.88106"
+       x2="240.88106"
+       y1="426.14047"
+       y2="-86.6297">
+      <stop
+         offset="0"
+         stop-color="#d3d3d3"
+         id="stop13" />
+      <stop
+         offset="1"
+         stop-color="#fcf9f9"
+         id="stop15" />
+    </linearGradient>
+  </defs>
+  <sodipodi:namedview
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1"
+     objecttolerance="10"
+     gridtolerance="10"
+     guidetolerance="10"
+     inkscape:pageopacity="0"
+     inkscape:pageshadow="2"
+     inkscape:window-width="1861"
+     inkscape:window-height="1026"
+     id="namedview860"
+     showgrid="false"
+     inkscape:zoom="2.8284271"
+     inkscape:cx="165.24992"
+     inkscape:cy="85.569149"
+     inkscape:window-x="59"
+     inkscape:window-y="26"
+     inkscape:window-maximized="1"
+     inkscape:current-layer="g2773"
+     showguides="false"
+     units="px"
+     width="512mm" />
+  <linearGradient
+     id="a">
+    <stop
+       offset="0"
+       stop-color="#ccc"
+       id="stop2" />
+    <stop
+       offset="1"
+       stop-color="#fff"
+       id="stop4" />
+  </linearGradient>
+  <linearGradient
+     id="b">
+    <stop
+       offset="0"
+       stop-color="#00a199"
+       id="stop7" />
+    <stop
+       offset="1"
+       stop-color="#00f89a"
+       stop-opacity=".988235"
+       id="stop9" />
+  </linearGradient>
+  <linearGradient
+     id="c"
+     gradientUnits="userSpaceOnUse"
+     x1="409.51648"
+     x2="409.51648"
+     xlink:href="#b"
+     y1="547.28601"
+     y2="500.5195"
+     gradientTransform="matrix(25.554392,0,0,25.554392,-12165.011,-14139.861)" />
+  <linearGradient
+     id="d"
+     gradientUnits="userSpaceOnUse"
+     x1="409.69965"
+     x2="409.69965"
+     xlink:href="#a"
+     y1="548.31091"
+     y2="499.23196"
+     gradientTransform="matrix(5.0551353,0,0,5.0551353,-1933.0287,-2233.7697)" />
+  <linearGradient
+     id="e"
+     gradientUnits="userSpaceOnUse"
+     x1="409.55756"
+     x2="409.55756"
+     xlink:href="#b"
+     y1="548.30719"
+     y2="499.50742" />
+  <linearGradient
+     id="f"
+     gradientUnits="userSpaceOnUse"
+     x1="6.7750993"
+     x2="41.058132"
+     xlink:href="#a"
+     y1="24.388876"
+     y2="24.388876"
+     gradientTransform="matrix(5.7193533,1.756882,-1.756882,5.7193533,85.313877,517.88078)" />
+  <g
+     transform="translate(-384.57143,-291.79807)"
+     id="g856">
+    <text
+       x="1202.6191"
+       y="509.15475"
+       id="text18"
+       style="opacity:0.8">
+      <tspan
+         x="1202.6191"
+         y="509.15475"
+         id="tspan16" />
+    </text>
+    <text
+       x="1226.5801"
+       y="468.41306"
+       id="text22"
+       style="opacity:0.8">
+      <tspan
+         x="1226.5801"
+         y="468.41306"
+         id="tspan20" />
+    </text>
+    <text
+       x="-243.97829"
+       y="438.3349"
+       id="text26"
+       style="opacity:0.8">
+      <tspan
+         x="-243.97829"
+         y="438.3349"
+         id="tspan24" />
+    </text>
+    <text
+       x="-2067.6643"
+       y="1183.8884"
+       id="text30"
+       style="opacity:0.8">
+      <tspan
+         x="-2067.6643"
+         y="1183.8884"
+         id="tspan28" />
+    </text>
+    <text
+       x="-129.4872"
+       y="53.013943"
+       id="text34"
+       style="opacity:0.8">
+      <tspan
+         x="-129.4872"
+         y="53.013943"
+         id="tspan32" />
+    </text>
+    <text
+       x="678.11493"
+       y="-360.45621"
+       id="text38"
+       style="opacity:0.8">
+      <tspan
+         x="678.11493"
+         y="-360.45621"
+         id="tspan36" />
+    </text>
+    <text
+       x="702.07587"
+       y="-401.19788"
+       id="text42"
+       style="opacity:0.8">
+      <tspan
+         x="702.07587"
+         y="-401.19788"
+         id="tspan40" />
+    </text>
+    <text
+       x="-789.38727"
+       y="-408.40778"
+       id="text46"
+       style="opacity:0.8">
+      <tspan
+         x="-789.38727"
+         y="-408.40778"
+         id="tspan44" />
+    </text>
+    <text
+       x="671.15546"
+       y="-681.64197"
+       id="text50"
+       style="opacity:0.8">
+      <tspan
+         x="671.15546"
+         y="-681.64197"
+         id="tspan48" />
+    </text>
+    <text
+       x="2157.2788"
+       y="-54.950565"
+       id="text54"
+       style="opacity:0.8">
+      <tspan
+         x="2157.2788"
+         y="-54.950565"
+         id="tspan52" />
+    </text>
+    <text
+       x="2181.2397"
+       y="-95.692329"
+       id="text58"
+       style="opacity:0.8">
+      <tspan
+         x="2181.2397"
+         y="-95.692329"
+         id="tspan56" />
+    </text>
+    <text
+       x="689.77661"
+       y="-102.90223"
+       id="text62"
+       style="opacity:0.8">
+      <tspan
+         x="689.77661"
+         y="-102.90223"
+         id="tspan60" />
+    </text>
+    <text
+       x="2150.3196"
+       y="-376.13623"
+       id="text66"
+       style="opacity:0.8">
+      <tspan
+         x="2150.3196"
+         y="-376.13623"
+         id="tspan64" />
+    </text>
+    <text
+       x="-248.03969"
+       y="-150.99353"
+       id="text70"
+       style="opacity:0.8">
+      <tspan
+         x="-248.03969"
+         y="-150.99353"
+         id="tspan68" />
+    </text>
+    <text
+       x="-2071.7253"
+       y="594.56"
+       id="text74"
+       style="opacity:0.8">
+      <tspan
+         x="-2071.7253"
+         y="594.56"
+         id="tspan72" />
+    </text>
+    <text
+       x="-356.96991"
+       y="687.43213"
+       id="text78"
+       style="opacity:0.8">
+      <tspan
+         x="-356.96991"
+         y="687.43213"
+         id="tspan76" />
+    </text>
+    <text
+       x="752.05438"
+       y="508.25003"
+       id="text82"
+       style="opacity:0.8">
+      <tspan
+         x="752.05438"
+         y="508.25003"
+         id="tspan80" />
+    </text>
+    <text
+       x="776.01532"
+       y="467.5083"
+       id="text86"
+       style="opacity:0.8">
+      <tspan
+         x="776.01532"
+         y="467.5083"
+         id="tspan84" />
+    </text>
+    <text
+       x="-715.44781"
+       y="460.29831"
+       id="text90"
+       style="opacity:0.8">
+      <tspan
+         x="-715.44781"
+         y="460.29831"
+         id="tspan88" />
+    </text>
+    <text
+       x="745.09491"
+       y="187.06427"
+       id="text94"
+       style="opacity:0.8">
+      <tspan
+         x="745.09491"
+         y="187.06427"
+         id="tspan92" />
+    </text>
+    <text
+       x="-282.63968"
+       y="457.58408"
+       id="text98"
+       style="opacity:0.8">
+      <tspan
+         x="-282.63968"
+         y="457.58408"
+         id="tspan96" />
+    </text>
+    <text
+       x="-2106.3257"
+       y="1203.1376"
+       id="text102"
+       style="opacity:0.8">
+      <tspan
+         x="-2106.3257"
+         y="1203.1376"
+         id="tspan100" />
+    </text>
+    <text
+       x="-131.54662"
+       y="-403.94641"
+       id="text106"
+       style="opacity:0.8">
+      <tspan
+         x="-131.54662"
+         y="-403.94641"
+         id="tspan104" />
+    </text>
+    <text
+       x="676.05554"
+       y="-817.41663"
+       id="text110"
+       style="opacity:0.8">
+      <tspan
+         x="676.05554"
+         y="-817.41663"
+         id="tspan108" />
+    </text>
+    <text
+       x="700.01642"
+       y="-858.15833"
+       id="text114"
+       style="opacity:0.8">
+      <tspan
+         x="700.01642"
+         y="-858.15833"
+         id="tspan112" />
+    </text>
+    <text
+       x="-791.44672"
+       y="-865.36829"
+       id="text118"
+       style="opacity:0.8">
+      <tspan
+         x="-791.44672"
+         y="-865.36829"
+         id="tspan116" />
+    </text>
+    <text
+       x="669.09601"
+       y="-1138.6024"
+       id="text122"
+       style="opacity:0.8">
+      <tspan
+         x="669.09601"
+         y="-1138.6024"
+         id="tspan120" />
+    </text>
+    <text
+       x="2155.2195"
+       y="-511.91116"
+       id="text126"
+       style="opacity:0.8">
+      <tspan
+         x="2155.2195"
+         y="-511.91116"
+         id="tspan124" />
+    </text>
+    <text
+       x="2179.1802"
+       y="-552.65271"
+       id="text130"
+       style="opacity:0.8">
+      <tspan
+         x="2179.1802"
+         y="-552.65271"
+         id="tspan128" />
+    </text>
+    <text
+       x="687.71716"
+       y="-559.86267"
+       id="text134"
+       style="opacity:0.8">
+      <tspan
+         x="687.71716"
+         y="-559.86267"
+         id="tspan132" />
+    </text>
+    <text
+       x="2148.26"
+       y="-833.0968"
+       id="text138"
+       style="opacity:0.8">
+      <tspan
+         x="2148.26"
+         y="-833.0968"
+         id="tspan136" />
+    </text>
+    <text
+       x="-250.09914"
+       y="-607.95398"
+       id="text142"
+       style="opacity:0.8">
+      <tspan
+         x="-250.09914"
+         y="-607.95398"
+         id="tspan140" />
+    </text>
+    <text
+       x="-2073.7849"
+       y="137.59953"
+       id="text146"
+       style="opacity:0.8">
+      <tspan
+         x="-2073.7849"
+         y="137.59953"
+         id="tspan144" />
+    </text>
+    <text
+       x="-359.02936"
+       y="230.47168"
+       id="text150"
+       style="opacity:0.8">
+      <tspan
+         x="-359.02936"
+         y="230.47168"
+         id="tspan148" />
+    </text>
+    <text
+       x="480.98517"
+       y="471.38586"
+       id="text154"
+       style="opacity:0.8">
+      <tspan
+         x="480.98517"
+         y="471.38586"
+         id="tspan152" />
+    </text>
+    <text
+       x="504.94611"
+       y="430.64417"
+       id="text158"
+       style="opacity:0.8">
+      <tspan
+         x="504.94611"
+         y="430.64417"
+         id="tspan156" />
+    </text>
+    <text
+       x="-764.87061"
+       y="236.61552"
+       id="text162"
+       style="opacity:0.8">
+      <tspan
+         x="-764.87061"
+         y="236.61552"
+         id="tspan160" />
+    </text>
+    <text
+       x="42.731461"
+       y="-176.85461"
+       id="text166"
+       style="opacity:0.8">
+      <tspan
+         x="42.731461"
+         y="-176.85461"
+         id="tspan164" />
+    </text>
+    <text
+       x="66.692398"
+       y="-217.59633"
+       id="text170"
+       style="opacity:0.8">
+      <tspan
+         x="66.692398"
+         y="-217.59633"
+         id="tspan168" />
+    </text>
+    <text
+       x="-1424.7708"
+       y="-224.80621"
+       id="text174"
+       style="opacity:0.8">
+      <tspan
+         x="-1424.7708"
+         y="-224.80621"
+         id="tspan172" />
+    </text>
+    <text
+       x="35.772015"
+       y="-498.04034"
+       id="text178"
+       style="opacity:0.8">
+      <tspan
+         x="35.772015"
+         y="-498.04034"
+         id="tspan176" />
+    </text>
+    <text
+       x="1521.8954"
+       y="128.65103"
+       id="text182"
+       style="opacity:0.8">
+      <tspan
+         x="1521.8954"
+         y="128.65103"
+         id="tspan180" />
+    </text>
+    <text
+       x="1545.8563"
+       y="87.909302"
+       id="text186"
+       style="opacity:0.8">
+      <tspan
+         x="1545.8563"
+         y="87.909302"
+         id="tspan184" />
+    </text>
+    <text
+       x="54.393139"
+       y="80.699333"
+       id="text190"
+       style="opacity:0.8">
+      <tspan
+         x="54.393139"
+         y="80.699333"
+         id="tspan188" />
+    </text>
+    <text
+       x="1514.936"
+       y="-192.53474"
+       id="text194"
+       style="opacity:0.8">
+      <tspan
+         x="1514.936"
+         y="-192.53474"
+         id="tspan192" />
+    </text>
+    <text
+       x="-883.42316"
+       y="32.608059"
+       id="text198"
+       style="opacity:0.8">
+      <tspan
+         x="-883.42316"
+         y="32.608059"
+         id="tspan196" />
+    </text>
+    <text
+       x="-2707.1089"
+       y="778.16162"
+       id="text202"
+       style="opacity:0.8">
+      <tspan
+         x="-2707.1089"
+         y="778.16162"
+         id="tspan200" />
+    </text>
+    <text
+       x="-992.35889"
+       y="871.03326"
+       id="text206"
+       style="opacity:0.8">
+      <tspan
+         x="-992.35889"
+         y="871.03326"
+         id="tspan204" />
+    </text>
+    <text
+       x="1202.6191"
+       y="516.3927"
+       id="text210"
+       style="opacity:0.8">
+      <tspan
+         x="1202.6191"
+         y="516.3927"
+         id="tspan208" />
+    </text>
+    <text
+       x="1226.5801"
+       y="475.65103"
+       id="text214"
+       style="opacity:0.8">
+      <tspan
+         x="1226.5801"
+         y="475.65103"
+         id="tspan212" />
+    </text>
+    <text
+       x="-243.97829"
+       y="445.57288"
+       id="text218"
+       style="opacity:0.8">
+      <tspan
+         x="-243.97829"
+         y="445.57288"
+         id="tspan216" />
+    </text>
+    <text
+       x="-2067.6643"
+       y="1191.1263"
+       id="text222"
+       style="opacity:0.8">
+      <tspan
+         x="-2067.6643"
+         y="1191.1263"
+         id="tspan220" />
+    </text>
+    <text
+       x="-129.4872"
+       y="60.251945"
+       id="text226"
+       style="opacity:0.8">
+      <tspan
+         x="-129.4872"
+         y="60.251945"
+         id="tspan224" />
+    </text>
+    <text
+       x="678.11493"
+       y="-353.21817"
+       id="text230"
+       style="opacity:0.8">
+      <tspan
+         x="678.11493"
+         y="-353.21817"
+         id="tspan228" />
+    </text>
+    <text
+       x="702.07587"
+       y="-393.9599"
+       id="text234"
+       style="opacity:0.8">
+      <tspan
+         x="702.07587"
+         y="-393.9599"
+         id="tspan232" />
+    </text>
+    <text
+       x="-789.38727"
+       y="-401.1698"
+       id="text238"
+       style="opacity:0.8">
+      <tspan
+         x="-789.38727"
+         y="-401.1698"
+         id="tspan236" />
+    </text>
+    <text
+       x="671.15546"
+       y="-674.40399"
+       id="text242"
+       style="opacity:0.8">
+      <tspan
+         x="671.15546"
+         y="-674.40399"
+         id="tspan240" />
+    </text>
+    <text
+       x="2157.2788"
+       y="-47.712589"
+       id="text246"
+       style="opacity:0.8">
+      <tspan
+         x="2157.2788"
+         y="-47.712589"
+         id="tspan244" />
+    </text>
+    <text
+       x="2181.2397"
+       y="-88.454353"
+       id="text250"
+       style="opacity:0.8">
+      <tspan
+         x="2181.2397"
+         y="-88.454353"
+         id="tspan248" />
+    </text>
+    <text
+       x="689.77661"
+       y="-95.664253"
+       id="text254"
+       style="opacity:0.8">
+      <tspan
+         x="689.77661"
+         y="-95.664253"
+         id="tspan252" />
+    </text>
+    <text
+       x="2150.3196"
+       y="-368.89819"
+       id="text258"
+       style="opacity:0.8">
+      <tspan
+         x="2150.3196"
+         y="-368.89819"
+         id="tspan256" />
+    </text>
+    <text
+       x="-248.03969"
+       y="-143.75557"
+       id="text262"
+       style="opacity:0.8">
+      <tspan
+         x="-248.03969"
+         y="-143.75557"
+         id="tspan260" />
+    </text>
+    <text
+       x="-2071.7253"
+       y="601.79803"
+       id="text266"
+       style="opacity:0.8">
+      <tspan
+         x="-2071.7253"
+         y="601.79803"
+         id="tspan264" />
+    </text>
+    <text
+       x="-356.96991"
+       y="694.6701"
+       id="text270"
+       style="opacity:0.8">
+      <tspan
+         x="-356.96991"
+         y="694.6701"
+         id="tspan268" />
+    </text>
+    <text
+       x="752.05438"
+       y="515.48804"
+       id="text274"
+       style="opacity:0.8">
+      <tspan
+         x="752.05438"
+         y="515.48804"
+         id="tspan272" />
+    </text>
+    <text
+       x="776.01532"
+       y="474.74628"
+       id="text278"
+       style="opacity:0.8">
+      <tspan
+         x="776.01532"
+         y="474.74628"
+         id="tspan276" />
+    </text>
+    <text
+       x="-715.44781"
+       y="467.53632"
+       id="text282"
+       style="opacity:0.8">
+      <tspan
+         x="-715.44781"
+         y="467.53632"
+         id="tspan280" />
+    </text>
+    <text
+       x="745.09491"
+       y="194.30226"
+       id="text286"
+       style="opacity:0.8">
+      <tspan
+         x="745.09491"
+         y="194.30226"
+         id="tspan284" />
+    </text>
+    <text
+       x="-282.63968"
+       y="464.82208"
+       id="text290"
+       style="opacity:0.8">
+      <tspan
+         x="-282.63968"
+         y="464.82208"
+         id="tspan288" />
+    </text>
+    <text
+       x="-2106.3257"
+       y="1210.3756"
+       id="text294"
+       style="opacity:0.8">
+      <tspan
+         x="-2106.3257"
+         y="1210.3756"
+         id="tspan292" />
+    </text>
+    <text
+       x="-131.54662"
+       y="-396.70844"
+       id="text298"
+       style="opacity:0.8">
+      <tspan
+         x="-131.54662"
+         y="-396.70844"
+         id="tspan296" />
+    </text>
+    <text
+       x="676.05554"
+       y="-810.17865"
+       id="text302"
+       style="opacity:0.8">
+      <tspan
+         x="676.05554"
+         y="-810.17865"
+         id="tspan300" />
+    </text>
+    <text
+       x="700.01642"
+       y="-850.92041"
+       id="text306"
+       style="opacity:0.8">
+      <tspan
+         x="700.01642"
+         y="-850.92041"
+         id="tspan304" />
+    </text>
+    <text
+       x="-791.44672"
+       y="-858.13025"
+       id="text310"
+       style="opacity:0.8">
+      <tspan
+         x="-791.44672"
+         y="-858.13025"
+         id="tspan308" />
+    </text>
+    <text
+       x="669.09601"
+       y="-1131.3644"
+       id="text314"
+       style="opacity:0.8">
+      <tspan
+         x="669.09601"
+         y="-1131.3644"
+         id="tspan312" />
+    </text>
+    <text
+       x="2155.2195"
+       y="-504.67316"
+       id="text318"
+       style="opacity:0.8">
+      <tspan
+         x="2155.2195"
+         y="-504.67316"
+         id="tspan316" />
+    </text>
+    <text
+       x="2179.1802"
+       y="-545.41479"
+       id="text322"
+       style="opacity:0.8">
+      <tspan
+         x="2179.1802"
+         y="-545.41479"
+         id="tspan320" />
+    </text>
+    <text
+       x="687.71716"
+       y="-552.62463"
+       id="text326"
+       style="opacity:0.8">
+      <tspan
+         x="687.71716"
+         y="-552.62463"
+         id="tspan324" />
+    </text>
+    <text
+       x="2148.26"
+       y="-825.85876"
+       id="text330"
+       style="opacity:0.8">
+      <tspan
+         x="2148.26"
+         y="-825.85876"
+         id="tspan328" />
+    </text>
+    <text
+       x="-250.09914"
+       y="-600.71594"
+       id="text334"
+       style="opacity:0.8">
+      <tspan
+         x="-250.09914"
+         y="-600.71594"
+         id="tspan332" />
+    </text>
+    <text
+       x="-2073.7849"
+       y="144.83755"
+       id="text338"
+       style="opacity:0.8">
+      <tspan
+         x="-2073.7849"
+         y="144.83755"
+         id="tspan336" />
+    </text>
+    <text
+       x="-359.02936"
+       y="237.70972"
+       id="text342"
+       style="opacity:0.8">
+      <tspan
+         x="-359.02936"
+         y="237.70972"
+         id="tspan340" />
+    </text>
+    <text
+       x="480.98517"
+       y="478.62387"
+       id="text346"
+       style="opacity:0.8">
+      <tspan
+         x="480.98517"
+         y="478.62387"
+         id="tspan344" />
+    </text>
+    <text
+       x="504.94611"
+       y="437.88217"
+       id="text350"
+       style="opacity:0.8">
+      <tspan
+         x="504.94611"
+         y="437.88217"
+         id="tspan348" />
+    </text>
+    <text
+       x="-764.87061"
+       y="243.85356"
+       id="text354"
+       style="opacity:0.8">
+      <tspan
+         x="-764.87061"
+         y="243.85356"
+         id="tspan352" />
+    </text>
+    <text
+       x="42.731461"
+       y="-169.61664"
+       id="text358"
+       style="opacity:0.8">
+      <tspan
+         x="42.731461"
+         y="-169.61664"
+         id="tspan356" />
+    </text>
+    <text
+       x="66.692398"
+       y="-210.35834"
+       id="text362"
+       style="opacity:0.8">
+      <tspan
+         x="66.692398"
+         y="-210.35834"
+         id="tspan360" />
+    </text>
+    <text
+       x="-1424.7708"
+       y="-217.5683"
+       id="text366"
+       style="opacity:0.8">
+      <tspan
+         x="-1424.7708"
+         y="-217.5683"
+         id="tspan364" />
+    </text>
+    <text
+       x="35.772015"
+       y="-490.80231"
+       id="text370"
+       style="opacity:0.8">
+      <tspan
+         x="35.772015"
+         y="-490.80231"
+         id="tspan368" />
+    </text>
+    <text
+       x="1521.8954"
+       y="135.88901"
+       id="text374"
+       style="opacity:0.8">
+      <tspan
+         x="1521.8954"
+         y="135.88901"
+         id="tspan372" />
+    </text>
+    <text
+       x="1545.8563"
+       y="95.14727"
+       id="text378"
+       style="opacity:0.8">
+      <tspan
+         x="1545.8563"
+         y="95.14727"
+         id="tspan376" />
+    </text>
+    <text
+       x="54.393139"
+       y="87.937347"
+       id="text382"
+       style="opacity:0.8">
+      <tspan
+         x="54.393139"
+         y="87.937347"
+         id="tspan380" />
+    </text>
+    <text
+       x="1514.936"
+       y="-185.29675"
+       id="text386"
+       style="opacity:0.8">
+      <tspan
+         x="1514.936"
+         y="-185.29675"
+         id="tspan384" />
+    </text>
+    <text
+       x="-883.42316"
+       y="39.846062"
+       id="text390"
+       style="opacity:0.8">
+      <tspan
+         x="-883.42316"
+         y="39.846062"
+         id="tspan388" />
+    </text>
+    <text
+       x="-2707.1089"
+       y="785.3996"
+       id="text394"
+       style="opacity:0.8">
+      <tspan
+         x="-2707.1089"
+         y="785.3996"
+         id="tspan392" />
+    </text>
+    <text
+       x="-992.35889"
+       y="878.27325"
+       id="text398"
+       style="opacity:0.8">
+      <tspan
+         x="-992.35889"
+         y="878.27325"
+         id="tspan396" />
+    </text>
+    <text
+       x="761.29712"
+       y="137.11668"
+       id="text404">
+      <tspan
+         x="761.29712"
+         y="137.11668"
+         id="tspan400" />
+      <tspan
+         x="761.29712"
+         y="152.94977"
+         id="tspan402" />
+    </text>
+    <text
+       x="1226.4811"
+       y="-344.92786"
+       id="text408"
+       style="opacity:0.8">
+      <tspan
+         x="1226.4811"
+         y="-344.92786"
+         id="tspan406" />
+    </text>
+    <text
+       x="-597.2049"
+       y="400.62561"
+       id="text412"
+       style="opacity:0.8">
+      <tspan
+         x="-597.2049"
+         y="400.62561"
+         id="tspan410" />
+    </text>
+    <text
+       x="1953.5607"
+       y="-629.92371"
+       id="text416"
+       style="opacity:0.8">
+      <tspan
+         x="1953.5607"
+         y="-629.92371"
+         id="tspan414" />
+    </text>
+    <text
+       x="1977.5214"
+       y="-670.66541"
+       id="text420"
+       style="opacity:0.8">
+      <tspan
+         x="1977.5214"
+         y="-670.66541"
+         id="tspan418" />
+    </text>
+    <text
+       x="486.05829"
+       y="-677.87537"
+       id="text424"
+       style="opacity:0.8">
+      <tspan
+         x="486.05829"
+         y="-677.87537"
+         id="tspan422" />
+    </text>
+    <text
+       x="1946.6011"
+       y="-951.1095"
+       id="text428"
+       style="opacity:0.8">
+      <tspan
+         x="1946.6011"
+         y="-951.1095"
+         id="tspan426" />
+    </text>
+    <text
+       x="1202.6191"
+       y="509.15475"
+       id="text432"
+       style="opacity:0.8">
+      <tspan
+         x="1202.6191"
+         y="509.15475"
+         id="tspan430" />
+    </text>
+    <text
+       x="1226.5801"
+       y="468.41306"
+       id="text436"
+       style="opacity:0.8">
+      <tspan
+         x="1226.5801"
+         y="468.41306"
+         id="tspan434" />
+    </text>
+    <text
+       x="-243.97829"
+       y="438.3349"
+       id="text440"
+       style="opacity:0.8">
+      <tspan
+         x="-243.97829"
+         y="438.3349"
+         id="tspan438" />
+    </text>
+    <text
+       x="-2067.6643"
+       y="1183.8884"
+       id="text444"
+       style="opacity:0.8">
+      <tspan
+         x="-2067.6643"
+         y="1183.8884"
+         id="tspan442" />
+    </text>
+    <text
+       x="-129.4872"
+       y="53.013943"
+       id="text448"
+       style="opacity:0.8">
+      <tspan
+         x="-129.4872"
+         y="53.013943"
+         id="tspan446" />
+    </text>
+    <text
+       x="678.11493"
+       y="-360.45621"
+       id="text452"
+       style="opacity:0.8">
+      <tspan
+         x="678.11493"
+         y="-360.45621"
+         id="tspan450" />
+    </text>
+    <text
+       x="702.07587"
+       y="-401.19788"
+       id="text456"
+       style="opacity:0.8">
+      <tspan
+         x="702.07587"
+         y="-401.19788"
+         id="tspan454" />
+    </text>
+    <text
+       x="-789.38727"
+       y="-408.40778"
+       id="text460"
+       style="opacity:0.8">
+      <tspan
+         x="-789.38727"
+         y="-408.40778"
+         id="tspan458" />
+    </text>
+    <text
+       x="671.15546"
+       y="-681.64197"
+       id="text464"
+       style="opacity:0.8">
+      <tspan
+         x="671.15546"
+         y="-681.64197"
+         id="tspan462" />
+    </text>
+    <text
+       x="2157.2788"
+       y="-54.950565"
+       id="text468"
+       style="opacity:0.8">
+      <tspan
+         x="2157.2788"
+         y="-54.950565"
+         id="tspan466" />
+    </text>
+    <text
+       x="2181.2397"
+       y="-95.692329"
+       id="text472"
+       style="opacity:0.8">
+      <tspan
+         x="2181.2397"
+         y="-95.692329"
+         id="tspan470" />
+    </text>
+    <text
+       x="689.77661"
+       y="-102.90223"
+       id="text476"
+       style="opacity:0.8">
+      <tspan
+         x="689.77661"
+         y="-102.90223"
+         id="tspan474" />
+    </text>
+    <text
+       x="2150.3196"
+       y="-376.13623"
+       id="text480"
+       style="opacity:0.8">
+      <tspan
+         x="2150.3196"
+         y="-376.13623"
+         id="tspan478" />
+    </text>
+    <text
+       x="-248.03969"
+       y="-150.99353"
+       id="text484"
+       style="opacity:0.8">
+      <tspan
+         x="-248.03969"
+         y="-150.99353"
+         id="tspan482" />
+    </text>
+    <text
+       x="-2071.7253"
+       y="594.56"
+       id="text488"
+       style="opacity:0.8">
+      <tspan
+         x="-2071.7253"
+         y="594.56"
+         id="tspan486" />
+    </text>
+    <text
+       x="-356.96991"
+       y="687.43213"
+       id="text492"
+       style="opacity:0.8">
+      <tspan
+         x="-356.96991"
+         y="687.43213"
+         id="tspan490" />
+    </text>
+    <text
+       x="752.05438"
+       y="508.25003"
+       id="text496"
+       style="opacity:0.8">
+      <tspan
+         x="752.05438"
+         y="508.25003"
+         id="tspan494" />
+    </text>
+    <text
+       x="776.01532"
+       y="467.5083"
+       id="text500"
+       style="opacity:0.8">
+      <tspan
+         x="776.01532"
+         y="467.5083"
+         id="tspan498" />
+    </text>
+    <text
+       x="-715.44781"
+       y="460.29831"
+       id="text504"
+       style="opacity:0.8">
+      <tspan
+         x="-715.44781"
+         y="460.29831"
+         id="tspan502" />
+    </text>
+    <text
+       x="745.09491"
+       y="187.06427"
+       id="text508"
+       style="opacity:0.8">
+      <tspan
+         x="745.09491"
+         y="187.06427"
+         id="tspan506" />
+    </text>
+    <text
+       x="-282.63968"
+       y="457.58408"
+       id="text512"
+       style="opacity:0.8">
+      <tspan
+         x="-282.63968"
+         y="457.58408"
+         id="tspan510" />
+    </text>
+    <text
+       x="-2106.3257"
+       y="1203.1376"
+       id="text516"
+       style="opacity:0.8">
+      <tspan
+         x="-2106.3257"
+         y="1203.1376"
+         id="tspan514" />
+    </text>
+    <text
+       x="-131.54662"
+       y="-403.94641"
+       id="text520"
+       style="opacity:0.8">
+      <tspan
+         x="-131.54662"
+         y="-403.94641"
+         id="tspan518" />
+    </text>
+    <text
+       x="676.05554"
+       y="-817.41663"
+       id="text524"
+       style="opacity:0.8">
+      <tspan
+         x="676.05554"
+         y="-817.41663"
+         id="tspan522" />
+    </text>
+    <text
+       x="700.01642"
+       y="-858.15833"
+       id="text528"
+       style="opacity:0.8">
+      <tspan
+         x="700.01642"
+         y="-858.15833"
+         id="tspan526" />
+    </text>
+    <text
+       x="-791.44672"
+       y="-865.36829"
+       id="text532"
+       style="opacity:0.8">
+      <tspan
+         x="-791.44672"
+         y="-865.36829"
+         id="tspan530" />
+    </text>
+    <text
+       x="669.09601"
+       y="-1138.6024"
+       id="text536"
+       style="opacity:0.8">
+      <tspan
+         x="669.09601"
+         y="-1138.6024"
+         id="tspan534" />
+    </text>
+    <text
+       x="2155.2195"
+       y="-511.91116"
+       id="text540"
+       style="opacity:0.8">
+      <tspan
+         x="2155.2195"
+         y="-511.91116"
+         id="tspan538" />
+    </text>
+    <text
+       x="2179.1802"
+       y="-552.65271"
+       id="text544"
+       style="opacity:0.8">
+      <tspan
+         x="2179.1802"
+         y="-552.65271"
+         id="tspan542" />
+    </text>
+    <text
+       x="687.71716"
+       y="-559.86267"
+       id="text548"
+       style="opacity:0.8">
+      <tspan
+         x="687.71716"
+         y="-559.86267"
+         id="tspan546" />
+    </text>
+    <text
+       x="2148.26"
+       y="-833.0968"
+       id="text552"
+       style="opacity:0.8">
+      <tspan
+         x="2148.26"
+         y="-833.0968"
+         id="tspan550" />
+    </text>
+    <text
+       x="-250.09914"
+       y="-607.95398"
+       id="text556"
+       style="opacity:0.8">
+      <tspan
+         x="-250.09914"
+         y="-607.95398"
+         id="tspan554" />
+    </text>
+    <text
+       x="-2073.7849"
+       y="137.59953"
+       id="text560"
+       style="opacity:0.8">
+      <tspan
+         x="-2073.7849"
+         y="137.59953"
+         id="tspan558" />
+    </text>
+    <text
+       x="-359.02936"
+       y="230.47168"
+       id="text564"
+       style="opacity:0.8">
+      <tspan
+         x="-359.02936"
+         y="230.47168"
+         id="tspan562" />
+    </text>
+    <text
+       x="480.98517"
+       y="471.38586"
+       id="text568"
+       style="opacity:0.8">
+      <tspan
+         x="480.98517"
+         y="471.38586"
+         id="tspan566" />
+    </text>
+    <text
+       x="504.94611"
+       y="430.64417"
+       id="text572"
+       style="opacity:0.8">
+      <tspan
+         x="504.94611"
+         y="430.64417"
+         id="tspan570" />
+    </text>
+    <text
+       x="-764.87061"
+       y="236.61552"
+       id="text576"
+       style="opacity:0.8">
+      <tspan
+         x="-764.87061"
+         y="236.61552"
+         id="tspan574" />
+    </text>
+    <text
+       x="42.731461"
+       y="-176.85461"
+       id="text580"
+       style="opacity:0.8">
+      <tspan
+         x="42.731461"
+         y="-176.85461"
+         id="tspan578" />
+    </text>
+    <text
+       x="66.692398"
+       y="-217.59633"
+       id="text584"
+       style="opacity:0.8">
+      <tspan
+         x="66.692398"
+         y="-217.59633"
+         id="tspan582" />
+    </text>
+    <text
+       x="-1424.7708"
+       y="-224.80621"
+       id="text588"
+       style="opacity:0.8">
+      <tspan
+         x="-1424.7708"
+         y="-224.80621"
+         id="tspan586" />
+    </text>
+    <text
+       x="35.772015"
+       y="-498.04034"
+       id="text592"
+       style="opacity:0.8">
+      <tspan
+         x="35.772015"
+         y="-498.04034"
+         id="tspan590" />
+    </text>
+    <text
+       x="1521.8954"
+       y="128.65103"
+       id="text596"
+       style="opacity:0.8">
+      <tspan
+         x="1521.8954"
+         y="128.65103"
+         id="tspan594" />
+    </text>
+    <text
+       x="1545.8563"
+       y="87.909302"
+       id="text600"
+       style="opacity:0.8">
+      <tspan
+         x="1545.8563"
+         y="87.909302"
+         id="tspan598" />
+    </text>
+    <text
+       x="54.393139"
+       y="80.699333"
+       id="text604"
+       style="opacity:0.8">
+      <tspan
+         x="54.393139"
+         y="80.699333"
+         id="tspan602" />
+    </text>
+    <text
+       x="1514.936"
+       y="-192.53474"
+       id="text608"
+       style="opacity:0.8">
+      <tspan
+         x="1514.936"
+         y="-192.53474"
+         id="tspan606" />
+    </text>
+    <text
+       x="-883.42316"
+       y="32.608059"
+       id="text612"
+       style="opacity:0.8">
+      <tspan
+         x="-883.42316"
+         y="32.608059"
+         id="tspan610" />
+    </text>
+    <text
+       x="-2707.1089"
+       y="778.16162"
+       id="text616"
+       style="opacity:0.8">
+      <tspan
+         x="-2707.1089"
+         y="778.16162"
+         id="tspan614" />
+    </text>
+    <text
+       x="-992.35333"
+       y="871.03369"
+       id="text620"
+       style="opacity:0.8">
+      <tspan
+         x="-992.35333"
+         y="871.03369"
+         id="tspan618" />
+    </text>
+    <text
+       x="1202.6191"
+       y="516.3927"
+       id="text624"
+       style="opacity:0.8">
+      <tspan
+         x="1202.6191"
+         y="516.3927"
+         id="tspan622" />
+    </text>
+    <text
+       x="1226.5801"
+       y="475.65103"
+       id="text628"
+       style="opacity:0.8">
+      <tspan
+         x="1226.5801"
+         y="475.65103"
+         id="tspan626" />
+    </text>
+    <text
+       x="-243.97829"
+       y="445.57288"
+       id="text632"
+       style="opacity:0.8">
+      <tspan
+         x="-243.97829"
+         y="445.57288"
+         id="tspan630" />
+    </text>
+    <text
+       x="-2067.6643"
+       y="1191.1263"
+       id="text636"
+       style="opacity:0.8">
+      <tspan
+         x="-2067.6643"
+         y="1191.1263"
+         id="tspan634" />
+    </text>
+    <text
+       x="-129.4872"
+       y="60.251945"
+       id="text640"
+       style="opacity:0.8">
+      <tspan
+         x="-129.4872"
+         y="60.251945"
+         id="tspan638" />
+    </text>
+    <text
+       x="678.11493"
+       y="-353.21817"
+       id="text644"
+       style="opacity:0.8">
+      <tspan
+         x="678.11493"
+         y="-353.21817"
+         id="tspan642" />
+    </text>
+    <text
+       x="702.07587"
+       y="-393.9599"
+       id="text648"
+       style="opacity:0.8">
+      <tspan
+         x="702.07587"
+         y="-393.9599"
+         id="tspan646" />
+    </text>
+    <text
+       x="-789.38727"
+       y="-401.1698"
+       id="text652"
+       style="opacity:0.8">
+      <tspan
+         x="-789.38727"
+         y="-401.1698"
+         id="tspan650" />
+    </text>
+    <text
+       x="671.15546"
+       y="-674.40399"
+       id="text656"
+       style="opacity:0.8">
+      <tspan
+         x="671.15546"
+         y="-674.40399"
+         id="tspan654" />
+    </text>
+    <text
+       x="2157.2788"
+       y="-47.712589"
+       id="text660"
+       style="opacity:0.8">
+      <tspan
+         x="2157.2788"
+         y="-47.712589"
+         id="tspan658" />
+    </text>
+    <text
+       x="2181.2397"
+       y="-88.454353"
+       id="text664"
+       style="opacity:0.8">
+      <tspan
+         x="2181.2397"
+         y="-88.454353"
+         id="tspan662" />
+    </text>
+    <text
+       x="689.77661"
+       y="-95.664253"
+       id="text668"
+       style="opacity:0.8">
+      <tspan
+         x="689.77661"
+         y="-95.664253"
+         id="tspan666" />
+    </text>
+    <text
+       x="2150.3196"
+       y="-368.89819"
+       id="text672"
+       style="opacity:0.8">
+      <tspan
+         x="2150.3196"
+         y="-368.89819"
+         id="tspan670" />
+    </text>
+    <text
+       x="-248.03969"
+       y="-143.75557"
+       id="text676"
+       style="opacity:0.8">
+      <tspan
+         x="-248.03969"
+         y="-143.75557"
+         id="tspan674" />
+    </text>
+    <text
+       x="-2071.7253"
+       y="601.79803"
+       id="text680"
+       style="opacity:0.8">
+      <tspan
+         x="-2071.7253"
+         y="601.79803"
+         id="tspan678" />
+    </text>
+    <text
+       x="-356.96991"
+       y="694.6701"
+       id="text684"
+       style="opacity:0.8">
+      <tspan
+         x="-356.96991"
+         y="694.6701"
+         id="tspan682" />
+    </text>
+    <text
+       x="752.05438"
+       y="515.48804"
+       id="text688"
+       style="opacity:0.8">
+      <tspan
+         x="752.05438"
+         y="515.48804"
+         id="tspan686" />
+    </text>
+    <text
+       x="776.01532"
+       y="474.74628"
+       id="text692"
+       style="opacity:0.8">
+      <tspan
+         x="776.01532"
+         y="474.74628"
+         id="tspan690" />
+    </text>
+    <text
+       x="-715.44781"
+       y="467.53632"
+       id="text696"
+       style="opacity:0.8">
+      <tspan
+         x="-715.44781"
+         y="467.53632"
+         id="tspan694" />
+    </text>
+    <text
+       x="745.09491"
+       y="194.30226"
+       id="text700"
+       style="opacity:0.8">
+      <tspan
+         x="745.09491"
+         y="194.30226"
+         id="tspan698" />
+    </text>
+    <text
+       x="-282.63968"
+       y="464.82208"
+       id="text704"
+       style="opacity:0.8">
+      <tspan
+         x="-282.63968"
+         y="464.82208"
+         id="tspan702" />
+    </text>
+    <text
+       x="-2106.3257"
+       y="1210.3756"
+       id="text708"
+       style="opacity:0.8">
+      <tspan
+         x="-2106.3257"
+         y="1210.3756"
+         id="tspan706" />
+    </text>
+    <text
+       x="-131.54662"
+       y="-396.70844"
+       id="text712"
+       style="opacity:0.8">
+      <tspan
+         x="-131.54662"
+         y="-396.70844"
+         id="tspan710" />
+    </text>
+    <text
+       x="676.05554"
+       y="-810.17865"
+       id="text716"
+       style="opacity:0.8">
+      <tspan
+         x="676.05554"
+         y="-810.17865"
+         id="tspan714" />
+    </text>
+    <text
+       x="700.01642"
+       y="-850.92041"
+       id="text720"
+       style="opacity:0.8">
+      <tspan
+         x="700.01642"
+         y="-850.92041"
+         id="tspan718" />
+    </text>
+    <text
+       x="-791.44672"
+       y="-858.13025"
+       id="text724"
+       style="opacity:0.8">
+      <tspan
+         x="-791.44672"
+         y="-858.13025"
+         id="tspan722" />
+    </text>
+    <text
+       x="669.09601"
+       y="-1131.3644"
+       id="text728"
+       style="opacity:0.8">
+      <tspan
+         x="669.09601"
+         y="-1131.3644"
+         id="tspan726" />
+    </text>
+    <text
+       x="2155.2195"
+       y="-504.67316"
+       id="text732"
+       style="opacity:0.8">
+      <tspan
+         x="2155.2195"
+         y="-504.67316"
+         id="tspan730" />
+    </text>
+    <text
+       x="2179.1802"
+       y="-545.41479"
+       id="text736"
+       style="opacity:0.8">
+      <tspan
+         x="2179.1802"
+         y="-545.41479"
+         id="tspan734" />
+    </text>
+    <text
+       x="687.71716"
+       y="-552.62463"
+       id="text740"
+       style="opacity:0.8">
+      <tspan
+         x="687.71716"
+         y="-552.62463"
+         id="tspan738" />
+    </text>
+    <text
+       x="2148.26"
+       y="-825.85876"
+       id="text744"
+       style="opacity:0.8">
+      <tspan
+         x="2148.26"
+         y="-825.85876"
+         id="tspan742" />
+    </text>
+    <text
+       x="-250.09914"
+       y="-600.71594"
+       id="text748"
+       style="opacity:0.8">
+      <tspan
+         x="-250.09914"
+         y="-600.71594"
+         id="tspan746" />
+    </text>
+    <text
+       x="-2073.7849"
+       y="144.83755"
+       id="text752"
+       style="opacity:0.8">
+      <tspan
+         x="-2073.7849"
+         y="144.83755"
+         id="tspan750" />
+    </text>
+    <text
+       x="-359.02936"
+       y="237.70972"
+       id="text756"
+       style="opacity:0.8">
+      <tspan
+         x="-359.02936"
+         y="237.70972"
+         id="tspan754" />
+    </text>
+    <text
+       x="480.98517"
+       y="478.62387"
+       id="text760"
+       style="opacity:0.8">
+      <tspan
+         x="480.98517"
+         y="478.62387"
+         id="tspan758" />
+    </text>
+    <text
+       x="504.94611"
+       y="437.88217"
+       id="text764"
+       style="opacity:0.8">
+      <tspan
+         x="504.94611"
+         y="437.88217"
+         id="tspan762" />
+    </text>
+    <text
+       x="-764.87061"
+       y="243.85356"
+       id="text768"
+       style="opacity:0.8">
+      <tspan
+         x="-764.87061"
+         y="243.85356"
+         id="tspan766" />
+    </text>
+    <text
+       x="42.731461"
+       y="-169.61664"
+       id="text772"
+       style="opacity:0.8">
+      <tspan
+         x="42.731461"
+         y="-169.61664"
+         id="tspan770" />
+    </text>
+    <text
+       x="66.692398"
+       y="-210.35834"
+       id="text776"
+       style="opacity:0.8">
+      <tspan
+         x="66.692398"
+         y="-210.35834"
+         id="tspan774" />
+    </text>
+    <text
+       x="-1424.7708"
+       y="-217.5683"
+       id="text780"
+       style="opacity:0.8">
+      <tspan
+         x="-1424.7708"
+         y="-217.5683"
+         id="tspan778" />
+    </text>
+    <text
+       x="35.772015"
+       y="-490.80231"
+       id="text784"
+       style="opacity:0.8">
+      <tspan
+         x="35.772015"
+         y="-490.80231"
+         id="tspan782" />
+    </text>
+    <text
+       x="1521.8954"
+       y="135.88901"
+       id="text788"
+       style="opacity:0.8">
+      <tspan
+         x="1521.8954"
+         y="135.88901"
+         id="tspan786" />
+    </text>
+    <text
+       x="1545.8563"
+       y="95.14727"
+       id="text792"
+       style="opacity:0.8">
+      <tspan
+         x="1545.8563"
+         y="95.14727"
+         id="tspan790" />
+    </text>
+    <text
+       x="54.393139"
+       y="87.937347"
+       id="text796"
+       style="opacity:0.8">
+      <tspan
+         x="54.393139"
+         y="87.937347"
+         id="tspan794" />
+    </text>
+    <text
+       x="1514.936"
+       y="-185.29675"
+       id="text800"
+       style="opacity:0.8">
+      <tspan
+         x="1514.936"
+         y="-185.29675"
+         id="tspan798" />
+    </text>
+    <text
+       x="-883.42316"
+       y="39.846062"
+       id="text804"
+       style="opacity:0.8">
+      <tspan
+         x="-883.42316"
+         y="39.846062"
+         id="tspan802" />
+    </text>
+    <text
+       x="-2707.1089"
+       y="785.3996"
+       id="text808"
+       style="opacity:0.8">
+      <tspan
+         x="-2707.1089"
+         y="785.3996"
+         id="tspan806" />
+    </text>
+    <text
+       x="-992.35333"
+       y="878.27173"
+       id="text812"
+       style="opacity:0.8">
+      <tspan
+         x="-992.35333"
+         y="878.27173"
+         id="tspan810" />
+    </text>
+    <text
+       x="761.29712"
+       y="137.11668"
+       id="text818">
+      <tspan
+         x="761.29712"
+         y="137.11668"
+         id="tspan814" />
+      <tspan
+         x="761.29712"
+         y="152.94977"
+         id="tspan816" />
+    </text>
+    <text
+       x="1226.4811"
+       y="-344.92786"
+       id="text822"
+       style="opacity:0.8">
+      <tspan
+         x="1226.4811"
+         y="-344.92786"
+         id="tspan820" />
+    </text>
+    <text
+       x="-597.2049"
+       y="400.62561"
+       id="text826"
+       style="opacity:0.8">
+      <tspan
+         x="-597.2049"
+         y="400.62561"
+         id="tspan824" />
+    </text>
+    <text
+       x="1953.5607"
+       y="-629.92371"
+       id="text830"
+       style="opacity:0.8">
+      <tspan
+         x="1953.5607"
+         y="-629.92371"
+         id="tspan828" />
+    </text>
+    <text
+       x="1977.5214"
+       y="-670.66541"
+       id="text834"
+       style="opacity:0.8">
+      <tspan
+         x="1977.5214"
+         y="-670.66541"
+         id="tspan832" />
+    </text>
+    <text
+       x="486.05829"
+       y="-677.87537"
+       id="text838"
+       style="opacity:0.8">
+      <tspan
+         x="486.05829"
+         y="-677.87537"
+         id="tspan836" />
+    </text>
+    <text
+       x="1946.6011"
+       y="-951.1095"
+       id="text842"
+       style="opacity:0.8">
+      <tspan
+         x="1946.6011"
+         y="-951.1095"
+         id="tspan840" />
+    </text>
+    <circle
+       cx="408.57138"
+       cy="523.79797"
+       r="0"
+       id="circle844"
+       style="fill:url(#e);stroke:url(#e);stroke-width:2.26199508" />
+    <g
+       transform="matrix(0.95833333,0,0,0.95833333,16.893861,21.955146)"
+       id="g854">
+      <g
+         id="g2775"
+         transform="matrix(1.0434783,0,0,1.0434783,-18.138348,-19.943921)">
+        <g
+           id="g2773"
+           transform="matrix(5.448192,0,0,5.4569213,381.22715,286.00296)">
+          <path
+             id="path2767"
+             d="M 3.304478,20.895672 20.103078,4.0750563 C 22.61296,1.565174 25.38704,1.565174 27.104328,3.304478 l 17.591194,17.591194 c 1.739304,1.717288 1.739304,4.491368 0,6.208656 L 27.104328,44.695522 c -1.717288,1.739304 -4.491368,1.739304 -6.208656,0 L 3.304478,27.104328 c -1.739304,-1.717288 -1.739304,-4.491368 0,-6.208656 z"
+             inkscape:connector-curvature="0"
+             style="fill:url(#linearGradient2785);fill-opacity:1.0" />
+          <path
+             id="path2771"
+             d="m 23.822266,1.0996094 c -1.504805,0.118622 -3.040584,0.8823804 -4.425782,2.2675781 v 0.00195 L 2.5976562,20.189453 c -2.1172184,2.096059 -2.11679221,5.533098 0.00391,7.626953 L 20.189453,45.402344 c 2.094337,2.11548 5.526757,2.11548 7.621094,0 l 17.587891,-17.585938 0.0039,-0.0059 c 2.11548,-2.094337 2.11548,-5.526757 0,-7.621094 l -0.0039,-0.0059 -17.582032,-17.5820315 -0.0059,-0.00391 C 26.763185,1.5397652 25.324641,0.9811788 23.822266,1.0996094 Z M 23.980469,3.09375 c 0.939028,-0.074023 1.742608,0.2359785 2.412109,0.9140625 l 0.002,0.00195 17.595703,17.5957035 0.002,0.002 c 1.356168,1.339002 1.356168,3.446154 0,4.785156 l -0.002,0.002 -17.595703,17.595703 -0.002,0.002 c -1.339002,1.356168 -3.446154,1.356168 -4.785156,0 l -0.002,-0.002 -17.5957034,-17.595703 -0.00195,-0.002 c -1.356168,-1.339002 -1.356168,-3.446154 0,-4.785156 l 0.00195,-0.002 0.00195,-0.0039 L 20.810547,4.78125 c 1.124684,-1.1246846 2.230893,-1.6134774 3.169922,-1.6875 z"
+             inkscape:connector-curvature="0"
+             style="fill:#ffffff" />
+        </g>
+      </g>
+      <path
+         style="fill:#ffffff;fill-opacity:1;stroke-width:0.56199169"
+         d="m 653.12824,586.46748 c -0.0931,3.33007 1.04453,6.57762 3.19529,9.1217 L 634.16,631.55726 c -0.66699,-0.11652 -1.34162,-0.184 -2.01847,-0.20193 -6.3533,-0.17015 -11.81079,3.9957 -13.50989,9.79704 l -41.93817,-1.06124 c -1.36356,-5.91424 -6.60452,-10.39752 -12.98028,-10.56829 -1.18314,-0.0317 -2.33542,0.087 -3.43727,0.33868 L 541.13423,594.3445 c 2.38107,-2.37839 3.88944,-5.63188 3.98641,-9.25375 0.20152,-7.52461 -5.76314,-13.78861 -13.32203,-13.99105 -7.55889,-0.20245 -13.84971,5.73339 -14.05124,13.25799 -0.20149,7.52463 5.76262,13.78864 13.32149,13.99107 0.82138,0.022 1.6283,-0.0283 2.41345,-0.14563 l 19.45231,36.09313 c -2.03669,2.36598 -3.19285,5.36331 -3.27259,8.48415 -0.2015,7.52515 5.76257,13.78918 13.32147,13.9916 5.55088,0.15547 10.64625,-3.05624 12.90023,-8.13128 l 43.05734,1.08957 c 1.96187,5.22163 6.89452,8.73174 12.47072,8.87427 7.55888,0.2024 13.84968,-5.73343 14.05119,-13.25802 0.10061,-3.75727 -1.33633,-7.20039 -3.74109,-9.73112 l 21.89198,-35.52736 c 0.92993,0.22134 1.88033,0.34551 2.83591,0.37053 7.55888,0.20242 13.84969,-5.73341 14.05117,-13.25801 0.20151,-7.52464 -4.72416,-14.2052 -13.32144,-13.99106 -7.9415,0.40994 -13.76312,5.91711 -14.05127,13.25795 z"
+         id="path2781"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ccccccccccccscccccccccccccc" />
+      <path
+         style="fill-opacity:0.07843101;stroke-width:6.08912611"
+         d="M 106.72549,59.803844 90.301739,63.3952 87.377988,84.111556 121.38,118.074 l -1.90143,2.9389 C 107.19792,114.36321 77.632355,82.528838 77.632355,82.528838 l -12.831574,27.908662 12.125,49.43945 -16.590073,9.72852 72.349422,72.09934 c 0,0 3.70652,-1.38302 6.03214,-3.45516 3.00313,-2.67581 7.16341,-7.04876 9.93931,-9.83324 5.55178,-5.56897 12.21448,-12.25118 16.65812,-16.70415 8.86519,-8.88381 26.60658,-26.64043 26.60658,-26.64043 0,0 10.44884,-10.76383 21.68159,-21.90458 11.23275,-11.14076 23.48584,-22.47617 25.04896,-25.62141 2.37032,-4.76945 2.29079,-5.66417 2.29079,-5.66417 L 193.98499,85.306334 c 0,0 -7.39453,5.146415 -13.53968,8.574525 3.42619,-3.069993 -0.12613,-1.54302 2.93307,-5.083185 l -30.21033,-31.124649 -4.24359,29.566188 -0.12774,-14.98776 -11.48637,-11.227717 -12.18523,-0.747695 -7.32481,10.888901 z"
+         id="path4139-0"
+         inkscape:connector-curvature="0"
+         sodipodi:nodetypes="ccccccccccssscssccccccccccc"
+         transform="matrix(1.0434783,0,0,1.0434783,383.66355,281.57523)" />
+      <path
+         inkscape:connector-curvature="0"
+         style="fill:#ffffff;fill-opacity:1;stroke-width:0.5712924"
+         d="m 530.8398,410.72903 35.93543,-20.22321 c 1.2053,1.05718 2.58511,1.8969 4.07789,2.4817 l 0.0257,43.62731 c -5.34639,2.08861 -8.86281,7.24449 -8.85561,12.98436 0,1.02144 0.1097,2.01664 0.31765,2.97641 l -35.98228,20.44827 c -2.4998,-2.14574 -5.68632,-3.32366 -8.98073,-3.31979 -3.3865,-0.004 -6.65565,1.24041 -9.18238,3.49519 l -37.15343,-21.54346 c 0.10024,-0.68095 0.15045,-1.36833 0.15025,-2.05662 0,-6.46078 -4.3818,-11.89319 -10.32325,-13.46196 l -0.0628,-42.64582 c 5.97287,-1.54649 10.3861,-6.99432 10.3861,-13.47794 0,-1.20315 -0.15196,-2.37086 -0.43761,-3.48373 -1.63233,-4.56158 -2.55595,-5.51513 -4.7063,-7.33939 -2.45969,-2.00528 -5.53698,-3.09859 -8.7105,-3.0947 -7.65246,0 -13.85556,6.23109 -13.85556,13.91782 -0.007,5.64497 3.39541,10.73542 8.61395,12.88778 l 0.0645,43.78384 c -5.25276,2.13574 -8.68544,7.24376 -8.67851,12.9141 0,7.68673 6.20309,13.91779 13.85499,13.91779 3.82079,0 7.28054,-1.55389 9.7868,-4.06644 l 36.69812,21.2795 c -0.19962,0.951 -0.29994,1.92015 -0.29936,2.89187 0,7.68676 6.20309,13.91783 13.85497,13.91783 7.65189,0 13.85499,-6.23107 13.85499,-13.91783 0,-1.08317 -0.1234,-2.1372 -0.35591,-3.14895 l 35.88458,-20.39342 c 2.51823,2.2189 5.76036,3.44134 9.11669,3.43744 7.65189,0 13.85499,-6.23106 13.85499,-13.91779 0,-6.39621 -4.29498,-11.78463 -10.14616,-13.41397 l -0.0246,-42.75152 c 5.86318,-1.62018 10.17073,-7.01546 10.17073,-13.42023 0,-7.68673 -6.2031,-13.91782 -13.85499,-13.91782 -7.65189,0 -13.85498,6.23109 -13.85498,13.91782 0,1.0272 0.11083,2.02866 0.32106,2.99302 l -36.11253,20.32257 c -2.48158,-2.07887 -5.61662,-3.21632 -8.8539,-3.21236 -7.65188,0 -13.85497,6.23106 -13.85497,13.9178 0,7.68674 6.20309,13.91783 13.85497,13.91783 7.6519,0 13.855,-6.23109 13.855,-13.91783 0,-1.13915 -0.13597,-2.24573 -0.39306,-3.30547 z"
+         id="path2"
+         sodipodi:nodetypes="cccccccccccccscccccccscccsscccsccssscccssscc" />
+      <rect
+         transform="rotate(30.875719)"
+         y="86.096924"
+         x="594.3501"
+         height="9.2517576"
+         width="65.916595"
+         id="rect4131"
+         style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#684a3e;stroke-width:0;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:0.352941;paint-order:stroke fill markers" />
+      <rect
+         style="opacity:1;fill:#ffffff;fill-opacity:1;stroke:#684a3e;stroke-width:0;stroke-linejoin:round;stroke-miterlimit:10;stroke-dasharray:none;stroke-opacity:0.352941;paint-order:stroke fill markers"
+         id="rect4133"
+         width="65.916595"
+         height="9.2517576"
+         x="421.09106"
+         y="-517.12476"
+         transform="rotate(89.379372)" />
+      <text
+         xml:space="preserve"
+         style="font-style:normal;font-weight:normal;font-size:48.6580925px;line-height:1.25;font-family:sans-serif;letter-spacing:0px;word-spacing:0px;fill:#ffffff;fill-opacity:1;stroke:none;stroke-width:1.21645224"
+         x="431.46475"
+         y="406.78391"
+         id="text4137"
+         transform="scale(1.0889512,0.91831479)"><tspan
+           sodipodi:role="line"
+           id="tspan4135"
+           x="431.46475"
+           y="406.78391"
+           style="font-style:normal;font-variant:normal;font-weight:bold;font-stretch:normal;font-family:'Roboto Condensed';-inkscape-font-specification:'Roboto Condensed,  Bold';fill:#ffffff;fill-opacity:1;stroke-width:1.21645224">GQL</tspan></text>
+      <path
+         inkscape:connector-curvature="0"
+         id="XMLID_478_"
+         class="st4"
+         d="m 473.90348,441.85542 c -0.68511,-0.35989 -1.26644,-0.90264 -1.72675,-1.57141 -1.30127,-2.05974 -0.63734,-4.79541 1.50425,-6.04309 l 21.46759,-13.43575 c 2.14154,-1.24769 4.98926,-0.60591 6.2905,1.45378 1.30128,2.05968 0.63734,4.79541 -1.50428,6.04309 l -21.4675,13.43572 c -1.42891,0.86284 -3.19354,0.83745 -4.56381,0.11766 z"
+         style="fill:#ffffff;fill-opacity:1;stroke-width:4.24996805"
+         sodipodi:nodetypes="cccccccc" />
+      <path
+         sodipodi:nodetypes="cccccccc"
+         style="fill:#ffffff;fill-opacity:1;stroke-width:4.24996805"
+         d="m 531.68714,424.58326 c 0.0125,-0.77378 0.23514,-1.53731 0.62475,-2.24959 1.25241,-2.08981 3.99377,-2.72983 6.07262,-1.3802 l 21.66787,13.11032 c 2.07883,1.34958 2.78911,4.18099 1.53674,6.27075 -1.25236,2.08979 -3.99378,2.72982 -6.07265,1.38016 l -21.66779,-13.11025 c -1.41416,-0.8868 -2.18665,-2.47357 -2.16154,-4.02119 z"
+         class="st4"
+         id="path1303"
+         inkscape:connector-curvature="0" />
+    </g>
+  </g>
+</svg>
