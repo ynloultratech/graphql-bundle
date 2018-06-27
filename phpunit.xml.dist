@@ -14,15 +14,10 @@
          bootstrap="vendor/autoload.php"
 >
     <php>
-        <env name="SYMFONY_DEPRECATIONS_HELPER" value="weak"/>
-        <server name="KERNEL_DIR" value="demo/app/"/>
     </php>
     <testsuites>
         <testsuite name="Unit Tests">
-            <directory>src/Tests/</directory>
-        </testsuite>
-        <testsuite name="Integration Tests">
-            <directory>demo/src/AppBundle/Tests/</directory>
+            <directory>tests</directory>
         </testsuite>
     </testsuites>
 
@@ -33,6 +28,6 @@
     </filter>
 
     <listeners>
-        <listener class="Symfony\Bridge\PhpUnit\SymfonyTestsListener"></listener>
+        <listener class="\Mockery\Adapter\Phpunit\TestListener"></listener>
     </listeners>
 </phpunit>

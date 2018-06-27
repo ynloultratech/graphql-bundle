@@ -17,14 +17,13 @@ use Behat\Gherkin\Node\StepNode;
 use Behat\Testwork\Environment\Environment;
 use Faker\Factory;
 use Mockery;
-use PHPUnit\Framework\TestCase;
 use Ynlo\GraphQLBundle\Behat\Storage\Storage;
 use Ynlo\GraphQLBundle\Behat\Transformer\ExpressionLanguage\FakerProvider;
 use Ynlo\GraphQLBundle\Behat\Transformer\ExpressionLanguage\JMESPathSearchProvider;
 use Ynlo\GraphQLBundle\Behat\Transformer\ExpressionLanguage\StorageValuesProvider;
 use Ynlo\GraphQLBundle\Behat\Transformer\TransformStringToExpression;
 
-class TransformStringToExpressionTest extends TestCase
+class TransformStringToExpressionTest extends Mockery\Adapter\Phpunit\MockeryTestCase
 {
     /**
      * @var TransformStringToExpression

@@ -19,6 +19,11 @@
       "Ynlo\\GraphQLBundle\\": "src/"
     }
   },
+  "autoload-dev": {
+    "psr-4": {
+      "Ynlo\\GraphQLBundle\\Tests\\": "tests/"
+    }
+  },
   "require": {
     "php": ">=7.1",
     "symfony/form": "^3.0 || ^4.0",
