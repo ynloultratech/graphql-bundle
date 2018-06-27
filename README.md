@@ -1,7 +1,6 @@
 # GraphQL Bundle
 
 [![Build Status](https://travis-ci.org/ynloultratech/graphql-bundle.svg?branch=master)](https://travis-ci.org/ynloultratech/graphql-bundle)
-[![Code Coverage](https://scrutinizer-ci.com/g/ynloultratech/graphql-bundle/badges/coverage.png?b=master)](https://scrutinizer-ci.com/g/ynloultratech/graphql-bundle/?branch=master)
 [![Scrutinizer Code Quality](https://scrutinizer-ci.com/g/ynloultratech/graphql-bundle/badges/quality-score.png?b=master)](https://scrutinizer-ci.com/g/ynloultratech/graphql-bundle/?branch=master)
 [![Latest Stable Version](https://poser.pugx.org/ynloultratech/graphql-bundle/v/stable)](//packagist.org/packages/ynloultratech/graphql-bundle)
 [![Latest Unstable Version](https://poser.pugx.org/ynloultratech/graphql-bundle/v/unstable)](//packagist.org/packages/ynloultratech/graphql-bundle)
