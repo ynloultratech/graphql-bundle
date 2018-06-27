@@ -20,7 +20,7 @@
 
 ## Documentation
 
-Full documentation is available on the [Documentation](https://ynloultratech.github.io/graphql-bundle) site as well as in the doc folder of the distribution.
+Full documentation is available on the [GraphQLBundle](https://graphql-bundle.ynloultratech.com) site.
 
 If you don't know what GraphQL is, visit this [official website](http://graphql.org/)
 by the Facebook engineering team.
