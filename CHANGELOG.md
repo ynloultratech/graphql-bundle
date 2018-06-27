@@ -1,9 +1,10 @@
-v1.1.2 - [Unreleased]
+v1.1.2 - 2018-06-27
 ----
  * Handle symfony HTTP exceptions to display related status code error instead of "Unknown error"
  * Added build-in LexikJWT authentication for GraphiQL API explorer.
  * Deprecated the old `jwt` authentication in favor of the new one `lexik_jwt`
- * Removed `demo` app inside the project, moved out to another repository.
+ * Removed `demo` app inside the project, moved out to another repository `ynloultratech/graphql-bundle-demo`.
+ * Removed `docs` inside the project, moved out to another repository `ynloultratech/graphql-bundle-docs`
  * Fixed API endpoint route to use POST method.
 
 v1.1.1 - 2018-06-21
