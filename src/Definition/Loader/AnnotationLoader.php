@@ -13,6 +13,7 @@ namespace Ynlo\GraphQLBundle\Definition\Loader;
 use Doctrine\Common\Annotations\Reader;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpKernel\KernelInterface;
 use Ynlo\GraphQLBundle\Definition\Loader\Annotation\AnnotationParserInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 
@@ -48,11 +49,11 @@ class AnnotationLoader implements DefinitionLoaderInterface
     protected $annotationParsers = [];
 
     /**
-     * @param Kernel                               $kernel
+     * @param KernelInterface                      $kernel
      * @param Reader                               $reader
      * @param iterable|AnnotationParserInterface[] $annotationParsers
      */
-    public function __construct(Kernel $kernel, Reader $reader, $annotationParsers = [])
+    public function __construct(KernelInterface $kernel, Reader $reader, $annotationParsers = [])
     {
         $this->kernel = $kernel;
         $this->reader = $reader;
