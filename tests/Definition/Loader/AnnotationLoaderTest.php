@@ -28,8 +28,8 @@ class AnnotationLoaderTest extends MockeryTestCase
         $dir = __DIR__.'/../../Fixtures/App';
 
         $bundle = \Mockery::mock(Bundle::class);
-        $bundle->allows('getPath')->times(4)->withNoArgs()->andReturn($dir);
-        $bundle->expects('getNamespace')->once()->andReturn('Ynlo\GraphQLBundle\Tests\Fixtures\App');
+        $bundle->allows('getPath')->withNoArgs()->andReturn($dir);
+        $bundle->allows('getNamespace')->andReturn('Ynlo\GraphQLBundle\Tests\Fixtures\App');
 
         $kernel = \Mockery::mock(KernelInterface::class);
         $kernel->expects('getBundles')->andReturn(
@@ -43,8 +43,7 @@ class AnnotationLoaderTest extends MockeryTestCase
         $annotation = new ObjectType();
         $reader = \Mockery::mock(Reader::class);
         $reader
-            ->expects('getClassAnnotations')
-            ->once()
+            ->allows('getClassAnnotations')
             ->withArgs(
                 function (\ReflectionClass $class) use (&$classes) {
                     $classes->add($class);
@@ -55,8 +54,8 @@ class AnnotationLoaderTest extends MockeryTestCase
             ->andReturn([$annotation]);
 
         $parser = \Mockery::mock(AnnotationParserInterface::class);
-        $parser->expects('supports')->once()->with($annotation)->andReturn(true);
-        $parser->expects('parse')->withArgs(
+        $parser->allows('supports')->with($annotation)->andReturn(true);
+        $parser->allows('parse')->withArgs(
             function ($arg1, \ReflectionClass $arg2, Endpoint $arg3) use ($annotation, $classes, $endpoint) {
                 return $annotation === $arg1 && $classes->contains($arg2) && $endpoint === $arg3;
             }
@@ -64,6 +63,5 @@ class AnnotationLoaderTest extends MockeryTestCase
 
         $loader = new AnnotationLoader($kernel, $reader, [$parser]);
         $loader->loadDefinitions($endpoint);
-
     }
 }

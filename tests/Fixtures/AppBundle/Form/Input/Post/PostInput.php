@@ -8,14 +8,11 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Tests\Fixtures\App\Entity;
+namespace Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Form\Input\Post;
 
-use Ynlo\GraphQLBundle\Annotation as GraphQL;
+use Symfony\Component\Form\Extension\Core\Type\FormType;
 
-/**
- * @GraphQL\ObjectType()
- */
-class User
+class PostInput extends FormType
 {
 
 }
