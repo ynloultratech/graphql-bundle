@@ -38,7 +38,7 @@ class AccessControlListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
-            GraphQLEvents::POST_READ_FIELD => 'preReadField',
+            GraphQLEvents::PRE_READ_FIELD => 'preReadField',
             GraphQLEvents::MUTATION_SUBMITTED => 'onSubmitMutation',
         ];
     }

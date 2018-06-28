@@ -45,7 +45,6 @@ class TestDefinitionHelper
         $reader = TestAnnotationReader::create();
         $annotations = $reader->getClassAnnotations($ref);
 
-
         $fieldDecorators = [
             new DoctrineFieldDefinitionDecorator($reader),
             new GraphQLFieldDefinitionDecorator($reader),

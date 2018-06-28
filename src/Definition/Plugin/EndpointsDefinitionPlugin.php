@@ -84,7 +84,7 @@ class EndpointsDefinitionPlugin extends AbstractDefinitionPlugin
         }
 
         //ignore safe operations
-        if (in_array($definition->getName(), ['node', 'nodes'])) {
+        if (\in_array($definition->getName(), ['node', 'nodes'])) {
             return;
         }
 

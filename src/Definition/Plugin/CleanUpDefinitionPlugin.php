@@ -51,10 +51,6 @@ class CleanUpDefinitionPlugin extends AbstractDefinitionPlugin
             return;
         }
 
-        if ($endpoint->getName() !== 'pos') {
-            return;
-        }
-
         $this->endpoint = $endpoint;
 
         $this->processOperations($endpoint->allQueries());

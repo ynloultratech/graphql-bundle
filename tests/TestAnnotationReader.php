@@ -21,24 +21,12 @@ use Doctrine\Common\Cache\PhpFileCache;
 class TestAnnotationReader
 {
     /**
-     * @var Reader
-     */
-    private static $reader;
-
-    /**
      * @return Reader
      */
     public static function create(): Reader
     {
-        if (self::$reader) {
-            return self::$reader;
-        }
-
         $cache = new PhpFileCache(sys_get_temp_dir());
-        $cache->deleteAll();
 
-        self::$reader = new CachedReader(new AnnotationReader(), $cache);
-
-        return self::$reader;
+        return new CachedReader(new AnnotationReader(), $cache);
     }
 }
