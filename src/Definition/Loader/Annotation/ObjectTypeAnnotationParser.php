@@ -19,6 +19,7 @@ use Ynlo\GraphQLBundle\Definition\ImplementorInterface;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\Loader\Annotation\FieldDecorator\FieldDefinitionDecoratorInterface;
+use Ynlo\GraphQLBundle\Definition\NodeAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
@@ -81,6 +82,10 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
         $objectDefinition->setExclusionPolicy($annotation->exclusionPolicy);
         $objectDefinition->setClass($refClass->name);
         $objectDefinition->setMetas($annotation->options);
+
+        if ($objectDefinition instanceof NodeAwareDefinitionInterface) {
+            $objectDefinition->setNode($refClass->getName());
+        }
 
         if (!$objectDefinition->getName()) {
             preg_match('/\w+$/', $refClass->getName(), $matches);

@@ -20,12 +20,18 @@ use Doctrine\Common\Cache\PhpFileCache;
  */
 class TestAnnotationReader
 {
+    private static $initialized = false;
+
     /**
      * @return Reader
      */
     public static function create(): Reader
     {
         $cache = new PhpFileCache(sys_get_temp_dir());
+        if (!self::$initialized) {
+            $cache->deleteAll();
+            self::$initialized = true;
+        }
 
         return new CachedReader(new AnnotationReader(), $cache);
     }

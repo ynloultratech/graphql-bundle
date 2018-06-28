@@ -31,6 +31,59 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
 {
     protected $globalConfig = [];
 
+    /**
+     * NamespaceDefinitionPlugin constructor.
+     *
+     * Configuration:
+     *
+     * # Group each bundle into a separate schema definition
+     * bundles:
+     *      enabled:              true
+     *
+     *      # The following suffix will be used for bundle query groups
+     *      query_suffix:         BundleQuery
+     *
+     *      # The following suffix will be used for bundle mutation groups
+     *      mutation_suffix:      BundleMutation
+     *
+     *      # The following bundles will be ignore for grouping, all definitions will be placed in the root query or mutation
+     *      ignore:
+     *
+     *      # Default:
+     *      - AppBundle
+     *
+     *      # Define aliases for bundles to set definitions inside other desired bundle name.
+     *      # Can be used to group multiple bundles or publish a bundle with a different name
+     *      aliases:              # Example: SecurityBundle: AppBundle
+     *
+     *          # Prototype
+     *          name:                 ~
+     *
+     * # Group queries and mutations of the same node into a node specific schema definition.
+     * nodes:
+     *      enabled:              true
+     *
+     *      # The following suffix will be used to create the name for queries to the same node
+     *      query_suffix:         Query
+     *
+     *      # The following suffix will be used to create the name for mutations to the same node
+     *      mutation_suffix:      Mutation
+     *
+     *      # The following nodes will be ignore for grouping, all definitions will be placed in the root query or mutation
+     *      ignore:
+     *
+     *      # Default:
+     *      - Node
+     *
+     *      # Define aliases for nodes to set definitions inside other desired node name.
+     *      # Can be used to group multiple nodes or publish a node with a different group name
+     *      aliases:              # Example: InvoiceItem: Invoice
+     *
+     *          # Prototype
+     *          name:
+     *
+     * @param array $config
+     */
     public function __construct(array $config = [])
     {
         $this->globalConfig = $config;
@@ -75,7 +128,7 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
                 $node = $this->globalConfig['nodes']['aliases'][$node];
             }
 
-            if ($node && \in_array($node, $this->globalConfig['nodes']['ignore'], true)) {
+            if ($node && \in_array($node, $this->globalConfig['nodes']['ignore'] ?? [], true)) {
                 $node = null;
             }
         }
@@ -92,7 +145,7 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
                     $bundle = $this->globalConfig['bundles']['aliases'][$bundle];
                 }
 
-                if ($bundle && \in_array($bundle, $this->globalConfig['bundles']['ignore'], true)) {
+                if ($bundle && \in_array($bundle, $this->globalConfig['bundles']['ignore'] ?? [], true)) {
                     $bundle = null;
                 }
 
@@ -123,6 +176,12 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
         }
     }
 
+    /**
+     * @param array    $definitions
+     * @param Endpoint $endpoint
+     *
+     * @return array
+     */
     private function namespaceDefinitions(array $definitions, Endpoint $endpoint): array
     {
         $namespacedDefinitions = [];
@@ -180,7 +239,11 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
         return $namespacedDefinitions;
     }
 
-    private function addDefinitionToNamespace(FieldsAwareDefinitionInterface $fieldsAwareDefinition, ExecutableDefinitionInterface $definition)
+    /**
+     * @param FieldsAwareDefinitionInterface $fieldsAwareDefinition
+     * @param ExecutableDefinitionInterface  $definition
+     */
+    private function addDefinitionToNamespace(FieldsAwareDefinitionInterface $fieldsAwareDefinition, ExecutableDefinitionInterface $definition): void
     {
         $field = new FieldDefinition();
         $field->setName($definition->getName());
