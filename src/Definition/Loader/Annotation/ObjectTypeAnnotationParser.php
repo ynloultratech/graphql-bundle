@@ -10,6 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation;
 
+use Doctrine\Common\Annotations\Reader;
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
@@ -29,7 +30,10 @@ use Ynlo\GraphQLBundle\Util\TypeUtil;
  */
 class ObjectTypeAnnotationParser implements AnnotationParserInterface
 {
-    use AnnotationReaderAwareTrait;
+    /**
+     * @var Reader
+     */
+    protected $reader;
 
     /**
      * @var FieldDefinitionDecoratorInterface[]
@@ -43,10 +47,12 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
     /**
      * ObjectTypeAnnotationParser constructor.
      *
-     * @param iterable|FieldDefinitionDecoratorInterface[] $fieldDecorators
+     * @param Reader   $reader
+     * @param iterable $fieldDecorators
      */
-    public function __construct(iterable $fieldDecorators = [])
+    public function __construct(Reader $reader, iterable $fieldDecorators = [])
     {
+        $this->reader = $reader;
         $this->fieldDecorators = $fieldDecorators;
     }
 
@@ -320,9 +326,9 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
                 $fieldDefinition->setType($annotation->type);
             }
             if ($annotation->alias) {
-                $fieldDefinition->setName($annotation->alias);
                 $objectDefinition->removeField($fieldDefinition->getName());
-                $objectDefinition->addField($fieldDefinition);
+                $fieldDefinition->setName($annotation->alias);
+                $objectDefinition->addField(clone $fieldDefinition);
             }
             if ($annotation->description) {
                 $fieldDefinition->setDescription($annotation->description);

@@ -10,9 +10,9 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation\FieldDecorator;
 
+use Doctrine\Common\Annotations\Reader;
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
-use Ynlo\GraphQLBundle\Definition\Loader\Annotation\AnnotationReaderAwareTrait;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Util\TypeUtil;
 
@@ -21,7 +21,20 @@ use Ynlo\GraphQLBundle\Util\TypeUtil;
  */
 class GraphQLFieldDefinitionDecorator implements FieldDefinitionDecoratorInterface
 {
-    use AnnotationReaderAwareTrait;
+    /**
+     * @var Reader
+     */
+    protected $reader;
+
+    /**
+     * GraphQLFieldDefinitionDecorator constructor.
+     *
+     * @param Reader $reader
+     */
+    public function __construct(Reader $reader)
+    {
+        $this->reader = $reader;
+    }
 
     /**
      * {@inheritdoc}

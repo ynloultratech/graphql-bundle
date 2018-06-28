@@ -10,6 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation\FieldDecorator;
 
+use Doctrine\Common\Annotations\Reader;
 use Doctrine\DBAL\Types\Type as DoctrineType;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Embedded;
@@ -19,7 +20,6 @@ use Doctrine\ORM\Mapping\ManyToOne;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
-use Ynlo\GraphQLBundle\Definition\Loader\Annotation\AnnotationReaderAwareTrait;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Type\Types;
 use Ynlo\GraphQLBundle\Util\TypeUtil;
@@ -29,7 +29,20 @@ use Ynlo\GraphQLBundle\Util\TypeUtil;
  */
 class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterface
 {
-    use AnnotationReaderAwareTrait;
+    /**
+     * @var Reader
+     */
+    protected $reader;
+
+    /**
+     * DoctrineFieldDefinitionDecorator constructor.
+     *
+     * @param Reader $reader
+     */
+    public function __construct(Reader $reader)
+    {
+        $this->reader = $reader;
+    }
 
     /**
      * {@inheritdoc}

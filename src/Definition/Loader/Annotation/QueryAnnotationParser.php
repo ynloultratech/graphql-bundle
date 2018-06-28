@@ -10,6 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation;
 
+use Doctrine\Common\Annotations\Reader;
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\ArgumentAwareInterface;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
@@ -23,7 +24,20 @@ use Ynlo\GraphQLBundle\Util\TypeUtil;
  */
 class QueryAnnotationParser implements AnnotationParserInterface
 {
-    use AnnotationReaderAwareTrait;
+    /**
+     * @var Reader
+     */
+    protected $reader;
+
+    /**
+     * QueryAnnotationParser constructor.
+     *
+     * @param Reader $reader
+     */
+    public function __construct(Reader $reader)
+    {
+        $this->reader = $reader;
+    }
 
     /**
      * {@inheritdoc}

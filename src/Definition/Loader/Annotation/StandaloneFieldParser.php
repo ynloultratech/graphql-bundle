@@ -24,8 +24,6 @@ use Ynlo\GraphQLBundle\Util\TypeUtil;
  */
 class StandaloneFieldParser extends QueryAnnotationParser
 {
-    use AnnotationReaderAwareTrait;
-
     /**
      * {@inheritdoc}
      */

@@ -13,12 +13,9 @@ namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation;
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Form\Node\NodeDeleteBatchInput;
-use Ynlo\GraphQLBundle\Form\Node\NodeDeleteInput;
 use Ynlo\GraphQLBundle\Model\DeleteBatchNodePayload;
-use Ynlo\GraphQLBundle\Model\DeleteNodePayload;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Mutation\DeleteBatchNode;
-use Ynlo\GraphQLBundle\Mutation\DeleteNode;
 use Ynlo\GraphQLBundle\Util\ClassUtils;
 
 class MutationDeleteBatchAnnotationParser extends MutationAnnotationParser

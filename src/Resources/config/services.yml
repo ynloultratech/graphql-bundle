@@ -78,69 +78,41 @@ services:
             - { name: 'graphql.definition_loader' }
 
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\ObjectTypeAnnotationParser:
-        public: true
-        arguments: [!tagged graphql.field_definition_decorator]
-        calls:
-            - [ setReader, ['@annotations.reader']]
+        arguments: ['@annotations.reader', !tagged graphql.field_definition_decorator]
         tags:
             - { name: 'graphql.definition_annotation_parser', priority: 200}
 
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\QueryAnnotationParser:
-        public: true
-        calls:
-            - [ setReader, ['@annotations.reader']]
+        arguments: ['@annotations.reader']
         tags:
             - { name: 'graphql.definition_annotation_parser', priority: 100 }
 
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\QueryListAnnotationParser:
-        public: true
-        calls:
-            - [ setReader, ['@annotations.reader']]
+        arguments: ['@annotations.reader']
         tags:
             - { name: 'graphql.definition_annotation_parser', priority: 100 }
 
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\MutationAnnotationParser:
-        public: true
-        arguments: ['@form.factory']
-        calls:
-            - [ setReader, ['@annotations.reader']]
+        arguments: ['@annotations.reader']
         tags:
             - { name: 'graphql.definition_annotation_parser', priority: 100 }
 
-    Ynlo\GraphQLBundle\Definition\Loader\Annotation\MutationAddAnnotationParser:
-        public: true
-        arguments: ['@form.factory']
-        calls:
-            - [ setReader, ['@annotations.reader']]
-        tags:
-            - { name: 'graphql.definition_annotation_parser', priority: 100 }
-
-    Ynlo\GraphQLBundle\Definition\Loader\Annotation\MutationUpdateAnnotationParser:
-        public: true
-        arguments: ['@form.factory']
-        calls:
-            - [ setReader, ['@annotations.reader']]
+    Ynlo\GraphQLBundle\Definition\Loader\Annotation\MutationAddUpdateAnnotationParser:
+        arguments: ['@annotations.reader']
         tags:
             - { name: 'graphql.definition_annotation_parser', priority: 100 }
 
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\MutationDeleteAnnotationParser:
-        public: true
-        arguments: ['@form.factory']
-        calls:
-            - [ setReader, ['@annotations.reader']]
+        arguments: ['@annotations.reader']
         tags:
             - { name: 'graphql.definition_annotation_parser', priority: 100 }
 
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\MutationDeleteBatchAnnotationParser:
-        public: true
-        arguments: ['@form.factory']
-        calls:
-            - [ setReader, ['@annotations.reader']]
+        arguments: ['@annotations.reader']
         tags:
             - { name: 'graphql.definition_annotation_parser', priority: 100 }
 
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\CRUDAnnotationParser:
-        public: true
         arguments:
             - '@Ynlo\GraphQLBundle\Definition\Loader\Annotation\QueryAnnotationParser'
             - '@Ynlo\GraphQLBundle\Definition\Loader\Annotation\MutationAnnotationParser'
@@ -150,24 +122,17 @@ services:
             - { name: 'graphql.definition_annotation_parser' }
 
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\StandaloneFieldParser:
-        public: true
-        calls:
-            - [ setReader, ['@annotations.reader']]
+        arguments: ['@annotations.reader']
         tags:
             - { name: 'graphql.definition_annotation_parser', priority: 50 }
 
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\FieldDecorator\GraphQLFieldDefinitionDecorator:
-        public: true
-        calls:
-            - [ setReader, ['@annotations.reader']]
+        arguments: ['@annotations.reader']
         tags:
             - { name: 'graphql.field_definition_decorator', priority: 100 }
 
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\FieldDecorator\DoctrineFieldDefinitionDecorator:
-        public: true
-        arguments: ['@doctrine']
-        calls:
-            - [ setReader, ['@annotations.reader']]
+        arguments: ['@annotations.reader']
         tags:
             - { name: 'graphql.field_definition_decorator' }
 

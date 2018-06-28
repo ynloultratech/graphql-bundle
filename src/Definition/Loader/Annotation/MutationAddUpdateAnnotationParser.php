@@ -15,17 +15,19 @@ use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Model\AddNodePayload;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
+use Ynlo\GraphQLBundle\Model\UpdateNodePayload;
 use Ynlo\GraphQLBundle\Mutation\AddNode;
+use Ynlo\GraphQLBundle\Mutation\UpdateNode;
 use Ynlo\GraphQLBundle\Util\ClassUtils;
 
-class MutationAddAnnotationParser extends MutationAnnotationParser
+class MutationAddUpdateAnnotationParser extends MutationAnnotationParser
 {
     /**
      * {@inheritdoc}
      */
     public function supports($annotation): bool
     {
-        return $annotation instanceof Annotation\MutationAdd;
+        return ($annotation instanceof Annotation\MutationAdd || $annotation instanceof Annotation\MutationUpdate);
     }
 
     /**
@@ -36,22 +38,24 @@ class MutationAddAnnotationParser extends MutationAnnotationParser
     public function parse($annotation, \ReflectionClass $refClass, Endpoint $endpoint)
     {
         if (!$endpoint->hasTypeForClass($refClass->getName())) {
-            throw new \RuntimeException(sprintf('Can\'t apply Add operation to "%s", CRUD operations can only be applied to valid GraphQL object types.', $refClass->getName()));
+            throw new \RuntimeException(sprintf('Can\'t apply Add/Update operation to "%s", CRUD operations can only be applied to valid GraphQL object types.', $refClass->getName()));
         }
 
         if (!$refClass->implementsInterface(NodeInterface::class)) {
-            throw new \RuntimeException(sprintf('Can\'t apply Add operation to "%s", CRUD operations can only be applied to nodes. You are implementing "%s" in this class?', $refClass->getName(), NodeInterface::class));
+            throw new \RuntimeException(sprintf('Can\'t apply Add/Update operation to "%s", CRUD operations can only be applied to nodes. You are implementing "%s" in this class?', $refClass->getName(), NodeInterface::class));
         }
 
         $definition = $endpoint->getType($endpoint->getTypeForClass($refClass->getName()));
         $bundleNamespace = ClassUtils::relatedBundleNamespace($refClass->getName());
 
-        $annotation->name = $annotation->name ?? 'add'.ucfirst($definition->getName());
+        $actionPrefix = $annotation instanceof Annotation\MutationAdd ? 'add' : 'update';
+        $annotation->name = $annotation->name ?? $actionPrefix.ucfirst($definition->getName());
         $annotation->payload = $annotation->payload ?? null;
         if (!$annotation->payload) {
             //deep cloning
             /** @var ObjectDefinitionInterface $payload */
-            $payload = unserialize(serialize($endpoint->getType(AddNodePayload::class)), ['allowed_classes' => true]);
+            $payloadClass = $annotation instanceof Annotation\MutationAdd ? AddNodePayload::class : UpdateNodePayload::class;
+            $payload = unserialize(serialize($endpoint->getType($payloadClass)), ['allowed_classes' => true]);
             $payload->setName(ucfirst($annotation->name.'Payload'));
 
             if (!$endpoint->hasType($payload->getName())) {
@@ -79,7 +83,8 @@ class MutationAddAnnotationParser extends MutationAnnotationParser
         }
 
         $annotation->options = array_merge(['form' => ['type' => $formType, 'options' => $options]], $annotation->options);
-        $resolverReflection = new \ReflectionClass(AddNode::class);
+        $resolver = $annotation instanceof Annotation\MutationAdd ? AddNode::class : UpdateNode::class;
+        $resolverReflection = new \ReflectionClass($resolver);
 
         $resolver = ClassUtils::applyNamingConvention($bundleNamespace, 'Mutation', $definition->getName(), $annotation->name);
         if (class_exists($resolver)) {

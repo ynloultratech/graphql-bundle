@@ -46,7 +46,7 @@ class QueryListAnnotationParser extends QueryAnnotationParser
         $definition = $endpoint->getType($endpoint->getTypeForClass($refClass->getName()));
 
         $annotation->name = $annotation->name ?? 'all'.Inflector::pluralize(ucfirst($definition->getName()));
-        $annotation->type = $annotation->type ?? $definition->getName();
+        $annotation->type = sprintf('[%s]', $annotation->type ?? $definition->getName());
         $annotation->options = array_merge(['pagination' => true], $annotation->options);
         if ($annotation->limit) {
             if (!\is_array($annotation->options['pagination'])) {

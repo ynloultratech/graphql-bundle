@@ -10,7 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation;
 
-use Symfony\Component\Form\FormFactory;
+use Doctrine\Common\Annotations\Reader;
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\MutationDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
@@ -22,11 +22,19 @@ use Ynlo\GraphQLBundle\Util\TypeUtil;
  */
 class MutationAnnotationParser extends QueryAnnotationParser
 {
-    protected $formFactory;
+    /**
+     * @var Reader
+     */
+    protected $reader;
 
-    public function __construct(FormFactory $formFactory)
+    /**
+     * MutationAnnotationParser constructor.
+     *
+     * @param Reader $reader
+     */
+    public function __construct(Reader $reader)
     {
-        $this->formFactory = $formFactory;
+        $this->reader = $reader;
     }
 
     /**
