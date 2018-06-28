@@ -11,6 +11,7 @@
 namespace Ynlo\GraphQLBundle\Events;
 
 use Symfony\Component\EventDispatcher\Event;
+use Ynlo\GraphQLBundle\Resolver\FieldExecutionContext;
 
 class GraphQLFieldEvent extends Event
 {
@@ -31,7 +32,7 @@ class GraphQLFieldEvent extends Event
     protected $args = [];
 
     /**
-     * @var mixed|null
+     * @var FieldExecutionContext
      */
     protected $context;
 
@@ -43,13 +44,13 @@ class GraphQLFieldEvent extends Event
     /**
      * GraphQLFieldEvent constructor.
      *
-     * @param GraphQLFieldInfo $info
-     * @param mixed            $root
-     * @param array            $args
-     * @param mixed|null       $context
-     * @param mixed|null       $value
+     * @param GraphQLFieldInfo      $info
+     * @param mixed                 $root
+     * @param array                 $args
+     * @param FieldExecutionContext $context
+     * @param mixed|null            $value
      */
-    public function __construct(GraphQLFieldInfo $info, $root, array $args, $context = null, $value = null)
+    public function __construct(GraphQLFieldInfo $info, $root, array $args, FieldExecutionContext $context = null, $value = null)
     {
         $this->info = $info;
         $this->root = $root;
@@ -83,7 +84,7 @@ class GraphQLFieldEvent extends Event
     }
 
     /**
-     * @return mixed|null
+     * @return FieldExecutionContext
      */
     public function getContext()
     {
