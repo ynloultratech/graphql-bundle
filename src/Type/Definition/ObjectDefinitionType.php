@@ -14,25 +14,21 @@ use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Ynlo\GraphQLBundle\Definition\ImplementorInterface;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Resolver\DeferredBuffer;
+use Ynlo\GraphQLBundle\Resolver\FieldExecutionContext;
 use Ynlo\GraphQLBundle\Resolver\ObjectFieldResolver;
+use Ynlo\GraphQLBundle\Resolver\QueryExecutionContext;
 use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 use Ynlo\GraphQLBundle\Util\GraphQLBuilder;
 
-class ObjectDefinitionType extends ObjectType implements
-    ContainerAwareInterface,
-    EndpointAwareInterface
+class ObjectDefinitionType extends ObjectType implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
-    use EndpointAwareTrait;
-
-    protected $definition;
 
     public function __construct(ObjectDefinition $definition)
     {
-        $this->definition = $definition;
-
         parent::__construct(
             [
                 'name' => $definition->getName(),
@@ -40,27 +36,25 @@ class ObjectDefinitionType extends ObjectType implements
                 'fields' => function () use ($definition) {
                     return GraphQLBuilder::resolveFields($definition);
                 },
-                'interfaces' => function () {
-                    return $this->resolveInterfaces();
+                'interfaces' => function () use ($definition) {
+                    return $this->resolveInterfaces($definition);
                 },
-                'resolveField' => function ($root, array $args, $context, ResolveInfo $resolveInfo) {
+                'resolveField' => function ($root, array $args, QueryExecutionContext $context, ResolveInfo $resolveInfo) use ($definition) {
                     $resolver = new ObjectFieldResolver(
                         $this->container,
-                        $this->endpoint,
-                        $this->definition,
                         $this->container->get(DeferredBuffer::class)
                     );
 
-                    return $resolver($root, $args, $context, $resolveInfo);
+                    return $resolver($root, $args, new FieldExecutionContext($context, $definition), $resolveInfo);
                 }
             ]
         );
     }
 
-    private function resolveInterfaces(): array
+    private function resolveInterfaces(ImplementorInterface $definition): array
     {
         $interfaces = [];
-        foreach ($this->definition->getInterfaces() as $interface) {
+        foreach ($definition->getInterfaces() as $interface) {
             $interfaces[] = TypeRegistry::get($interface);
         }
 

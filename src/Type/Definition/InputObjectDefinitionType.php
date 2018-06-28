@@ -11,15 +11,15 @@
 namespace Ynlo\GraphQLBundle\Type\Definition;
 
 use GraphQL\Type\Definition\InputObjectType;
-use GraphQL\Type\Definition\ObjectType;
 use GraphQL\Type\Definition\ResolveInfo;
-use GraphQL\Type\Definition\Type;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Resolver\DeferredBuffer;
+use Ynlo\GraphQLBundle\Resolver\FieldExecutionContext;
 use Ynlo\GraphQLBundle\Resolver\ObjectFieldResolver;
-use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
+use Ynlo\GraphQLBundle\Resolver\QueryExecutionContext;
+use Ynlo\GraphQLBundle\Util\GraphQLBuilder;
 
 /**
  * Class InputObjectDefinitionType
@@ -47,53 +47,18 @@ class InputObjectDefinitionType extends InputObjectType implements
             [
                 'name' => $definition->getName(),
                 'description' => $definition->getDescription(),
-                'fields' => function () {
-                    return $this->resolveFields();
+                'fields' => function () use ($definition) {
+                    return GraphQLBuilder::resolveFields($definition);
                 },
-                'resolveField' => function ($root, array $args, $context, ResolveInfo $resolveInfo) {
+                'resolveField' => function ($root, array $args, QueryExecutionContext $context, ResolveInfo $resolveInfo) use ($definition) {
                     $resolver = new ObjectFieldResolver(
                         $this->container,
-                        $this->endpoint,
-                        $this->definition,
                         $this->container->get(DeferredBuffer::class)
                     );
 
-                    return $resolver($root, $args, $context, $resolveInfo);
+                    return $resolver($root, $args, new FieldExecutionContext($context, $definition), $resolveInfo);
                 },
             ]
         );
-    }
-
-    /**
-     * @return array
-     */
-    private function resolveFields()
-    {
-        $fields = [];
-        foreach ($this->definition->getFields() as $fieldDefinition) {
-            $type = TypeRegistry::get($fieldDefinition->getType());
-            if ($type instanceof ObjectType) {
-                $type = TypeRegistry::get($fieldDefinition->getType());
-            }
-
-            if ($fieldDefinition->isList()) {
-                if ($fieldDefinition->isNonNullList()) {
-                    $type = Type::nonNull($type);
-                }
-                $type = Type::listOf($type);
-            }
-
-            if ($fieldDefinition->isNonNull()) {
-                $type = Type::nonNull($type);
-            }
-
-            $fields[$fieldDefinition->getName()] = [
-                'type' => $type,
-                'description' => $fieldDefinition->getDescription(),
-                'deprecationReason' => $fieldDefinition->getDeprecationReason(),
-            ];
-        }
-
-        return $fields;
     }
 }

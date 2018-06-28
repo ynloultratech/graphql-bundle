@@ -12,6 +12,9 @@ namespace Ynlo\GraphQLBundle\Resolver;
 
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 
+/**
+ * Context where a main query is executed
+ */
 class QueryExecutionContext
 {
     /**
@@ -32,6 +35,7 @@ class QueryExecutionContext
     public function __construct(Endpoint $endpoint)
     {
         $this->queryId = md5(time().mt_rand().spl_object_hash($this));
+        $this->endpoint = $endpoint;
     }
 
     /**

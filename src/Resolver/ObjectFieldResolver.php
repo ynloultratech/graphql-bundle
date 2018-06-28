@@ -21,59 +21,60 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
-use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
-use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Events\GraphQLEvents;
 use Ynlo\GraphQLBundle\Events\GraphQLFieldEvent;
 use Ynlo\GraphQLBundle\Events\GraphQLFieldInfo;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
-use Ynlo\GraphQLBundle\Type\Definition\EndpointAwareInterface;
-use Ynlo\GraphQLBundle\Type\Definition\EndpointAwareTrait;
 use Ynlo\GraphQLBundle\Type\Types;
 use Ynlo\GraphQLBundle\Util\IDEncoder;
 
 /**
  * Default resolver for all object fields
  */
-class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInterface
+class ObjectFieldResolver implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
-    use EndpointAwareTrait;
 
     /**
      * @var int[]
      */
     private static $concurrentUsages = [];
 
-    protected $definition;
+    /**
+     * @var DeferredBuffer
+     */
     protected $deferredBuffer;
 
-    public function __construct(ContainerInterface $container, Endpoint $endpoint, FieldsAwareDefinitionInterface $definition, DeferredBuffer $deferredBuffer)
+    /**
+     * ObjectFieldResolver constructor.
+     *
+     * @param ContainerInterface $container
+     * @param DeferredBuffer     $deferredBuffer
+     */
+    public function __construct(ContainerInterface $container, DeferredBuffer $deferredBuffer)
     {
         $this->container = $container;
-        $this->endpoint = $endpoint;
-        $this->definition = $definition;
         $this->deferredBuffer = $deferredBuffer;
     }
 
     /**
-     * @param mixed       $root
-     * @param array       $args
-     * @param mixed       $context
-     * @param ResolveInfo $info
+     * @param mixed                 $root
+     * @param array                 $args
+     * @param FieldExecutionContext $context
+     * @param ResolveInfo           $info
      *
      * @return mixed|null|string
      *
      * @throws \Exception
      */
-    public function __invoke($root, array $args, $context, ResolveInfo $info)
+    public function __invoke($root, array $args, FieldExecutionContext $context, ResolveInfo $info)
     {
         $value = null;
-        $fieldDefinition = $this->definition->getField($info->fieldName);
+        $fieldDefinition = $context->getDefinition()->getField($info->fieldName);
         $eventDispatcher = $this->container->get(EventDispatcherInterface::class);
 
-        $fieldInfo = new GraphQLFieldInfo($this->definition, $fieldDefinition, $info);
+        $fieldInfo = new GraphQLFieldInfo($context->getDefinition(), $fieldDefinition, $info);
         $event = new GraphQLFieldEvent(
             $fieldInfo,
             $root,
@@ -88,7 +89,7 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
             return $event->getValue();
         }
 
-        $this->verifyConcurrentUsage($context, $fieldDefinition);
+        $this->verifyConcurrentUsage($context->getQueryContext(), $fieldDefinition);
 
         //when use external resolver or use a object method with arguments
         if (($resolver = $fieldDefinition->getResolver()) || $fieldDefinition->getArguments()) {
@@ -106,7 +107,7 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
                 $queryDefinition->setResolver($fieldDefinition->getOriginName());
             }
 
-            $resolver = new ResolverExecutor($this->container, $this->endpoint, $queryDefinition);
+            $resolver = new ResolverExecutor($this->container, $context->getQueryContext()->getEndpoint(), $queryDefinition);
             $value = $resolver($root, $args, $context, $info);
         } else {
             $accessor = new PropertyAccessor(true);
