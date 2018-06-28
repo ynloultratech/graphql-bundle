@@ -36,12 +36,15 @@ class SchemaController
 
     public function __invoke(Request $request): Response
     {
-        $name = $this->endpointResolver->resolveEndpoint($request);
-
-        if ('json' === $request->getRequestFormat()) {
-            return new JsonResponse($this->exporter->export($name, true));
+        $endpoint = $this->endpointResolver->resolveEndpoint($request);
+        if (!$endpoint) {
+            return new Response();
         }
 
-        return new Response($this->exporter->export($name));
+        if ('json' === $request->getRequestFormat()) {
+            return new JsonResponse($this->exporter->export($endpoint, true));
+        }
+
+        return new Response($this->exporter->export($endpoint));
     }
 }

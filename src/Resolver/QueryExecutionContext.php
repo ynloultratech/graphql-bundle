@@ -10,6 +10,8 @@
 
 namespace Ynlo\GraphQLBundle\Resolver;
 
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+
 class QueryExecutionContext
 {
     /**
@@ -18,9 +20,16 @@ class QueryExecutionContext
     protected $queryId;
 
     /**
-     * QueryExecutionContext constructor.
+     * @var Endpoint
      */
-    public function __construct()
+    protected $endpoint;
+
+    /**
+     * QueryExecutionContext constructor.
+     *
+     * @param Endpoint $endpoint
+     */
+    public function __construct(Endpoint $endpoint)
     {
         $this->queryId = md5(time().mt_rand().spl_object_hash($this));
     }
@@ -31,5 +40,13 @@ class QueryExecutionContext
     public function getQueryId(): string
     {
         return $this->queryId;
+    }
+
+    /**
+     * @return Endpoint
+     */
+    public function getEndpoint(): Endpoint
+    {
+        return $this->endpoint;
     }
 }

@@ -12,6 +12,7 @@ namespace Ynlo\GraphQLBundle\Schema;
 
 use GraphQL\GraphQL;
 use GraphQL\Utils\SchemaPrinter;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 
 class SchemaExporter
 {
@@ -123,12 +124,12 @@ GraphQL;
     }
 
     /**
-     * @param string $endpoint
-     * @param bool   $json
+     * @param Endpoint $endpoint
+     * @param bool     $json
      *
      * @return string
      */
-    public function export(string $endpoint, bool $json = false): string
+    public function export(Endpoint $endpoint, bool $json = false): string
     {
         $schema = $this->compiler->compile($endpoint);
 

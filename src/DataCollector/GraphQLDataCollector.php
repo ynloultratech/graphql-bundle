@@ -71,10 +71,9 @@ class GraphQLDataCollector extends DataCollector
     public function collect(Request $request, Response $response, \Exception $exception = null)
     {
         try {
-            $name = $this->endpointResolver->resolveEndpoint($request);
             $this->data = [
                 'defaultEndpoint' => $this->registry->getEndpoint(),
-                'endpoint' => $this->registry->getEndpoint($name),
+                'endpoint' => $this->endpointResolver->resolveEndpoint($request),
             ];
         } catch (EndpointNotValidException $exception) {
             //do nothing

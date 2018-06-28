@@ -13,6 +13,8 @@ namespace Ynlo\GraphQLBundle\Tests\Security;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
+use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Security\EndpointResolver;
 
 class EndpointResolverTest extends MockeryTestCase
@@ -23,13 +25,25 @@ class EndpointResolverTest extends MockeryTestCase
      */
     public function testResolveEndpoint($expected, $config, Request $request)
     {
+        $registry = \Mockery::mock(DefinitionRegistry::class);
+        $registry->allows('getEndpoint')->withAnyArgs()->andReturnUsing(
+            function ($name = DefinitionRegistry::DEFAULT_ENDPOINT) {
+                return new Endpoint($name);
+            }
+        );
+
         $authChecker = \Mockery::mock(AuthorizationCheckerInterface::class);
         $authChecker->allows('isGranted')->withArgs([['ROLE_ADMIN']])->andReturn(true);
         $authChecker->allows('isGranted')->withArgs([['ROLE_USER']])->andReturn(false);
 
-        $resolver = new EndpointResolver($authChecker, $config);
+        $resolver = new EndpointResolver($registry, $authChecker, $config);
+        $endpoint = $resolver->resolveEndpoint($request);
 
-        self::assertEquals($expected, $resolver->resolveEndpoint($request));
+        if ($expected) {
+            self::assertEquals($expected, $endpoint->getName());
+        } else {
+            self::assertNull($endpoint);
+        }
     }
 
     public function getData()

@@ -14,6 +14,7 @@ use GraphQL\Type\Schema;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 
 /**
@@ -27,14 +28,27 @@ class SchemaCompiler implements ContainerAwareInterface
 
     protected $registry;
 
+    /**
+     * SchemaCompiler constructor.
+     *
+     * @param DefinitionRegistry $registry
+     */
     public function __construct(DefinitionRegistry $registry)
     {
         $this->registry = $registry;
     }
 
-    public function compile($name): Schema
+    /**
+     * @param Endpoint|string $endpoint
+     *
+     * @return Schema
+     */
+    public function compile($endpoint = DefinitionRegistry::DEFAULT_ENDPOINT): Schema
     {
-        $endpoint = $this->registry->getEndpoint($name);
+        if (\is_string($endpoint)) {
+            $endpoint = $this->registry->getEndpoint($endpoint);
+        }
+
         TypeRegistry::setUp($this->container, $endpoint);
 
         //automatically create all interface implementors

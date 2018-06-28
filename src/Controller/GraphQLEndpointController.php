@@ -149,13 +149,13 @@ class GraphQLEndpointController
                 }
             }
 
-            $context = new QueryExecutionContext();
-            $validationRules = null;
-
             $endpoint = $this->resolver->resolveEndpoint($request);
             if (!$endpoint) {
                 throw new AccessDeniedHttpException();
             }
+
+            $context = new QueryExecutionContext($endpoint);
+            $validationRules = null;
 
             $schema = $this->compiler->compile($endpoint);
             $schema->assertValid();

@@ -15,9 +15,16 @@ use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
 use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException;
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\Extension\EndpointNotValidException;
 
 class EndpointResolver
 {
+    /**
+     * @var DefinitionRegistry
+     */
+    protected $definitionRegistry;
+
     /**
      * @var AuthorizationChecker
      */
@@ -43,11 +50,13 @@ class EndpointResolver
      *  ]
      * ]
      *
+     * @param DefinitionRegistry            $definitionRegistry
      * @param AuthorizationCheckerInterface $authorizationChecker
      * @param array                         $endpointsConfig
      */
-    public function __construct(AuthorizationCheckerInterface $authorizationChecker, array $endpointsConfig = [])
+    public function __construct(DefinitionRegistry $definitionRegistry, AuthorizationCheckerInterface $authorizationChecker, array $endpointsConfig = [])
     {
+        $this->definitionRegistry = $definitionRegistry;
         $this->authorizationChecker = $authorizationChecker;
         $this->endpointsConfig = $endpointsConfig['endpoints'] ?? [];
     }
@@ -55,12 +64,14 @@ class EndpointResolver
     /**
      * @param Request $request
      *
-     * @return null|string
+     * @return null|Endpoint
+     *
+     * @throws EndpointNotValidException
      */
-    public function resolveEndpoint(Request $request): ?string
+    public function resolveEndpoint(Request $request): ?Endpoint
     {
         if (empty($this->endpointsConfig)) {
-            return DefinitionRegistry::DEFAULT_ENDPOINT;
+            return $this->definitionRegistry->getEndpoint();
         }
 
         foreach ($this->endpointsConfig as $endpoint => $config) {
@@ -97,7 +108,7 @@ class EndpointResolver
             }
 
             if ($rolePassed && $hostPassed && $pathPassed) {
-                return $endpoint;
+                return $this->definitionRegistry->getEndpoint($endpoint);
             }
         }
 

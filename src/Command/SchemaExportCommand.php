@@ -25,13 +25,20 @@ class SchemaExportCommand extends Command
     protected $exporter;
 
     /**
+     * @var DefinitionRegistry
+     */
+    protected $definitionRegistry;
+
+    /**
      * GraphQLSchemaExportCommand constructor.
      *
-     * @param SchemaExporter $exporter
+     * @param SchemaExporter     $exporter
+     * @param DefinitionRegistry $definitionRegistry
      */
-    public function __construct(SchemaExporter $exporter)
+    public function __construct(SchemaExporter $exporter, DefinitionRegistry $definitionRegistry)
     {
         $this->exporter = $exporter;
+        $this->definitionRegistry = $definitionRegistry;
 
         parent::__construct();
     }
@@ -60,7 +67,7 @@ class SchemaExportCommand extends Command
             $asJson = true;
         }
 
-        $schema = $this->exporter->export($endpoint, $asJson);
+        $schema = $this->exporter->export($this->definitionRegistry->getEndpoint($endpoint), $asJson);
         if ($outputName) {
             file_put_contents($outputName, $schema);
         } else {

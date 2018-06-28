@@ -267,7 +267,10 @@ services:
           - { name: 'data_collector',template: '@YnloGraphQL/data_collector/template.html.twig',  id: 'graphql' }
 
     Ynlo\GraphQLBundle\Security\EndpointResolver:
-        arguments: ['@security.authorization_checker', '%graphql.endpoints%']
+        arguments:
+            - '@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry'
+            - '@security.authorization_checker'
+            - '%graphql.endpoints%'
 
     Symfony\Component\EventDispatcher\EventDispatcherInterface:
         alias: event_dispatcher
@@ -304,6 +307,7 @@ services:
     Ynlo\GraphQLBundle\Command\SchemaExportCommand:
         arguments:
             - '@Ynlo\GraphQLBundle\Schema\SchemaExporter'
+            - '@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry'
         tags:
             - 'console.command'
 
