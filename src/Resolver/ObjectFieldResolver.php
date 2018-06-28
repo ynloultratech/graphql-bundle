@@ -11,14 +11,12 @@
 namespace Ynlo\GraphQLBundle\Resolver;
 
 use Doctrine\Common\Collections\Collection;
-use GraphQL\Error\Error;
 use GraphQL\Type\Definition\ResolveInfo;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
-use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Events\GraphQLEvents;
 use Ynlo\GraphQLBundle\Events\GraphQLFieldEvent;
@@ -33,11 +31,6 @@ use Ynlo\GraphQLBundle\Util\IDEncoder;
 class ObjectFieldResolver implements ContainerAwareInterface
 {
     use ContainerAwareTrait;
-
-    /**
-     * @var int[]
-     */
-    private static $concurrentUsages = [];
 
     /**
      * ObjectFieldResolver constructor.
@@ -80,8 +73,6 @@ class ObjectFieldResolver implements ContainerAwareInterface
             return $event->getValue();
         }
 
-        $this->verifyConcurrentUsage($context->getQueryContext(), $fieldDefinition);
-
         //when use external resolver or use a object method with arguments
         if (($resolver = $fieldDefinition->getResolver()) || $fieldDefinition->getArguments()) {
             $queryDefinition = new QueryDefinition();
@@ -121,35 +112,5 @@ class ObjectFieldResolver implements ContainerAwareInterface
         $eventDispatcher->dispatch(GraphQLEvents::POST_READ_FIELD, $event);
 
         return $event->getValue();
-    }
-
-    /**
-     * @param QueryExecutionContext $context
-     * @param FieldDefinition       $definition
-     *
-     * @throws Error
-     */
-    private function verifyConcurrentUsage(QueryExecutionContext $context, FieldDefinition $definition)
-    {
-        if ($maxConcurrentUsage = $definition->getMaxConcurrentUsage()) {
-            $oid = spl_object_hash($definition);
-            $usages = static::$concurrentUsages[$context->getQueryId()][$oid] ?? 1;
-            if ($usages > $maxConcurrentUsage) {
-                if (1 === $maxConcurrentUsage) {
-                    $error = sprintf(
-                        'The field "%s" can be fetched only once per query. This field can`t be used in a list.',
-                        $definition->getName()
-                    );
-                } else {
-                    $error = sprintf(
-                        'The field "%s" can`t be fetched more than %s times per query.',
-                        $definition->getName(),
-                        $maxConcurrentUsage
-                    );
-                }
-                throw new Error($error);
-            }
-            static::$concurrentUsages[$context->getQueryId()][$oid] = $usages + 1;
-        }
     }
 }

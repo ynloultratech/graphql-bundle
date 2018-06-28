@@ -289,6 +289,10 @@ services:
         tags:
             - { name: 'kernel.event_subscriber' }
 
+    Ynlo\GraphQLBundle\EventListener\GraphQL\FieldConcurrentUsageListener:
+        tags:
+            - { name: 'kernel.event_subscriber' }
+
     Ynlo\GraphQLBundle\Encoder\IDEncoderManager:
         public: true
         arguments: [''] #inject in the extension builder
