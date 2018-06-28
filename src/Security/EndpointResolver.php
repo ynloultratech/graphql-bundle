@@ -12,6 +12,7 @@ namespace Ynlo\GraphQLBundle\Security;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Core\Authorization\AuthorizationChecker;
+use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException;
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
 
@@ -27,12 +28,35 @@ class EndpointResolver
      */
     protected $endpointsConfig = [];
 
-    public function __construct(AuthorizationChecker $authorizationChecker, array $endpointsConfig = [])
+    /**
+     * EndpointResolver constructor.
+     *
+     * Endpoints config should have the following format
+     *
+     * [
+     * 'endpoints' => [
+     *   'name' => [
+     *      'roles'=> [],
+     *      'host' => '',
+     *      'path' => ''
+     *    ]
+     *  ]
+     * ]
+     *
+     * @param AuthorizationCheckerInterface $authorizationChecker
+     * @param array                         $endpointsConfig
+     */
+    public function __construct(AuthorizationCheckerInterface $authorizationChecker, array $endpointsConfig = [])
     {
         $this->authorizationChecker = $authorizationChecker;
         $this->endpointsConfig = $endpointsConfig['endpoints'] ?? [];
     }
 
+    /**
+     * @param Request $request
+     *
+     * @return null|string
+     */
     public function resolveEndpoint(Request $request): ?string
     {
         if (empty($this->endpointsConfig)) {
@@ -80,6 +104,11 @@ class EndpointResolver
         return null;
     }
 
+    /**
+     * @param string $exp
+     *
+     * @return null|string|string[]
+     */
     private function cleanExpression($exp)
     {
         return preg_replace('/\//', '\/', $exp);
