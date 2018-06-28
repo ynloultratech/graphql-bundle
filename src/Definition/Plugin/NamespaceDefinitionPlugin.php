@@ -190,7 +190,6 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
         $field->setList($definition->isList());
         $field->setMetas($definition->getMetas());
         $field->setNode($definition->getNode());
-        $field->setRoles($definition->getRoles());
         $field->setComplexity($definition->getComplexity());
         $fieldsAwareDefinition->addField($field);
     }

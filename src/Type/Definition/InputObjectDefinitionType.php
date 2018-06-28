@@ -55,8 +55,7 @@ class InputObjectDefinitionType extends InputObjectType implements
                         $this->container,
                         $this->endpoint,
                         $this->definition,
-                        $this->container->get(DeferredBuffer::class),
-                        $this->container->get('graphql.security.authorization_checker')
+                        $this->container->get(DeferredBuffer::class)
                     );
 
                     return $resolver($root, $args, $context, $resolveInfo);

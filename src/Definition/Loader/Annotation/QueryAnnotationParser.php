@@ -115,11 +115,6 @@ class QueryAnnotationParser implements AnnotationParserInterface
         $query->setResolver($annotation->resolver ?? $refClass->getName());
         $query->setDeprecationReason($annotation->deprecationReason);
         $query->setDescription($annotation->description);
-        $query->setRoles((array) $annotation->roles);
-
-        if ($annotation->roles) {
-            $annotation->options['roles'] = (array) $annotation->roles;
-        }
 
         foreach ($annotation->options as $option => $value) {
             $query->setMeta($option, $value);

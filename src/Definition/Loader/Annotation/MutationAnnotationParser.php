@@ -127,15 +127,10 @@ class MutationAnnotationParser extends QueryAnnotationParser
         $mutation->setResolver($annotation->resolver ?? $refClass->getName());
         $mutation->setDeprecationReason($annotation->deprecationReason);
         $mutation->setDescription($annotation->description);
-        $mutation->setRoles((array) $annotation->roles);
 
         //enable form auto-loaded by default
         if (!isset($annotation->options['form'])) {
             $annotation->options['form'] = true;
-        }
-
-        if ($annotation->roles) {
-            $annotation->options['roles'] = (array) $annotation->roles;
         }
 
         foreach ($annotation->options as $option => $value) {

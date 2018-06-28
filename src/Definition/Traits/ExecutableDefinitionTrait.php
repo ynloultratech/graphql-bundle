@@ -32,11 +32,6 @@ trait ExecutableDefinitionTrait
     protected $complexity;
 
     /**
-     * @var array
-     */
-    protected $roles = [];
-
-    /**
      * @return null|string
      */
     public function getResolver(): ?string
@@ -64,18 +59,6 @@ trait ExecutableDefinitionTrait
     public function setComplexity(?string $complexity): self
     {
         $this->complexity = $complexity;
-
-        return $this;
-    }
-
-    public function getRoles(): array
-    {
-        return $this->roles;
-    }
-
-    public function setRoles(array $roles): self
-    {
-        $this->roles = $roles;
 
         return $this;
     }

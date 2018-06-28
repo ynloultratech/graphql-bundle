@@ -49,11 +49,6 @@ final class QueryList
     public $resolver;
 
     /**
-     * @var array
-     */
-    public $roles = [];
-
-    /**
      * @var string[]
      */
     public $searchFields = [];

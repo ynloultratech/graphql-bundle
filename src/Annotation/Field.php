@@ -46,11 +46,6 @@ final class Field
     public $maxConcurrentUsage = 0;
 
     /**
-     * @var array
-     */
-    public $roles = [];
-
-    /**
      * Use this field only for given types
      * helpful for polymorphic objects
      *

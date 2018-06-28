@@ -20,7 +20,6 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
-use Symfony\Component\Security\Core\Authorization\AuthorizationCheckerInterface;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
@@ -49,15 +48,13 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
 
     protected $definition;
     protected $deferredBuffer;
-    protected $authorizationChecker;
 
-    public function __construct(ContainerInterface $container, Endpoint $endpoint, FieldsAwareDefinitionInterface $definition, DeferredBuffer $deferredBuffer, AuthorizationCheckerInterface $authorizationChecker)
+    public function __construct(ContainerInterface $container, Endpoint $endpoint, FieldsAwareDefinitionInterface $definition, DeferredBuffer $deferredBuffer)
     {
         $this->container = $container;
         $this->endpoint = $endpoint;
         $this->definition = $definition;
         $this->deferredBuffer = $deferredBuffer;
-        $this->authorizationChecker = $authorizationChecker;
     }
 
     /**
@@ -92,7 +89,6 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
         }
 
         $this->verifyConcurrentUsage($context, $fieldDefinition);
-        $this->denyAccessUnlessGranted($fieldDefinition);
 
         //when use external resolver or use a object method with arguments
         if (($resolver = $fieldDefinition->getResolver()) || $fieldDefinition->getArguments()) {
@@ -102,7 +98,6 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
             $queryDefinition->setNode($fieldDefinition->getNode());
             $queryDefinition->setArguments($fieldDefinition->getArguments());
             $queryDefinition->setList($fieldDefinition->isList());
-            $queryDefinition->setRoles($fieldDefinition->getRoles());
             $queryDefinition->setMetas($fieldDefinition->getMetas());
 
             if ($resolver) {
@@ -175,22 +170,6 @@ class ObjectFieldResolver implements ContainerAwareInterface, EndpointAwareInter
                 throw new Error($error);
             }
             static::$concurrentUsages[$context->getQueryId()][$oid] = $usages + 1;
-        }
-    }
-
-    /**
-     * @throws Error
-     */
-    private function denyAccessUnlessGranted(FieldDefinition $fieldDefinition): void
-    {
-        if ($fieldDefinition->hasMeta('roles')) {
-            $roles = $fieldDefinition->getMeta('roles');
-        } else {
-            $roles = $fieldDefinition->getRoles();
-        }
-
-        if ($roles && !$this->authorizationChecker->isGranted($roles, $fieldDefinition)) {
-            throw new Error(sprintf('Access denied to "%s" field', $fieldDefinition->getName()));
         }
     }
 }

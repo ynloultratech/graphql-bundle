@@ -53,10 +53,5 @@ final class MutationDelete
     /**
      * @var array
      */
-    public $roles;
-
-    /**
-     * @var array
-     */
     public $options = [];
 }

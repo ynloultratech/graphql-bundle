@@ -71,11 +71,6 @@ class StandaloneFieldParser extends QueryAnnotationParser
         $field->setDescription($annotation->description);
         $field->setComplexity($annotation->complexity);
         $field->setMaxConcurrentUsage($annotation->maxConcurrentUsage);
-        $field->setRoles((array) $annotation->roles);
-
-        if ($annotation->roles) {
-            $annotation->options['roles'] = (array) $annotation->roles;
-        }
 
         foreach ($annotation->options as $option => $value) {
             $field->setMeta($option, $value);

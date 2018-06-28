@@ -1,3 +1,8 @@
+v1.1.3 - [Unreleased]
+----
+ * Some minors bugs fixed
+ * Removed experimental `roles` and role AuthorizationChecker.
+
 v1.1.2 - 2018-06-27
 ----
  * Handle symfony HTTP exceptions to display related status code error instead of "Unknown error"

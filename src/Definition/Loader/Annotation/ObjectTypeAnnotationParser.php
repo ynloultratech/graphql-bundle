@@ -339,9 +339,6 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
             if ($annotation->complexity) {
                 $fieldDefinition->setComplexity($annotation->complexity);
             }
-            if ($annotation->roles) {
-                $fieldDefinition->setRoles($annotation->roles);
-            }
         }
 
         //load virtual fields
@@ -368,7 +365,6 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
                     $fieldDefinition->setMeta('expression', $annotation->expression);
                     $fieldDefinition->setResolver(FieldExpressionResolver::class);
                     $fieldDefinition->setComplexity($annotation->complexity);
-                    $fieldDefinition->setRoles((array) $annotation->roles);
                     $objectDefinition->addField($fieldDefinition);
                 } else {
                     $fieldDefinition = $objectDefinition->getField($annotation->name);

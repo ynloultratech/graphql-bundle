@@ -48,11 +48,6 @@ final class Query
     public $resolver;
 
     /**
-     * @var array
-     */
-    public $roles = [];
-
-    /**
      * Options used by plugins
      *
      * @var array
