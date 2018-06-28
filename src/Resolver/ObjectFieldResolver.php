@@ -11,8 +11,6 @@
 namespace Ynlo\GraphQLBundle\Resolver;
 
 use Doctrine\Common\Collections\Collection;
-use Doctrine\Common\Persistence\Proxy;
-use GraphQL\Deferred;
 use GraphQL\Error\Error;
 use GraphQL\Type\Definition\ResolveInfo;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
@@ -42,20 +40,13 @@ class ObjectFieldResolver implements ContainerAwareInterface
     private static $concurrentUsages = [];
 
     /**
-     * @var DeferredBuffer
-     */
-    protected $deferredBuffer;
-
-    /**
      * ObjectFieldResolver constructor.
      *
      * @param ContainerInterface $container
-     * @param DeferredBuffer     $deferredBuffer
      */
-    public function __construct(ContainerInterface $container, DeferredBuffer $deferredBuffer)
+    public function __construct(ContainerInterface $container)
     {
         $this->container = $container;
-        $this->deferredBuffer = $deferredBuffer;
     }
 
     /**
@@ -124,18 +115,6 @@ class ObjectFieldResolver implements ContainerAwareInterface
 
         if ($value instanceof Collection) {
             $value = $value->toArray();
-        }
-
-        if ($value instanceof Proxy && $value instanceof NodeInterface && !$value->__isInitialized()) {
-            $this->deferredBuffer->add($value);
-
-            return new Deferred(
-                function () use ($value) {
-                    $this->deferredBuffer->loadBuffer();
-
-                    return $this->deferredBuffer->getLoadedEntity($value);
-                }
-            );
         }
 
         $event->setValue($value);

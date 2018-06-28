@@ -39,6 +39,11 @@ class Post extends Message implements NodeInterface
     use NodeNamedTrait;
 
     /**
+     * @var int|null
+     */
+    protected $id;
+
+    /**
      * @ORM\Column(type="simple_array")
      *
      * @var string[]
@@ -52,9 +57,20 @@ class Post extends Message implements NodeInterface
      */
     protected $comments;
 
-    public function getId()
+    /**
+     * @param int|null $id
+     */
+    public function __construct(?int $id = null)
     {
-        return 1;
+        $this->id = $id;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 
     /**

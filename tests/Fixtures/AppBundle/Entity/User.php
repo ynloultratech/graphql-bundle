@@ -35,6 +35,11 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
 class User implements NodeInterface
 {
     /**
+     * @var int|null
+     */
+    protected $id;
+
+    /**
      * @ORM\Column(type="string")
      *
      * @GraphQL\Field(name="login")
@@ -74,8 +79,21 @@ class User implements NodeInterface
      */
     protected $lastLogin;
 
-    public function getId()
+    /**
+     * User constructor.
+     *
+     * @param int|null $id
+     */
+    public function __construct(?int $id = null)
     {
-        return 1;
+        $this->id = $id;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getId(): ?int
+    {
+        return $this->id;
     }
 }

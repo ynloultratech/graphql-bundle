@@ -284,6 +284,11 @@ services:
         tags:
             - { name: 'kernel.event_subscriber' }
 
+    Ynlo\GraphQLBundle\EventListener\GraphQL\NodeDeferredListener:
+        arguments: ['@Ynlo\GraphQLBundle\Resolver\DeferredBuffer']
+        tags:
+            - { name: 'kernel.event_subscriber' }
+
     Ynlo\GraphQLBundle\Encoder\IDEncoderManager:
         public: true
         arguments: [''] #inject in the extension builder

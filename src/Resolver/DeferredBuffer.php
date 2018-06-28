@@ -30,11 +30,19 @@ class DeferredBuffer
 
     protected $registry;
 
+    /**
+     * DeferredBuffer constructor.
+     *
+     * @param Registry $registry
+     */
     public function __construct(Registry $registry)
     {
         $this->registry = $registry;
     }
 
+    /**
+     * @param NodeInterface $entity
+     */
     public function add(NodeInterface $entity): void
     {
         $class = ClassUtils::getClass($entity);
@@ -69,10 +77,14 @@ class DeferredBuffer
             /** @var EntityRepository $repo */
             $repo = $this->registry->getRepository($class);
             $qb = $repo->createQueryBuilder('o', 'o.id');
-            $entities = $qb->where($qb->expr()->in('o.id', $ids))
+            $entities = $qb->where($qb->expr()->in('o.id', array_values($ids)))
                            ->getQuery()
                            ->getResult();
-            self::$deferred[$class] = $entities;
+            foreach ($entities as $entity) {
+                if ($entity instanceof NodeInterface) {
+                    self::$deferred[$class][$entity->getId()] = $entity;
+                }
+            }
         }
     }
 }

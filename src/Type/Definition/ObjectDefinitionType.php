@@ -16,7 +16,6 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Ynlo\GraphQLBundle\Definition\ImplementorInterface;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
-use Ynlo\GraphQLBundle\Resolver\DeferredBuffer;
 use Ynlo\GraphQLBundle\Resolver\FieldExecutionContext;
 use Ynlo\GraphQLBundle\Resolver\ObjectFieldResolver;
 use Ynlo\GraphQLBundle\Resolver\QueryExecutionContext;
@@ -40,10 +39,7 @@ class ObjectDefinitionType extends ObjectType implements ContainerAwareInterface
                     return $this->resolveInterfaces($definition);
                 },
                 'resolveField' => function ($root, array $args, QueryExecutionContext $context, ResolveInfo $resolveInfo) use ($definition) {
-                    $resolver = new ObjectFieldResolver(
-                        $this->container,
-                        $this->container->get(DeferredBuffer::class)
-                    );
+                    $resolver = new ObjectFieldResolver($this->container);
 
                     return $resolver($root, $args, new FieldExecutionContext($context, $definition), $resolveInfo);
                 }
