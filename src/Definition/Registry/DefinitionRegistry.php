@@ -60,16 +60,29 @@ class DefinitionRegistry
     /**
      * DefinitionRegistry constructor.
      *
+     * Configured endpoints array should have the following format:
+     *
+     * [
+     * 'endpoints' => [
+     *   'name' => [
+     *      'roles'=> [],
+     *      'host' => '',
+     *      'path' => ''
+     *    ]
+     *  ]
+     * ]
+     *
      * @param iterable|DefinitionLoaderInterface[] $loaders
      * @param iterable|DefinitionPluginInterface[] $plugins
      * @param null|string                          $cacheDir
-     * @param array                                $endpointsConfig
+     * @param array                                $endpointsConfig array of configured endpoints
+     *
      */
-    public function __construct(iterable $loaders, iterable $plugins, ?string $cacheDir = null, array $endpointsConfig = [])
+    public function __construct(iterable $loaders = [], iterable $plugins = [], ?string $cacheDir = null, array $endpointsConfig = [])
     {
         $this->loaders = $loaders;
         $this->plugins = $plugins;
-        $this->cacheDir = $cacheDir;
+        $this->cacheDir = $cacheDir ?? sys_get_temp_dir();
         $this->endpointsConfig = array_merge($endpointsConfig['endpoints'] ?? [], [self::DEFAULT_ENDPOINT => []]);
     }
 
@@ -91,13 +104,7 @@ class DefinitionRegistry
         unset($endpoints[self::DEFAULT_ENDPOINT]);
         $endpointsNames = array_keys($endpoints);
         if (self::DEFAULT_ENDPOINT !== $name && !\in_array($name, $endpointsNames)) {
-            throw new EndpointNotValidException(
-                sprintf(
-                    '"%s" is not a valid configured endpoint, use one of the following endpoints: [%s]',
-                    $name,
-                    implode($endpointsNames, ',')
-                )
-            );
+            throw new EndpointNotValidException($name, $endpointsNames);
         }
 
         //use first static cache
@@ -120,14 +127,18 @@ class DefinitionRegistry
 
     /**
      * remove the specification cache
+     *
+     * @param bool $warmUp recreate the cache after clear
      */
-    public function clearCache()
+    public function clearCache($warmUp = false)
     {
         @unlink($this->cacheFileName('default.raw'));
         foreach ($this->endpointsConfig as $name => $config) {
             unset(self::$endpoints[$name]);
             @unlink($this->cacheFileName($name));
-            $this->initialize($name);
+            if ($warmUp) {
+                $this->initialize($name);
+            }
         }
     }
 

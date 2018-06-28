@@ -57,7 +57,7 @@ class DefinitionCacheWarmer extends CacheWarmer implements EventSubscriberInterf
      */
     public function warmUp($cacheDir)
     {
-        $this->registry->clearCache();
+        $this->registry->clearCache(true);
         $this->updateControlFile();
     }
 

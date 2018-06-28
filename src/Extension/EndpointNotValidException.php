@@ -12,5 +12,16 @@ namespace Ynlo\GraphQLBundle\Extension;
 
 class EndpointNotValidException extends \RuntimeException
 {
-
+    /**
+     * @inheritDoc
+     */
+    public function __construct(string $endpoint, array $registeredEndpoints)
+    {
+        $message  = sprintf(
+            '"%s" is not a valid configured endpoint, use one of the following endpoints: [%s]',
+            $endpoint,
+            implode($registeredEndpoints, ',')
+        );
+        parent::__construct($message);
+    }
 }
