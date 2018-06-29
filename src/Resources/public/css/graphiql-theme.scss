@@ -76,6 +76,21 @@ html, body {
       overflow: hidden;
     }
 
+    code {
+      background-color: #f5f5f5;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      box-shadow: none;
+      font-size: 0.8rem;
+      padding: 0.1rem 0.3rem
+    }
+
+    pre > code {
+      padding: 10px;
+      font-size: 0.9rem;
+      display: block;
+    }
+
     .field-short-description {
       margin-left: 0;
 
