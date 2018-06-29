@@ -328,7 +328,10 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
             $fieldDefinition = $objectDefinition->getField($annotation->name);
 
             if ($annotation->type) {
-                $fieldDefinition->setType($annotation->type);
+                $fieldDefinition->setType(TypeUtil::normalize($annotation->type));
+                $fieldDefinition->setNonNull(TypeUtil::isTypeNonNull($annotation->type));
+                $fieldDefinition->setNonNullList(TypeUtil::isTypeNonNullList($annotation->type));
+                $fieldDefinition->setList(TypeUtil::isTypeList($annotation->type));
             }
             if ($annotation->alias) {
                 $objectDefinition->removeField($fieldDefinition->getName());
