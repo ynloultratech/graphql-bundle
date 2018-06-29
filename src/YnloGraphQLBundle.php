@@ -18,6 +18,7 @@ use Ynlo\GraphQLBundle\DependencyInjection\YnloGraphQLExtension;
 use Ynlo\GraphQLBundle\Encoder\IDEncoderManager;
 use Ynlo\GraphQLBundle\Error\Exporter\ErrorListExporterInterface;
 use Ynlo\GraphQLBundle\Extension\ExtensionInterface;
+use Ynlo\GraphQLBundle\Form\Input\InputFieldTypeGuesser;
 use Ynlo\GraphQLBundle\Type\Loader\TypeAutoLoader;
 use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 use Ynlo\GraphQLBundle\Util\IDEncoder;
@@ -49,6 +50,7 @@ class YnloGraphQLBundle extends Bundle
         $container->addCompilerPass(new ControllerPass());
         $container->registerForAutoconfiguration(ErrorListExporterInterface::class)->addTag('graphql.error_list_exporter');
         $container->registerForAutoconfiguration(ExtensionInterface::class)->addTag('graphql.extension');
+        $container->registerForAutoconfiguration(InputFieldTypeGuesser::class)->addTag('graphql.input_type_guesser');
     }
 
     /**

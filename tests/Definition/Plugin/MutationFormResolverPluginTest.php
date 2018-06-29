@@ -10,7 +10,9 @@
 
 namespace Ynlo\GraphQLBundle\Tests\Definition\Plugin;
 
-use PHPUnit\Framework\TestCase;
+use Doctrine\ORM\EntityManagerInterface;
+use Mockery\Adapter\Phpunit\MockeryTestCase;
+use Symfony\Component\Form\AbstractExtension;
 use Symfony\Component\Form\FormFactory;
 use Symfony\Component\Form\FormRegistry;
 use Symfony\Component\Form\ResolvedFormTypeFactory;
@@ -18,21 +20,46 @@ use Ynlo\GraphQLBundle\Annotation\ObjectType;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\MutationDefinition;
 use Ynlo\GraphQLBundle\Definition\Plugin\MutationFormResolverPlugin;
+use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\Form\Input\GraphQLInputTypeGuesser;
+use Ynlo\GraphQLBundle\Form\Input\SymfonyFormInputTypeGuesser;
+use Ynlo\GraphQLBundle\Form\Type\IDType;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\User;
 use Ynlo\GraphQLBundle\Tests\TestDefinitionHelper;
 
-class MutationFormResolverPluginTest extends TestCase
+class MutationFormResolverPluginTest extends MockeryTestCase
 {
     public function testConfigure()
     {
         $endpoint = new Endpoint('default');
         TestDefinitionHelper::loadAnnotationDefinitions(User::class, $endpoint, [ObjectType::class]);
 
-        $registry = new FormRegistry([], new ResolvedFormTypeFactory());
-        $factory = new FormFactory($registry);
+        //extension only for tests purposes to
+        $idTypeExtension = new class extends AbstractExtension
+        {
+            /**
+             * @inheritDoc
+             */
+            public function getType($name)
+            {
+                return new IDType(\Mockery::mock(EntityManagerInterface::class), \Mockery::mock(DefinitionRegistry::class));
+            }
 
-        $plugin = new MutationFormResolverPlugin($factory);
+            /**
+             * @inheritDoc
+             */
+            public function hasType($name)
+            {
+                return $name === IDType::class;
+            }
+        };
+
+        $registry = new FormRegistry([$idTypeExtension], new ResolvedFormTypeFactory());
+        $factory = new FormFactory($registry);
+        $guessers[] = new GraphQLInputTypeGuesser();
+        $guessers[] = new SymfonyFormInputTypeGuesser();
+        $plugin = new MutationFormResolverPlugin($factory, $guessers);
 
         $definition = new MutationDefinition();
         $definition->setName('addUser');
@@ -62,7 +89,7 @@ class MutationFormResolverPluginTest extends TestCase
         /** @var InputObjectDefinition $profileInput */
         $profileInput = $endpoint->getType('AddUserProfileInput');
         self::assertInstanceOf(InputObjectDefinition::class, $profileInput);
-        self::assertCount(9, $profileInput->getFields());
+        self::assertCount(10, $profileInput->getFields());
 
         self::assertEquals('String', $profileInput->getField('nick')->getType());
         self::assertFalse($profileInput->getField('nick')->isNonNull());
@@ -87,6 +114,9 @@ class MutationFormResolverPluginTest extends TestCase
 
         self::assertEquals('String', $profileInput->getField('hobbies')->getType());
         self::assertTrue($profileInput->getField('hobbies')->isList());
+
+        self::assertEquals('ID', $profileInput->getField('favoriteTopics')->getType());
+        self::assertTrue($profileInput->getField('favoriteTopics')->isList());
 
         self::assertEquals('AddUserProfilePhotosInput', $profileInput->getField('photos')->getType());
         self::assertTrue($profileInput->getField('photos')->isList());

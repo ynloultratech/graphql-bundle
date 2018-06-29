@@ -11,17 +11,11 @@
 namespace Ynlo\GraphQLBundle\Definition\Plugin;
 
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
-use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
-use Symfony\Component\Form\Extension\Core\Type\EmailType;
-use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\MoneyType;
-use Symfony\Component\Form\Extension\Core\Type\NumberType;
-use Symfony\Component\Form\Extension\Core\Type\PasswordType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormFactory;
 use Symfony\Component\Form\FormInterface;
+use Symfony\Component\Form\Guess\Guess;
+use Symfony\Component\Form\Guess\TypeGuess;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
@@ -29,19 +23,36 @@ use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\MutationDefinition;
 use Ynlo\GraphQLBundle\Definition\NodeAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
-use Ynlo\GraphQLBundle\Form\Type\GraphQLType;
-use Ynlo\GraphQLBundle\Form\Type\IDType;
+use Ynlo\GraphQLBundle\Form\Input\InputFieldTypeGuesser;
 use Ynlo\GraphQLBundle\Type\Types;
 use Ynlo\GraphQLBundle\Util\ClassUtils;
 use Ynlo\GraphQLBundle\Util\TypeUtil;
 
+/**
+ * MutationFormResolverPlugin
+ */
 class MutationFormResolverPlugin extends AbstractDefinitionPlugin
 {
+    /**
+     * @var FormFactory
+     */
     protected $formFactory;
 
-    public function __construct(FormFactory $formFactory)
+    /**
+     * @var InputFieldTypeGuesser[]|iterable
+     */
+    protected $typeGuessers;
+
+    /**
+     * MutationFormResolverPlugin constructor.
+     *
+     * @param FormFactory                      $formFactory
+     * @param iterable|InputFieldTypeGuesser[] $typeGuessers
+     */
+    public function __construct(FormFactory $formFactory, iterable $typeGuessers = [])
     {
         $this->formFactory = $formFactory;
+        $this->typeGuessers = $typeGuessers;
     }
 
     /**
@@ -222,49 +233,27 @@ class MutationFormResolverPlugin extends AbstractDefinitionPlugin
             $type = TypeUtil::normalize($type);
         }
 
-        if (is_a($form->getConfig()->getType()->getInnerType(), GraphQLType::class, true)) {
-            $type = $form->getConfig()->getOptions()['graphql_type'];
-            $field->setList(TypeUtil::isTypeList($type));
-            $type = TypeUtil::normalize($type);
-        }
-
-        if (!$type && is_a($form->getConfig()->getType()->getInnerType(), IDType::class, true)) {
-            if ($form->getConfig()->hasOption('multiple') && $form->getConfig()->getOption('multiple')) {
-                $field->setList(true);
+        if (!$type) {
+            $guesses = [];
+            foreach ($this->typeGuessers as $guesser) {
+                $formType = \get_class($form->getConfig()->getType()->getInnerType());
+                if ($guess = $guesser->guessType($field, $formType, $form->getConfig()->getOptions())) {
+                    $guesses[] = $guess;
+                }
             }
-            $type = Types::ID;
-        }
 
-        if (!$type && is_a($form->getConfig()->getType()->getInnerType(), TextType::class, true)) {
-            $type = Types::STRING;
-        }
+            $guess = Guess::getBestGuess($guesses);
+            if ($guess && $guess instanceof TypeGuess) {
+                $type = $guess->getType();
 
-        if (!$type && is_a($form->getConfig()->getType()->getInnerType(), PasswordType::class, true)) {
-            $type = Types::STRING;
-        }
+                if (isset($guess->getOptions()['required'])) {
+                    $field->setNonNull($guess->getOptions()['required']);
+                }
 
-        if (!$type && is_a($form->getConfig()->getType()->getInnerType(), TextareaType::class, true)) {
-            $type = Types::STRING;
-        }
-
-        if (!$type && is_a($form->getConfig()->getType()->getInnerType(), EmailType::class, true)) {
-            $type = Types::STRING;
-        }
-
-        if (!$type && is_a($form->getConfig()->getType()->getInnerType(), CheckboxType::class, true)) {
-            $type = Types::BOOLEAN;
-        }
-
-        if (!$type && is_a($form->getConfig()->getType()->getInnerType(), IntegerType::class, true)) {
-            $type = Types::INT;
-        }
-
-        if (!$type && is_a($form->getConfig()->getType()->getInnerType(), NumberType::class, true)) {
-            $type = Types::FLOAT;
-        }
-
-        if (!$type && is_a($form->getConfig()->getType()->getInnerType(), MoneyType::class, true)) {
-            $type = Types::FLOAT;
+                if (isset($guess->getOptions()['list'])) {
+                    $field->setList($guess->getOptions()['list']);
+                }
+            }
         }
 
         if (!$type) {

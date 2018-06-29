@@ -43,6 +43,14 @@ class Post extends Message implements NodeInterface
      */
     protected $id;
 
+
+    /**
+     * @var Topic
+     *
+     * @ORM\ManyToOne(targetEntity="Topic", inversedBy="posts")
+     */
+    protected $topic;
+
     /**
      * @ORM\Column(type="simple_array")
      *

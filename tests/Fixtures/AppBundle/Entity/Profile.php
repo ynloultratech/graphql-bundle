@@ -94,4 +94,11 @@ class Profile
      * @ORM\OneToOne(targetEntity="User",  inversedBy="profile")
      */
     protected $user;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="Topic")
+     *
+     * @var Collection
+     */
+    protected $favoriteTopics;
 }

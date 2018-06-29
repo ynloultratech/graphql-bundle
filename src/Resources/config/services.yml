@@ -189,7 +189,9 @@ services:
 
     Ynlo\GraphQLBundle\Definition\Plugin\MutationFormResolverPlugin:
         public: true
-        arguments: ['@form.factory']
+        arguments:
+            - '@form.factory'
+            - !tagged graphql.input_type_guesser
         tags:
             - { name: 'graphql.definition_plugin'}
 
@@ -376,3 +378,11 @@ services:
           - [setJWTCompatibility, ['%graphql.error_handling.jwt_auth_failure_compatibility%']]
         tags:
           - kernel.event_subscriber
+
+    Ynlo\GraphQLBundle\Form\Input\GraphQLInputTypeGuesser:
+        tags:
+          - graphql.input_type_guesser
+
+    Ynlo\GraphQLBundle\Form\Input\SymfonyFormInputTypeGuesser:
+        tags:
+          - graphql.input_type_guesser

@@ -14,11 +14,11 @@ use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
-use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Ynlo\GraphQLBundle\Form\Type\DateTimeType;
+use Ynlo\GraphQLBundle\Form\Type\IDType;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\Profile;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Form\Input\Photo\PhotoInput;
 
@@ -37,6 +37,7 @@ class ProfileInput extends AbstractType
         $builder->add('reputation', IntegerType::class);
         $builder->add('birthDate', DateTimeType::class);
         $builder->add('hobbies', CollectionType::class);
+        $builder->add('favoriteTopics', IDType::class, ['multiple' => true]);
         $builder->add(
             'photos',
             CollectionType::class,
