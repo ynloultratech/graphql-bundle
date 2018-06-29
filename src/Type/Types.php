@@ -23,6 +23,7 @@ final class Types
     public const BOOLEAN = GraphQLType::BOOLEAN;
     public const FLOAT = GraphQLType::FLOAT;
     public const DATETIME = DateTimeType::DATETIME;
+    public const DATE = DateType::DATE;
     public const ANY = AnyType::ANY;
     public const DYNAMIC_OBJECT = DynamicObjectType::DYNAMIC_OBJECT;
 

@@ -149,6 +149,8 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
                 $type = Types::nonNull(Types::listOf(Types::STRING));
                 break;
             case DoctrineType::DATE:
+                $type = Types::DATE;
+                break;
             case DoctrineType::DATETIME:
                 $type = Types::DATETIME;
                 break;
