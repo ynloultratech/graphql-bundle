@@ -15,7 +15,9 @@ use Symfony\Component\Form\Extension\Core\Type\CheckboxType;
 use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\EmailType;
 use Symfony\Component\Form\Extension\Core\Type\IntegerType;
+use Symfony\Component\Form\Extension\Core\Type\MoneyType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
+use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormFactory;
@@ -105,10 +107,11 @@ class MutationFormResolverPlugin extends AbstractDefinitionPlugin
         //try find the form using a related class
         if ($relatedClass && (!$formType || true === $formType)) {
             $bundleNamespace = ClassUtils::relatedBundleNamespace($relatedClass);
+            $nodeName = $endpoint->getType($definition->getNode())->getName();
             $formClass = ClassUtils::applyNamingConvention(
                 $bundleNamespace,
                 'Form\Input',
-                $definition->getNode(),
+                $nodeName,
                 ucfirst($definition->getName()),
                 'Input'
             );
@@ -133,10 +136,10 @@ class MutationFormResolverPlugin extends AbstractDefinitionPlugin
             $endpoint->addType($inputObject);
 
             $input = new ArgumentDefinition();
-            $input->setName($config['argument']);
+            $input->setName($config['argument'] ?? 'input');
             $input->setType($inputObject->getName());
 
-            if ($config['client_mutation_id']) {
+            if ($config['client_mutation_id'] ?? true) {
                 $clientMutationId = new FieldDefinition();
                 $clientMutationId->setName('clientMutationId');
                 $clientMutationId->setType(Types::STRING);
@@ -149,7 +152,14 @@ class MutationFormResolverPlugin extends AbstractDefinitionPlugin
         }
     }
 
-    public function createFormInputObject(Endpoint $endpoint, FormInterface $form, string $name): InputObjectDefinition
+    /**
+     * @param Endpoint      $endpoint
+     * @param FormInterface $form
+     * @param string        $name
+     *
+     * @return InputObjectDefinition
+     */
+    private function createFormInputObject(Endpoint $endpoint, FormInterface $form, string $name): InputObjectDefinition
     {
         $inputObject = new InputObjectDefinition();
         $inputObject->setName($name.'Input');
@@ -195,7 +205,11 @@ class MutationFormResolverPlugin extends AbstractDefinitionPlugin
         return $inputObject;
     }
 
-    public function resolveFormFieldDefinition(FieldDefinition $field, FormInterface $form)
+    /**
+     * @param FieldDefinition $field
+     * @param FormInterface   $form
+     */
+    private function resolveFormFieldDefinition(FieldDefinition $field, FormInterface $form): void
     {
         $type = null;
         $resolver = $form->getConfig()->getType()->getOptionsResolver();
@@ -225,6 +239,10 @@ class MutationFormResolverPlugin extends AbstractDefinitionPlugin
             $type = Types::STRING;
         }
 
+        if (!$type && is_a($form->getConfig()->getType()->getInnerType(), PasswordType::class, true)) {
+            $type = Types::STRING;
+        }
+
         if (!$type && is_a($form->getConfig()->getType()->getInnerType(), TextareaType::class, true)) {
             $type = Types::STRING;
         }
@@ -242,6 +260,10 @@ class MutationFormResolverPlugin extends AbstractDefinitionPlugin
         }
 
         if (!$type && is_a($form->getConfig()->getType()->getInnerType(), NumberType::class, true)) {
+            $type = Types::FLOAT;
+        }
+
+        if (!$type && is_a($form->getConfig()->getType()->getInnerType(), MoneyType::class, true)) {
             $type = Types::FLOAT;
         }
 

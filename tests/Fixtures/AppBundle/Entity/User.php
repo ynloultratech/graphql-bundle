@@ -52,6 +52,15 @@ class User implements NodeInterface
     /**
      * @ORM\Column(type="string")
      *
+     * @GraphQL\Expose()
+     *
+     * @var string
+     */
+    protected $email;
+
+    /**
+     * @ORM\Column(type="string")
+     *
      * @var string
      */
     protected $password;
@@ -65,6 +74,8 @@ class User implements NodeInterface
 
     /**
      * @var Profile
+     *
+     * @GraphQL\Expose()
      *
      * @ORM\OneToOne(targetEntity="Profile", mappedBy="user")
      */
