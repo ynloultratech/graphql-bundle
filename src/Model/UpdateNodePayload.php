@@ -34,7 +34,11 @@ class UpdateNodePayload
     /**
      * @var ConstraintViolation[]
      *
-     * @GraphQL\Field(type="[Ynlo\GraphQLBundle\Model\ConstraintViolation]", description="List of `ConstraintViolation` if the validation fails.")
+     * @GraphQL\Field(
+     *     type="[Ynlo\GraphQLBundle\Model\ConstraintViolation]",
+     *     description="List of `ConstraintViolation` if the validation fails.",
+     *     deprecationReason="Constraint violations has been moved out of the payload and now are returned in the error list."
+     * )
      */
     public $constraintViolations = [];
 
