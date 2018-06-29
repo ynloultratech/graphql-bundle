@@ -5,6 +5,7 @@ v1.1.3 - [Unreleased]
  * Some minors bugs fixed
  * Added `Date` type using *ISO-8601* format: 2018-06-21
  * Added `Time` type using *ISO-8601* format: 13:18:05
+ * Fixed Private properties marked as @Field from parent objects are not correctly inherited
 
 v1.1.2 - 2018-06-27
 ----

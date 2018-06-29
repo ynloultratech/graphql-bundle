@@ -452,6 +452,16 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
     protected function getClassProperties(\ReflectionClass $refClass)
     {
         $props = [];
+
+        //fields from parents, including private fields
+        $currentClass = $refClass;
+        while ($parent = $currentClass->getParentClass()) {
+            foreach ($parent->getProperties() as $prop) {
+                $props[$prop->name] = $prop;
+            }
+            $currentClass = $parent;
+        }
+
         foreach ($refClass->getProperties() as $prop) {
             $props[$prop->name] = $prop;
         }
