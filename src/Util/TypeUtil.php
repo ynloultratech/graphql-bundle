@@ -169,6 +169,9 @@ final class TypeUtil
             case 'date':
                 $type = Types::DATE;
                 break;
+            case 'time':
+                $type = Types::TIME;
+                break;
             case 'any':
                 $type = Types::ANY;
                 break;

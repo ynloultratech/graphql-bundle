@@ -148,6 +148,10 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
             case DoctrineType::JSON_ARRAY:
                 $type = Types::nonNull(Types::listOf(Types::STRING));
                 break;
+            case DoctrineType::TIME:
+            case DoctrineType::TIME_IMMUTABLE:
+                $type = Types::TIME;
+                break;
             case DoctrineType::DATE:
                 $type = Types::DATE;
                 break;
