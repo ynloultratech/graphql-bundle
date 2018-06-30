@@ -45,7 +45,7 @@ class User implements NodeInterface
      * @GraphQL\Field(name="login")
      * @GraphQL\Expose()
      *
-     * @var string
+     * @var string|null
      */
     protected $username;
 
@@ -54,14 +54,14 @@ class User implements NodeInterface
      *
      * @GraphQL\Expose()
      *
-     * @var string
+     * @var string|null
      */
     protected $email;
 
     /**
      * @ORM\Column(type="string")
      *
-     * @var string
+     * @var string|null
      */
     protected $password;
 
@@ -73,7 +73,7 @@ class User implements NodeInterface
     protected $type;
 
     /**
-     * @var Profile
+     * @var Profile|null
      *
      * @GraphQL\Expose()
      *
@@ -86,7 +86,7 @@ class User implements NodeInterface
      *
      * @GraphQL\Expose()
      *
-     * @var \DateTime
+     * @var \DateTime|null
      */
     protected $lastLogin;
 
@@ -106,5 +106,101 @@ class User implements NodeInterface
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getUsername(): ?string
+    {
+        return $this->username;
+    }
+
+    /**
+     * @param null|string $username
+     */
+    public function setUsername(?string $username): void
+    {
+        $this->username = $username;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getEmail(): ?string
+    {
+        return $this->email;
+    }
+
+    /**
+     * @param null|string $email
+     */
+    public function setEmail(?string $email): void
+    {
+        $this->email = $email;
+    }
+
+    /**
+     * @return null|string
+     */
+    public function getPassword(): ?string
+    {
+        return $this->password;
+    }
+
+    /**
+     * @param null|string $password
+     */
+    public function setPassword(?string $password): void
+    {
+        $this->password = $password;
+    }
+
+    /**
+     * @return string
+     */
+    public function getType(): string
+    {
+        return $this->type;
+    }
+
+    /**
+     * @param string $type
+     */
+    public function setType(string $type): void
+    {
+        $this->type = $type;
+    }
+
+    /**
+     * @return null|Profile
+     */
+    public function getProfile(): ?Profile
+    {
+        return $this->profile;
+    }
+
+    /**
+     * @param null|Profile $profile
+     */
+    public function setProfile(?Profile $profile): void
+    {
+        $this->profile = $profile;
+    }
+
+    /**
+     * @return \DateTime|null
+     */
+    public function getLastLogin(): ?\DateTime
+    {
+        return $this->lastLogin;
+    }
+
+    /**
+     * @param \DateTime|null $lastLogin
+     */
+    public function setLastLogin(?\DateTime $lastLogin): void
+    {
+        $this->lastLogin = $lastLogin;
     }
 }

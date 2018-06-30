@@ -8,15 +8,17 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Query\Post;
+namespace Ynlo\GraphQLBundle\Tests\Resolver;
 
-class AllPosts
+use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
+
+class CustomResolver extends AbstractResolver
 {
     /**
      * @inheritDoc
      */
-    public function __invoke()
+    public function __invoke($root, $args = [])
     {
-        // TODO: Implement __invoke() method.
+
     }
 }

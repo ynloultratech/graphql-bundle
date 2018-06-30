@@ -11,7 +11,6 @@
 namespace Ynlo\GraphQLBundle\Resolver;
 
 use Doctrine\Common\Util\ClassUtils;
-use Doctrine\ORM\EntityManager;
 use GraphQL\Type\Definition\ResolveInfo;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
@@ -19,12 +18,12 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Ynlo\GraphQLBundle\Component\AutoWire\AutoWire;
+use Ynlo\GraphQLBundle\Definition\ClassAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
+use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\HasExtensionsInterface;
 use Ynlo\GraphQLBundle\Definition\NodeAwareDefinitionInterface;
-use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
-use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Events\EventDispatcherAwareInterface;
 use Ynlo\GraphQLBundle\Extension\ExtensionInterface;
@@ -79,20 +78,20 @@ class ResolverExecutor implements ContainerAwareInterface
     }
 
     /**
-     * @param mixed       $root
-     * @param array       $args
-     * @param mixed       $context
-     * @param ResolveInfo $resolveInfo
+     * @param mixed                 $root
+     * @param array                 $args
+     * @param QueryExecutionContext $context
+     * @param ResolveInfo           $resolveInfo
      *
      * @return mixed
      *
      * @throws \Exception
      */
-    public function __invoke($root, array $args, $context, ResolveInfo $resolveInfo)
+    public function __invoke($root, array $args, QueryExecutionContext $context, ResolveInfo $resolveInfo)
     {
         $this->root = $root;
         $this->args = $args;
-        $this->context = $context;
+        $this->context = new QueryExecutionContext($context->getEndpoint(), $this->executableDefinition);
         $this->resolveInfo = $resolveInfo;
 
         $resolverName = $this->executableDefinition->getResolver();
@@ -178,7 +177,7 @@ class ResolverExecutor implements ContainerAwareInterface
      *
      * @return ExtensionInterface[]
      */
-    protected function resolveObjectExtensions(HasExtensionsInterface $objectDefinition): array
+    private function resolveObjectExtensions(HasExtensionsInterface $objectDefinition): array
     {
         $extensions = [];
 
@@ -217,7 +216,7 @@ class ResolverExecutor implements ContainerAwareInterface
      *
      * @return array
      */
-    protected function prepareMethodParameters(\ReflectionMethod $refMethod, array $args): array
+    private function prepareMethodParameters(\ReflectionMethod $refMethod, array $args): array
     {
         //normalize arguments
         $normalizedArguments = [];
@@ -230,7 +229,7 @@ class ResolverExecutor implements ContainerAwareInterface
                     $normalizedValue = $this->normalizeValue($value, $argument->getType());
 
                     //normalize argument into respective inputs objects
-                    if (is_array($normalizedValue) && $this->endpoint->hasType($argument->getType())) {
+                    if (\is_array($normalizedValue) && $this->endpoint->hasType($argument->getType())) {
                         if ($argument->isList()) {
                             $tmp = [];
                             foreach ($normalizedValue as $childValue) {
@@ -260,7 +259,7 @@ class ResolverExecutor implements ContainerAwareInterface
      *
      * @return array
      */
-    protected function resolveMethodArguments(\ReflectionMethod $method, array $incomeArgs)
+    private function resolveMethodArguments(\ReflectionMethod $method, array $incomeArgs)
     {
         $orderedArguments = [];
         foreach ($method->getParameters() as $parameter) {
@@ -294,7 +293,7 @@ class ResolverExecutor implements ContainerAwareInterface
      *
      * @return mixed
      */
-    protected function normalizeValue($value, string $type)
+    private function normalizeValue($value, string $type)
     {
         if (Types::ID === $type && $value) {
             if (\is_array($value)) {
@@ -316,14 +315,17 @@ class ResolverExecutor implements ContainerAwareInterface
     /**
      * Convert a array into object using given definition
      *
-     * @param array                     $data       data to populate the object
-     * @param ObjectDefinitionInterface $definition object definition
+     * @param array                          $data       data to populate the object
+     * @param FieldsAwareDefinitionInterface $definition object definition
      *
      * @return mixed
      */
-    protected function arrayToObject(array $data, ObjectDefinitionInterface $definition)
+    private function arrayToObject(array $data, FieldsAwareDefinitionInterface $definition)
     {
-        $class = $definition->getClass();
+        $class = null;
+        if ($definition instanceof ClassAwareDefinitionInterface) {
+            $class = $definition->getClass();
+        }
 
         //normalize data
         foreach ($data as $fieldName => &$value) {
@@ -339,7 +341,7 @@ class ResolverExecutor implements ContainerAwareInterface
         if (class_exists($class)) {
             $object = new $class();
         } else {
-            return $data;
+            $object = $data;
         }
 
         //populate object
@@ -348,6 +350,14 @@ class ResolverExecutor implements ContainerAwareInterface
                 continue;
             }
             $fieldDefinition = $definition->getField($key);
+
+            if (\is_array($value) && $this->endpoint->hasType($fieldDefinition->getType())) {
+                $childType = $this->endpoint->getType($fieldDefinition->getType());
+                if ($childType instanceof FieldsAwareDefinitionInterface) {
+                    $value = $this->arrayToObject($value, $childType);
+                }
+            }
+
             $this->setObjectValue($object, $fieldDefinition, $value);
         }
 
@@ -358,19 +368,23 @@ class ResolverExecutor implements ContainerAwareInterface
      * @param mixed           $object
      * @param FieldDefinition $fieldDefinition
      * @param mixed           $value
+     *
+     * @throws \ReflectionException
      */
-    protected function setObjectValue($object, FieldDefinition $fieldDefinition, $value)
+    private function setObjectValue(&$object, FieldDefinition $fieldDefinition, $value): void
     {
         //using setter
         $accessor = new PropertyAccessor();
         $propertyName = $fieldDefinition->getOriginName();
-        if ($propertyName) {
+        if (\is_array($object)) {
+            $object[$propertyName ?? $fieldDefinition->getName()] = $value;
+        } else {
             if ($accessor->isWritable($object, $propertyName)) {
                 $accessor->setValue($object, $propertyName, $value);
             } else {
                 //using reflection
                 $refClass = new \ReflectionClass(\get_class($object));
-                if ($refClass->hasProperty($fieldDefinition->getOriginName()) && $property = $refClass->getProperty($fieldDefinition->getOriginName())) {
+                if ($refClass->hasProperty($object) && $property = $refClass->getProperty($object)) {
                     $property->setAccessible(true);
                     $property->setValue($object, $value);
                 }

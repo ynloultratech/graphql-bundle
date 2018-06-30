@@ -10,6 +10,8 @@
 
 namespace Ynlo\GraphQLBundle\Resolver;
 
+use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
+use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 
 /**
@@ -28,14 +30,21 @@ class QueryExecutionContext
     protected $endpoint;
 
     /**
+     * @var ExecutableDefinitionInterface
+     */
+    protected $definition;
+
+    /**
      * QueryExecutionContext constructor.
      *
-     * @param Endpoint $endpoint
+     * @param Endpoint                      $endpoint
+     * @param ExecutableDefinitionInterface $definition
      */
-    public function __construct(Endpoint $endpoint)
+    public function __construct(Endpoint $endpoint, ExecutableDefinitionInterface $definition = null)
     {
         $this->queryId = md5(time().mt_rand().spl_object_hash($this));
         $this->endpoint = $endpoint;
+        $this->definition = $definition ?? new QueryDefinition();
     }
 
     /**
@@ -52,5 +61,13 @@ class QueryExecutionContext
     public function getEndpoint(): Endpoint
     {
         return $this->endpoint;
+    }
+
+    /**
+     * @return ExecutableDefinitionInterface
+     */
+    public function getDefinition(): ExecutableDefinitionInterface
+    {
+        return $this->definition;
     }
 }
