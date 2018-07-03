@@ -63,7 +63,7 @@ class MutationFormResolverPluginTest extends MockeryTestCase
 
         $definition = new MutationDefinition();
         $definition->setName('addUser');
-        $definition->setNode(User::class);
+        $definition->setNode('User');
 
         $plugin->configure($definition, $endpoint, ['enabled' => true, 'type' => true]);
 

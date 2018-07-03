@@ -37,6 +37,10 @@ trait NodeAwareDefinitionTrait
      */
     public function setNode(?string $node): NodeAwareDefinitionInterface
     {
+        if ($node && !preg_match('/\w+/', $node)) {
+            throw new \InvalidArgumentException('Invalid node name');
+        }
+
         $this->node = $node;
 
         return $this;

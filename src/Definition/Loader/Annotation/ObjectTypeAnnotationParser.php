@@ -83,13 +83,13 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
         $objectDefinition->setClass($refClass->name);
         $objectDefinition->setMetas($annotation->options);
 
-        if ($objectDefinition instanceof NodeAwareDefinitionInterface) {
-            $objectDefinition->setNode($refClass->getName());
-        }
-
         if (!$objectDefinition->getName()) {
             preg_match('/\w+$/', $refClass->getName(), $matches);
             $objectDefinition->setName($matches[0] ?? '');
+        }
+
+        if ($objectDefinition instanceof NodeAwareDefinitionInterface) {
+            $objectDefinition->setNode($objectDefinition->getName());
         }
 
         if ($endpoint->hasType($objectDefinition->getName())) {

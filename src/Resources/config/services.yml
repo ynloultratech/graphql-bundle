@@ -183,7 +183,7 @@ services:
 
     Ynlo\GraphQLBundle\Definition\Plugin\PaginationDefinitionPlugin:
         public: true
-        arguments: ['@annotations.reader','%graphql.pagination%']
+        arguments: ['@Ynlo\GraphQLBundle\Filter\FilterFactory','%graphql.pagination%']
         tags:
             - { name: 'graphql.definition_plugin'}
 
@@ -386,3 +386,17 @@ services:
     Ynlo\GraphQLBundle\Form\Input\SymfonyFormInputTypeGuesser:
         tags:
           - graphql.input_type_guesser
+
+    Ynlo\GraphQLBundle\Filter\FilterFactory:
+        arguments:
+          - !tagged graphql.filter_resolver
+
+    Ynlo\GraphQLBundle\Filter\Resolver\DoctrineORMFilterResolver:
+        arguments: ['@Doctrine\ORM\EntityManagerInterface']
+        tags:
+          - { name: graphql.filter_resolver, priority: 200 }
+
+    Ynlo\GraphQLBundle\Filter\Resolver\NamingConventionFilterResolver:
+        arguments: ['@kernel', '@annotations.reader' ]
+        tags:
+          - graphql.filter_resolver

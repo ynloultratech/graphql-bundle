@@ -13,13 +13,18 @@ namespace Ynlo\GraphQLBundle\Query\Node;
 use Doctrine\ORM\Query\Expr\Orx;
 use Doctrine\ORM\QueryBuilder;
 use GraphQL\Error\Error;
+use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
+use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\Plugin\PaginationDefinitionPlugin;
+use Ynlo\GraphQLBundle\Filter\FilterContext;
+use Ynlo\GraphQLBundle\Filter\FilterInterface;
 use Ynlo\GraphQLBundle\Model\ConnectionInterface;
 use Ynlo\GraphQLBundle\Model\NodeConnection;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Pagination\DoctrineCursorPaginatorInterface;
 use Ynlo\GraphQLBundle\Pagination\DoctrineOffsetCursorPaginator;
 use Ynlo\GraphQLBundle\Pagination\PaginationRequest;
+use Ynlo\GraphQLBundle\Resolver\QueryExecutionContext;
 
 /**
  * Base class to fetch nodes
@@ -27,13 +32,14 @@ use Ynlo\GraphQLBundle\Pagination\PaginationRequest;
 class AllNodesWithPagination extends AllNodes
 {
     /**
-     * @param array[] $args
+     * @param array[]               $args
+     * @param QueryExecutionContext $context
      *
      * @return mixed
      *
      * @throws Error
      */
-    public function __invoke($args = [])
+    public function __invoke($args = [], QueryExecutionContext $context)
     {
         $orderBy = $args['orderBy'] ?? [];
         $first = $args['first'] ?? null;
@@ -42,6 +48,7 @@ class AllNodesWithPagination extends AllNodes
         $after = $args['after'] ?? null;
         $search = $args['search'] ?? null;
         $filters = $args['filters'] ?? null;
+        $where = $args['where'] ?? null;
 
         $this->initialize();
 
@@ -58,6 +65,10 @@ class AllNodesWithPagination extends AllNodes
 
         if ($filters) {
             $this->applyFilters($qb, $filters);
+        }
+
+        if ($where) {
+            $this->applyWhere($context, $qb, $where);
         }
 
         $this->configureQuery($qb);
@@ -108,6 +119,8 @@ class AllNodesWithPagination extends AllNodes
 
     /**
      * Apply advanced filters
+     *
+     * @deprecated since v1.1, `applyWhere` should be used instead
      */
     protected function applyFilters(QueryBuilder $qb, array $filters)
     {
@@ -145,6 +158,42 @@ class AllNodesWithPagination extends AllNodes
     }
 
     /**
+     * @param QueryExecutionContext $context
+     * @param QueryBuilder          $qb
+     * @param array                 $where
+     *
+     * @throws \ReflectionException
+     */
+    protected function applyWhere(QueryExecutionContext $context, QueryBuilder $qb, array $where): void
+    {
+        $whereType = $context->getDefinition()->getArgument('where')->getType();
+
+        /** @var InputObjectDefinition $whereDefinition */
+        $whereDefinition = $context->getEndpoint()->getType($whereType);
+
+        /** @var ObjectDefinition $node */
+        $node = $context->getEndpoint()->getType($context->getDefinition()->getNode());
+
+        foreach ($where as $filterName => $condition) {
+            $filterDefinition = $whereDefinition->getField($filterName);
+
+            //TODO: load filters from services
+            /** @var FilterInterface $filter */
+            $filter = (new \ReflectionClass($filterDefinition->getResolver()))->newInstanceWithoutConstructor();
+
+            $fieldName = $filterDefinition->getMeta('filter_field');
+            if ($fieldName && $node->hasField($fieldName)) {
+                $relatedField = $node->getField($fieldName);
+                $filterContext = new FilterContext($context->getEndpoint(), $node, $relatedField);
+            } else {
+                $filterContext = new FilterContext($context->getEndpoint(), $node);
+            }
+
+            $filter($filterContext, $qb, $condition);
+        }
+    }
+
+    /**
      * Filter some columns with simple string.
      */
     protected function search(QueryBuilder $qb, string $search)
@@ -159,7 +208,7 @@ class AllNodesWithPagination extends AllNodes
         $metadata = $em->getClassMetadata($this->entity);
         $searchFields = $metadata->getFieldNames();
 
-        if (count($searchFields) > 0) {
+        if (\count($searchFields) > 0) {
             $meta = $qb->getEntityManager()->getClassMetadata($qb->getRootEntities()[0]);
             foreach ($searchArray as $q) {
                 $q = trim(rtrim($q));
@@ -178,6 +227,10 @@ class AllNodesWithPagination extends AllNodes
         }
     }
 
+    /**
+     * @param QueryBuilder  $qb
+     * @param NodeInterface $root
+     */
     protected function applyFilterByParent(QueryBuilder $qb, NodeInterface $root)
     {
         $parentField = null;

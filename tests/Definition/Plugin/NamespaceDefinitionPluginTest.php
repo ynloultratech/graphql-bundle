@@ -66,12 +66,6 @@ class NamespaceDefinitionPluginTest extends TestCase
         TestDefinitionHelper::loadAnnotationDefinitions(OrderBy::class, $endpoint);
         TestDefinitionHelper::loadAnnotationDefinitions(PageInfo::class, $endpoint);
 
-        //FQN class
-        /** @var ObjectDefinition $userDefinition */
-        $userDefinition = $endpoint->getType('Administrator');
-        $plugin->configure($userDefinition, $endpoint, []);
-        self::assertEquals(['bundle' => null, 'node' => User::class], $userDefinition->getMeta('namespace'));
-
         //Node name
         /** @var ObjectDefinition $userDefinition */
         $userDefinition = $endpoint->getType('Administrator');
@@ -86,17 +80,11 @@ class NamespaceDefinitionPluginTest extends TestCase
         $plugin->configure($userDefinition, $endpoint, []);
         self::assertEquals(['bundle' => null, 'node' => 'User'], $userDefinition->getMeta('namespace'));
 
-        //Node ignore FQN
-        /** @var ObjectDefinition $postDefinition */
-        $postDefinition = $endpoint->getType('Post');
-        $plugin->configure($postDefinition, $endpoint, []);
-        self::assertEquals(null, $postDefinition->getMeta('namespace'));
-
         //Bundle aliases
         /** @var ObjectDefinition $userDefinition */
         $definition = $endpoint->getType(Invoice::class);
         $plugin->configure($definition, $endpoint, []);
-        self::assertEquals(['bundle' => 'Accountant', 'node' => Invoice::class], $definition->getMeta('namespace'));
+        self::assertEquals(['bundle' => 'Accountant', 'node' => 'Invoice'], $definition->getMeta('namespace'));
     }
 
     public function testConfigureEndpoint()

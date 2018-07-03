@@ -1,5 +1,4 @@
 <?php
-
 /*******************************************************************************
  *  This file is part of the GraphQL Bundle package.
  *
@@ -13,20 +12,25 @@ namespace Ynlo\GraphQLBundle\Annotation;
 
 /**
  * @Annotation()
- *
- * @Target({"CLASS"})
  */
-final class QueryList
+final class Filter
 {
+    /**
+     * @var string
+     */
+    public $type;
+
     /**
      * @var string
      */
     public $name;
 
     /**
+     * Filter class implementing FilterInterface
+     *
      * @var string
      */
-    public $type;
+    public $resolver;
 
     /**
      * @var string
@@ -39,33 +43,15 @@ final class QueryList
     public $deprecationReason;
 
     /**
-     * @var Argument[]
-     */
-    public $arguments = [];
-
-    /**
+     * Name of the field directly related to this filter.
+     * The filter is linked to this field and only is
+     * available if this field is available.
+     *
      * @var string
      */
-    public $resolver;
+    public $field;
 
     /**
-     * @var string[]
-     */
-    public $searchFields = [];
-
-    /**
-     * @var array
-     */
-    public $filters = [];
-
-    /**
-     * @var int
-     */
-    public $limit;
-
-    /**
-     * Options used by plugins
-     *
      * @var array
      */
     public $options = [];
