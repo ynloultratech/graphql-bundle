@@ -11,17 +11,44 @@
 namespace Ynlo\GraphQLBundle\Filter\Resolver;
 
 use Ynlo\GraphQLBundle\Annotation\Filter;
+use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Filter\FilterResolverInterface;
 
+/**
+ * Resolve generic filters manually settled in the list config
+ *
+ * Example:
+ *
+ * QueryList(
+ *     filters={
+ *      "*",
+ *      "title, body": @GraphQL\Filter(resolver="App\Filter\LikeFilter", type="string")
+ *     }
+ * })
+ */
 class CustomGenericFilterResolver implements FilterResolverInterface
 {
     /**
      * @inheritDoc
      */
-    public function resolve(ObjectDefinitionInterface $node, Endpoint $endpoint): array
+    public function resolve(ExecutableDefinitionInterface $executableDefinition, ObjectDefinitionInterface $node, Endpoint $endpoint): array
     {
-        // TODO: Implement resolve() method.
+        $resolverFilters = [];
+        if ($filters = $executableDefinition->getMeta('pagination')['filters'] ?? []) {
+            foreach ($filters as $fields => $filter) {
+                if ($filter instanceof Filter) {
+                    $fields = explode(',', $fields);
+                    foreach ($fields as $field) {
+                        $filter = clone $filter;
+                        $filter->name = $filter->field = trim($field);
+                        $resolverFilters[] = $filter;
+                    }
+                }
+            }
+        }
+
+        return $resolverFilters;
     }
 }

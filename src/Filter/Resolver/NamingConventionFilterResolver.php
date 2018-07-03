@@ -15,6 +15,7 @@ use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Ynlo\GraphQLBundle\Annotation\Filter;
+use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\ImplementorInterface;
 use Ynlo\GraphQLBundle\Definition\NodeAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
@@ -55,7 +56,7 @@ class NamingConventionFilterResolver implements FilterResolverInterface
     /**
      * @inheritDoc
      */
-    public function resolve(ObjectDefinitionInterface $node, Endpoint $endpoint): array
+    public function resolve(ExecutableDefinitionInterface $executableDefinition, ObjectDefinitionInterface $node, Endpoint $endpoint): array
     {
         $types = [];
         if ($node instanceof ImplementorInterface && $node->getInterfaces()) {

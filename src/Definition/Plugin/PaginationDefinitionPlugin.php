@@ -232,7 +232,10 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin
         if (!$definition->getResolver()) {
             $definition->setResolver(AllNodesWithPagination::class);
         }
-
+        if (!$endpoint->hasType($target)) {
+            dump($target);
+            exit;
+        }
         $this->filterFactory->build($definition, $endpoint->getType($target), $endpoint);
 
         $this->addFilters($definition, $target, $endpoint);

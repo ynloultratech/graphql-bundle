@@ -394,9 +394,13 @@ services:
     Ynlo\GraphQLBundle\Filter\Resolver\DoctrineORMFilterResolver:
         arguments: ['@Doctrine\ORM\EntityManagerInterface']
         tags:
-          - { name: graphql.filter_resolver, priority: 200 }
+          - { name: graphql.filter_resolver, priority: -100 }
 
     Ynlo\GraphQLBundle\Filter\Resolver\NamingConventionFilterResolver:
         arguments: ['@kernel', '@annotations.reader' ]
+        tags:
+          - graphql.filter_resolver
+
+    Ynlo\GraphQLBundle\Filter\Resolver\CustomGenericFilterResolver:
         tags:
           - graphql.filter_resolver

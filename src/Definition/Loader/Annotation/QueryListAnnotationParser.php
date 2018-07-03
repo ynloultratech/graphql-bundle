@@ -17,6 +17,7 @@ use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Query\Node\AllNodesWithPagination;
 use Ynlo\GraphQLBundle\Util\ClassUtils;
+use Ynlo\GraphQLBundle\Util\TypeUtil;
 
 class QueryListAnnotationParser extends QueryAnnotationParser
 {
@@ -46,7 +47,7 @@ class QueryListAnnotationParser extends QueryAnnotationParser
         $definition = $endpoint->getType($endpoint->getTypeForClass($refClass->getName()));
 
         $annotation->name = $annotation->name ?? 'all'.Inflector::pluralize(ucfirst($definition->getName()));
-        $annotation->type = sprintf('[%s]', $annotation->type ?? $definition->getName());
+        $annotation->type = sprintf('[%s]', TypeUtil::normalize($annotation->type ?? $definition->getName()));
         $annotation->options = array_merge(['pagination' => true], $annotation->options);
 
         if ($annotation->limit) {

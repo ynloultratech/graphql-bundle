@@ -16,6 +16,7 @@ use GraphQL\Type\Definition\EnumType;
 use Ynlo\GraphQLBundle\Annotation\Filter;
 use Ynlo\GraphQLBundle\Definition\ClassAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\EnumDefinition;
+use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
@@ -62,7 +63,7 @@ class DoctrineORMFilterResolver implements FilterResolverInterface
     /**
      * @inheritDoc
      */
-    public function resolve(ObjectDefinitionInterface $node, Endpoint $endpoint): array
+    public function resolve(ExecutableDefinitionInterface $executableDefinition,ObjectDefinitionInterface $node, Endpoint $endpoint): array
     {
         $class = $node->getClass();
         $filters = [];

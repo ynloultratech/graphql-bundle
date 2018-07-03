@@ -44,11 +44,11 @@ class FilterFactory
     {
         $filters = [];
         foreach ($this->resolvers as $resolver) {
-            $filters[] = $resolver->resolve($node, $endpoint);
+            $filters[] = $resolver->resolve($executableDefinition, $node, $endpoint);
         }
 
         /** @var Filter[] $filters */
-        $filters = array_merge(... $filters);
+        $filters = array_reverse(array_merge(... $filters));
 
         //unset resolved but not allowed filters
         foreach ($filters as $index => $filter) {

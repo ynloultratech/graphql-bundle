@@ -11,6 +11,7 @@
 namespace Ynlo\GraphQLBundle\Filter;
 
 use Ynlo\GraphQLBundle\Annotation\Filter;
+use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 
@@ -19,10 +20,11 @@ interface FilterResolverInterface
     /**
      * Resolve filter definitions
      *
-     * @param ObjectDefinitionInterface $node
-     * @param Endpoint                  $endpoint
+     * @param ExecutableDefinitionInterface $executableDefinition
+     * @param ObjectDefinitionInterface     $node
+     * @param Endpoint                      $endpoint
      *
      * @return Filter[]
      */
-    public function resolve(ObjectDefinitionInterface $node, Endpoint $endpoint): array;
+    public function resolve(ExecutableDefinitionInterface $executableDefinition, ObjectDefinitionInterface $node, Endpoint $endpoint): array;
 }
