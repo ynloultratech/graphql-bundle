@@ -1,4 +1,4 @@
-v1.1.3 - [Unreleased]
+v1.1.x - [Unreleased]
 ----
  * Added input type guesser to guess the correctness GraphQL type in forms fields [#10](https://github.com/ynloultratech/graphql-bundle/issues/10)
  * Removed experimental `roles` and role AuthorizationChecker.
@@ -6,6 +6,10 @@ v1.1.3 - [Unreleased]
  * Added `Date` type using *ISO-8601* format: 2018-06-21
  * Added `Time` type using *ISO-8601* format: 13:18:05
  * Fixed Private properties marked as @Field from parent objects are not correctly inherited
+
+v1.1.3 - 2018-07-03
+----
+ * Fixed API endpoint route to allow OPTIONS method (required by GraphiQL and other tools).
 
 v1.1.2 - 2018-06-27
 ----
