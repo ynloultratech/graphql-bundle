@@ -1,7 +1,7 @@
 api_root:
     path: /
     controller: Ynlo\GraphQLBundle\Controller\GraphQLEndpointController
-    methods: [POST]
+    methods: [POST, OPTIONS]
 
 api_schema:
     path: /schema.graphql

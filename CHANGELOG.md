@@ -1,3 +1,7 @@
+v1.1.3 - 2018-07-03
+----
+ * Fixed API endpoint route to allow OPTIONS method (required by GraphiQL and other tools).
+
 v1.1.2 - 2018-06-27
 ----
  * Handle symfony HTTP exceptions to display related status code error instead of "Unknown error"
