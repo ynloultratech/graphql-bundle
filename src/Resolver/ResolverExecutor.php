@@ -282,6 +282,17 @@ class ResolverExecutor implements ContainerAwareInterface
             ) {
                 $orderedArguments[$parameter->getPosition()] = $this->root;
             }
+
+            //inject context common argument
+            if ($this->context
+                && 'context' === $parameter->getName()
+                && $parameter->getClass()
+                && (is_a($parameter->getClass()->getName(), QueryExecutionContext::class, true)
+                    || is_a($parameter->getClass()->getName(), FieldExecutionContext::class, true))
+
+            ) {
+                $orderedArguments[$parameter->getPosition()] = $this->context;
+            }
         }
 
         return $orderedArguments;
