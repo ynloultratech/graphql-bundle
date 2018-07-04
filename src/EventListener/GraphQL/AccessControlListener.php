@@ -57,19 +57,19 @@ class AccessControlListener implements EventSubscriberInterface
     public function preReadField(GraphQLFieldEvent $event)
     {
         //check firstly if the user have rights to read the object
-        $object = $event->getInfo()->getObject();
-        if ($this->accessControlChecker->isControlled($object)
-            && !$this->accessControlChecker->isGranted($object, $event->getRoot())
+        $node = $event->getContext()->getNode();
+        if ($node && $this->accessControlChecker->isControlled($node)
+            && !$this->accessControlChecker->isGranted($node, $event->getContext()->getRoot())
         ) {
             $event->stopPropagation();
             $event->setValue(null);
-            throw new ForbiddenError($this->accessControlChecker->getMessage($object));
+            throw new ForbiddenError($this->accessControlChecker->getMessage($node));
         }
 
         //check then if the user have rights to read the field
-        $field = $event->getInfo()->getField();
+        $field = $event->getContext()->getDefinition();
         if ($this->accessControlChecker->isControlled($field)
-            && !$this->accessControlChecker->isGranted($field, $event->getRoot())
+            && !$this->accessControlChecker->isGranted($field, $event->getContext()->getRoot())
         ) {
             throw new ForbiddenError($this->accessControlChecker->getMessage($field));
         }

@@ -25,7 +25,7 @@ use Ynlo\GraphQLBundle\Model\DeleteNodePayload;
 use Ynlo\GraphQLBundle\Model\Filter\NodeComparisonExpression;
 use Ynlo\GraphQLBundle\Model\Filter\StringComparisonExpression;
 use Ynlo\GraphQLBundle\Model\UpdateNodePayload;
-use Ynlo\GraphQLBundle\Resolver\QueryExecutionContext;
+use Ynlo\GraphQLBundle\Resolver\ContextBuilder;
 use Ynlo\GraphQLBundle\Resolver\ResolverExecutor;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\Post;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\Profile;
@@ -136,7 +136,7 @@ class ResolverExecutorTest extends MockeryTestCase
         $query->addArgument($where);
 
         $query->setResolver($resolverClass);
-        $resolverExecutor = new ResolverExecutor($container, $endpoint, $query);
+        $resolverExecutor = new ResolverExecutor($container, $query);
 
         $args = [
             'name' => 'John',
@@ -166,6 +166,12 @@ class ResolverExecutorTest extends MockeryTestCase
                 ],
             ],
         ];
-        $resolverExecutor(new User(0), $args, new QueryExecutionContext($endpoint, $query), new ResolveInfo([]));
+
+        $context = ContextBuilder::create($endpoint)
+                                 ->setDefinition($query)
+                                 ->setArgs($args)
+                                 ->build();
+
+        $resolverExecutor(new User(0), $args, $context, new ResolveInfo([]));
     }
 }

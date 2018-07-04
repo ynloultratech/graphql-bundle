@@ -17,10 +17,10 @@ use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
+use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Events\GraphQLEvents;
 use Ynlo\GraphQLBundle\Events\GraphQLFieldEvent;
-use Ynlo\GraphQLBundle\Events\GraphQLFieldInfo;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Type\Types;
 use Ynlo\GraphQLBundle\Util\IDEncoder;
@@ -43,28 +43,26 @@ class ObjectFieldResolver implements ContainerAwareInterface
     }
 
     /**
-     * @param mixed                 $root
-     * @param array                 $args
-     * @param FieldExecutionContext $context
-     * @param ResolveInfo           $info
+     * @param mixed           $root
+     * @param array           $args
+     * @param ResolverContext $context
+     * @param ResolveInfo     $info
      *
      * @return mixed|null|string
      *
      * @throws \Exception
      */
-    public function __invoke($root, array $args, FieldExecutionContext $context, ResolveInfo $info)
+    public function __invoke($root, array $args, ResolverContext $context, ResolveInfo $info)
     {
         $value = null;
-        $fieldDefinition = $context->getDefinition()->getField($info->fieldName);
         $eventDispatcher = $this->container->get(EventDispatcherInterface::class);
+        $fieldDefinition = $context->getDefinition();
 
-        $fieldInfo = new GraphQLFieldInfo($context->getDefinition(), $fieldDefinition, $info);
-        $event = new GraphQLFieldEvent(
-            $fieldInfo,
-            $root,
-            $args,
-            $context
-        );
+        if (!$fieldDefinition instanceof FieldDefinition) {
+            throw new \RuntimeException('This resolver can only resolve fields');
+        }
+
+        $event = new GraphQLFieldEvent($context);
         $eventDispatcher->dispatch(GraphQLEvents::PRE_READ_FIELD, $event);
 
         if ($event->isPropagationStopped() || $event->getValue()) {
@@ -89,13 +87,15 @@ class ObjectFieldResolver implements ContainerAwareInterface
                 $queryDefinition->setResolver($fieldDefinition->getOriginName());
             }
 
-            $resolver = new ResolverExecutor($this->container, $context->getQueryContext()->getEndpoint(), $queryDefinition);
-            $value = $resolver(
-                $root,
-                $args,
-                new QueryExecutionContext($context->getQueryContext()->getEndpoint(), $queryDefinition),
-                $info
-            );
+            $context = ContextBuilder::create($context->getEndpoint())
+                                     ->setArgs($args)
+                                     ->setRoot($root)
+                                     ->setDefinition($queryDefinition)
+                                     ->setResolveInfo($info)
+                                     ->build();
+
+            $resolver = new ResolverExecutor($this->container, $queryDefinition);
+            $value = $resolver($root, $args, $context, $info);
         } else {
             $accessor = new PropertyAccessor(true);
             $originName = $fieldDefinition->getOriginName() ?: $fieldDefinition->getName();

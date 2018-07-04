@@ -15,7 +15,7 @@ use GraphQL\Error\Error;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
-use Ynlo\GraphQLBundle\Resolver\QueryExecutionContext;
+use Ynlo\GraphQLBundle\Resolver\ResolverContext;
 
 /**
  * Resolver to fetch a simple list of nodes without pagination, edges etc
@@ -43,14 +43,14 @@ class AllNodes extends AbstractResolver
     protected $objectDefinition;
 
     /**
-     * @param array[]               $args
-     * @param QueryExecutionContext $context
+     * @param array[]         $args
+     * @param ResolverContext $context
      *
      * @return mixed
      *
      * @throws Error
      */
-    public function __invoke($args = [], QueryExecutionContext $context)
+    public function __invoke($args = [], ResolverContext $context)
     {
         $orderBy = $args['orderBy'] ?? [];
 
@@ -72,8 +72,8 @@ class AllNodes extends AbstractResolver
     public function initialize()
     {
         $this->queryDefinition = $this->context->getDefinition();
-        $this->entity = $this->context->getNodeDefinition()->getClass();
-        $this->objectDefinition = $this->context->getNodeDefinition();
+        $this->entity = $this->context->getNode()->getClass();
+        $this->objectDefinition = $this->context->getNode();
     }
 
     /**

@@ -40,7 +40,7 @@ class QueryListAnnotationParserTest extends TestCase
         $query = $endpoint->getQuery('allPosts');
 
         self::assertEquals('Post', $query->getType());
-        self::assertEquals(true, $query->getMeta('pagination'));
+        self::assertNotEmpty($query->getMeta('pagination'));
         self::assertEquals(AllPosts::class, $query->getResolver());
         self::assertTrue($query->isList());
     }

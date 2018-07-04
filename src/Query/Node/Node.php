@@ -42,7 +42,7 @@ class Node extends AbstractResolver
         //@see QueryGet::fetchBy
         $searchValue = $node;
 
-        $type = $this->getContext()->getNodeDefinition()->getName();
+        $type = $this->getContext()->getNode()->getName();
 
         $entityClass = $this->getContext()->getEndpoint()->getClassForType($type);
 

@@ -16,9 +16,9 @@ use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Ynlo\GraphQLBundle\Definition\ImplementorInterface;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
-use Ynlo\GraphQLBundle\Resolver\FieldExecutionContext;
+use Ynlo\GraphQLBundle\Resolver\ContextBuilder;
 use Ynlo\GraphQLBundle\Resolver\ObjectFieldResolver;
-use Ynlo\GraphQLBundle\Resolver\QueryExecutionContext;
+use Ynlo\GraphQLBundle\Resolver\ResolverContext;
 use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 use Ynlo\GraphQLBundle\Util\GraphQLBuilder;
 
@@ -38,10 +38,17 @@ class ObjectDefinitionType extends ObjectType implements ContainerAwareInterface
                 'interfaces' => function () use ($definition) {
                     return $this->resolveInterfaces($definition);
                 },
-                'resolveField' => function ($root, array $args, QueryExecutionContext $context, ResolveInfo $resolveInfo) use ($definition) {
+                'resolveField' => function ($root, array $args, ResolverContext $context, ResolveInfo $resolveInfo) use ($definition) {
                     $resolver = new ObjectFieldResolver($this->container);
+                    $context = ContextBuilder::create($context->getEndpoint())
+                                             ->setRoot($root)
+                                             ->setResolveInfo($resolveInfo)
+                                             ->setArgs($args)
+                                             ->setDefinition($definition->getField($resolveInfo->fieldName))
+                                             ->build();
 
-                    return $resolver($root, $args, new FieldExecutionContext($context, $definition), $resolveInfo);
+
+                    return $resolver($root, $args, $context, $resolveInfo);
                 }
             ]
         );

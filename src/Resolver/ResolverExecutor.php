@@ -23,8 +23,6 @@ use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\HasExtensionsInterface;
-use Ynlo\GraphQLBundle\Definition\NodeAwareDefinitionInterface;
-use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Events\EventDispatcherAwareInterface;
 use Ynlo\GraphQLBundle\Extension\ExtensionInterface;
 use Ynlo\GraphQLBundle\Extension\ExtensionManager;
@@ -70,29 +68,34 @@ class ResolverExecutor implements ContainerAwareInterface
      */
     protected $args = [];
 
-    public function __construct(ContainerInterface $container, Endpoint $endpoint, ExecutableDefinitionInterface $executableDefinition)
+    /**
+     * ResolverExecutor constructor.
+     *
+     * @param ContainerInterface            $container
+     * @param ExecutableDefinitionInterface $executableDefinition
+     */
+    public function __construct(ContainerInterface $container, ExecutableDefinitionInterface $executableDefinition)
     {
         $this->container = $container;
-        $this->endpoint = $endpoint;
         $this->executableDefinition = $executableDefinition;
     }
 
     /**
-     * @param mixed                 $root
-     * @param array                 $args
-     * @param QueryExecutionContext $context
-     * @param ResolveInfo           $resolveInfo
+     * @param mixed           $root
+     * @param array           $args
+     * @param ResolverContext $context
+     * @param ResolveInfo     $resolveInfo
      *
      * @return mixed
      *
      * @throws \Exception
      */
-    public function __invoke($root, array $args, QueryExecutionContext $context, ResolveInfo $resolveInfo)
+    public function __invoke($root, array $args, ResolverContext $context, ResolveInfo $resolveInfo)
     {
         $this->root = $root;
         $this->args = $args;
-        $this->context = new QueryExecutionContext($context->getEndpoint(), $this->executableDefinition);
         $this->resolveInfo = $resolveInfo;
+        $this->endpoint = $context->getEndpoint();
 
         $resolverName = $this->executableDefinition->getResolver();
 
@@ -125,38 +128,21 @@ class ResolverExecutor implements ContainerAwareInterface
         }
 
         if ($resolver && $refMethod) {
-            $resolveContext = new ResolverContext();
-            $resolveContext->setDefinition($this->executableDefinition);
-            $resolveContext->setArgs($args);
-            $resolveContext->setRoot($root);
-            $resolveContext->setEndpoint($this->endpoint);
-            $resolveContext->setResolveInfo($resolveInfo);
+            $this->context = ContextBuilder::create($context->getEndpoint())
+                                           ->setRoot($root)
+                                           ->setResolveInfo($resolveInfo)
+                                           ->setArgs($args)
+                                           ->setDefinition($this->executableDefinition)
+                                           ->build();
 
-            $type = null;
-            if ($this->executableDefinition instanceof NodeAwareDefinitionInterface && $this->executableDefinition->getNode()) {
-                $type = $this->executableDefinition->getNode();
-            }
-
-            if (!$type && $this->executableDefinition->hasMeta('node')) {
-                $type = $this->executableDefinition->getMeta('node');
-            }
-            if (!$type) {
-                $type = $this->executableDefinition->getType();
-            }
-
-            $nodeDefinition = null;
-            if ($this->endpoint->hasType($type)) {
-                if ($nodeDefinition = $this->endpoint->getType($type)) {
-                    $resolveContext->setNodeDefinition($nodeDefinition);
-                }
-            }
 
             if ($resolver instanceof ResolverInterface) {
-                $resolver->setContext($resolveContext);
+                $resolver->setContext($this->context);
             }
 
-            if ($resolver instanceof ExtensionsAwareInterface && $nodeDefinition instanceof HasExtensionsInterface) {
-                $resolver->setExtensions($this->resolveObjectExtensions($nodeDefinition));
+            $node = $this->context->getNode();
+            if ($resolver instanceof ExtensionsAwareInterface && $node instanceof HasExtensionsInterface) {
+                $resolver->setExtensions($this->resolveObjectExtensions($node));
             }
 
             if ($resolver instanceof EventDispatcherAwareInterface) {
@@ -247,6 +233,7 @@ class ResolverExecutor implements ContainerAwareInterface
         }
         $normalizedArguments['args'] = $normalizedArguments;
         $normalizedArguments['root'] = $this->root;
+        $normalizedArguments['context'] = $this->context;
         $indexedArguments = $this->resolveMethodArguments($refMethod, $normalizedArguments);
         ksort($indexedArguments);
 
@@ -287,9 +274,7 @@ class ResolverExecutor implements ContainerAwareInterface
             if ($this->context
                 && 'context' === $parameter->getName()
                 && $parameter->getClass()
-                && (is_a($parameter->getClass()->getName(), QueryExecutionContext::class, true)
-                    || is_a($parameter->getClass()->getName(), FieldExecutionContext::class, true))
-
+                && is_a($parameter->getClass()->getName(), ResolverContext::class, true)
             ) {
                 $orderedArguments[$parameter->getPosition()] = $this->context;
             }

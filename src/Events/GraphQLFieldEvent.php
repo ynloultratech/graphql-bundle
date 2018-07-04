@@ -11,28 +11,12 @@
 namespace Ynlo\GraphQLBundle\Events;
 
 use Symfony\Component\EventDispatcher\Event;
-use Ynlo\GraphQLBundle\Resolver\FieldExecutionContext;
+use Ynlo\GraphQLBundle\Resolver\ResolverContext;
 
 class GraphQLFieldEvent extends Event
 {
-
     /**
-     * @var GraphQLFieldInfo
-     */
-    protected $info;
-
-    /**
-     * @var mixed
-     */
-    protected $root;
-
-    /**
-     * @var array
-     */
-    protected $args = [];
-
-    /**
-     * @var FieldExecutionContext
+     * @var ResolverContext
      */
     protected $context;
 
@@ -44,49 +28,19 @@ class GraphQLFieldEvent extends Event
     /**
      * GraphQLFieldEvent constructor.
      *
-     * @param GraphQLFieldInfo      $info
-     * @param mixed                 $root
-     * @param array                 $args
-     * @param FieldExecutionContext $context
-     * @param mixed|null            $value
+     * @param ResolverContext $context
+     * @param mixed|null      $value
      */
-    public function __construct(GraphQLFieldInfo $info, $root, array $args, FieldExecutionContext $context = null, $value = null)
+    public function __construct(ResolverContext $context, $value = null)
     {
-        $this->info = $info;
-        $this->root = $root;
-        $this->args = $args;
         $this->context = $context;
         $this->value = $value;
     }
 
     /**
-     * @return GraphQLFieldInfo
+     * @return ResolverContext
      */
-    public function getInfo(): GraphQLFieldInfo
-    {
-        return $this->info;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getRoot()
-    {
-        return $this->root;
-    }
-
-    /**
-     * @return array
-     */
-    public function getArgs(): array
-    {
-        return $this->args;
-    }
-
-    /**
-     * @return FieldExecutionContext
-     */
-    public function getContext()
+    public function getContext(): ResolverContext
     {
         return $this->context;
     }

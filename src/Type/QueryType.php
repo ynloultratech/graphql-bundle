@@ -66,7 +66,7 @@ class QueryType extends ObjectType implements
 
         $config['args'] = GraphQLBuilder::buildArguments($query);
 
-        $config['resolve'] = new ResolverExecutor($this->container, $this->endpoint, $query);
+        $config['resolve'] = new ResolverExecutor($this->container, $query);
         $config['description'] = $query->getDescription();
         $config['deprecationReason'] = $query->getDeprecationReason();
 

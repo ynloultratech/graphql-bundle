@@ -27,7 +27,7 @@ use Ynlo\GraphQLBundle\Error\ErrorHandlerInterface;
 use Ynlo\GraphQLBundle\Error\ErrorQueue;
 use Ynlo\GraphQLBundle\Request\ExecuteQuery;
 use Ynlo\GraphQLBundle\Request\RequestMiddlewareInterface;
-use Ynlo\GraphQLBundle\Resolver\QueryExecutionContext;
+use Ynlo\GraphQLBundle\Resolver\ResolverContext;
 use Ynlo\GraphQLBundle\Schema\SchemaCompiler;
 use Ynlo\GraphQLBundle\Security\EndpointResolver;
 
@@ -154,7 +154,7 @@ class GraphQLEndpointController
                 throw new AccessDeniedHttpException();
             }
 
-            $context = new QueryExecutionContext($endpoint);
+            $context = new ResolverContext($endpoint);
             $validationRules = null;
 
             $schema = $this->compiler->compile($endpoint);

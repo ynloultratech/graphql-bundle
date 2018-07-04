@@ -24,7 +24,7 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Pagination\DoctrineCursorPaginatorInterface;
 use Ynlo\GraphQLBundle\Pagination\DoctrineOffsetCursorPaginator;
 use Ynlo\GraphQLBundle\Pagination\PaginationRequest;
-use Ynlo\GraphQLBundle\Resolver\QueryExecutionContext;
+use Ynlo\GraphQLBundle\Resolver\ResolverContext;
 
 /**
  * Base class to fetch nodes
@@ -32,14 +32,14 @@ use Ynlo\GraphQLBundle\Resolver\QueryExecutionContext;
 class AllNodesWithPagination extends AllNodes
 {
     /**
-     * @param array[]               $args
-     * @param QueryExecutionContext $context
+     * @param array[]         $args
+     * @param ResolverContext $context
      *
      * @return mixed
      *
      * @throws Error
      */
-    public function __invoke($args = [], QueryExecutionContext $context)
+    public function __invoke($args = [], ResolverContext $context)
     {
         $orderBy = $args['orderBy'] ?? [];
         $first = $args['first'] ?? null;
@@ -55,8 +55,8 @@ class AllNodesWithPagination extends AllNodes
         $qb = $this->createQuery();
         $this->applyOrderBy($qb, $orderBy);
 
-        if ($this->getContext()->getRoot()) {
-            $this->applyFilterByParent($qb, $this->getContext()->getRoot());
+        if ($context->getRoot()) {
+            $this->applyFilterByParent($qb, $context->getRoot());
         }
 
         if ($search) {
@@ -158,13 +158,13 @@ class AllNodesWithPagination extends AllNodes
     }
 
     /**
-     * @param QueryExecutionContext $context
-     * @param QueryBuilder          $qb
-     * @param array                 $where
+     * @param ResolverContext $context
+     * @param QueryBuilder    $qb
+     * @param array           $where
      *
      * @throws \ReflectionException
      */
-    protected function applyWhere(QueryExecutionContext $context, QueryBuilder $qb, array $where): void
+    protected function applyWhere(ResolverContext $context, QueryBuilder $qb, array $where): void
     {
         $whereType = $context->getDefinition()->getArgument('where')->getType();
 

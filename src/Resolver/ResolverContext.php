@@ -21,6 +21,16 @@ use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 class ResolverContext
 {
     /**
+     * @var Endpoint
+     */
+    protected $endpoint;
+
+    /**
+     * @var ExecutableDefinitionInterface
+     */
+    protected $definition;
+
+    /**
      * @var mixed
      */
     protected $root;
@@ -28,7 +38,7 @@ class ResolverContext
     /**
      * @var ObjectDefinitionInterface
      */
-    protected $nodeDefinition;
+    protected $node;
 
     /**
      * Array of arguments given
@@ -38,90 +48,34 @@ class ResolverContext
     protected $args = [];
 
     /**
-     * @var ExecutableDefinitionInterface
-     */
-    protected $definition;
-
-    /**
-     * @var Endpoint
-     */
-    protected $endpoint;
-
-    /**
      * @var ResolveInfo
      */
     protected $resolveInfo;
 
     /**
-     * @return mixed
-     */
-    public function getRoot()
-    {
-        return $this->root;
-    }
-
-    /**
-     * @param mixed $root
-     */
-    public function setRoot($root)
-    {
-        $this->root = $root;
-    }
-
-    /**
-     * @return ObjectDefinitionInterface
-     */
-    public function getNodeDefinition(): ObjectDefinitionInterface
-    {
-        return $this->nodeDefinition;
-    }
-
-    /**
-     * @param ObjectDefinitionInterface $nodeDefinition
-     */
-    public function setNodeDefinition(ObjectDefinitionInterface $nodeDefinition)
-    {
-        $this->nodeDefinition = $nodeDefinition;
-    }
-
-    /**
-     * @return array
-     */
-    public function getArgs(): array
-    {
-        return $this->args;
-    }
-
-    /**
-     * @return mixed
-     */
-    public function getArg(string $name)
-    {
-        return $this->args[$name];
-    }
-
-    /**
-     * @param array $args
-     */
-    public function setArgs(array $args)
-    {
-        $this->args = $args;
-    }
-
-    /**
-     * @return ExecutableDefinitionInterface
-     */
-    public function getDefinition()
-    {
-        return $this->definition;
-    }
-
-    /**
+     * ResolverContext constructor.
+     *
+     * @param Endpoint                      $endpoint
      * @param ExecutableDefinitionInterface $definition
+     * @param mixed                         $root
+     * @param ObjectDefinitionInterface     $node
+     * @param array                         $args
+     * @param ResolveInfo                   $resolveInfo
      */
-    public function setDefinition(ExecutableDefinitionInterface $definition)
-    {
+    public function __construct(
+        Endpoint $endpoint,
+        ?ExecutableDefinitionInterface $definition = null,
+        $root = null,
+        ?ObjectDefinitionInterface $node = null,
+        array $args = [],
+        ?ResolveInfo $resolveInfo = null
+    ) {
+        $this->endpoint = $endpoint;
         $this->definition = $definition;
+        $this->root = $root;
+        $this->node = $node;
+        $this->args = $args;
+        $this->resolveInfo = $resolveInfo;
     }
 
     /**
@@ -133,11 +87,45 @@ class ResolverContext
     }
 
     /**
-     * @param Endpoint $endpoint
+     * @return ExecutableDefinitionInterface
      */
-    public function setEndpoint(Endpoint $endpoint)
+    public function getDefinition(): ExecutableDefinitionInterface
     {
-        $this->endpoint = $endpoint;
+        return $this->definition;
+    }
+
+    /**
+     * @return mixed|null
+     */
+    public function getRoot()
+    {
+        return $this->root;
+    }
+
+    /**
+     * @deprecated use getNode() instead
+     *
+     * @return ObjectDefinitionInterface|null
+     */
+    public function getNodeDefinition(): ?ObjectDefinitionInterface
+    {
+        return $this->getNode();
+    }
+
+    /**
+     * @return ObjectDefinitionInterface|null
+     */
+    public function getNode(): ?ObjectDefinitionInterface
+    {
+        return $this->node;
+    }
+
+    /**
+     * @return array
+     */
+    public function getArgs(): array
+    {
+        return $this->args;
     }
 
     /**
@@ -146,13 +134,5 @@ class ResolverContext
     public function getResolveInfo(): ResolveInfo
     {
         return $this->resolveInfo;
-    }
-
-    /**
-     * @param ResolveInfo $resolveInfo
-     */
-    public function setResolveInfo(ResolveInfo $resolveInfo)
-    {
-        $this->resolveInfo = $resolveInfo;
     }
 }

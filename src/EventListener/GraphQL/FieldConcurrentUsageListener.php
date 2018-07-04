@@ -12,6 +12,7 @@ namespace Ynlo\GraphQLBundle\EventListener\GraphQL;
 
 use GraphQL\Error\Error;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Events\GraphQLEvents;
 use Ynlo\GraphQLBundle\Events\GraphQLFieldEvent;
 
@@ -37,11 +38,10 @@ class FieldConcurrentUsageListener implements EventSubscriberInterface
      */
     public function preReadField(GraphQLFieldEvent $event)
     {
-        $definition = $event->getInfo()->getField();
-        if ($maxConcurrentUsage = $definition->getMaxConcurrentUsage()) {
+        $definition = $event->getContext()->getDefinition();
+        if ($definition instanceof FieldDefinition && $maxConcurrentUsage = $definition->getMaxConcurrentUsage()) {
             $oid = spl_object_hash($definition);
-            $queryId = $event->getContext()->getQueryContext()->getQueryId();
-            $usages = static::$concurrentUsages[$queryId][$oid] ?? 1;
+            $usages = static::$concurrentUsages[$oid] ?? 1;
             if ($usages > $maxConcurrentUsage) {
                 if (1 === $maxConcurrentUsage) {
                     $error = sprintf(
@@ -57,7 +57,7 @@ class FieldConcurrentUsageListener implements EventSubscriberInterface
                 }
                 throw new Error($error);
             }
-            static::$concurrentUsages[$queryId][$oid] = $usages + 1;
+            static::$concurrentUsages[$oid] = $usages + 1;
         }
     }
 }

@@ -51,12 +51,12 @@ final class QueryList
     /**
      * @var string[]
      */
-    public $searchFields = [];
+    public $searchFields = ['*'];
 
     /**
      * @var array
      */
-    public $filters = [];
+    public $filters = ['*'];
 
     /**
      * @var int
