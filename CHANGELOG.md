@@ -1,4 +1,4 @@
-v1.1.x - [Unreleased]
+v1.2.0 - [Unreleased]
 ----
  * Added input type guesser to guess the correctness GraphQL type in forms fields [#10](https://github.com/ynloultratech/graphql-bundle/issues/10)
  * Removed experimental `roles` and role AuthorizationChecker.
@@ -6,6 +6,8 @@ v1.1.x - [Unreleased]
  * Added `Date` type using *ISO-8601* format: 2018-06-21
  * Added `Time` type using *ISO-8601* format: 13:18:05
  * Fixed Private properties marked as @Field from parent objects are not correctly inherited
+ * Added `where` in lists to support filters with advanced settings
+ * Deprecate `filter` in list pagination in favor of more advanced `where` field
 
 v1.1.3 - 2018-07-03
 ----
