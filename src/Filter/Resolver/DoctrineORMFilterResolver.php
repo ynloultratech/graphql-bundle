@@ -17,6 +17,7 @@ use Ynlo\GraphQLBundle\Annotation\Filter;
 use Ynlo\GraphQLBundle\Definition\ClassAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\EnumDefinition;
 use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
+use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
@@ -29,13 +30,13 @@ use Ynlo\GraphQLBundle\Filter\Common\NumberFilter;
 use Ynlo\GraphQLBundle\Filter\Common\StringFilter;
 use Ynlo\GraphQLBundle\Filter\FilterResolverInterface;
 use Ynlo\GraphQLBundle\Model\Filter\ArrayComparisonExpression;
+use Ynlo\GraphQLBundle\Model\Filter\DateComparisonExpression;
 use Ynlo\GraphQLBundle\Model\Filter\DateTimeComparisonExpression;
 use Ynlo\GraphQLBundle\Model\Filter\EnumComparisonExpression;
 use Ynlo\GraphQLBundle\Model\Filter\FloatComparisonExpression;
 use Ynlo\GraphQLBundle\Model\Filter\IntegerComparisonExpression;
 use Ynlo\GraphQLBundle\Model\Filter\NodeComparisonExpression;
 use Ynlo\GraphQLBundle\Model\Filter\StringComparisonExpression;
-use Ynlo\GraphQLBundle\Type\DateComparisonOperatorType;
 use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 use Ynlo\GraphQLBundle\Type\Types;
 use Ynlo\GraphQLBundle\Util\TypeUtil;
@@ -104,7 +105,7 @@ class DoctrineORMFilterResolver implements FilterResolverInterface
                         break;
                     case Types::DATE:
                         $filter->resolver = DateFilter::class;
-                        $filter->type = DateComparisonOperatorType::class;
+                        $filter->type = DateComparisonExpression::class;
                         break;
                     case Types::DATETIME:
                         $filter->resolver = DateFilter::class;
@@ -121,9 +122,18 @@ class DoctrineORMFilterResolver implements FilterResolverInterface
                 }
 
                 //relations and enums
-                if (!$filter && $endpoint->hasType($field->getType())) {
+                if (!$filter->resolver && $endpoint->hasType($field->getType())) {
                     $relatedNode = $endpoint->getType($field->getType());
-                    if ($relatedNode instanceof ClassAwareDefinitionInterface) {
+
+                    //enum registered using enum definition
+                    if ($relatedNode instanceof EnumDefinition) {
+                        $enumName = $relatedNode->getName();
+                        foreach ($relatedNode->getValues() as $value) {
+                            $enumValues[] = $value->getName();
+                        }
+                        $filter = $this->createEnumFilter($endpoint, $field, $enumName, $enumValues);
+                        $filter->field = $field->getName();
+                    } elseif ($relatedNode instanceof ClassAwareDefinitionInterface) {
                         $relatedEntity = $relatedNode->getClass();
                         try {
                             if ($this->manager->getClassMetadata($relatedEntity)) {
@@ -131,47 +141,20 @@ class DoctrineORMFilterResolver implements FilterResolverInterface
                                 $filter->type = NodeComparisonExpression::class;
                             }
                         } catch (MappingException $exception) {
-                            //if not mapped check if is ENUM
-                            $enumName = null;
-                            $enumValues = [];
-                            if ($relatedNode instanceof EnumDefinition) {
-                                $enumName = $relatedNode->getName();
-                                foreach ($relatedNode->getValues() as $value) {
-                                    $enumValues[] = $value->getName();
-                                }
-                            } elseif (TypeRegistry::has($relatedNode->getName())
-                                      && ($enumType = TypeRegistry::get($relatedNode->getName()))
-                                      && $enumType instanceof EnumType) {
-                                $enumName = $enumType->name;
-                                foreach ($enumType->getValues() as $value) {
-                                    $enumValues[] = $value->name;
-                                }
-                            }
-
-                            if ($enumName) {
-                                $name = "{$enumName}ComparisonExpression";
-                                if ($endpoint->hasType($name)) {
-                                    $condition = $endpoint->getType($name);
-                                } else {
-                                    /** @var InputObjectDefinition $condition */
-                                    $condition = unserialize(serialize($endpoint->getType(EnumComparisonExpression::class)), ['allowed_classes' => true]);
-                                    $condition->setName($name);
-                                    $condition->getField('values')->setType($enumName)->setList(true);
-                                    $description = $condition->getDescription();
-                                    $description = str_replace('\'{VALUE_1}\'', array_values($enumValues)[0], $description);
-                                    if (isset(array_values($enumValues)[1])) {
-                                        $description = str_replace('\'{VALUE_2}\'', array_values($enumValues)[1], $description);
-                                    } else {
-                                        $description = str_replace(', \'{VALUE_2}\'', null, $description);
-                                    }
-                                    $condition->setDescription($description);
-                                    $endpoint->add($condition);
-                                }
-                                $filter->resolver = EnumFilter::class;
-                                $filter->type = $condition->getName();
-                            }
+                            //ignore
                         }
                     }
+                }
+
+                //enum registered as internal GraphQL type
+                if (!$filter->resolver && TypeRegistry::has($field->getType())
+                    && ($enumType = TypeRegistry::get($field->getType()))
+                    && $enumType instanceof EnumType) {
+                    $enumName = $enumType->name;
+                    foreach ($enumType->getValues() as $value) {
+                        $enumValues[] = $value->name;
+                    }
+                    $filter = $this->createEnumFilter($endpoint, $field, $enumName, $enumValues);
                 }
 
                 if ($filter->resolver) {
@@ -183,5 +166,41 @@ class DoctrineORMFilterResolver implements FilterResolverInterface
         } catch (MappingException $exception) {
             return [];
         }
+    }
+
+    /**
+     * @param Endpoint        $endpoint
+     * @param FieldDefinition $field
+     * @param string          $enumName
+     * @param array           $enumValues
+     *
+     * @return Filter
+     */
+    private function createEnumFilter(Endpoint $endpoint, FieldDefinition $field, string $enumName, array $enumValues): Filter
+    {
+        $name = "{$enumName}ComparisonExpression";
+        if ($endpoint->hasType($name)) {
+            $condition = $endpoint->getType($name);
+        } else {
+            /** @var InputObjectDefinition $condition */
+            $condition = unserialize(serialize($endpoint->getType(EnumComparisonExpression::class)), ['allowed_classes' => true]);
+            $condition->setName($name);
+            $condition->getField('values')->setType($enumName)->setList(true);
+            $description = $condition->getDescription();
+            $description = str_replace('\'{VALUE_1}\'', array_values($enumValues)[0], $description);
+            if (isset(array_values($enumValues)[1])) {
+                $description = str_replace('\'{VALUE_2}\'', array_values($enumValues)[1], $description);
+            } else {
+                $description = str_replace(', \'{VALUE_2}\'', null, $description);
+            }
+            $condition->setDescription($description);
+            $endpoint->add($condition);
+        }
+        $filter = new Filter();
+        $filter->name = $filter->field = $field->getName();
+        $filter->resolver = EnumFilter::class;
+        $filter->type = $condition->getName();
+
+        return $filter;
     }
 }

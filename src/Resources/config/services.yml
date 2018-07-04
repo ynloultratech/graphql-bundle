@@ -402,5 +402,6 @@ services:
           - graphql.filter_resolver
 
     Ynlo\GraphQLBundle\Filter\Resolver\CustomGenericFilterResolver:
+        arguments: ['@annotations.reader' ]
         tags:
           - graphql.filter_resolver

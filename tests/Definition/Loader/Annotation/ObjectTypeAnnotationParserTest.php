@@ -44,7 +44,7 @@ class ObjectTypeAnnotationParserTest extends MockeryTestCase
         self::assertTrue($endpoint->hasTypeForClass(Post::class));
         /** @var ObjectDefinition $commentDefinition */
         $commentDefinition = $endpoint->getType(Post::class);
-        self::assertCount(10, $commentDefinition->getFields());
+        self::assertCount(16, $commentDefinition->getFields());
 
         //fields
         self::assertNotNull($commentDefinition->getField('id'));

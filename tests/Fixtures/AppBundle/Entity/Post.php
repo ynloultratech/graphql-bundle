@@ -16,6 +16,7 @@ use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Model\Message;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Model\NodeNamedTrait;
+use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Types\PostStatusType;
 
 /**
  * @ORM\Entity()
@@ -40,9 +41,10 @@ class Post extends Message implements NodeInterface
 
     /**
      * @var int|null
+     *
+     * @ORM\Column(type="id")
      */
     protected $id;
-
 
     /**
      * @var Topic
@@ -52,11 +54,57 @@ class Post extends Message implements NodeInterface
     protected $topic;
 
     /**
-     * @ORM\Column(type="simple_array")
+     * @var string
      *
+     * @GraphQL\Field(type="PostStatus")
+     *
+     * @ORM\Column(type="string")
+     */
+    protected $status = PostStatusType::DRAFT;
+
+    /**
+     * @var string
+     *
+     * @GraphQL\Field(type="PostType")
+     *
+     * @ORM\Column(type="string")
+     */
+    protected $type;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(type="boolean")
+     */
+    protected $private = false;
+
+    /**
+     * @var int
+     *
+     * @ORM\Column(type="integer")
+     */
+    protected $views = 0;
+
+    /**
      * @var string[]
+     *
+     * @ORM\Column(type="simple_array")
      */
     protected $tags = [];
+
+    /**
+     * @var float
+     *
+     * @ORM\Column(type="float")
+     */
+    protected $rate = 0.00;
+
+    /**
+     * @var Collection
+     *
+     * @ORM\ManyToMany(targetEntity="Category")
+     */
+    protected $categories;
 
     /**
      * @var Collection|Comment[]
@@ -85,11 +133,11 @@ class Post extends Message implements NodeInterface
      * @GraphQL\Field(type="boolean")
      * @GraphQL\Argument(name="tag", type="string!", internalName="tagName")
      *
-     * @param string $tag
+     * @param string $tagName
      *
      * @return bool
      */
-    public function containsTag($tagName)
+    public function containsTag($tagName): bool
     {
         return \in_array($tagName, $this->tags);
     }

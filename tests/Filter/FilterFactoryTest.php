@@ -27,19 +27,42 @@ use Ynlo\GraphQLBundle\Tests\TestDefinitionHelper;
 
 class FilterFactoryTest extends MockeryTestCase
 {
-    public function testBuild()
+    /**
+     * @var array
+     */
+    protected $filters = [];
+
+    /**
+     * @var FilterFactory
+     */
+    protected $factory;
+
+    /**
+     * @var ObjectDefinition
+     */
+    protected $node;
+
+    /**
+     * @var Endpoint
+     */
+    protected $endpoint;
+
+    /**
+     * @inheritDoc
+     */
+    protected function setUp()
     {
-        $endpoint = new Endpoint('default');
-        TestDefinitionHelper::loadAnnotationDefinitions(Post::class, $endpoint, [ObjectType::class]);
-
-        /** @var ObjectDefinition $postDefinition */
-        $postDefinition = $endpoint->getType(Post::class);
-
         $titleFilter = new Filter();
         $titleFilter->name = 'title';
         $titleFilter->resolver = StringFilter::class;
         $titleFilter->type = StringComparisonExpression::class;
         $titleFilter->field = 'title';
+
+        $bodyFilter = new Filter();
+        $bodyFilter->name = 'body';
+        $bodyFilter->resolver = StringFilter::class;
+        $bodyFilter->type = StringComparisonExpression::class;
+        $bodyFilter->field = 'body';
 
         $dateFilter = new Filter();
         $dateFilter->name = 'date';
@@ -47,25 +70,65 @@ class FilterFactoryTest extends MockeryTestCase
         $dateFilter->type = DateComparisonExpression::class;
         $dateFilter->field = 'date';
 
-        $resolver = \Mockery::mock(FilterResolverInterface::class);
-        $resolver->expects('resolve')->andReturn([$titleFilter, $dateFilter]);
+        $this->filters = [$titleFilter, $dateFilter, $bodyFilter];
 
+        $this->endpoint = new Endpoint('default');
+        TestDefinitionHelper::loadAnnotationDefinitions(Post::class, $this->endpoint, [ObjectType::class]);
+
+        /** @var ObjectDefinition $postDefinition */
+        $this->node = $this->endpoint->getType(Post::class);
+
+        $resolver = \Mockery::mock(FilterResolverInterface::class);
+        $resolver->expects('resolve')->andReturn($this->filters);
+
+        $this->factory = new FilterFactory([$resolver]);
+    }
+
+    public function testBuild()
+    {
         $query = new QueryDefinition();
         $query->setName('allPosts');
         $query->setMeta('pagination', ['filters' => ['*', 'date' => false]]);
 
-        $factory = new FilterFactory([$resolver]);
-        $factory->build($query, $postDefinition, $endpoint);
+        $this->factory->build($query, $this->node, $this->endpoint);
 
         self::assertTrue($query->hasArgument('where'));
         self::assertEquals('AllPostsCondition', $query->getArgument('where')->getType());
 
         /** @var ObjectDefinition $condition */
-        $condition = $endpoint->getType('AllPostsCondition');
+        $condition = $this->endpoint->getType('AllPostsCondition');
 
-        self::assertCount(1, $condition->getFields());
+        self::assertCount(2, $condition->getFields());
         self::assertEquals(StringComparisonExpression::class, $condition->getField('title')->getType());
         self::assertEquals(StringFilter::class, $condition->getField('title')->getResolver());
         self::assertEquals('title', $condition->getField('title')->getMeta('filter_field'));
+
+        self::assertEquals(StringComparisonExpression::class, $condition->getField('body')->getType());
+        self::assertEquals(StringFilter::class, $condition->getField('body')->getResolver());
+        self::assertEquals('body', $condition->getField('body')->getMeta('filter_field'));
+    }
+
+    public function testBuildExplicitInclusion()
+    {
+        $query = new QueryDefinition();
+        $query->setName('allPosts');
+        $query->setMeta('pagination', ['filters' => ['*' => false, 'title, body' => true]]);
+
+        $this->factory->build($query, $this->node, $this->endpoint);
+
+        self::assertTrue($query->hasArgument('where'));
+        self::assertEquals('AllPostsCondition', $query->getArgument('where')->getType());
+
+        /** @var ObjectDefinition $condition */
+        $condition = $this->endpoint->getType('AllPostsCondition');
+
+        self::assertCount(2, $condition->getFields());
+        self::assertEquals(StringComparisonExpression::class, $condition->getField('title')->getType());
+        self::assertEquals(StringFilter::class, $condition->getField('title')->getResolver());
+        self::assertEquals('title', $condition->getField('title')->getMeta('filter_field'));
+
+        self::assertEquals(StringComparisonExpression::class, $condition->getField('body')->getType());
+        self::assertEquals(StringFilter::class, $condition->getField('body')->getResolver());
+        self::assertEquals('body', $condition->getField('body')->getMeta('filter_field'));
     }
 }

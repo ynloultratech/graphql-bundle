@@ -29,6 +29,18 @@ class EnumValueDefinition implements
     protected $value;
 
     /**
+     * EnumValueDefinition constructor.
+     *
+     * @param string $value
+     * @param string $description
+     */
+    public function __construct(string $value = null, string $description = null)
+    {
+        $this->value = $value;
+        $this->description = $description;
+    }
+
+    /**
      * @return mixed
      */
     public function getValue()

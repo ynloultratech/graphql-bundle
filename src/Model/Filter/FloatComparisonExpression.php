@@ -11,6 +11,7 @@
 namespace Ynlo\GraphQLBundle\Model\Filter;
 
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
+use Ynlo\GraphQLBundle\Type\NumberComparisonOperatorType;
 
 /**
  * @GraphQL\InputObjectType(
@@ -39,7 +40,7 @@ class FloatComparisonExpression
      *
      * @GraphQL\Field(type="NumberComparisonOperator!", description="Comparison operator")
      */
-    private $op;
+    private $op = NumberComparisonOperatorType::EQ;
 
     /**
      * @var float|null

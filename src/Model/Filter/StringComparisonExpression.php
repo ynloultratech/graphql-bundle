@@ -11,6 +11,7 @@
 namespace Ynlo\GraphQLBundle\Model\Filter;
 
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
+use Ynlo\GraphQLBundle\Type\StringComparisonOperatorType;
 
 /**
  * @GraphQL\InputObjectType(
@@ -37,7 +38,7 @@ class StringComparisonExpression
      *
      * @GraphQL\Field(type="StringComparisonOperator", description="Comparison operator, default value: `CONTAINS`")
      */
-    private $op;
+    private $op = StringComparisonOperatorType::EQUAL;
 
     /**
      * @var string|null

@@ -16,6 +16,8 @@ namespace Ynlo\GraphQLBundle\Annotation;
 final class Filter
 {
     /**
+     * Filter input object type
+     *
      * @var string
      */
     public $type;

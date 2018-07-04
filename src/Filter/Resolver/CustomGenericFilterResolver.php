@@ -10,6 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Filter\Resolver;
 
+use Doctrine\Common\Annotations\Reader;
 use Ynlo\GraphQLBundle\Annotation\Filter;
 use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
@@ -31,6 +32,21 @@ use Ynlo\GraphQLBundle\Filter\FilterResolverInterface;
 class CustomGenericFilterResolver implements FilterResolverInterface
 {
     /**
+     * @var Reader
+     */
+    protected $reader;
+
+    /**
+     * CustomGenericFilterResolver constructor.
+     *
+     * @param Reader $reader
+     */
+    public function __construct(Reader $reader)
+    {
+        $this->reader = $reader;
+    }
+
+    /**
      * @inheritDoc
      */
     public function resolve(ExecutableDefinitionInterface $executableDefinition, ObjectDefinitionInterface $node, Endpoint $endpoint): array
@@ -44,6 +60,18 @@ class CustomGenericFilterResolver implements FilterResolverInterface
                         $filter = clone $filter;
                         $filter->name = $filter->field = trim($field);
                         $resolverFilters[] = $filter;
+                    }
+                } elseif (\is_string($filter) && class_exists($filter)) {
+                    $ref = new \ReflectionClass($filter);
+                    $filter = $this->reader->getClassAnnotation($ref, Filter::class);
+                    if ($filter) {
+                        $fields = explode(',', $fields);
+                        foreach ($fields as $field) {
+                            $filter = clone $filter;
+                            $filter->name = $filter->field = trim($field);
+                            $filter->resolver = $ref->getName();
+                            $resolverFilters[] = $filter;
+                        }
                     }
                 }
             }

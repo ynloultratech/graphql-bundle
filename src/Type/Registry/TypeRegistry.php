@@ -181,6 +181,10 @@ class TypeRegistry
             }
         }
 
+        if (!array_key_exists($name, self::$types) && array_key_exists($name, self::$typesMap)) {
+            static::create($name);
+        }
+
         return array_key_exists($name, self::$types);
     }
 

@@ -67,9 +67,10 @@ class NamingConventionFilterResolver implements FilterResolverInterface
         }
 
         $paths = [];
+        $bundles = $this->kernel->getBundles();
         foreach ($types as $type) {
             //search for filters using naming convention inside Bundle/Filter/...
-            foreach ($this->kernel->getBundles() as $bundle) {
+            foreach ($bundles as $bundle) {
                 $path = "{$bundle->getPath()}/Filter/$type";
                 if (file_exists($path)) {
                     $paths[$path] = "{$bundle->getNamespace()}\Filter\\$type";

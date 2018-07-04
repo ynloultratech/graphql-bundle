@@ -12,6 +12,7 @@ namespace Ynlo\GraphQLBundle\Model\Filter;
 
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
+use Ynlo\GraphQLBundle\Type\NodeComparisonOperatorType;
 
 /**
  * @GraphQL\InputObjectType(
@@ -38,7 +39,7 @@ class NodeComparisonExpression
      *
      * @GraphQL\Field(type="NodeComparisonOperator", description="Comparison operator, default `IN`")
      */
-    private $op;
+    private $op = NodeComparisonOperatorType::IN;
 
     /**
      * @var NodeInterface[]

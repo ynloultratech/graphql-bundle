@@ -51,8 +51,21 @@ class FilterFactory
         $filters = array_reverse(array_merge(... $filters));
 
         //unset resolved but not allowed filters
-        foreach ($filters as $index => $filter) {
-            if (($pagination = $executableDefinition->getMeta('pagination')) && $allowedFilters = $pagination['filters'] ?? []) {
+        if (($pagination = $executableDefinition->getMeta('pagination')) && $allowedFilters = $pagination['filters'] ?? []) {
+            //normalize comma separated names
+            foreach ($allowedFilters as $filtersNames => $option) {
+                if (strpos($filtersNames, ',') !== false) {
+                    $filtersNamesArray = explode(',', $filtersNames);
+                    foreach ($filtersNamesArray as $name) {
+                        $name = trim($name);
+                        if (!isset($allowedFilters[$name])) {
+                            $allowedFilters[$name] = $option;
+                        }
+                    }
+                }
+            }
+
+            foreach ($filters as $index => $filter) {
                 $allowed = $allowedFilters['*'] ?? \in_array('*', $allowedFilters, true);
                 if (isset($allowedFilters[$filter->name])) {
                     $allowed = $allowedFilters[$filter->name];

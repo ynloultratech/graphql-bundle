@@ -29,7 +29,7 @@ abstract class Message implements HasAuthorInterface
     protected $body;
 
     /**
-     * @GraphQL\Field(type="date")
+     * @GraphQL\Field(type="datetime")
      *
      * @ORM\Column(type="datetime")
      *
