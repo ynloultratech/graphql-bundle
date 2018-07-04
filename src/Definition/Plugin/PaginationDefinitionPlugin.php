@@ -243,62 +243,6 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin
      * @param Endpoint                      $endpoint
      *
      * @throws \ReflectionException
-     */
-    private function addWhere(ExecutableDefinitionInterface $definition, string $targetType, Endpoint $endpoint): void
-    {
-        $whereName = ucfirst($definition->getName()).'Condition';
-        if ($endpoint->hasType($whereName)) {
-            $wheres = $endpoint->getType($whereName);
-        } else {
-            $wheres = new InputObjectDefinition();
-            $wheres->setName($whereName);
-            $endpoint->add($wheres);
-
-            $field = new FieldDefinition();
-            $field->setName('createdAt');
-            $field->setType(DateTimeComparisonExpression::class);
-            $wheres->addField($field);
-
-            $field = new FieldDefinition();
-            $field->setName('name');
-            $field->setType(StringComparisonExpression::class);
-            $wheres->addField($field);
-
-            $field = new FieldDefinition();
-            $field->setName('age');
-            $field->setType(IntegerComparisonExpression::class);
-            $wheres->addField($field);
-
-            $field = new FieldDefinition();
-            $field->setName('credits');
-            $field->setType(FloatComparisonExpression::class);
-            $wheres->addField($field);
-
-            $field = new FieldDefinition();
-            $field->setName('categories');
-            $field->setType(NodeComparisonExpression::class);
-            $wheres->addField($field);
-        }
-
-        if (!$wheres->getFields()) {
-            return;
-        }
-
-        $where = new ArgumentDefinition();
-        $where->setName('where');
-        $where->setType($wheres->getName());
-        $where->setNonNull(false);
-        $where->setDescription('Filter the list using conditions');
-
-        $definition->addArgument($where);
-    }
-
-    /**
-     * @param ExecutableDefinitionInterface $definition
-     * @param string                        $targetType
-     * @param Endpoint                      $endpoint
-     *
-     * @throws \ReflectionException
      *
      * @deprecated since v1.1, should use `where` instead
      */
