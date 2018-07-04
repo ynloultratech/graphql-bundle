@@ -24,7 +24,6 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Pagination\DoctrineCursorPaginatorInterface;
 use Ynlo\GraphQLBundle\Pagination\DoctrineOffsetCursorPaginator;
 use Ynlo\GraphQLBundle\Pagination\PaginationRequest;
-use Ynlo\GraphQLBundle\Resolver\ResolverContext;
 
 /**
  * Base class to fetch nodes
@@ -32,14 +31,13 @@ use Ynlo\GraphQLBundle\Resolver\ResolverContext;
 class AllNodesWithPagination extends AllNodes
 {
     /**
-     * @param array[]         $args
-     * @param ResolverContext $context
+     * @param array[] $args
      *
      * @return mixed
      *
      * @throws Error
      */
-    public function __invoke($args = [], ResolverContext $context)
+    public function __invoke($args = [])
     {
         $orderBy = $args['orderBy'] ?? [];
         $first = $args['first'] ?? null;
@@ -55,8 +53,8 @@ class AllNodesWithPagination extends AllNodes
         $qb = $this->createQuery();
         $this->applyOrderBy($qb, $orderBy);
 
-        if ($context->getRoot()) {
-            $this->applyFilterByParent($qb, $context->getRoot());
+        if ($this->getContext()->getRoot()) {
+            $this->applyFilterByParent($qb, $this->getContext()->getRoot());
         }
 
         if ($search) {
@@ -68,7 +66,7 @@ class AllNodesWithPagination extends AllNodes
         }
 
         if ($where) {
-            $this->applyWhere($context, $qb, $where);
+            $this->applyWhere($qb, $where);
         }
 
         $this->configureQuery($qb);
@@ -158,21 +156,20 @@ class AllNodesWithPagination extends AllNodes
     }
 
     /**
-     * @param ResolverContext $context
      * @param QueryBuilder    $qb
      * @param array           $where
      *
      * @throws \ReflectionException
      */
-    protected function applyWhere(ResolverContext $context, QueryBuilder $qb, array $where): void
+    protected function applyWhere(QueryBuilder $qb, array $where): void
     {
-        $whereType = $context->getDefinition()->getArgument('where')->getType();
+        $whereType = $this->getContext()->getDefinition()->getArgument('where')->getType();
 
         /** @var InputObjectDefinition $whereDefinition */
-        $whereDefinition = $context->getEndpoint()->getType($whereType);
+        $whereDefinition = $this->getContext()->getEndpoint()->getType($whereType);
 
         /** @var ObjectDefinition $node */
-        $node = $context->getEndpoint()->getType($context->getDefinition()->getNode());
+        $node = $this->getContext()->getEndpoint()->getType($this->getContext()->getDefinition()->getNode());
 
         foreach ($where as $filterName => $condition) {
             $filterDefinition = $whereDefinition->getField($filterName);
@@ -184,9 +181,9 @@ class AllNodesWithPagination extends AllNodes
             $fieldName = $filterDefinition->getMeta('filter_field');
             if ($fieldName && $node->hasField($fieldName)) {
                 $relatedField = $node->getField($fieldName);
-                $filterContext = new FilterContext($context->getEndpoint(), $node, $relatedField);
+                $filterContext = new FilterContext($this->getContext()->getEndpoint(), $node, $relatedField);
             } else {
-                $filterContext = new FilterContext($context->getEndpoint(), $node);
+                $filterContext = new FilterContext($this->getContext()->getEndpoint(), $node);
             }
 
             $filter($filterContext, $qb, $condition);
