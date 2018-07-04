@@ -37,8 +37,8 @@ class ReorderDefinitionsPlugin extends AbstractDefinitionPlugin
         foreach ($queries as $query) {
             $name = $query->getName();
             $node = $query->getType();
-            if ($query->hasMeta('node')) {
-                $node = $query->getMeta('node');
+            if ($query->getNode()) {
+                $node = $query->getNode();
             }
             $sortedQueries[$node.'_'.$name] = $query;
         }

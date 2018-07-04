@@ -226,15 +226,11 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin
 
         $definition->setType($connection->getName());
         $definition->setList(false);
-        $definition->setMeta('node', $target);
+        $definition->setNode($target);
         $definition->setMeta('pagination', $config);
 
         if (!$definition->getResolver()) {
             $definition->setResolver(AllNodesWithPagination::class);
-        }
-        if (!$endpoint->hasType($target)) {
-            dump($target);
-            exit;
         }
         $this->filterFactory->build($definition, $endpoint->getType($target), $endpoint);
 

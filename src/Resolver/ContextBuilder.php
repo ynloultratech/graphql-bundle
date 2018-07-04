@@ -101,9 +101,6 @@ final class ContextBuilder
             $type = $definition->getNode();
         }
 
-        if (!$type && $definition->hasMeta('node')) {
-            $type = $definition->getMeta('node');
-        }
         if (!$type) {
             $type = $definition->getType();
         }

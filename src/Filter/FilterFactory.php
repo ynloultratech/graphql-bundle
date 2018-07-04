@@ -80,7 +80,7 @@ class FilterFactory
             return;
         }
 
-        $whereName = ucfirst($executableDefinition->getName()).'Condition';
+        $whereName = $executableDefinition->getNode().'Condition';
         if ($endpoint->hasType($whereName)) {
             $wheres = $endpoint->getType($whereName);
         } else {
