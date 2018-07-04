@@ -26,6 +26,7 @@ use Ynlo\GraphQLBundle\Model\Filter\NodeComparisonExpression;
 use Ynlo\GraphQLBundle\Model\Filter\StringComparisonExpression;
 use Ynlo\GraphQLBundle\Model\UpdateNodePayload;
 use Ynlo\GraphQLBundle\Resolver\ContextBuilder;
+use Ynlo\GraphQLBundle\Resolver\ResolverContext;
 use Ynlo\GraphQLBundle\Resolver\ResolverExecutor;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\Post;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\Profile;
@@ -61,8 +62,12 @@ class ResolverExecutorTest extends MockeryTestCase
         $resolver->expects('setExtensions')->with($extensions);
         $resolver->expects('setEventDispatcher')->with($eventDispatcher);
         $resolver->expects('__invoke')->withArgs(
-            function (User $root, $args) {
+            function (ResolverContext $context, User $root, $args) {
                 self::assertInstanceOf(User::class, $root);
+                self::assertEquals('default', $context->getEndpoint()->getName());
+                self::assertEquals('User', $context->getNode()->getName());
+                self::assertEquals('allUsers', $context->getDefinition()->getName());
+                self::assertEquals($root, $context->getRoot());
                 self::assertEquals(0, $root->getId());
                 self::assertEquals('John', $args['name']);
                 self::assertEquals(1, $args['post']->getId());

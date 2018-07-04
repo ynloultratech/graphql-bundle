@@ -232,8 +232,6 @@ class ResolverExecutor implements ContainerAwareInterface
             }
         }
         $normalizedArguments['args'] = $normalizedArguments;
-        $normalizedArguments['root'] = $this->root;
-        $normalizedArguments['context'] = $this->context;
         $indexedArguments = $this->resolveMethodArguments($refMethod, $normalizedArguments);
         ksort($indexedArguments);
 
@@ -261,12 +259,7 @@ class ResolverExecutor implements ContainerAwareInterface
             }
 
             //inject root common argument
-            if ($this->root
-                && 'root' === $parameter->getName()
-                && $parameter->getClass()
-                && $parameter->getClass()->isInstance($this->root)
-
-            ) {
+            if ($this->root && !isset($incomeArgs['root']) && 'root' === $parameter->getName()) {
                 $orderedArguments[$parameter->getPosition()] = $this->root;
             }
 

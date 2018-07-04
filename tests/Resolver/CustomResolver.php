@@ -11,13 +11,14 @@
 namespace Ynlo\GraphQLBundle\Tests\Resolver;
 
 use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
+use Ynlo\GraphQLBundle\Resolver\ResolverContext;
 
 class CustomResolver extends AbstractResolver
 {
     /**
      * @inheritDoc
      */
-    public function __invoke($root, $args = [])
+    public function __invoke(ResolverContext $context, $root, $args = [])
     {
 
     }
