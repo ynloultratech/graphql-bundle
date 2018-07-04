@@ -88,15 +88,16 @@ class FilterFactoryTest extends MockeryTestCase
     {
         $query = new QueryDefinition();
         $query->setName('allPosts');
+        $query->setNode('Post');
         $query->setMeta('pagination', ['filters' => ['*', 'date' => false]]);
 
         $this->factory->build($query, $this->node, $this->endpoint);
 
         self::assertTrue($query->hasArgument('where'));
-        self::assertEquals('AllPostsCondition', $query->getArgument('where')->getType());
+        self::assertEquals('PostCondition', $query->getArgument('where')->getType());
 
         /** @var ObjectDefinition $condition */
-        $condition = $this->endpoint->getType('AllPostsCondition');
+        $condition = $this->endpoint->getType('PostCondition');
 
         self::assertCount(2, $condition->getFields());
         self::assertEquals(StringComparisonExpression::class, $condition->getField('title')->getType());
@@ -112,15 +113,16 @@ class FilterFactoryTest extends MockeryTestCase
     {
         $query = new QueryDefinition();
         $query->setName('allPosts');
+        $query->setNode('Post');
         $query->setMeta('pagination', ['filters' => ['*' => false, 'title, body' => true]]);
 
         $this->factory->build($query, $this->node, $this->endpoint);
 
         self::assertTrue($query->hasArgument('where'));
-        self::assertEquals('AllPostsCondition', $query->getArgument('where')->getType());
+        self::assertEquals('PostCondition', $query->getArgument('where')->getType());
 
         /** @var ObjectDefinition $condition */
-        $condition = $this->endpoint->getType('AllPostsCondition');
+        $condition = $this->endpoint->getType('PostCondition');
 
         self::assertCount(2, $condition->getFields());
         self::assertEquals(StringComparisonExpression::class, $condition->getField('title')->getType());

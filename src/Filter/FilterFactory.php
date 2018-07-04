@@ -42,6 +42,10 @@ class FilterFactory
      */
     public function build(ExecutableDefinitionInterface $executableDefinition, ObjectDefinitionInterface $node, Endpoint $endpoint): void
     {
+        if (!$executableDefinition->getNode()) {
+            throw new \InvalidArgumentException('The given definition is not related to any valid node and can\'t be filtered');
+        }
+
         $filters = [];
         foreach ($this->resolvers as $resolver) {
             $filters[] = $resolver->resolve($executableDefinition, $node, $endpoint);
