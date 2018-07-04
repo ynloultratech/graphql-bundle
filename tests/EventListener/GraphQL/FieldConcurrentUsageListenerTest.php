@@ -11,22 +11,25 @@
 namespace Ynlo\GraphQLBundle\Tests\EventListener\GraphQL;
 
 use GraphQL\Error\Error;
-use GraphQL\Type\Definition\ResolveInfo;
 use PHPUnit\Framework\TestCase;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
-use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\EventListener\GraphQL\FieldConcurrentUsageListener;
 use Ynlo\GraphQLBundle\Events\GraphQLEvents;
 use Ynlo\GraphQLBundle\Events\GraphQLFieldEvent;
-use Ynlo\GraphQLBundle\Events\GraphQLFieldInfo;
 use Ynlo\GraphQLBundle\Resolver\ContextBuilder;
 
 class FieldConcurrentUsageListenerTest extends TestCase
 {
     public function testSubscribedEvennts()
     {
-        self::assertEquals([GraphQLEvents::PRE_READ_FIELD => 'preReadField'], FieldConcurrentUsageListener::getSubscribedEvents());
+        self::assertEquals(
+            [
+                GraphQLEvents::OPERATION_START => 'operationStart',
+                GraphQLEvents::PRE_READ_FIELD => 'preReadField',
+            ],
+            FieldConcurrentUsageListener::getSubscribedEvents()
+        );
     }
 
     /**
