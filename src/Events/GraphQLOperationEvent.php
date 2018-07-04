@@ -10,9 +10,11 @@
 
 namespace Ynlo\GraphQLBundle\Events;
 
+use Symfony\Component\EventDispatcher\Event;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Request\ExecuteQuery;
 
-class GraphQLOperationEvent
+class GraphQLOperationEvent extends Event
 {
     /**
      * @var ExecuteQuery
@@ -20,7 +22,35 @@ class GraphQLOperationEvent
     protected $operation;
 
     /**
-     * @var string
+     * @var Endpoint
      */
     protected $endpoint;
+
+    /**
+     * GraphQLOperationEvent constructor.
+     *
+     * @param ExecuteQuery $operation
+     * @param Endpoint     $endpoint
+     */
+    public function __construct(ExecuteQuery $operation, Endpoint $endpoint)
+    {
+        $this->operation = $operation;
+        $this->endpoint = $endpoint;
+    }
+
+    /**
+     * @return ExecuteQuery
+     */
+    public function getOperation(): ExecuteQuery
+    {
+        return $this->operation;
+    }
+
+    /**
+     * @return Endpoint
+     */
+    public function getEndpoint(): Endpoint
+    {
+        return $this->endpoint;
+    }
 }

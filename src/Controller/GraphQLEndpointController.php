@@ -17,6 +17,8 @@ use GraphQL\GraphQL;
 use GraphQL\Validator\DocumentValidator;
 use GraphQL\Validator\Rules;
 use Psr\Log\LoggerInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -25,6 +27,8 @@ use Symfony\Component\HttpKernel\Exception\HttpException;
 use Ynlo\GraphQLBundle\Error\ErrorFormatterInterface;
 use Ynlo\GraphQLBundle\Error\ErrorHandlerInterface;
 use Ynlo\GraphQLBundle\Error\ErrorQueue;
+use Ynlo\GraphQLBundle\Events\GraphQLEvents;
+use Ynlo\GraphQLBundle\Events\GraphQLOperationEvent;
 use Ynlo\GraphQLBundle\Request\ExecuteQuery;
 use Ynlo\GraphQLBundle\Request\RequestMiddlewareInterface;
 use Ynlo\GraphQLBundle\Resolver\ResolverContext;
@@ -42,6 +46,11 @@ class GraphQLEndpointController
      * @var SchemaCompiler
      */
     protected $compiler;
+
+    /**
+     * @var EventDispatcherInterface
+     */
+    protected $dispatcher;
 
     /**
      * App Config
@@ -96,6 +105,14 @@ class GraphQLEndpointController
     }
 
     /**
+     * @param EventDispatcherInterface $dispatcher
+     */
+    public function setDispatcher(EventDispatcherInterface $dispatcher): void
+    {
+        $this->dispatcher = $dispatcher;
+    }
+
+    /**
      * @param ErrorHandlerInterface $errorHandler
      */
     public function setErrorHandler(ErrorHandlerInterface $errorHandler): void
@@ -137,6 +154,8 @@ class GraphQLEndpointController
 
     public function __invoke(Request $request): JsonResponse
     {
+        $operationEvent = null;
+
         if (!$this->debug && $request->getMethod() !== Request::METHOD_POST) {
             throw new HttpException(Response::HTTP_BAD_REQUEST, 'The method should be POST to talk with GraphQL API');
         }
@@ -152,6 +171,11 @@ class GraphQLEndpointController
             $endpoint = $this->resolver->resolveEndpoint($request);
             if (!$endpoint) {
                 throw new AccessDeniedHttpException();
+            }
+
+            if ($this->dispatcher) {
+                $operationEvent = new GraphQLOperationEvent($query, $endpoint);
+                $this->dispatcher->dispatch(GraphQLEvents::OPERATION_START, $operationEvent);
             }
 
             $context = new ResolverContext($endpoint);
@@ -202,6 +226,10 @@ class GraphQLEndpointController
             $output = [
                 'errors' => $errors,
             ];
+        }
+
+        if ($this->dispatcher && $operationEvent) {
+            $this->dispatcher->dispatch(GraphQLEvents::OPERATION_END, $operationEvent);
         }
 
         return JsonResponse::create($output, $statusCode);

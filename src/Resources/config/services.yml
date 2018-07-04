@@ -10,6 +10,7 @@ services:
             - [ setMiddlewares, [!tagged graphql.middleware] ]
             - [ setLogger, ['@?monolog.logger'] ]
             - [ setConfig, ['%graphql.config%'] ]
+            - [ setDispatcher, ['@event_dispatcher'] ]
 
     Ynlo\GraphQLBundle\Request\StandardGraphQLRequestMiddleware:
          public: true
