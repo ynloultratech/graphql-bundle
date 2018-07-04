@@ -17,6 +17,7 @@ use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\Util\FieldOptionsHelper;
 
 class FilterFactory
 {
@@ -55,26 +56,9 @@ class FilterFactory
         $filters = array_reverse(array_merge(... $filters));
 
         //unset resolved but not allowed filters
-        if (($pagination = $executableDefinition->getMeta('pagination')) && $allowedFilters = $pagination['filters'] ?? []) {
-            //normalize comma separated names
-            foreach ($allowedFilters as $filtersNames => $option) {
-                if (strpos($filtersNames, ',') !== false) {
-                    $filtersNamesArray = explode(',', $filtersNames);
-                    foreach ($filtersNamesArray as $name) {
-                        $name = trim($name);
-                        if (!isset($allowedFilters[$name])) {
-                            $allowedFilters[$name] = $option;
-                        }
-                    }
-                }
-            }
-
+        if (($pagination = $executableDefinition->getMeta('pagination')) && $options = $pagination['filters'] ?? ['*']) {
             foreach ($filters as $index => $filter) {
-                $allowed = $allowedFilters['*'] ?? \in_array('*', $allowedFilters, true);
-                if (isset($allowedFilters[$filter->name])) {
-                    $allowed = $allowedFilters[$filter->name];
-                }
-                if (!$allowed) {
+                if (!FieldOptionsHelper::isEnabled($options, $filter->name)) {
                     unset($filters[$index]);
                 }
             }

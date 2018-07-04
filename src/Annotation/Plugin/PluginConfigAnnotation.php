@@ -20,10 +20,21 @@ abstract class PluginConfigAnnotation
 {
     public function __construct(array $config = [])
     {
+        $ref = new \ReflectionClass(get_class($this));
+        $properties = $ref->getProperties();
+
+        //set default values
+        foreach ($properties as $property) {
+            $property->setAccessible(true);
+            $value = $property->getValue($this);
+            if (null !== $value) {
+                $this->config[Inflector::tableize($property->getName())] = $property->getValue($this);
+            }
+        }
+
         //if only one value is given, the first property is set with the given value
         if (isset($config['value']) && count($config) === 1) {
-            $ref = new \ReflectionClass(get_class($this));
-            if ($ref->getProperties()) {
+            if ($properties) {
                 $propName = $ref->getProperties()[0]->getName();
                 $this->$propName = $config['value'];
                 $this->config[Inflector::tableize($propName)] = $config['value'];

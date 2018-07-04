@@ -30,6 +30,16 @@ class Pagination extends PluginConfigAnnotation
     public $limit;
 
     /**
+     * @var string[]
+     */
+    public $orderBy = ['*'];
+
+    /**
+     * @var array
+     */
+    public $filters = ['*'];
+
+    /**
      * Target node to properly paginate.
      * If is possible will be auto-resolved using naming conventions
      *

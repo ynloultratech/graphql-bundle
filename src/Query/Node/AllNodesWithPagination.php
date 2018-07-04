@@ -39,7 +39,8 @@ class AllNodesWithPagination extends AllNodes
      */
     public function __invoke($args = [])
     {
-        $orderBy = $args['orderBy'] ?? [];
+        //keep orderBy for BC
+        $orderBy = array_merge($args['orderBy'] ?? [], $args['order'] ?? []);
         $first = $args['first'] ?? null;
         $last = $args['last'] ?? null;
         $before = $args['before'] ?? null;

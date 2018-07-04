@@ -31,12 +31,14 @@ class EnumValueDefinition implements
     /**
      * EnumValueDefinition constructor.
      *
+     * @param string $name
      * @param string $value
      * @param string $description
      */
-    public function __construct(string $value = null, string $description = null)
+    public function __construct(string $name = null, string $value = null, string $description = null)
     {
-        $this->value = $value;
+        $this->name = $name;
+        $this->value = $value ?? $name;
         $this->description = $description;
     }
 

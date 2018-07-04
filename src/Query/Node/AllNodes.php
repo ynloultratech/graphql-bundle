@@ -50,7 +50,8 @@ class AllNodes extends AbstractResolver
      */
     public function __invoke($args = [])
     {
-        $orderBy = $args['orderBy'] ?? [];
+        //keep orderBy for BC
+        $orderBy = array_merge($args['orderBy'] ?? [], $args['order'] ?? []);
 
         $this->initialize();
         $qb = $this->createQuery();

@@ -1,4 +1,4 @@
-v1.2.0 - [Unreleased]
+v1.2.x - [Unreleased]
 ----
  * Some minors bugs fixed
  * Added input type guesser to guess the correctness GraphQL type in forms fields [#10](https://github.com/ynloultratech/graphql-bundle/issues/10)
@@ -7,8 +7,10 @@ v1.2.0 - [Unreleased]
  * Added `Time` type using *ISO-8601* format: 13:18:05
  * Fixed Private properties marked as @Field from parent objects are not correctly inherited
  * Added `where` in lists to support filters with advanced settings
- * Deprecate `filter` in list pagination in favor of more advanced `where` field
+ * Deprecated `filter` in list pagination in favor of more advanced `where` field
  * Added `graphql.operationStart` and `graphql.operationEnd` events
+ * Added `order` as better alternative to sort collections of nodes
+ * Deprecated `orderBy` in collections in favor of `order` which uses enum for field names
 
 v1.1.3 - 2018-07-03
 ----

@@ -54,6 +54,11 @@ final class QueryList
     public $searchFields = ['*'];
 
     /**
+     * @var string[]
+     */
+    public $orderBy = ['*'];
+
+    /**
      * @var array
      */
     public $filters = ['*'];

@@ -16,6 +16,7 @@ use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\EnumDefinition;
+use Ynlo\GraphQLBundle\Definition\EnumValueDefinition;
 use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
@@ -24,14 +25,10 @@ use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Filter\FilterFactory;
-use Ynlo\GraphQLBundle\Model\Filter\DateTimeComparisonExpression;
-use Ynlo\GraphQLBundle\Model\Filter\FloatComparisonExpression;
-use Ynlo\GraphQLBundle\Model\Filter\IntegerComparisonExpression;
-use Ynlo\GraphQLBundle\Model\Filter\NodeComparisonExpression;
-use Ynlo\GraphQLBundle\Model\Filter\StringComparisonExpression;
 use Ynlo\GraphQLBundle\Model\OrderBy;
 use Ynlo\GraphQLBundle\Query\Node\AllNodesWithPagination;
 use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
+use Ynlo\GraphQLBundle\Util\FieldOptionsHelper;
 
 /**
  * Convert a simple return of nodes into a paginated collection with edges
@@ -79,6 +76,7 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin
                ->isRequired();
         $config->variableNode('filters')
                ->info('Filters configuration');
+        $config->variableNode('order_by');
         $config->integerNode('limit')->info('Max number of records allowed for first & last')->defaultValue($this->limit);
         $config->scalarNode('parent_field')
                ->info('When is used in sub-fields should be the field to filter by parent instance');
@@ -128,6 +126,163 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin
         $search->setDescription('Search in current list by given string');
         $definition->addArgument($search);
 
+        $target = null;
+        if ($definition instanceof FieldDefinition) {
+            $target = $definition->getType();
+        }
+
+        $target = $config['target'] ?? $target;
+        if ($endpoint->hasTypeForClass($target)) {
+            $target = $endpoint->getTypeForClass($target);
+        }
+        $targetNode = $endpoint->getType($target);
+
+        $this->addPaginationArguments($definition);
+        $this->createOrderBy($endpoint, $definition, $targetNode);
+
+        $connection = $this->createConnection($endpoint, $targetNode);
+        $definition->setType($connection->getName());
+        $definition->setList(false);
+        $definition->setNode($target);
+        $definition->setMeta('pagination', $config);
+
+        if (!$definition->getResolver()) {
+            $definition->setResolver(AllNodesWithPagination::class);
+        }
+
+        $this->filterFactory->build($definition, $targetNode, $endpoint);
+
+        //deprecated, keep for BC with v1
+        $this->addFilters($definition, $target, $endpoint);
+    }
+
+    /**
+     * @param Endpoint            $endpoint
+     * @param DefinitionInterface $node
+     *
+     * @return ObjectDefinition
+     */
+    private function createConnection(Endpoint $endpoint, DefinitionInterface $node): ObjectDefinition
+    {
+        $connection = new ObjectDefinition();
+        $connection->setName("{$node->getName()}Connection");
+
+        if (!$endpoint->hasType($connection->getName())) {
+            $endpoint->addType($connection);
+
+            $totalCount = new FieldDefinition();
+            $totalCount->setName('totalCount');
+            $totalCount->setType('Int');
+            $totalCount->setNonNull(true);
+            $connection->addField($totalCount);
+
+            $pageInfo = new FieldDefinition();
+            $pageInfo->setName('pageInfo');
+            $pageInfo->setType('PageInfo');
+            $pageInfo->setNonNull(true);
+            $connection->addField($pageInfo);
+
+            $edgeObject = new ObjectDefinition();
+            $edgeObject->setName("{$node->getName()}Edge");
+            if (!$endpoint->hasType($edgeObject->getName())) {
+                $endpoint->addType($edgeObject);
+
+                $nodeField = new FieldDefinition();
+                $nodeField->setName('node');
+                $nodeField->setType($node->getName());
+                $nodeField->setNonNull(true);
+                $edgeObject->addField($nodeField);
+
+                $cursor = new FieldDefinition();
+                $cursor->setName('cursor');
+                $cursor->setType('string');
+                $cursor->setNonNull(true);
+                $edgeObject->addField($cursor);
+            }
+
+            $edges = new FieldDefinition();
+            $edges->setName('edges');
+            $edges->setType($edgeObject->getName());
+            $edges->setList(true);
+            $connection->addField($edges);
+        } else {
+            $connection = $endpoint->getType($connection->getName());
+        }
+
+        return $connection;
+    }
+
+    /**
+     * @param Endpoint                       $endpoint
+     * @param ExecutableDefinitionInterface  $query
+     * @param FieldsAwareDefinitionInterface $node
+     */
+    private function createOrderBy(Endpoint $endpoint, ExecutableDefinitionInterface $query, FieldsAwareDefinitionInterface $node)
+    {
+        /** @var InputObjectDefinition $orderBy */
+        $orderBy = unserialize(serialize($endpoint->getType(OrderBy::class)), ['allowed_classes' => true]); //clone recursively
+        $orderBy->setName("{$node->getName()}OrderBy");
+
+        if (!$endpoint->hasType($orderBy->getName())) {
+            $orderByFields = new EnumDefinition();
+            $orderByFields->setName("{$node->getName()}OrderByField");
+            $options = $query->getMeta('pagination')['order_by'] ?? ['*'];
+            foreach ($node->getFields() as $field) {
+                if (!FieldOptionsHelper::isEnabled($options, $field->getName())) {
+                    continue;
+                }
+
+                //ignore if non related to entity property
+                if ($field->getOriginType() !== \ReflectionProperty::class) {
+                    continue;
+                }
+
+                //ignore if is a list
+                if ($field->isList()) {
+                    continue;
+                }
+
+                //ignore if is related to other object
+                if ($endpoint->hasType($field->getType()) && $endpoint->getType($field->getType()) instanceof FieldsAwareDefinitionInterface) {
+                    continue;
+                }
+
+                $orderByFields->addValue(new EnumValueDefinition($field->getName()));
+            }
+            if ($orderByFields->getValues()) {
+                $orderBy->getField('field')->setType($orderByFields->getName());
+                $endpoint->addType($orderByFields);
+                $endpoint->addType($orderBy);
+            } else {
+                return;
+            }
+        } else {
+            $orderBy = $endpoint->getType($orderBy->getName());
+        }
+
+        $arg = new ArgumentDefinition();
+        $arg->setName('order');
+        $arg->setType($orderBy->getName());
+        $arg->setNonNull(false);
+        $arg->setList(true);
+        $arg->setDescription('Ordering options for this list.');
+        $query->addArgument($arg);
+
+        //to keep BC
+        $arg = new ArgumentDefinition();
+        $arg->setName('orderBy');
+        $arg->setType(OrderBy::class);
+        $arg->setNonNull(false);
+        $arg->setList(true);
+        $arg->setDescription('**DEPRECATED** use `order` instead.');
+        $query->addArgument($arg);
+    }
+
+    /**
+     * @param ExecutableDefinitionInterface $definition
+     */
+    private function addPaginationArguments(ExecutableDefinitionInterface $definition): void
+    {
         $first = new ArgumentDefinition();
         $first->setName('first');
         $first->setType('int');
@@ -155,86 +310,6 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin
         $before->setNonNull(false);
         $before->setDescription('Returns the last *n* elements from the list.');
         $definition->addArgument($before);
-
-        if (!$definition->hasArgument('orderBy')) {
-            $orderBy = new ArgumentDefinition();
-            $orderBy->setName('orderBy');
-            $orderBy->setType(OrderBy::class);
-            $orderBy->setNonNull(false);
-            $orderBy->setList(true);
-            $orderBy->setDescription('Ordering options for this list.');
-            $definition->addArgument($orderBy);
-        } else {
-            //if exist move to the end
-            $orderBy = $definition->getArgument('orderBy');
-            $definition->removeArgument('orderBy');
-            $definition->addArgument($orderBy);
-        }
-
-        $target = null;
-        if ($definition instanceof FieldDefinition) {
-            $target = $definition->getType();
-        }
-
-        $target = $config['target'] ?? $target;
-        if ($endpoint->hasTypeForClass($target)) {
-            $target = $endpoint->getTypeForClass($target);
-        }
-
-        $connection = new ObjectDefinition();
-        $connection->setName(ucfirst($target).'Connection');
-
-        if (!$endpoint->hasType($connection->getName())) {
-            $endpoint->addType($connection);
-
-            $totalCount = new FieldDefinition();
-            $totalCount->setName('totalCount');
-            $totalCount->setType('Int');
-            $totalCount->setNonNull(true);
-            $connection->addField($totalCount);
-
-            $pageInfo = new FieldDefinition();
-            $pageInfo->setName('pageInfo');
-            $pageInfo->setType('PageInfo');
-            $pageInfo->setNonNull(true);
-            $connection->addField($pageInfo);
-
-            $edgeObject = new ObjectDefinition();
-            $edgeObject->setName(ucfirst($target).'Edge');
-            if (!$endpoint->hasType($edgeObject->getName())) {
-                $endpoint->addType($edgeObject);
-
-                $node = new FieldDefinition();
-                $node->setName('node');
-                $node->setType($target);
-                $node->setNonNull(true);
-                $edgeObject->addField($node);
-
-                $cursor = new FieldDefinition();
-                $cursor->setName('cursor');
-                $cursor->setType('string');
-                $cursor->setNonNull(true);
-                $edgeObject->addField($cursor);
-            }
-
-            $edges = new FieldDefinition();
-            $edges->setName('edges');
-            $edges->setType($edgeObject->getName());
-            $edges->setList(true);
-            $connection->addField($edges);
-        }
-
-        $definition->setType($connection->getName());
-        $definition->setList(false);
-        $definition->setNode($target);
-        $definition->setMeta('pagination', $config);
-
-        if (!$definition->getResolver()) {
-            $definition->setResolver(AllNodesWithPagination::class);
-        }
-        $this->filterFactory->build($definition, $endpoint->getType($target), $endpoint);
-
-        $this->addFilters($definition, $target, $endpoint);
     }
 
     /**
@@ -244,7 +319,7 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin
      *
      * @throws \ReflectionException
      *
-     * @deprecated since v1.1, should use `where` instead
+     * @deprecated since v1.2, should use `where` instead
      */
     private function addFilters(ExecutableDefinitionInterface $definition, string $targetType, Endpoint $endpoint): void
     {

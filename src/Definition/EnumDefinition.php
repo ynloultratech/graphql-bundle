@@ -26,7 +26,7 @@ class EnumDefinition implements
     /**
      * @var EnumValueDefinition[]
      */
-    protected $values;
+    protected $values = [];
 
     /**
      * @return EnumValueDefinition[]

@@ -64,6 +64,13 @@ class QueryListAnnotationParser extends QueryAnnotationParser
             $annotation->options['pagination']['filters'] = $annotation->filters;
         }
 
+        if ($annotation->orderBy) {
+            if (!\is_array($annotation->options['pagination'])) {
+                $annotation->options['pagination'] = [];
+            }
+            $annotation->options['pagination']['order_by'] = $annotation->orderBy;
+        }
+
         $bundleNamespace = ClassUtils::relatedBundleNamespace($refClass->getName());
 
         $resolver = ClassUtils::applyNamingConvention($bundleNamespace, 'Query', $definition->getName(), $annotation->name);
