@@ -29,8 +29,14 @@ class FieldConcurrentUsageListener implements EventSubscriberInterface
     public static function getSubscribedEvents()
     {
         return [
+            GraphQLEvents::OPERATION_START => 'operationStart',
             GraphQLEvents::PRE_READ_FIELD => 'preReadField',
         ];
+    }
+
+    public function operationStart()
+    {
+        self::$concurrentUsages = [];
     }
 
     /**
