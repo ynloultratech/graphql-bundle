@@ -99,15 +99,21 @@ class NamingConventionFilterResolver implements FilterResolverInterface
                 }
 
                 if (class_exists($fullyClassName)) {
-                    /** @var Filter $filter */
+                    preg_match('/\w+$/', $fullyClassName, $matches);
+                    $name = lcfirst($matches[0]);
+
+                    /** @var Filter|null $filter */
                     $filter = $this->reader->getClassAnnotation(new \ReflectionClass($fullyClassName), Filter::class);
                     if ($filter) {
                         $filter->resolver = $fullyClassName;
-                        if (!$filter->name) {
-                            preg_match('/\w+$/', $fullyClassName, $matches);
-                            $filter->name = lcfirst($matches[0]);
+                        $filter->name = $filter->name ?: $name;
+                        if (!$filter->type && $node->hasField($filter->name)) {
+                            $guessedFilter = FilterUtil::createFilter($endpoint, $node->getField($filter->name));
+                            $filter->type = $guessedFilter->type;
                         }
                         $resolvedFilters[] = $filter;
+                    } elseif ($node->hasField($name)) {
+                        $resolvedFilters[] = FilterUtil::createFilter($endpoint, $node->getField($name));
                     }
                 }
             }

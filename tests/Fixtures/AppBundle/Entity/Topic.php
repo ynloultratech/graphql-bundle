@@ -12,6 +12,7 @@ namespace Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
+use Ynlo\GraphQLBundle\Model\NodeInterface;
 
 /**
  * @ORM\Entity()
@@ -22,7 +23,7 @@ use Ynlo\GraphQLBundle\Annotation as GraphQL;
  * @GraphQL\MutationUpdate()
  * @GraphQL\MutationDelete()
  */
-class Topic
+class Topic implements NodeInterface
 {
     /**
      * @var int|null
