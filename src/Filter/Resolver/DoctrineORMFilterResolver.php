@@ -11,7 +11,8 @@
 namespace Ynlo\GraphQLBundle\Filter\Resolver;
 
 use Doctrine\Common\Persistence\Mapping\MappingException;
-use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use GraphQL\Type\Definition\EnumType;
 use Ynlo\GraphQLBundle\Annotation\Filter;
 use Ynlo\GraphQLBundle\Definition\ClassAwareDefinitionInterface;
@@ -47,16 +48,16 @@ use Ynlo\GraphQLBundle\Util\TypeUtil;
 class DoctrineORMFilterResolver implements FilterResolverInterface
 {
     /**
-     * @var ObjectManager
+     * @var EntityManagerInterface
      */
     private $manager;
 
     /**
      * DoctrineORMFilterResolver constructor.
      *
-     * @param ObjectManager $manager
+     * @param EntityManagerInterface $manager
      */
-    public function __construct(ObjectManager $manager)
+    public function __construct(EntityManagerInterface $manager)
     {
         $this->manager = $manager;
     }
@@ -137,6 +138,19 @@ class DoctrineORMFilterResolver implements FilterResolverInterface
                         $relatedEntity = $relatedNode->getClass();
                         try {
                             if ($this->manager->getClassMetadata($relatedEntity)) {
+                                $associationType = null;
+
+                                if ($metaData->hasAssociation($field->getName())) {
+                                    $associationType = $metaData->getAssociationMapping($field->getName())['type'] ?? null;
+                                } elseif ($metaData->hasAssociation($field->getOriginName())) {
+                                    $associationType = $metaData->getAssociationMapping($field->getOriginName())['type'] ?? null;
+                                }
+
+                                //ignore filters by records only related to one record
+                                if (\in_array($associationType, [ClassMetadataInfo::ONE_TO_ONE, ClassMetadataInfo::ONE_TO_MANY], true)) {
+                                    continue;
+                                }
+
                                 $filter->resolver = NodeFilter::class;
                                 $filter->type = NodeComparisonExpression::class;
                             }
