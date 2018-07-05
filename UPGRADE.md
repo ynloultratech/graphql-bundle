@@ -1,4 +1,109 @@
+>> Please, before make a upgrade of your project to any version, read firstly how [updates in GraphQLBundle](https://graphql-bundle.ynloultratech.com/Advanced/Bundle_Upgrade.html) are made.
+
+
 # UPGRADE FROM v1.1 to 1.2
+
+>> **Heads up!** Upgrade to `v1.2` requires change some settings and definitions.
+The following steps explain how migrate to this version and keep your API functional.
+With all necessary adjustments this version has fully backward compatibility.
+
+## **Update:** The `filters` argument in collection has been updated and renamed to `where`
+
+In order to allow more advanced options to filter collections a new `where` option has been added, the old `filters` has been marked as deprecated and hidden by default.
+
+Before:
+
+````graphql
+query post{
+  posts {
+    all(first: 10, filters: { title: "Lorem" }) {
+      edges {
+        cursor
+        node {
+          title
+        }
+      }
+    }
+  }
+}
+````
+
+After:
+
+````graphql
+query post{
+  posts {
+    all(first: 10, where: { title: { op:CONTAINS, value: "Lorem"}}) {
+      edges {
+        cursor
+        node {
+          title
+        }
+      }
+    }
+  }
+}
+````
+
+Read more about this new option in the [documentation](https://graphql-bundle.ynloultratech.com/Crud_Operations/List/Filters.html).
+
+In order to keep BC with your API consumers and keep the old `filters` 
+usable during some time must enabled the following config:
+
+````yaml
+graphql:
+    bc:
+      filters: true
+
+````
+
+## **Update:** The `orderBy` argument in collection has been updated and renamed to `order`
+
+In order to use ENUM for field names in the `orderBy` of collections this option has been refactored and renamed to `order`.
+
+Before:
+
+````graphql
+query post{
+  posts {
+    all(first: 10, orderBy: { field: "title" }) {
+      edges {
+        cursor
+        node {
+          title
+        }
+      }
+    }
+  }
+}
+````
+
+After:
+
+````graphql
+query post{
+  posts {
+    all(first: 10, order: { field: title }) {
+      edges {
+        cursor
+        node {
+          title
+        }
+      }
+    }
+  }
+}
+````
+
+In order to keep BC with your API consumers and keep the old `orderBy` 
+usable during some time must enabled the following config:
+
+````yaml
+graphql:
+    bc:
+      orderBy: true
+
+````
 
 ## **Deprecate:** The GraphiQL authenticator provider `jwt` has been deprecated.
 
@@ -31,7 +136,7 @@ graphql:
 
 # UPGRADE FROM v1.0 to v1.1
 
->> **Heads up!** Upgrade from `v1.0` requires change some settings and definitions.
+>> **Heads up!** Upgrade to `v1.1` requires change some settings and definitions.
 The following steps explain how migrate to this version and keep your API functional.
 With all necessary adjustments this version has fully backward compatibility.
 
