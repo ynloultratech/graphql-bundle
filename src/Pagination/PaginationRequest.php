@@ -38,12 +38,12 @@ class PaginationRequest
     /**
      * PaginationRequest constructor.
      *
-     * @param string $first
-     * @param string $last
-     * @param string $after
-     * @param string $before
+     * @param string|null $first
+     * @param string|null $last
+     * @param string|null $after
+     * @param string|null $before
      */
-    public function __construct($first, $last, $after, $before)
+    public function __construct($first = null, $last = null, $after = null, $before = null)
     {
         $this->first = $first;
         $this->last = $last;

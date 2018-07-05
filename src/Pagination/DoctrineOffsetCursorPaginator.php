@@ -60,12 +60,14 @@ class DoctrineOffsetCursorPaginator implements DoctrineCursorPaginatorInterface
      * @param QueryBuilder $qb
      *
      * @return int
+     *
+     * @throws \Doctrine\ORM\NonUniqueResultException
      */
-    protected function getQueryTotal(QueryBuilder $qb)
+    protected function getQueryTotal(QueryBuilder $qb): int
     {
         $countQuery = clone $qb;
 
-        if (count($qb->getParameters()) > 0) {
+        if (\count($qb->getParameters()) > 0) {
             $countQuery->setParameters($qb->getParameters());
         }
 
@@ -87,7 +89,7 @@ class DoctrineOffsetCursorPaginator implements DoctrineCursorPaginatorInterface
      * @param int               $count
      * @param PaginationRequest $pagination
      */
-    protected function applyCursor(QueryBuilder $qb, $count, PaginationRequest $pagination)
+    protected function applyCursor(QueryBuilder $qb, $count, PaginationRequest $pagination): void
     {
         $limit = $pagination->getFirst() ?? $pagination->getLast();
         $offset = 0;
@@ -113,8 +115,8 @@ class DoctrineOffsetCursorPaginator implements DoctrineCursorPaginatorInterface
             //last records after any cursor always start in ($count - $limit)
             if ($pagination->getLast()) {
                 $offset = $count - $pagination->getLast();
-                if ($offset < $pagination->getAfter()) {
-                    $offset = $pagination->getAfter() + 1;
+                if ($offset < $this->decodeCursor($pagination->getAfter())) {
+                    $offset =  $this->decodeCursor($pagination->getAfter()) + 1;
                 }
             } else {
                 $offset = $this->decodeCursor($pagination->getAfter()) + 1;
@@ -148,9 +150,9 @@ class DoctrineOffsetCursorPaginator implements DoctrineCursorPaginatorInterface
      *
      * @return int
      */
-    protected function decodeCursor($cursor)
+    protected function decodeCursor($cursor): int
     {
-        list(, $offset) = explode(':', base64_decode($cursor));
+        [, $offset] = explode(':', base64_decode($cursor));
 
         return $offset;
     }
@@ -160,7 +162,7 @@ class DoctrineOffsetCursorPaginator implements DoctrineCursorPaginatorInterface
      *
      * @return string
      */
-    protected function encodeCursor($offset)
+    protected function encodeCursor($offset): string
     {
         return base64_encode(sprintf('cursor:%s', $offset));
     }
