@@ -24,6 +24,8 @@ use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\DependencyInjection\BackwardCompatibilityAwareInterface;
+use Ynlo\GraphQLBundle\DependencyInjection\BackwardCompatibilityAwareTrait;
 use Ynlo\GraphQLBundle\Filter\FilterFactory;
 use Ynlo\GraphQLBundle\Model\OrderBy;
 use Ynlo\GraphQLBundle\Query\Node\AllNodesWithPagination;
@@ -33,8 +35,10 @@ use Ynlo\GraphQLBundle\Util\FieldOptionsHelper;
 /**
  * Convert a simple return of nodes into a paginated collection with edges
  */
-class PaginationDefinitionPlugin extends AbstractDefinitionPlugin
+class PaginationDefinitionPlugin extends AbstractDefinitionPlugin implements BackwardCompatibilityAwareInterface
 {
+    use BackwardCompatibilityAwareTrait;
+
     public const ONE_TO_MANY = 'ONE_TO_MANY';
     public const MANY_TO_MANY = 'MANY_TO_MANY';
 
@@ -153,7 +157,9 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin
         $this->filterFactory->build($definition, $targetNode, $endpoint);
 
         //deprecated, keep for BC with v1
-        $this->addFilters($definition, $target, $endpoint);
+        if ($this->bcConfig['filters'] ?? false) {
+            $this->addFilters($definition, $target, $endpoint);
+        }
     }
 
     /**
@@ -269,13 +275,16 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin
         $query->addArgument($arg);
 
         //to keep BC
-        $arg = new ArgumentDefinition();
-        $arg->setName('orderBy');
-        $arg->setType(OrderBy::class);
-        $arg->setNonNull(false);
-        $arg->setList(true);
-        $arg->setDescription('**DEPRECATED** use `order` instead.');
-        $query->addArgument($arg);
+        if ($this->bcConfig['orderBy'] ?? false) {
+            $arg = new ArgumentDefinition();
+            $arg->setName('orderBy');
+            $arg->setType(OrderBy::class);
+            $arg->setNonNull(false);
+            $arg->setList(true);
+            $deprecateMessage = \is_string($this->bcConfig['orderBy']) ? $this->bcConfig['orderBy'] : '**DEPRECATED** use `order` instead.';
+            $arg->setDescription($deprecateMessage);
+            $query->addArgument($arg);
+        }
     }
 
     /**
@@ -376,7 +385,8 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin
         $search = new ArgumentDefinition();
         $search->setName('filters');
         $search->setType($filters->getName());
-        $search->setDescription('**DEPRECATED** use `where` instead to filter the list.');
+        $deprecateMessage = \is_string($this->bcConfig['filters']) ? $this->bcConfig['filters'] : '**DEPRECATED** use `where` instead to filter the list.';
+        $search->setDescription($deprecateMessage);
         $search->setNonNull(false);
         $definition->addArgument($search);
     }
