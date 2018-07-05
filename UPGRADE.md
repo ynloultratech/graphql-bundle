@@ -1,5 +1,4 @@
->> Please, before make a upgrade of your project to any version, read firstly how [updates in GraphQLBundle](https://graphql-bundle.ynloultratech.com/Advanced/Bundle_Upgrade.html) are made.
-
+>>> Please, before make a upgrade of your project to any version, read firstly how [updates in GraphQLBundle](https://graphql-bundle.ynloultratech.com/Advanced/Bundle_Upgrade.html) are made.
 
 # UPGRADE FROM v1.1 to 1.2
 
@@ -7,7 +6,7 @@
 The following steps explain how migrate to this version and keep your API functional.
 With all necessary adjustments this version has fully backward compatibility.
 
-## **Update:** The `filters` argument in collection has been updated and renamed to `where`
+## **Update:** The `filters` argument in collections has been updated and renamed to `where`
 
 In order to allow more advanced options to filter collections a new `where` option has been added, the old `filters` has been marked as deprecated and hidden by default.
 
