@@ -29,7 +29,7 @@ class SecureIDEncoder extends SimpleIDEncoder
     /**
      * @var string
      */
-    protected $cipher = "aes-128-ctr";
+    protected $cipher = 'aes-128-ctr';
 
     /**
      * @param DefinitionRegistry $definitionRegistry
