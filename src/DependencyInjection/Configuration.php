@@ -40,6 +40,7 @@ class Configuration implements ConfigurationInterface
         $this->configurePlugins($rootNode);
         $this->configureSecurity($rootNode);
         $this->configureOthers($rootNode);
+        $this->configureBCCompatibility($rootNode);
 
         return $treeBuilder;
     }
@@ -427,5 +428,24 @@ Can be used to group multiple nodes or publish a node with a different group nam
             ->scalarNode('id_encoder')
             ->defaultValue(SecureIDEncoder::class)
             ->info('Service used to encode nodes identifiers, must implements IDEncoderInterface');
+    }
+
+    private function configureBCCompatibility(NodeBuilder $rootNode)
+    {
+        $bcNode = $rootNode
+            ->arrayNode('bc')
+            ->info('Backward compatibility layer to keep deprecated features during some time to upgrade API consumers progressively.')
+            ->addDefaultsIfNotSet()
+            ->children();
+
+        $bcNode->variableNode('filters')
+               ->info('Keep deprecated "filters" argument in collections')
+               ->setDeprecated('v1.2')
+               ->defaultFalse();
+
+        $bcNode->variableNode('orderBy')
+               ->info('Keep deprecated "orderBy" argument in collections')
+               ->setDeprecated('v1.2')
+               ->defaultFalse();
     }
 }

@@ -97,6 +97,8 @@ class YnloGraphQLExtension extends Extension
             $container->removeDefinition(LexikJWTGraphiQLAuthenticator::class);
         }
 
+        $this->setBackwardCompatibilitySettings($container, $config['bc'] ?? []);
+
         //build the ID encoder manager with configured encoder
         $container->getDefinition(IDEncoderManager::class)
                   ->setPublic(true)
@@ -107,6 +109,27 @@ class YnloGraphQLExtension extends Extension
         $container->getDefinition(GraphQLEndpointController::class)
                   ->addMethodCall('setErrorFormatter', [$container->getDefinition($config['error_handling']['formatter'])])
                   ->addMethodCall('setErrorHandler', [$container->getDefinition($config['error_handling']['handler'])]);
+    }
+
+    /**
+     * @param ContainerBuilder $container
+     * @param array            $config
+     *
+     * @throws \ReflectionException
+     */
+    public function setBackwardCompatibilitySettings(ContainerBuilder $container, array $config): void
+    {
+        foreach ($container->getDefinitions() as $class => $definition) {
+            if ($definition->getClass()) {
+                $class = $definition->getClass();
+            }
+            if (class_exists($class)) {
+                $ref = new \ReflectionClass($class);
+                if ($ref->implementsInterface(BackwardCompatibilityAwareInterface::class)) {
+                    $definition->addMethodCall('setBCConfig', [$config]);
+                }
+            }
+        }
     }
 
     /**
