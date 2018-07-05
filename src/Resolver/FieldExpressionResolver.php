@@ -15,16 +15,16 @@ use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
 /**
  * FieldExpressionResolver
  */
-class FieldExpressionResolver extends AbstractResolver
+class FieldExpressionResolver
 {
     /**
      * {@inheritDoc}
      */
-    public function __invoke($root)
+    public function __invoke(ResolverContext $context, $root)
     {
         $language = new ExpressionLanguage();
-        if ($this->getContext()->getDefinition()->hasMeta('expression')) {
-            $expression = $this->getContext()->getDefinition()->getMeta('expression');
+        if ($context->getDefinition()->hasMeta('expression')) {
+            $expression = $context->getDefinition()->getMeta('expression');
 
             return $language->evaluate(
                 $expression,
