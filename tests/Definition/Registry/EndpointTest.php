@@ -16,7 +16,7 @@ use Ynlo\GraphQLBundle\Definition\MutationDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
-use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\Comment;
+use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\PostComment;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\User;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Model\HasAuthorInterface;
 
@@ -55,34 +55,34 @@ class EndpointTest extends TestCase
         self::assertEquals('User', $endpoint->getTypeForClass(User::class));
         self::assertEquals(['User', 'Admin'], $endpoint->getTypesForClass(User::class));
         self::assertEquals(User::class, $endpoint->getClassForType('User'));
-        self::assertNull($endpoint->getClassForType('Comment'));
+        self::assertNull($endpoint->getClassForType('PostComment'));
         self::assertEquals(['User' => $user, 'Admin' => $admin, 'HasAuthor' => $hasAuthor], $endpoint->allTypes());
         self::assertEquals(['HasAuthor' => $hasAuthor], $endpoint->allInterfaces());
 
         $comment = new ObjectDefinition();
-        $comment->setName('Comment');
-        $comment->setClass(Comment::class);
+        $comment->setName('PostComment');
+        $comment->setClass(PostComment::class);
 
         $endpoint->setTypes([$comment]);
-        self::assertTrue($endpoint->hasType('Comment'));
+        self::assertTrue($endpoint->hasType('PostComment'));
         self::assertFalse($endpoint->hasType('User'));
         self::assertFalse($endpoint->hasType('HasAuthor'));
         self::assertEmpty($endpoint->allInterfaces());
-        self::assertEquals($comment, $endpoint->getType('Comment'));
-        self::assertEquals($comment, $endpoint->getType(Comment::class));
+        self::assertEquals($comment, $endpoint->getType('PostComment'));
+        self::assertEquals($comment, $endpoint->getType(PostComment::class));
 
-        $endpoint->removeType('Comment');
-        self::assertFalse($endpoint->hasType('Comment'));
+        $endpoint->removeType('PostComment');
+        self::assertFalse($endpoint->hasType('PostComment'));
 
         $endpoint->setTypes([$user, $hasAuthor, $comment]);
 
-        self::assertTrue($endpoint->hasType('Comment'));
+        self::assertTrue($endpoint->hasType('PostComment'));
         self::assertTrue($endpoint->hasType('User'));
         self::assertTrue($endpoint->hasType('HasAuthor'));
 
         $endpoint->removeType('HasAuthor');
 
-        self::assertTrue($endpoint->hasType('Comment'));
+        self::assertTrue($endpoint->hasType('PostComment'));
         self::assertTrue($endpoint->hasType('User'));
         self::assertFalse($endpoint->hasType('HasAuthor'));
 

@@ -18,7 +18,7 @@ use Ynlo\GraphQLBundle\Model\DeleteNodePayload;
 use Ynlo\GraphQLBundle\Model\OrderBy;
 use Ynlo\GraphQLBundle\Model\PageInfo;
 use Ynlo\GraphQLBundle\Model\UpdateNodePayload;
-use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\Comment;
+use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\PostComment;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\Post;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\User;
 use Ynlo\GraphQLBundle\Tests\TestDefinitionHelper;
@@ -34,20 +34,20 @@ class CleanUpDefinitionPluginTest extends TestCase
         TestDefinitionHelper::loadAnnotationDefinitions(UpdateNodePayload::class, $endpoint);
         TestDefinitionHelper::loadAnnotationDefinitions(DeleteNodePayload::class, $endpoint);
         TestDefinitionHelper::loadAnnotationDefinitions(Post::class, $endpoint);
-        TestDefinitionHelper::loadAnnotationDefinitions(Comment::class, $endpoint);
+        TestDefinitionHelper::loadAnnotationDefinitions(PostComment::class, $endpoint);
         TestDefinitionHelper::loadAnnotationDefinitions(User::class, $endpoint);
         TestDefinitionHelper::loadAnnotationDefinitions(OrderBy::class, $endpoint);
         TestDefinitionHelper::loadAnnotationDefinitions(PageInfo::class, $endpoint);
 
-        self::assertCount(17, $endpoint->allTypes());
-        self::assertCount(4, $endpoint->allInterfaces());
+        self::assertCount(19, $endpoint->allTypes());
+        self::assertCount(6, $endpoint->allInterfaces());
         self::assertCount(8, $endpoint->allMutations());
         self::assertCount(2, $endpoint->allQueries());
 
         $plugin->configureEndpoint($endpoint);
 
-        self::assertCount(13, $endpoint->allTypes());
-        self::assertCount(4, $endpoint->allInterfaces());
+        self::assertCount(15, $endpoint->allTypes());
+        self::assertCount(6, $endpoint->allInterfaces());
         self::assertCount(8, $endpoint->allMutations());
         self::assertCount(2, $endpoint->allQueries());
     }
@@ -61,20 +61,20 @@ class CleanUpDefinitionPluginTest extends TestCase
         TestDefinitionHelper::loadAnnotationDefinitions(UpdateNodePayload::class, $endpoint);
         TestDefinitionHelper::loadAnnotationDefinitions(DeleteNodePayload::class, $endpoint);
         TestDefinitionHelper::loadAnnotationDefinitions(Post::class, $endpoint);
-        TestDefinitionHelper::loadAnnotationDefinitions(Comment::class, $endpoint);
+        TestDefinitionHelper::loadAnnotationDefinitions(PostComment::class, $endpoint);
         TestDefinitionHelper::loadAnnotationDefinitions(User::class, $endpoint);
         TestDefinitionHelper::loadAnnotationDefinitions(OrderBy::class, $endpoint);
         TestDefinitionHelper::loadAnnotationDefinitions(PageInfo::class, $endpoint);
 
-        self::assertCount(17, $endpoint->allTypes());
-        self::assertCount(4, $endpoint->allInterfaces());
+        self::assertCount(19, $endpoint->allTypes());
+        self::assertCount(6, $endpoint->allInterfaces());
         self::assertCount(8, $endpoint->allMutations());
         self::assertCount(2, $endpoint->allQueries());
 
         $plugin->configureEndpoint($endpoint);
 
-        self::assertCount(17, $endpoint->allTypes());
-        self::assertCount(4, $endpoint->allInterfaces());
+        self::assertCount(19, $endpoint->allTypes());
+        self::assertCount(6, $endpoint->allInterfaces());
         self::assertCount(8, $endpoint->allMutations());
         self::assertCount(2, $endpoint->allQueries());
     }

@@ -20,7 +20,7 @@ use Ynlo\GraphQLBundle\Model\OrderBy;
 use Ynlo\GraphQLBundle\Model\PageInfo;
 use Ynlo\GraphQLBundle\Model\UpdateNodePayload;
 use Ynlo\GraphQLBundle\Resolver\EmptyObjectResolver;
-use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\Comment;
+use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\PostComment;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\Post;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\User;
 use Ynlo\GraphQLBundle\Tests\Fixtures\BillingBundle\Entity\Invoice;
@@ -61,7 +61,7 @@ class NamespaceDefinitionPluginTest extends TestCase
         TestDefinitionHelper::loadAnnotationDefinitions(DeleteNodePayload::class, $endpoint);
         TestDefinitionHelper::loadAnnotationDefinitions(Post::class, $endpoint);
         TestDefinitionHelper::loadAnnotationDefinitions(Invoice::class, $endpoint);
-        TestDefinitionHelper::loadAnnotationDefinitions(Comment::class, $endpoint);
+        TestDefinitionHelper::loadAnnotationDefinitions(PostComment::class, $endpoint);
         TestDefinitionHelper::loadAnnotationDefinitions(User::class, $endpoint);
         TestDefinitionHelper::loadAnnotationDefinitions(OrderBy::class, $endpoint);
         TestDefinitionHelper::loadAnnotationDefinitions(PageInfo::class, $endpoint);
@@ -120,7 +120,7 @@ class NamespaceDefinitionPluginTest extends TestCase
         TestDefinitionHelper::loadAnnotationDefinitions(DeleteNodePayload::class, $endpoint);
         TestDefinitionHelper::loadAnnotationDefinitions(Post::class, $endpoint);
         TestDefinitionHelper::loadAnnotationDefinitions(Invoice::class, $endpoint);
-        TestDefinitionHelper::loadAnnotationDefinitions(Comment::class, $endpoint);
+        TestDefinitionHelper::loadAnnotationDefinitions(PostComment::class, $endpoint);
         TestDefinitionHelper::loadAnnotationDefinitions(User::class, $endpoint);
         TestDefinitionHelper::loadAnnotationDefinitions(OrderBy::class, $endpoint);
         TestDefinitionHelper::loadAnnotationDefinitions(PageInfo::class, $endpoint);

@@ -80,11 +80,19 @@ class FieldDefinition implements ExecutableDefinitionInterface
     }
 
     /**
+     * @param string[] $inheritedFrom
+     */
+    public function setInheritedFrom(array $inheritedFrom): void
+    {
+        $this->inheritedFrom = $inheritedFrom;
+    }
+
+    /**
      * @param string $inheritedFrom
      */
     public function addInheritedFrom(string $inheritedFrom): void
     {
-        if (!in_array($inheritedFrom, $this->inheritedFrom)) {
+        if (!\in_array($inheritedFrom, $this->inheritedFrom)) {
             $this->inheritedFrom[] = $inheritedFrom;
         }
     }

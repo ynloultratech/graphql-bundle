@@ -14,6 +14,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
+use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Model\CommentableInterface;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Model\Message;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Model\NodeNamedTrait;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Types\PostStatusType;
@@ -35,7 +36,7 @@ use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Types\PostStatusType;
  * )
  * @GraphQL\OverrideField(name="name", alias="title", description="Post title")
  */
-class Post extends Message implements NodeInterface
+class Post extends Message implements NodeInterface, CommentableInterface
 {
     use NodeNamedTrait;
 
@@ -107,9 +108,9 @@ class Post extends Message implements NodeInterface
     protected $categories;
 
     /**
-     * @var Collection|Comment[]
+     * @var Collection|PostComment[]
      *
-     * @ORM\OneToMany(targetEntity="Comment", mappedBy="post", fetch="EXTRA_LAZY")
+     * @ORM\OneToMany(targetEntity="PostComment", mappedBy="post", fetch="EXTRA_LAZY")
      */
     protected $comments;
 
@@ -140,5 +141,29 @@ class Post extends Message implements NodeInterface
     public function containsTag($tagName): bool
     {
         return \in_array($tagName, $this->tags);
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function getComments(): Collection
+    {
+        // TODO: Implement getComments() method.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function setComments(Collection $comments)
+    {
+        // TODO: Implement setComments() method.
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function createComment(): CommentableInterface
+    {
+        // TODO: Implement createComment() method.
     }
 }

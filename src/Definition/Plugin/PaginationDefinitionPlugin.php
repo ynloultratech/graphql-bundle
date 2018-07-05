@@ -21,6 +21,7 @@ use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
+use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
@@ -123,17 +124,28 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin implements Bac
             return;
         }
 
+        $target = null;
+        if ($definition instanceof FieldDefinition) {
+            $target = $definition->getType();
+            // only apply pagination to inherited fields
+            // if all interfaces has pagination enabled
+            if ($definition->getInheritedFrom()) {
+                foreach ($definition->getInheritedFrom() as $inheritedType) {
+                    /** @var InterfaceDefinition $inheritedDefinition */
+                    $inheritedDefinition = $endpoint->getType($inheritedType);
+                    if (!$inheritedDefinition->getField($definition->getName())->hasMeta('pagination')) {
+                        return;
+                    }
+                }
+            }
+        }
+
         $search = new ArgumentDefinition();
         $search->setName('search');
         $search->setType('string');
         $search->setNonNull(false);
         $search->setDescription('Search in current list by given string');
         $definition->addArgument($search);
-
-        $target = null;
-        if ($definition instanceof FieldDefinition) {
-            $target = $definition->getType();
-        }
 
         $target = $config['target'] ?? $target;
         if ($endpoint->hasTypeForClass($target)) {

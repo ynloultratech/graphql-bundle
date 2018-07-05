@@ -42,43 +42,46 @@ class ObjectTypeAnnotationParserTest extends MockeryTestCase
 
         self::assertTrue($endpoint->hasType('Post'));
         self::assertTrue($endpoint->hasTypeForClass(Post::class));
-        /** @var ObjectDefinition $commentDefinition */
-        $commentDefinition = $endpoint->getType(Post::class);
-        self::assertCount(16, $commentDefinition->getFields());
+        /** @var ObjectDefinition $postDefinition */
+        $postDefinition = $endpoint->getType(Post::class);
+        self::assertCount(16, $postDefinition->getFields());
 
         //fields
-        self::assertNotNull($commentDefinition->getField('id'));
-        self::assertNotNull($commentDefinition->getField('title'));
-        self::assertNotNull($commentDefinition->getField('body'));
-        self::assertNotNull($commentDefinition->getField('comments'));
-        self::assertNotNull($commentDefinition->getField('date'));
-        self::assertNotNull($commentDefinition->getField('author'));
-        self::assertNotNull($commentDefinition->getField('tags'));
-        self::assertNotNull($commentDefinition->getField('hasTags'));
-        self::assertNotNull($commentDefinition->getField('containsTag'));
+        self::assertNotNull($postDefinition->getField('id'));
+        self::assertNotNull($postDefinition->getField('title'));
+        self::assertNotNull($postDefinition->getField('body'));
+        self::assertNotNull($postDefinition->getField('comments'));
+        self::assertNotNull($postDefinition->getField('date'));
+        self::assertNotNull($postDefinition->getField('author'));
+        self::assertNotNull($postDefinition->getField('tags'));
+        self::assertNotNull($postDefinition->getField('hasTags'));
+        self::assertNotNull($postDefinition->getField('containsTag'));
 
-        self::assertEquals('Boolean', $commentDefinition->getField('containsTag')->getType());
-        self::assertTrue($commentDefinition->getField('containsTag')->hasArgument('tag'));
-        self::assertCount(1, $commentDefinition->getField('containsTag')->getArguments());
-        self::assertEquals('String', $commentDefinition->getField('containsTag')->getArgument('tag')->getType());
-        self::assertEquals('tagName', $commentDefinition->getField('containsTag')->getArgument('tag')->getInternalName());
+        self::assertEquals('Boolean', $postDefinition->getField('containsTag')->getType());
+        self::assertTrue($postDefinition->getField('containsTag')->hasArgument('tag'));
+        self::assertCount(1, $postDefinition->getField('containsTag')->getArguments());
+        self::assertEquals('String', $postDefinition->getField('containsTag')->getArgument('tag')->getType());
+        self::assertEquals('tagName', $postDefinition->getField('containsTag')->getArgument('tag')->getInternalName());
 
-        self::assertEquals('String', $commentDefinition->getField('tags')->getType());
-        self::assertTrue($commentDefinition->getField('tags')->isList());
+        self::assertEquals('String', $postDefinition->getField('tags')->getType());
+        self::assertTrue($postDefinition->getField('tags')->isList());
 
-        self::assertEquals('!object.getTags()', $commentDefinition->getField('hasTags')->getMeta('expression'));
-        self::assertEquals('Boolean', $commentDefinition->getField('hasTags')->getType());
+        self::assertEquals('!object.getTags()', $postDefinition->getField('hasTags')->getMeta('expression'));
+        self::assertEquals('Boolean', $postDefinition->getField('hasTags')->getType());
 
-        self::assertEquals(['Node'], $commentDefinition->getField('id')->getInheritedFrom());
-        self::assertEquals('ID', $commentDefinition->getField('id')->getType());
+        self::assertEquals(['Node'], $postDefinition->getField('id')->getInheritedFrom());
+        self::assertEquals('ID', $postDefinition->getField('id')->getType());
 
-        self::assertEquals(['HasAuthor'], $commentDefinition->getField('author')->getInheritedFrom());
-        self::assertEquals('User', $commentDefinition->getField('author')->getType());
+        self::assertEquals(['HasAuthor'], $postDefinition->getField('author')->getInheritedFrom());
+        self::assertEquals('User', $postDefinition->getField('author')->getType());
 
-        self::assertEquals(['Message'], $commentDefinition->getField('body')->getInheritedFrom());
-        self::assertEquals('String', $commentDefinition->getField('body')->getType());
+        self::assertEquals(['Message'], $postDefinition->getField('body')->getInheritedFrom());
+        self::assertEquals('String', $postDefinition->getField('body')->getType());
 
-        self::assertEquals(['HasAuthor', 'Node', 'Message'], $commentDefinition->getInterfaces());
+        self::assertEquals(['Commentable'], $postDefinition->getField('comments')->getInheritedFrom());
+        self::assertEquals('PostComment', $postDefinition->getField('comments')->getType());
+
+        self::assertEquals(['HasAuthor', 'Node', 'Commentable', 'Message'], $postDefinition->getInterfaces());
 
         //check interfaces
         self::assertTrue($endpoint->hasType('HasAuthor'));

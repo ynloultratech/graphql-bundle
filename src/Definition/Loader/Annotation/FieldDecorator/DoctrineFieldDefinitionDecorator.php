@@ -57,65 +57,63 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
             return;
         }
 
-        if (!$definition->getType()) {
-            $pagination = [];
-            $targetNode = null;
+        $pagination = [];
+        $targetNode = null;
 
-            /** @var Column $column */
-            if ($column = $this->reader->getPropertyAnnotation($field, Column::class)) {
-                $type = $this->getGraphQLType($column->type);
-                $definition->setType(TypeUtil::normalize($type));
-                $definition->setList(TypeUtil::isTypeList($type));
-                $definition->setNonNullList(TypeUtil::isTypeNonNullList($type));
-                $definition->setNonNull(!$column->nullable);
-            }
+        /** @var Column $column */
+        if ($column = $this->reader->getPropertyAnnotation($field, Column::class)) {
+            $type = $this->getGraphQLType($column->type);
+            $definition->setType(TypeUtil::normalize($type));
+            $definition->setList(TypeUtil::isTypeList($type));
+            $definition->setNonNullList(TypeUtil::isTypeNonNullList($type));
+            $definition->setNonNull(!$column->nullable);
+        }
 
-            /** @var Id $id */
-            if ($column = $this->reader->getPropertyAnnotation($field, Id::class)) {
-                $definition->setType(Types::ID);
-                $definition->setNonNull(true);
-            }
+        /** @var Id $id */
+        if ($column = $this->reader->getPropertyAnnotation($field, Id::class)) {
+            $definition->setType(Types::ID);
+            $definition->setNonNull(true);
+        }
 
-            /** @var OneToOne $oneToOne */
-            if ($oneToOne = $this->reader->getPropertyAnnotation($field, OneToOne::class)) {
-                $definition->setType($targetNode = $oneToOne->targetEntity);
-            }
+        /** @var OneToOne $oneToOne */
+        if ($oneToOne = $this->reader->getPropertyAnnotation($field, OneToOne::class)) {
+            $definition->setType($targetNode = $oneToOne->targetEntity);
+        }
 
-            /** @var OneToMany $oneToMany */
-            if ($oneToMany = $this->reader->getPropertyAnnotation($field, OneToMany::class)) {
-                $definition->setType($targetNode = $oneToMany->targetEntity);
-                $definition->setList(true);
-                if ($oneToMany->fetch === 'EXTRA_LAZY') {
-                    $pagination['target'] = $targetNode;
-                    $pagination['parent_field'] = $oneToMany->mappedBy;
-                    $pagination['parent_relation'] = 'ONE_TO_MANY';
-                }
+        /** @var OneToMany $oneToMany */
+        if ($oneToMany = $this->reader->getPropertyAnnotation($field, OneToMany::class)) {
+            $definition->setType($targetNode = $oneToMany->targetEntity);
+            $definition->setList(true);
+            if ($oneToMany->fetch === 'EXTRA_LAZY') {
+                $pagination['target'] = $targetNode;
+                $pagination['parent_field'] = $oneToMany->mappedBy;
+                $pagination['parent_relation'] = 'ONE_TO_MANY';
             }
+        }
 
-            /** @var ManyToOne $manyToOne */
-            if ($manyToOne = $this->reader->getPropertyAnnotation($field, ManyToOne::class)) {
-                $definition->setType($targetNode = $manyToOne->targetEntity);
-            }
+        /** @var ManyToOne $manyToOne */
+        if ($manyToOne = $this->reader->getPropertyAnnotation($field, ManyToOne::class)) {
+            $definition->setType($targetNode = $manyToOne->targetEntity);
+        }
 
-            /** @var ManyToMany $manyToMany */
-            if ($manyToMany = $this->reader->getPropertyAnnotation($field, ManyToMany::class)) {
-                $definition->setType($targetNode = $manyToMany->targetEntity);
-                $definition->setList(true);
-                if ($manyToMany->fetch === 'EXTRA_LAZY') {
-                    $pagination['target'] = $targetNode;
-                    $pagination['parent_field'] = $manyToMany->mappedBy ?? $manyToMany->inversedBy;
-                    $pagination['parent_relation'] = 'MANY_TO_MANY';
-                }
+        /** @var ManyToMany $manyToMany */
+        if ($manyToMany = $this->reader->getPropertyAnnotation($field, ManyToMany::class)) {
+            $definition->setType($targetNode = $manyToMany->targetEntity);
+            $definition->setList(true);
+            if ($manyToMany->fetch === 'EXTRA_LAZY') {
+                $pagination['target'] = $targetNode;
+                $pagination['parent_field'] = $manyToMany->mappedBy ?? $manyToMany->inversedBy;
+                $pagination['parent_relation'] = 'MANY_TO_MANY';
             }
+        }
 
-            /** @var Embedded $embedded */
-            if ($embedded = $this->reader->getPropertyAnnotation($field, Embedded::class)) {
-                $definition->setType($embedded->class);
-            }
+        /** @var Embedded $embedded */
+        if ($embedded = $this->reader->getPropertyAnnotation($field, Embedded::class)) {
+            $definition->setType($embedded->class);
+        }
 
-            if ($definition->isList() && $pagination) {
-                $definition->setMeta('pagination', $pagination);
-            }
+        if ($definition->isList() && $pagination) {
+            $definition->setMeta('pagination', $pagination);
         }
     }
 

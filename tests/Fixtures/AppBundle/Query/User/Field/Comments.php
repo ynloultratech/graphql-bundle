@@ -13,7 +13,7 @@ namespace Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Query\User\Field;
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
 
 /**
- * @GraphQL\Field(type="[Comment]",
+ * @GraphQL\Field(type="[PostComment]",
  *     description="Get list of comments of user",
  *     deprecationReason="The comment list has filter by user and pagination.",
  *     options={

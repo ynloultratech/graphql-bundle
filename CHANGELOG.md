@@ -11,7 +11,8 @@ v1.2.x - [Unreleased]
  * Added `graphql.operationStart` and `graphql.operationEnd` events
  * Added `order` as better alternative to sort collections of nodes
  * Deprecated `orderBy` in collections in favor of `order` which uses enum for field names
-
+ * Fixed inherited interface properties override object properties
+ 
 v1.1.3 - 2018-07-03
 ----
  * Fixed API endpoint route to allow OPTIONS method (required by GraphiQL and other tools).

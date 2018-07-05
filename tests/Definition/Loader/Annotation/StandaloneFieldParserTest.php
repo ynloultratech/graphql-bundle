@@ -32,7 +32,7 @@ class StandaloneFieldParserTest extends MockeryTestCase
         $endpoint = new Endpoint('default');
 
         $comment = new ObjectDefinition();
-        $comment->setName('Comment');
+        $comment->setName('PostComment');
 
         $user = new InterfaceDefinition();
         $user->setName('User');

@@ -11,6 +11,7 @@
 namespace Ynlo\GraphQLBundle\Tests\Filter\Resolver;
 
 use Doctrine\Common\Persistence\ObjectManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\Mapping\Driver\AnnotationDriver;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
@@ -49,7 +50,7 @@ class DoctrineORMFilterResolverTest extends MockeryTestCase
 {
     public function testResolve()
     {
-        $manager = \Mockery::mock(ObjectManager::class);
+        $manager = \Mockery::mock(EntityManagerInterface::class);
         $manager
             ->expects('getClassMetadata')
             ->with(Post::class)

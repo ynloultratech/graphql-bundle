@@ -130,12 +130,12 @@ services:
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\FieldDecorator\GraphQLFieldDefinitionDecorator:
         arguments: ['@annotations.reader']
         tags:
-            - { name: 'graphql.field_definition_decorator', priority: 100 }
+            - { name: 'graphql.field_definition_decorator' }
 
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\FieldDecorator\DoctrineFieldDefinitionDecorator:
         arguments: ['@annotations.reader']
         tags:
-            - { name: 'graphql.field_definition_decorator' }
+            - { name: 'graphql.field_definition_decorator', priority: 50 }
 
     Ynlo\GraphQLBundle\Type\Loader\TypeAutoLoader:
         public: true

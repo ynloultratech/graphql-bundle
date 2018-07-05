@@ -267,11 +267,19 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
                 $fieldDecorator->decorateFieldDefinition($prop, $field, $objectDefinition);
             }
 
+            //in case the object already have this field (inherited from interface),
+            //copy interfaces and remove the existent field to add the new definition
             if ($objectDefinition->hasField($field->getName())) {
-                $field = $objectDefinition->getField($field->getName());
-            } else {
-                $objectDefinition->addField($field);
+                $existentField = $objectDefinition->getField($field->getName());
+                $field->setInheritedFrom($existentField->getInheritedFrom());
+                $objectDefinition->removeField($existentField->getName());
+                //force type compatibility
+                $field->setList($existentField->isList());
+                $field->setNonNull($existentField->isNonNull());
+                $field->setNonNullList($existentField->isNonNullList());
             }
+
+            $objectDefinition->addField($field);
 
             $field->setOriginName($prop->name);
             $field->setOriginType(\get_class($prop));
