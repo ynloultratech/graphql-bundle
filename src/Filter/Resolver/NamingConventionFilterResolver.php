@@ -113,7 +113,9 @@ class NamingConventionFilterResolver implements FilterResolverInterface
                         }
                         $resolvedFilters[] = $filter;
                     } elseif ($node->hasField($name)) {
-                        $resolvedFilters[] = FilterUtil::createFilter($endpoint, $node->getField($name));
+                        $filter = FilterUtil::createFilter($endpoint, $node->getField($name));
+                        $filter->resolver = $fullyClassName;
+                        $resolvedFilters[] = $filter;
                     }
                 }
             }
