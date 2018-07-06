@@ -82,6 +82,7 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin implements Bac
         $config->variableNode('filters')
                ->info('Filters configuration');
         $config->variableNode('order_by');
+        $config->variableNode('search_fields');
         $config->integerNode('limit')->info('Max number of records allowed for first & last')->defaultValue($this->limit);
         $config->scalarNode('parent_field')
                ->info('When is used in sub-fields should be the field to filter by parent instance');

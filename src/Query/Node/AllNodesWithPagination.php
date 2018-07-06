@@ -10,6 +10,8 @@
 
 namespace Ynlo\GraphQLBundle\Query\Node;
 
+use Doctrine\DBAL\Types\Type;
+use Doctrine\ORM\Query\Expr\Andx;
 use Doctrine\ORM\Query\Expr\Orx;
 use Doctrine\ORM\QueryBuilder;
 use GraphQL\Error\Error;
@@ -24,6 +26,7 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Pagination\DoctrineCursorPaginatorInterface;
 use Ynlo\GraphQLBundle\Pagination\DoctrineOffsetCursorPaginator;
 use Ynlo\GraphQLBundle\Pagination\PaginationRequest;
+use Ynlo\GraphQLBundle\Util\FieldOptionsHelper;
 
 /**
  * Base class to fetch nodes
@@ -192,36 +195,99 @@ class AllNodesWithPagination extends AllNodes
     }
 
     /**
-     * Filter some columns with simple string.
+     * @param QueryBuilder $qb
+     * @param string       $search
+     *
+     * @throws \Doctrine\ORM\Mapping\MappingException
      */
-    protected function search(QueryBuilder $qb, string $search)
+    protected function search(QueryBuilder $qb, string $search): void
     {
-        //search every word separate
-        $searchArray = explode(' ', $search);
+        $query = $this->queryDefinition;
+        $node = $this->objectDefinition;
 
-        $alias = $qb->getRootAliases()[0];
-
-        //TODO: allow some config to customize search fields
         $em = $this->getManager();
         $metadata = $em->getClassMetadata($this->entity);
-        $searchFields = $metadata->getFieldNames();
 
-        if (\count($searchFields) > 0) {
-            $meta = $qb->getEntityManager()->getClassMetadata($qb->getRootEntities()[0]);
-            foreach ($searchArray as $q) {
-                $q = trim(rtrim($q));
-                $id = md5($q);
-                $orx = new Orx();
-                foreach ($searchFields as $field) {
-                    if (strpos($field, '.') !== false && !isset($meta->embeddedClasses[explode('.', $field)[0]])) {
-                        $orx->add("$field LIKE :search_$id");
-                    } else { //append current alias
-                        $orx->add("$alias.$field LIKE :search_$id");
+        $node->getFields();
+        $columns = [];
+        $searchFields = FieldOptionsHelper::normalize($query->getMeta('pagination')['search_fields'] ?? ['*']);
+        foreach ($node->getFields() as $field) {
+            if (!FieldOptionsHelper::isEnabled($searchFields, $field->getName())) {
+                continue;
+            }
+
+            $config = FieldOptionsHelper::getConfig($searchFields, $field->getName(), null);
+            $searchColumn = null;
+            if ($metadata->hasField($field->getName())) {
+                $searchColumn = $field->getName();
+            }
+
+            if ($metadata->hasField($field->getOriginName())) {
+                $searchColumn = $field->getOriginName();
+            }
+
+            if ($searchColumn) {
+                switch ($metadata->getFieldMapping($searchColumn)['type']) {
+                    case Type::STRING:
+                    case Type::TEXT:
+                        $columns[$searchColumn] = $config ?? 'partial';
+                        break;
+                    case Type::INTEGER:
+                    case Type::BIGINT:
+                    case Type::FLOAT:
+                    case Type::DECIMAL:
+                    case Type::SMALLINT:
+                        $columns[$searchColumn] = $config ?? 'exact';
+                        break;
+                }
+            }
+        }
+
+        foreach ($searchFields as $field => $mode) {
+            if (\is_int($field)) {
+                $field = $mode;
+                $mode = 'exact';
+            }
+
+            if ('*' === $field) {
+                continue;
+            }
+            $columns[$field] = $mode;
+        }
+
+
+        if (\count($columns) > 0) {
+            $joins = [];
+            $orx = new Orx();
+            foreach ($columns as $column => $mode) {
+                $alias = $qb->getRootAliases()[0];
+                if (strpos($column, '.') !== false) {
+                    [$child, $column] = explode('.', $column);
+                    $parentAlias = $alias;
+                    $alias = 'searchJoin'.ucfirst($child);
+                    if (!\in_array($alias, $joins, true)) {
+                        $qb->leftJoin("{$parentAlias}.{$child}", $alias);
+                        $joins[] = $alias;
                     }
                 }
-                $qb->andWhere($orx);
-                $qb->setParameter("search_$id", "%$q%");
+
+                if ('partial' === $mode) {
+                    //search each word separate
+                    $searchArray = explode(' ', $search);
+
+                    $partialAnd = new Andx();
+                    foreach ($searchArray as $q) {
+                        $q = trim($q);
+                        $partialAnd->add("$alias.$column LIKE '%$q%'");
+                    }
+                    $orx->add($partialAnd);
+                } else {
+                    $q = trim($search);
+                    $orx->add("$alias.$column LIKE '$q'");
+                }
             }
+
+            $qb->andWhere($orx);
         }
     }
 
@@ -252,10 +318,10 @@ class AllNodesWithPagination extends AllNodes
         $paramName = 'root'.mt_rand();
         if ($this->queryDefinition->getMeta('pagination')['parent_relation'] === PaginationDefinitionPlugin::MANY_TO_MANY) {
             $qb->andWhere(sprintf(':%s MEMBER OF %s.%s', $paramName, $this->queryAlias, $parentField))
-               ->setParameter($paramName, $root);
+                ->setParameter($paramName, $root);
         } else {
             $qb->andWhere(sprintf('%s.%s = :%s', $this->queryAlias, $parentField, $paramName))
-               ->setParameter($paramName, $root);
+                ->setParameter($paramName, $root);
         }
     }
 }

@@ -12,6 +12,7 @@ v1.2.x - [Unreleased]
  * Added `order` as better alternative to sort collections of nodes
  * Deprecated `orderBy` in collections in favor of `order` which uses enum for field names
  * Fixed inherited interface properties override object properties
+ * Improved list search and allow configure `searchFields` in QueryList annotation 
  
 v1.1.3 - 2018-07-03
 ----
