@@ -17,6 +17,7 @@ class ClassUtilsTest extends TestCase
 {
     public function testRelatedBundleNamesapce()
     {
+        self::assertEquals('App', ClassUtils::relatedBundleNamespace('App\Entity\Class'));
         self::assertEquals('SomeBundle', ClassUtils::relatedBundleNamespace('SomeBundle\Folder\Class'));
         self::assertEquals('Vendor\SomeBundle', ClassUtils::relatedBundleNamespace('Vendor\SomeBundle\Folder\Class'));
         self::assertEquals('VendorBundle\SomeBundle', ClassUtils::relatedBundleNamespace('VendorBundle\SomeBundle\Class'));
