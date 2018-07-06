@@ -91,22 +91,17 @@ class AllNodes extends AbstractResolver
      */
     protected function applyOrderBy(QueryBuilder $qb, $orderBy)
     {
-        $refClass = new \ReflectionClass($this->entity);
-        //TODO: allow sort using nested entities, e.g. profile.username
         foreach ($orderBy as $order) {
             $order->getField();
-            if ($this->objectDefinition->hasField($order->getField())) {
-                $fieldDefinition = $this->objectDefinition->getField($order->getField());
-                if ($fieldDefinition->getOriginType() === \ReflectionProperty::class) {
-                    if ($refClass->hasProperty($fieldDefinition->getOriginName())) {
-                        $qb->addOrderBy($this->queryAlias.'.'.$fieldDefinition->getOriginName(), $order->getDirection());
-
-                        continue;
-                    }
-                }
+            $column = $order->getField();
+            if (strpos($column, '.') !== false) {
+                [$relation, $column] = explode('.', $column);
+                $childAlias = "orderBy".ucfirst($relation);
+                $qb->leftJoin("{$this->queryAlias}.{$relation}", $childAlias);
+                $qb->addOrderBy("{$this->queryAlias}.$column", $order->getDirection());
+            } else {
+                $qb->addOrderBy("{$this->queryAlias}.$column", $order->getDirection());
             }
-
-            throw new Error(sprintf('The field "%s" its not valid to order in "%s"', $order->getField(), $this->queryDefinition->getName()));
         }
     }
 

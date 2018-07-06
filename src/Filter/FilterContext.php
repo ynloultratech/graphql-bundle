@@ -11,7 +11,7 @@
 namespace Ynlo\GraphQLBundle\Filter;
 
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
-use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
+use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 
 /**
@@ -25,7 +25,7 @@ class FilterContext
     private $endpoint;
 
     /**
-     * @var ObjectDefinition
+     * @var FieldsAwareDefinitionInterface
      */
     private $node;
 
@@ -37,11 +37,11 @@ class FilterContext
     /**
      * FilterContext constructor.
      *
-     * @param Endpoint             $endpoint
-     * @param ObjectDefinition     $node
-     * @param null|FieldDefinition $field
+     * @param Endpoint                       $endpoint
+     * @param FieldsAwareDefinitionInterface $node
+     * @param null|FieldDefinition           $field
      */
-    public function __construct(Endpoint $endpoint, ObjectDefinition $node, ?FieldDefinition $field = null)
+    public function __construct(Endpoint $endpoint, FieldsAwareDefinitionInterface $node, ?FieldDefinition $field = null)
     {
         $this->endpoint = $endpoint;
         $this->node = $node;
@@ -57,9 +57,9 @@ class FilterContext
     }
 
     /**
-     * @return ObjectDefinition
+     * @return FieldsAwareDefinitionInterface
      */
-    public function getNode(): ObjectDefinition
+    public function getNode(): FieldsAwareDefinitionInterface
     {
         return $this->node;
     }

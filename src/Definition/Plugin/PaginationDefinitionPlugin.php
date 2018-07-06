@@ -267,6 +267,20 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin implements Bac
 
                 $orderByFields->addValue(new EnumValueDefinition($field->getName()));
             }
+
+            //configure custom orderBy and support for children, like "parentName" => parent.name
+            foreach ($options as $fieldName => $config) {
+                if ('*' === $fieldName || '*' === $config) {
+                    continue;
+                }
+
+                if (array_key_exists($fieldName, $orderByFields->getValues())) {
+                    continue;
+                }
+
+                $orderByFields->addValue(new EnumValueDefinition($fieldName, $config));
+            }
+
             if ($orderByFields->getValues()) {
                 $orderBy->getField('field')->setType($orderByFields->getName());
                 $endpoint->addType($orderByFields);
