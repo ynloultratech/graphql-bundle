@@ -56,6 +56,10 @@ class SimpleIDEncoder implements IDEncoderInterface
             list($nodeType, $databaseId) = explode(self::DIVIDER, $globalId);
 
             $class = $this->definitionRegistry->getEndpoint()->getClassForType($nodeType);
+            if (!class_exists($class)) {
+                return null;
+            }
+
             $manager = $this->doctrine->getManager();
             if ($manager instanceof EntityManagerInterface) {
                 $reference = $manager->getReference($class, $databaseId);
