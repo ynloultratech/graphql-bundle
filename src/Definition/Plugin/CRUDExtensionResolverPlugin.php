@@ -10,7 +10,6 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Plugin;
 
-use Symfony\Component\DependencyInjection\ContainerInterface;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\HasExtensionsInterface;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
@@ -24,13 +23,6 @@ use Ynlo\GraphQLBundle\Util\ClassUtils;
  */
 class CRUDExtensionResolverPlugin extends AbstractDefinitionPlugin
 {
-    protected $container;
-
-    public function __construct(ContainerInterface $container)
-    {
-        $this->container = $container;
-    }
-
     /**
      * {@inheritDoc}
      */
@@ -60,7 +52,7 @@ class CRUDExtensionResolverPlugin extends AbstractDefinitionPlugin
      * @param InterfaceDefinition $definition
      * @param Endpoint            $endpoint
      */
-    protected function resolveInterfaceExtension(InterfaceDefinition $definition, Endpoint $endpoint)
+    protected function resolveInterfaceExtension(InterfaceDefinition $definition, Endpoint $endpoint): void
     {
         $bundleNamespace = ClassUtils::relatedBundleNamespace($definition->getClass());
         $extensionClass = ClassUtils::applyNamingConvention($bundleNamespace, 'Extension', null, $definition->getName().'Extension');
@@ -85,7 +77,7 @@ class CRUDExtensionResolverPlugin extends AbstractDefinitionPlugin
      *
      * @throws \ReflectionException
      */
-    protected function resolveObjectRealInterfaceExtensions(ObjectDefinition $definition)
+    protected function resolveObjectRealInterfaceExtensions(ObjectDefinition $definition): void
     {
         $class = $definition->getClass();
 

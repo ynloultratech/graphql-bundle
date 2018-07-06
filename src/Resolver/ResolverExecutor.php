@@ -172,7 +172,7 @@ class ResolverExecutor implements ContainerAwareInterface
         foreach ($registeredExtensions as $registeredExtension) {
             foreach ($objectDefinition->getExtensions() as $extensionDefinition) {
                 $extensionClass = $extensionDefinition->getClass();
-                if (get_class($registeredExtension) === $extensionClass) {
+                if (\get_class($registeredExtension) === $extensionClass) {
                     $extensions[$extensionClass] = $registeredExtension;
                 }
             }
