@@ -1,4 +1,4 @@
-v1.2.x - [Unreleased]
+v1.2.0 - 2018-07-09
 ----
  * Some minors bugs fixed
  * Added input type guesser to guess the correctness GraphQL type in forms fields [#10](https://github.com/ynloultratech/graphql-bundle/issues/10)
