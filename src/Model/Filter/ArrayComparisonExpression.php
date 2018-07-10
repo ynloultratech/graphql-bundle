@@ -11,7 +11,7 @@
 namespace Ynlo\GraphQLBundle\Model\Filter;
 
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
-use Ynlo\GraphQLBundle\Type\NodeComparisonOperatorType;
+use Ynlo\GraphQLBundle\Type\CollectionComparisonOperatorType;
 
 /**
  * @GraphQL\InputObjectType(
@@ -30,9 +30,9 @@ class ArrayComparisonExpression
     /**
      * @var string|null
      *
-     * @GraphQL\Field(type="NodeComparisonOperator", description="Comparison operator, default value: `IN`")
+     * @GraphQL\Field(type="CollectionComparisonOperator", description="Comparison operator, default value: `IN`")
      */
-    private $op = NodeComparisonOperatorType::IN;
+    private $op = CollectionComparisonOperatorType::IN;
 
     /**
      * @var array

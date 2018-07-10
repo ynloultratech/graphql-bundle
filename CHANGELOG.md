@@ -1,3 +1,8 @@
+v1.2.1 - [Unreleased]
+----
+ * Add `CollectionComparisonOperator` as default comparison operator for array and enums
+ * minors bugs fixed
+  
 v1.2.0 - 2018-07-09
 ----
  * Some minors bugs fixed
