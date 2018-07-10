@@ -30,7 +30,7 @@ class ArrayComparisonExpression
     /**
      * @var string|null
      *
-     * @GraphQL\Field(type="NodeComparisonOperator", description="Comparison operator, default value: `CONTAINS`")
+     * @GraphQL\Field(type="NodeComparisonOperator", description="Comparison operator, default value: `IN`")
      */
     private $op = NodeComparisonOperatorType::IN;
 
