@@ -118,10 +118,8 @@ class MutationAnnotationParser extends QueryAnnotationParser
 
         if ($annotation->node) {
             $mutation->setNode($annotation->node);
-        } else {
-            if ($node = ClassUtils::getNodeFromClass($refClass->getName())) {
-                $mutation->setNode($node);
-            }
+        } elseif (($node = ClassUtils::getNodeFromClass($refClass->getName())) && $endpoint->hasType($node)) {
+            $mutation->setNode($node);
         }
 
         $mutation->setResolver($annotation->resolver ?? $refClass->getName());
