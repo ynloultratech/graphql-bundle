@@ -173,7 +173,14 @@ class MutationFormResolverPlugin extends AbstractDefinitionPlugin
     private function createFormInputObject(Endpoint $endpoint, FormInterface $form, string $name): InputObjectDefinition
     {
         $inputObject = new InputObjectDefinition();
-        $inputObject->setName($name.'Input');
+        if ($settledName = $form->getConfig()->getOption('graphql_type')) {
+            $settledName = preg_replace('/Input$/', null, $settledName);
+            if (\is_string($settledName) && $settledName) {
+                $name = $settledName;
+            }
+        }
+        $inputObject->setName($name .= 'Input');
+        $inputObject->setDescription($form->getConfig()->getOption('graphql_description'));
 
         foreach ($form->all() as $formField) {
             $field = new FieldDefinition();
