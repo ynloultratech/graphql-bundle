@@ -99,8 +99,22 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
             ->canBeDisabled()
             ->children();
 
+        $config->scalarNode('namespace');
         $config->scalarNode('node');
         $config->scalarNode('bundle');
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function normalizeConfig(DefinitionInterface $definition, $config): array
+    {
+        if (($config['namespace'] ?? null) && $config['namespace'] === true) {
+            $config['namespace'] = null;
+            $config['enabled'] = true;
+        }
+
+        return $config;
     }
 
     /**
@@ -194,8 +208,28 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
 
             $root = null;
             $parent = null;
-            $namespace = $definition->getMeta('namespace');
-            if ($bundle = $namespace['bundle'] ?? null) {
+            $namespaceConfig = $definition->getMeta('namespace');
+            $namespacePath = $namespaceConfig['namespace'] ?? null;
+            if ($namespacePath) {
+                $querySuffix = $this->globalConfig['nodes']['query_suffix'] ?? 'Query';
+                $mutationSuffix = $this->globalConfig['nodes']['mutation_suffix'] ?? 'Mutation';
+                $namespaces = explode('/', $namespacePath);
+                foreach ($namespaces as $namespace) {
+                    $name = lcfirst($namespace);
+                    $typeName = ucfirst($namespace).(($definition instanceof MutationDefinition) ? $mutationSuffix : $querySuffix);
+                    if (!$root) {
+                        $root = $this->createRootNamespace(\get_class($definition), $name, $typeName, $endpoint);
+                        $parent = $endpoint->getType($root->getType());
+                        $namespacedDefinitions[$root->getName()] = $root;
+                    } else {
+                        $parent = $this->createChildNamespace($parent, $name, $typeName, $endpoint);
+                    }
+                }
+                $this->addDefinitionToNamespace($parent, $definition);
+                continue;
+            }
+
+            if ($bundle = $namespaceConfig['bundle'] ?? null) {
                 $bundleQuerySuffix = $this->globalConfig['bundle']['query_suffix'] ?? 'BundleQuery';
                 $bundleMutationSuffix = $this->globalConfig['bundle']['mutation_suffix'] ?? 'BundleMutation';
 
@@ -205,7 +239,7 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
                 $parent = $endpoint->getType($root->getType());
             }
 
-            if ($nodeName = $namespace['node'] ?? null) {
+            if ($nodeName = $namespaceConfig['node'] ?? null) {
                 if ($endpoint->hasTypeForClass($nodeName)) {
                     $nodeName = $endpoint->getTypeForClass($nodeName);
                 }

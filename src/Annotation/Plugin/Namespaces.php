@@ -16,6 +16,16 @@ namespace Ynlo\GraphQLBundle\Annotation\Plugin;
 class Namespaces extends PluginConfigAnnotation
 {
     /**
+     * Set custom namespace,
+     * for example:
+     *
+     * billing/invoices
+     *
+     * @var string
+     */
+    public $namespace;
+
+    /**
      * @var bool
      */
     public $enabled;

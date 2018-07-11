@@ -20,14 +20,22 @@ use Ynlo\GraphQLBundle\Model\OrderBy;
 use Ynlo\GraphQLBundle\Model\PageInfo;
 use Ynlo\GraphQLBundle\Model\UpdateNodePayload;
 use Ynlo\GraphQLBundle\Resolver\EmptyObjectResolver;
-use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\PostComment;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\Post;
+use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\PostComment;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\User;
 use Ynlo\GraphQLBundle\Tests\Fixtures\BillingBundle\Entity\Invoice;
 use Ynlo\GraphQLBundle\Tests\TestDefinitionHelper;
 
 class NamespaceDefinitionPluginTest extends TestCase
 {
+    public function testNormalizeConfig()
+    {
+        $plugin = new NamespaceDefinitionPlugin();
+        $normalizedConfig = $plugin->normalizeConfig(new ObjectDefinition(), ['namespace' => true]);
+        self::assertTrue($normalizedConfig['enabled']);
+        self::assertNull($normalizedConfig['namespace']);
+    }
+
     public function testConfigure()
     {
         $endpoint = new Endpoint('default');
@@ -144,6 +152,7 @@ class NamespaceDefinitionPluginTest extends TestCase
 
         //to verify node using FQN
         $endpoint->getQuery('allUsers')->setMeta('namespace', ['node' => User::class]);
+        $endpoint->getQuery('allPosts')->setMeta('namespace', ['namespace' => 'posts/articles']);
 
         $plugin->configureEndpoint($endpoint);
 
@@ -155,6 +164,16 @@ class NamespaceDefinitionPluginTest extends TestCase
         self::assertFalse($endpoint->hasMutation('deleteUser'));
         self::assertFalse($endpoint->hasMutation('addInvoice'));
         self::assertFalse($endpoint->hasMutation('updateInvoice'));
+
+        self::assertTrue($endpoint->hasQuery('posts'));
+        self::assertEquals(EmptyObjectResolver::class, $endpoint->getQuery('posts')->getResolver());
+        self::assertEquals('PostsQuery', $endpoint->getQuery('posts')->getType());
+
+        self::assertTrue($endpoint->getType('PostsQuery')->hasField('articles'));
+        self::assertEquals('ArticlesQuery', $endpoint->getType('PostsQuery')->getField('articles')->getType());
+
+        self::assertTrue($endpoint->getType('ArticlesQuery')->hasField('allPosts'));
+        self::assertEquals('Post', $endpoint->getType('ArticlesQuery')->getField('allPosts')->getType());
 
         self::assertTrue($endpoint->hasQuery('users'));
         self::assertEquals(EmptyObjectResolver::class, $endpoint->getQuery('users')->getResolver());
