@@ -116,7 +116,7 @@ class MutationFormResolverPlugin extends AbstractDefinitionPlugin
         }
 
         //try find the form using a related class
-        if ($relatedClass && (!$formType || true === $formType)) {
+        if ($relatedClass && (!$formType || true === $formType) && $definition->getNode()) {
             $bundleNamespace = ClassUtils::relatedBundleNamespace($relatedClass);
             $nodeName = $endpoint->getType($definition->getNode())->getName();
             $formClass = ClassUtils::applyNamingConvention(
