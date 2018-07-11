@@ -10,7 +10,6 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation;
 
-use Doctrine\Common\Annotations\Reader;
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\MutationDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
@@ -22,21 +21,6 @@ use Ynlo\GraphQLBundle\Util\TypeUtil;
  */
 class MutationAnnotationParser extends QueryAnnotationParser
 {
-    /**
-     * @var Reader
-     */
-    protected $reader;
-
-    /**
-     * MutationAnnotationParser constructor.
-     *
-     * @param Reader $reader
-     */
-    public function __construct(Reader $reader)
-    {
-        $this->reader = $reader;
-    }
-
     /**
      * {@inheritdoc}
      */
