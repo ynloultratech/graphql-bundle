@@ -111,8 +111,15 @@ class MutationAnnotationParser extends QueryAnnotationParser
         $mutation->setDescription($annotation->description);
 
         //enable form auto-loaded by default
-        if (!isset($annotation->options['form'])) {
-            $annotation->options['form'] = true;
+        $form = null;
+        foreach ($annotation->options as $option) {
+            if ($option instanceof Annotation\Plugin\Form) {
+                $form = $option;
+            }
+        }
+        if (!$form && !isset($annotation->options['form'])) {
+            //mutations related to node resolve using forced mode 'true'
+            $annotation->options['form'] = $mutation->getNode() ? true : ['type' => null];
         }
 
         foreach ($annotation->options as $option => $value) {
