@@ -70,6 +70,8 @@ class SchemaCompiler implements ContainerAwareInterface
 
         if ($endpoint->allQueries()) {
             $config['query'] = TypeRegistry::get('Query');
+        } else {
+            throw new \RuntimeException('Invalid Schema, at least one query is required.');
         }
 
         if ($endpoint->allMutations()) {
