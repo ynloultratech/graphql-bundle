@@ -238,6 +238,7 @@ class ConstraintViolation
             'propertyPath' => $this->getPropertyPath(),
             'parameters' => $params,
             'invalidValue' => $this->getInvalidValue(),
+            'plural' => $this->getPlural(),
         ];
     }
 }
