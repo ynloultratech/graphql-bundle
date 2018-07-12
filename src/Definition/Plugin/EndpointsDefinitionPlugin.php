@@ -208,10 +208,14 @@ class EndpointsDefinitionPlugin extends AbstractDefinitionPlugin
         }
 
         $granted = true;
-        if (($type && in_array($type->getName(), $forbiddenTypes))
-            || ($node && in_array($node->getName(), $forbiddenTypes))) {
-            $granted = false;
-        } elseif (!$this->isGranted($endpoint, $executableDefinition)) {
+        $endpoints = $this->normalizeConfig($executableDefinition, $executableDefinition->getMeta('endpoints', []));
+
+        //if the operation has endpoints defined use that,
+        //otherwise check by related type and node
+        if ($endpoints) {
+            $granted = $this->isGranted($endpoint, $executableDefinition);
+        } elseif (($type && \in_array($type->getName(), $forbiddenTypes, true))
+                  || ($node && \in_array($node->getName(), $forbiddenTypes, true))) {
             $granted = false;
         }
 

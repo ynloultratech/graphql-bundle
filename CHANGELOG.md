@@ -4,6 +4,7 @@ v1.2.1 - [Unreleased]
  * Added support to use custom namespaces for queries and mutations
  * Allow set custom type name and description for mutations `input` argument
  * Added `plural` in constraint violation error for pluralizing the violation message
+ * Fixed check only forbidden type if the operation does not have any endpoint configured
  * minors bugs fixed
   
 v1.2.0 - 2018-07-09
