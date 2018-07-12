@@ -110,14 +110,20 @@ class MutationFormResolverPlugin extends AbstractDefinitionPlugin
             if ($class = $endpoint->getClassForType($relatedClass)) {
                 $relatedClass = $class;
             }
-        } elseif ($definition->getResolver()) {
+        }
+
+        if (!class_exists($relatedClass) && $definition->getResolver()) {
             $relatedClass = $definition->getResolver();
         }
 
         //try find the form using a related class
-        if ($relatedClass && (!$formType || true === $formType) && $definition->getNode()) {
+        if ($relatedClass && (!$formType || true === $formType)) {
             $bundleNamespace = ClassUtils::relatedBundleNamespace($relatedClass);
-            $nodeName = $endpoint->getType($definition->getNode())->getName();
+            if ($endpoint->hasType($definition->getNode())) {
+                $nodeName = $endpoint->getType($definition->getNode())->getName();
+            } else {
+                $nodeName = ClassUtils::getNodeFromClass($relatedClass);
+            }
             $formClass = ClassUtils::applyNamingConvention(
                 $bundleNamespace,
                 'Form\Input',
