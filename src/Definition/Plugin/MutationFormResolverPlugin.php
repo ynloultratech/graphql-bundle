@@ -74,15 +74,14 @@ class MutationFormResolverPlugin extends AbstractDefinitionPlugin
             ->canBeDisabled()
             ->children();
 
-        $config->variableNode('type')
-               ->defaultNull()
-               ->info(
-                   'Specify the form type to use,
+        $config
+            ->variableNode('type')
+            ->defaultNull()
+            ->info(
+                'Specify the form type to use,
 [string] Name of the form type to use
-[true|null] The form will be automatically resolved to ...Bundle\Form\Input\{Node}\{MutationName}Input.
-[true] Throw a exception if the form can`t be located
-[false] The form is not required and should not be resolved'
-               );
+[true|null] The form will be automatically resolved to ...Bundle\Form\Input\{Node}\{MutationName}Input.'
+            );
         $config->variableNode('options')->defaultValue([])->info('Form options');
         $config->variableNode('argument')
                ->defaultValue('input')

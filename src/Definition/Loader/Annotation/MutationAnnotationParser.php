@@ -117,9 +117,10 @@ class MutationAnnotationParser extends QueryAnnotationParser
                 $form = $option;
             }
         }
+
+        //form plugin is automatically enable for mutations
         if (!$form && !isset($annotation->options['form'])) {
-            //mutations related to node resolve using forced mode 'true'
-            $annotation->options['form'] = $mutation->getNode() ? true : ['type' => null];
+            $annotation->options['form'] = ['enabled' => true];
         }
 
         foreach ($annotation->options as $option => $value) {

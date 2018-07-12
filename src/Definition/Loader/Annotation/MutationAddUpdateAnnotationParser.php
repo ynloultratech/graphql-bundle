@@ -71,7 +71,7 @@ class MutationAddUpdateAnnotationParser extends MutationAnnotationParser
             $annotation->node = $endpoint->getTypeForClass($annotation->node);
         }
 
-        $formType = true;
+        $formType = null;
         $options = [];
         $generalForm = ClassUtils::applyNamingConvention($bundleNamespace, 'Form\Input', $annotation->node, $annotation->node, 'Input');
         $specificForm = ClassUtils::applyNamingConvention($bundleNamespace, 'Form\Input', $annotation->node, $annotation->name, 'Input');
