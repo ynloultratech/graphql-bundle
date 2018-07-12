@@ -178,7 +178,7 @@ class MutationFormResolverPlugin extends AbstractDefinitionPlugin
                 $name = $settledName;
             }
         }
-        $inputObject->setName($name .= 'Input');
+        $inputObject->setName("{$name}Input");
         $inputObject->setDescription($form->getConfig()->getOption('graphql_description'));
 
         foreach ($form->all() as $formField) {
