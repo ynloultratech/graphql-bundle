@@ -57,7 +57,7 @@ final class ResponseContext implements Context, ClientAwareInterface
      *
      * @Then /^the response is GraphQL error with "([^"]*)"$/
      */
-    public function theResponseIsGraphQLErrorWith($message)
+    public function theResponseIsGraphQLErrorWith(string $message)
     {
         $this->assertResponseStatus(Response::HTTP_OK);
 
@@ -70,6 +70,31 @@ final class ResponseContext implements Context, ClientAwareInterface
                 }
 
                 Assert::assertContains($message, $errorsStack);
+            } else {
+                $this->graphQLContext->debugLastQuery();
+                throw new AssertionFailedError('The response is not the expected error response.');
+            }
+        }
+    }
+
+    /**
+     * Assert that latest response is a GraphQL error with the given code
+     *
+     * @Then /^the response is GraphQL error with code "([^"]*)"$/
+     */
+    public function theResponseIsGraphQLErrorWithCode(string $code)
+    {
+        $this->assertResponseStatus(Response::HTTP_OK);
+
+        //success GraphQL response should not contains errors
+        if ($this->client->getGraphQL()) {
+            if ($this->isValidGraphQLResponse() && $errors = $this->getGraphQLResponseError()) {
+                $errorsStack = '';
+                foreach ($errors as $error) {
+                    $errorsStack .= $error->code."\n";
+                }
+
+                Assert::assertContains($code, $errorsStack);
             } else {
                 $this->graphQLContext->debugLastQuery();
                 throw new AssertionFailedError('The response is not the expected error response.');
