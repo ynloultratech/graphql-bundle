@@ -14,6 +14,7 @@ use Doctrine\ORM\QueryBuilder;
 use GraphQL\Error\Error;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
+use Ynlo\GraphQLBundle\Model\OrderBy;
 use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
 
 /**
@@ -84,22 +85,24 @@ class AllNodes extends AbstractResolver
     }
 
     /**
-     * @param QueryBuilder $qb
-     * @param array        $orderBy
+     * @param QueryBuilder    $qb
+     * @param array|OrderBy[] $orderBy
      *
      * @throws Error
      */
     protected function applyOrderBy(QueryBuilder $qb, $orderBy)
     {
         foreach ($orderBy as $order) {
-            $order->getField();
             $column = $order->getField();
             if (strpos($column, '.') !== false) {
                 [$relation, $column] = explode('.', $column);
-                $childAlias = "orderBy".ucfirst($relation);
+                $childAlias = 'orderBy'.ucfirst($relation);
                 $qb->leftJoin("{$this->queryAlias}.{$relation}", $childAlias);
                 $qb->addOrderBy("{$this->queryAlias}.$column", $order->getDirection());
             } else {
+                if ($this->objectDefinition && $this->objectDefinition->hasField($column)) {
+                    $column = $this->objectDefinition->getField($column)->getOriginName() ?: $column;
+                }
                 $qb->addOrderBy("{$this->queryAlias}.$column", $order->getDirection());
             }
         }
