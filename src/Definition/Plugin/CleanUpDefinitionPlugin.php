@@ -51,6 +51,7 @@ class CleanUpDefinitionPlugin extends AbstractDefinitionPlugin
             return;
         }
 
+        $this->used = [];
         $this->endpoint = $endpoint;
 
         $this->processOperations($endpoint->allQueries());
