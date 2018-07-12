@@ -51,6 +51,31 @@ final class DatabaseContext implements Context, ClientAwareInterface
     }
 
     /**
+     * Use a YAML syntax to create a criteria to not match a record in given table
+     *
+     * Example: Then should not exist in table "post" a record matching:
+     *   """
+     *   title: "Welcome"
+     *   body: "Welcome to web page"
+     *   """
+     *
+     * Expression syntax is allowed
+     *
+     * Example: Then should not exist in table "post" a record matching:
+     *   """
+     *   title: "{variables.input.title}"
+     *   body: "{variables.input.body}"
+     *   """
+     *
+     * @Given /^should not exist in table "([^"]*)" a record matching:$/
+     */
+    public function shouldNotExistInTableARecordMatching($table, YamlStringNode $criteria)
+    {
+        $count = $this->countRecordsInTableMatching($table, $criteria->toArray());
+        Assert::assertEquals(0, $count, sprintf('Exist at least one record in the database "%s" matching given conditions', $table));
+    }
+
+    /**
      * Count records in table matching criteria
      *
      * @param string $table

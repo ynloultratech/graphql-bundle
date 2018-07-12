@@ -7,6 +7,7 @@ v1.2.1 - [Unreleased]
  * Added `plural` in constraint violation error for pluralizing the violation message
  * Fixed check only forbidden type if the operation does not have any endpoint configured
  * Added behat step to verify GraphQL error code
+ * Added behat step to verify not existing row in table
  * minors bugs fixed
   
 v1.2.0 - 2018-07-09
