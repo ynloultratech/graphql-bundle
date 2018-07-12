@@ -281,6 +281,8 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
     {
         $field = new FieldDefinition();
         $field->setName($definition->getName());
+        $field->setDescription($definition->getDescription());
+        $field->setDeprecationReason($definition->getDeprecationReason());
         $field->setType($definition->getType());
         $field->setResolver($definition->getResolver());
         $field->setArguments($definition->getArguments());
