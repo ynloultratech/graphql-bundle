@@ -40,6 +40,16 @@ class Namespaces extends PluginConfigAnnotation
      */
     public $bundle;
 
+    public function __construct(array $config = [])
+    {
+        if (isset($config['value']) && \count($config) === 1 && \is_bool($config['value'])) {
+            $config['enabled'] = $config['value'];
+            unset($config['value']);
+        }
+        parent::__construct($config);
+    }
+
+
     /**
      * {@inheritdoc}
      */

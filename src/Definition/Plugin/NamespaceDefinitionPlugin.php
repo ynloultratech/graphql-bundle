@@ -105,19 +105,6 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
     }
 
     /**
-     * @inheritDoc
-     */
-    public function normalizeConfig(DefinitionInterface $definition, $config): array
-    {
-        if (($config['namespace'] ?? null) && $config['namespace'] === true) {
-            $config['namespace'] = null;
-            $config['enabled'] = true;
-        }
-
-        return $config;
-    }
-
-    /**
      * {@inheritdoc}
      */
     public function configure(DefinitionInterface $definition, Endpoint $endpoint, array $config): void
