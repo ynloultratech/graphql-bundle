@@ -26,6 +26,19 @@ class Namespaces extends PluginConfigAnnotation
     public $namespace;
 
     /**
+     * Name to use as alias for this operation.
+     *
+     * By default the same operation name is used,
+     * but removing any suffix containing the node name,
+     * example `AddPost` when is namespaced is converted to `add`
+     * inside `posts` namespace. If you wat to use for example `create` instead
+     * can set this as alias.
+     *
+     * @var bool
+     */
+    public $alias;
+
+    /**
      * @var bool
      */
     public $enabled;

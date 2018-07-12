@@ -100,6 +100,7 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
             ->children();
 
         $config->scalarNode('namespace');
+        $config->scalarNode('alias');
         $config->scalarNode('node');
         $config->scalarNode('bundle');
     }
@@ -160,7 +161,17 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
         $bundle = $config['bundle'] ?? $bundle;
 
         if ($bundle || $node) {
-            $definition->setMeta('namespace', ['bundle' => $bundle, 'node' => $node]);
+            $config = $definition->getMeta('namespace', []);
+            $definition->setMeta(
+                'namespace',
+                array_merge(
+                    [
+                        'bundle' => $bundle,
+                        'node' => $node,
+                    ],
+                    $config
+                )
+            );
         }
     }
 
@@ -212,6 +223,9 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
                         $parent = $this->createChildNamespace($parent, $name, $typeName, $endpoint);
                     }
                 }
+                if ($alias = $namespaceConfig['alias'] ?? null) {
+                    $definition->setName($alias);
+                }
                 $this->addDefinitionToNamespace($parent, $definition);
                 continue;
             }
@@ -244,9 +258,13 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
                     $parent = $this->createChildNamespace($parent, $name, $typeName, $endpoint);
                 }
 
-                //remove node suffix on namespaced definitions
-                $definition->setName(preg_replace(sprintf("/(\w+)%s$/", $nodeName), '$1', $definition->getName()));
-                $definition->setName(preg_replace(sprintf("/(\w+)%s$/", Inflector::pluralize($nodeName)), '$1', $definition->getName()));
+                if ($alias = $namespaceConfig['alias'] ?? null) {
+                    $definition->setName($alias);
+                } else {
+                    //remove node suffix on namespaced definitions
+                    $definition->setName(preg_replace(sprintf("/(\w+)%s$/", $nodeName), '$1', $definition->getName()));
+                    $definition->setName(preg_replace(sprintf("/(\w+)%s$/", Inflector::pluralize($nodeName)), '$1', $definition->getName()));
+                }
             }
 
             if ($root && $parent) {

@@ -2,6 +2,7 @@ v1.2.1 - [Unreleased]
 ----
  * Added `CollectionComparisonOperator` as default comparison operator for array and enums
  * Added support to use custom namespaces for queries and mutations
+ * Added support to use `alias` to customize name for namespaced operations
  * Allow set custom type name and description for mutations `input` argument
  * Added `plural` in constraint violation error for pluralizing the violation message
  * Fixed check only forbidden type if the operation does not have any endpoint configured
