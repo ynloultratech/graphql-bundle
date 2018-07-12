@@ -11,6 +11,7 @@
 namespace Ynlo\GraphQLBundle\Model;
 
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
+use Ynlo\GraphQLBundle\Util\IDEncoder;
 
 /**
  * @GraphQL\ObjectType(description="A violation of a constraint that happened during validation.
@@ -135,7 +136,7 @@ class ConstraintViolation
      */
     public function setInvalidValue($invalidValue): ConstraintViolation
     {
-        $this->invalidValue = $invalidValue;
+        $this->invalidValue = $this->normalizeValue($invalidValue);
 
         return $this;
     }
@@ -156,7 +157,7 @@ class ConstraintViolation
      */
     public function addParameter($name, $value): ConstraintViolation
     {
-        $this->parameters[] = new ConstraintViolationParameter($name, $value);
+        $this->parameters[] = new ConstraintViolationParameter($name, $this->normalizeValue($value));
 
         return $this;
     }
@@ -240,5 +241,25 @@ class ConstraintViolation
             'invalidValue' => $this->getInvalidValue(),
             'plural' => $this->getPlural(),
         ];
+    }
+
+    /**
+     * @param mixed $value
+     *
+     * @return null|string|mixed
+     */
+    private function normalizeValue($value)
+    {
+        if ($value instanceof NodeInterface) {
+            $value = IDEncoder::encode($value);
+        } elseif (\is_object($value)) {
+            if (method_exists($value, '__toString')) {
+                $value = (string) $value;
+            } else {
+                $value = null;
+            }
+        }
+
+        return $value;
     }
 }
