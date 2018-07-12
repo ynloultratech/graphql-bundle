@@ -28,13 +28,6 @@ use Ynlo\GraphQLBundle\Tests\TestDefinitionHelper;
 
 class NamespaceDefinitionPluginTest extends TestCase
 {
-    public function testNormalizeConfig()
-    {
-        $plugin = new NamespaceDefinitionPlugin();
-        $normalizedConfig = $plugin->normalizeConfig(new ObjectDefinition(), ['namespace' => true]);
-        self::assertTrue($normalizedConfig['enabled']);
-        self::assertNull($normalizedConfig['namespace']);
-    }
 
     public function testConfigure()
     {
