@@ -216,7 +216,11 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
                     $name = lcfirst($namespace);
                     $typeName = ucfirst($namespace).(($definition instanceof MutationDefinition) ? $mutationSuffix : $querySuffix);
                     if (!$root) {
-                        $root = $this->createRootNamespace(\get_class($definition), $name, $typeName, $endpoint);
+                        if (isset($namespacedDefinitions[$name])) {
+                            $root = $namespacedDefinitions[$name];
+                        } else {
+                            $root = $this->createRootNamespace(\get_class($definition), $name, $typeName, $endpoint);
+                        }
                         $parent = $endpoint->getType($root->getType());
                         $namespacedDefinitions[$root->getName()] = $root;
                     } else {
