@@ -69,7 +69,9 @@ class QueryAnnotationParser implements AnnotationParserInterface
             if (class_exists($annotation->type)) {
                 $type = $endpoint->getTypeForClass($annotation->type);
             }
-            $query->setNode($type);
+            if ($endpoint->hasType($type)) {
+                $query->setNode($type);
+            }
             $query->setType($type);
         }
 
