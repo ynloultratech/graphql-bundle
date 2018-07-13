@@ -166,7 +166,11 @@ GraphQL;
         }
         unset($value);
 
-        ksort($array);
+        if (isset($array[0])) {
+            sort($array);
+        } else {
+            ksort($array);
+        }
     }
 
     /**
