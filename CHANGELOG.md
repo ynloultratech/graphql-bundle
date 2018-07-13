@@ -8,6 +8,7 @@ v1.2.1 - [Unreleased]
  * Fixed check only forbidden type if the operation does not have any endpoint configured
  * Added behat step to verify GraphQL error code
  * Added behat step to verify not existing row in table
+ * Added support to use endpoints and others options in arguments
  * minors bugs fixed
   
 v1.2.0 - 2018-07-09

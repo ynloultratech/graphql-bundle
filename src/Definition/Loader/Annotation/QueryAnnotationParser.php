@@ -129,9 +129,9 @@ class QueryAnnotationParser implements AnnotationParserInterface
 
     /**
      * @param ArgumentAwareInterface $argumentAware
-     * @param object                 $argAnnotation
+     * @param Annotation\Argument    $argAnnotation
      */
-    public function resolveArgument(ArgumentAwareInterface $argumentAware, $argAnnotation)
+    protected function resolveArgument(ArgumentAwareInterface $argumentAware, Annotation\Argument $argAnnotation): void
     {
         $arg = new ArgumentDefinition();
         $arg->setName($argAnnotation->name);
@@ -142,6 +142,9 @@ class QueryAnnotationParser implements AnnotationParserInterface
         $arg->setList(TypeUtil::isTypeList($argAnnotation->type));
         $arg->setNonNullList(TypeUtil::isTypeNonNullList($argAnnotation->type));
         $arg->setNonNull(TypeUtil::isTypeNonNull($argAnnotation->type));
+        foreach ($argAnnotation->options as $option => $value) {
+            $arg->setMeta($option, $value);
+        }
         $argumentAware->addArgument($arg);
     }
 }

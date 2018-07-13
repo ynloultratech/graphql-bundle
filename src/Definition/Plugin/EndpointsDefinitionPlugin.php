@@ -148,6 +148,19 @@ class EndpointsDefinitionPlugin extends AbstractDefinitionPlugin
                             || ($fieldNodeType && in_array($fieldNodeType->getName(), $forbiddenTypes))) {
                             $type->removeField($field->getName());
                         }
+
+                        foreach ($field->getArguments() as $argument) {
+                            //remove forbidden argument
+                            if (!$this->isGranted($endpoint, $argument)) {
+                                $field->removeArgument($argument->getName());
+                            }
+
+                            //remove argument related to forbidden type
+                            $argumentType = $endpoint->hasType($argument->getType()) ? $endpoint->getType($argument->getType()) : null;
+                            if ($argumentType && \in_array($argumentType->getName(), $forbiddenTypes, true)) {
+                                $field->removeArgument($argument->getName());
+                            }
+                        }
                     }
 
                     //after delete fields related to forbidden objects,
@@ -224,6 +237,19 @@ class EndpointsDefinitionPlugin extends AbstractDefinitionPlugin
                 $endpoint->removeMutation($executableDefinition->getName());
             } else {
                 $endpoint->removeQuery($executableDefinition->getName());
+            }
+        } else {
+            foreach ($executableDefinition->getArguments() as $argument) {
+                //remove forbidden argument
+                if (!$this->isGranted($endpoint, $argument)) {
+                    $executableDefinition->removeArgument($argument->getName());
+                }
+
+                //remove argument related to forbidden type
+                $argumentType = $endpoint->hasType($argument->getType()) ? $endpoint->getType($argument->getType()) : null;
+                if ($argumentType && \in_array($argumentType->getName(), $forbiddenTypes, true)) {
+                    $executableDefinition->removeArgument($argument->getName());
+                }
             }
         }
     }
