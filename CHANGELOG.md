@@ -1,4 +1,4 @@
-v1.2.1 - [Unreleased]
+v1.2.1 - 2018-07-16
 ----
  * Added `CollectionComparisonOperator` as default comparison operator for array and enums
  * Added support to use custom namespaces for queries and mutations
