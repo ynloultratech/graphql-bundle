@@ -17,6 +17,7 @@ use Symfony\Component\HttpKernel\KernelInterface;
 use Ynlo\GraphQLBundle\Annotation\Filter;
 use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\ImplementorInterface;
+use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\NodeAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
@@ -64,6 +65,9 @@ class NamingConventionFilterResolver implements FilterResolverInterface
         }
         if ($node instanceof NodeAwareDefinitionInterface && $node->getNode()) {
             $types[] = $node->getNode();
+        }
+        if ($node instanceof InterfaceDefinition) {
+            $types[] = $node->getName();
         }
 
         $paths = [];

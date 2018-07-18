@@ -1,3 +1,7 @@
+v1.2.2 - (Unreleased)
+----
+ * Added support to use collection filters for interfaces (polymorphic nodes)
+  
 v1.2.1 - 2018-07-16
 ----
  * Added `CollectionComparisonOperator` as default comparison operator for array and enums
