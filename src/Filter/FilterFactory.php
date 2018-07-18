@@ -18,6 +18,7 @@ use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Util\FieldOptionsHelper;
+use Ynlo\GraphQLBundle\Util\TypeUtil;
 
 class FilterFactory
 {
@@ -82,7 +83,9 @@ class FilterFactory
                 }
                 $field = new FieldDefinition();
                 $field->setName($filter->name);
-                $field->setType($filter->type);
+                $field->setType(TypeUtil::normalize($filter->type));
+                $field->setList(TypeUtil::isTypeList($filter->type));
+                $field->setNonNullList(TypeUtil::isTypeNonNullList($filter->type));
                 $field->setResolver($filter->resolver);
                 if ($filter->field) {
                     $field->setMeta('filter_field', $filter->field);
