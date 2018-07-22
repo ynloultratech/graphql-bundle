@@ -48,6 +48,7 @@ class AllNodesWithPagination extends AllNodes
         $last = $args['last'] ?? null;
         $before = $args['before'] ?? null;
         $after = $args['after'] ?? null;
+        $page = $args['page'] ?? null;
         $search = $args['search'] ?? null;
         $filters = $args['filters'] ?? null;
         $where = $args['where'] ?? null;
@@ -104,7 +105,7 @@ class AllNodesWithPagination extends AllNodes
         $paginator = $this->createPaginator();
 
         $connection = $this->createConnection();
-        $paginator->paginate($qb, new PaginationRequest($first, $last, $after, $before), $connection);
+        $paginator->paginate($qb, new PaginationRequest($first, $last, $after, $before, $page), $connection);
 
         return $connection;
     }

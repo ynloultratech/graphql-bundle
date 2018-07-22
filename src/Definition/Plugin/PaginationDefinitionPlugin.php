@@ -195,6 +195,12 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin implements Bac
             $totalCount->setNonNull(true);
             $connection->addField($totalCount);
 
+            $pages = new FieldDefinition();
+            $pages->setName('pages');
+            $pages->setType('Int');
+            $pages->setNonNull(true);
+            $connection->addField($pages);
+
             $pageInfo = new FieldDefinition();
             $pageInfo->setName('pageInfo');
             $pageInfo->setType('PageInfo');
@@ -346,6 +352,13 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin implements Bac
         $before->setNonNull(false);
         $before->setDescription('Returns the last *n* elements from the list.');
         $definition->addArgument($before);
+
+        $page = new ArgumentDefinition();
+        $page->setName('page');
+        $page->setType('integer');
+        $page->setNonNull(false);
+        $page->setDescription('Page to fetch in order to use page pagination instead of cursor based');
+        $definition->addArgument($page);
     }
 
     /**

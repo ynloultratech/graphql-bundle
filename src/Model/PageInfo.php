@@ -46,6 +46,13 @@ class PageInfo
     protected $hasPreviousPage = false;
 
     /**
+     * @var int
+     *
+     * @GraphQL\Field(type="int")
+     */
+    protected $page = 0;
+
+    /**
      * @return string
      */
     public function getStartCursor(): ?string
@@ -121,6 +128,26 @@ class PageInfo
     public function setHasPreviousPage(bool $hasPreviousPage): PageInfo
     {
         $this->hasPreviousPage = $hasPreviousPage;
+
+        return $this;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPage(): int
+    {
+        return $this->page;
+    }
+
+    /**
+     * @param int $page
+     *
+     * @return PageInfo
+     */
+    public function setPage(int $page): PageInfo
+    {
+        $this->page = $page;
 
         return $this;
     }

@@ -30,6 +30,20 @@ interface ConnectionInterface
     public function setTotalCount(int $totalCount);
 
     /**
+     * @GraphQL\Field(type="int!")
+     *
+     * @return int
+     */
+    public function getPages(): int;
+
+    /**
+     * @param int $pages
+     *
+     * @return ConnectionInterface
+     */
+    public function setPages(int $pages): ConnectionInterface;
+
+    /**
      * @param EdgeInterface $edge
      */
     public function addEdge(EdgeInterface $edge);

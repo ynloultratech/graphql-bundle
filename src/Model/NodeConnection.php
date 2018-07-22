@@ -25,6 +25,13 @@ class NodeConnection implements ConnectionInterface
     protected $totalCount = 0;
 
     /**
+     * @var int
+     *
+     * @GraphQL\Field(type="Int!")
+     */
+    protected $pages = 0;
+
+    /**
      * @var array
      *
      * @GraphQL\Field(type="[Ynlo\GraphQLBundle\Model\EdgeInterface]")
@@ -60,6 +67,26 @@ class NodeConnection implements ConnectionInterface
     public function setTotalCount(int $totalCount)
     {
         $this->totalCount = $totalCount;
+    }
+
+    /**
+     * @return int
+     */
+    public function getPages(): int
+    {
+        return $this->pages;
+    }
+
+    /**
+     * @param int $pages
+     *
+     * @return NodeConnection
+     */
+    public function setPages(int $pages): ConnectionInterface
+    {
+        $this->pages = $pages;
+
+        return $this;
     }
 
     /**

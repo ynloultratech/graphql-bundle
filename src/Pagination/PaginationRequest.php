@@ -36,19 +36,26 @@ class PaginationRequest
     protected $before;
 
     /**
+     * @var int
+     */
+    protected $page;
+
+    /**
      * PaginationRequest constructor.
      *
      * @param string|null $first
      * @param string|null $last
      * @param string|null $after
      * @param string|null $before
+     * @param string|null $page
      */
-    public function __construct($first = null, $last = null, $after = null, $before = null)
+    public function __construct($first = null, $last = null, $after = null, $before = null, $page = null)
     {
         $this->first = $first;
         $this->last = $last;
         $this->after = $after;
         $this->before = $before;
+        $this->page = $page;
     }
 
     /**
@@ -127,6 +134,26 @@ class PaginationRequest
     public function setBefore(string $before): PaginationRequest
     {
         $this->before = $before;
+
+        return $this;
+    }
+
+    /**
+     * @return int|null
+     */
+    public function getPage(): ?int
+    {
+        return $this->page;
+    }
+
+    /**
+     * @param int $page
+     *
+     * @return PaginationRequest
+     */
+    public function setPage(int $page): PaginationRequest
+    {
+        $this->page = $page;
 
         return $this;
     }

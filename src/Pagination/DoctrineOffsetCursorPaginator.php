@@ -52,6 +52,17 @@ class DoctrineOffsetCursorPaginator implements DoctrineCursorPaginatorInterface
 
             $cursor = $this->encodeCursor($cursorOffset);
             $this->connection->addEdge($this->connection->createEdge($result, $cursor));
+            if ($limit > 0) {
+                $this->connection->setPages((int) ceil($count / $limit));
+                if ($offset > 0) {
+                    $this->connection->getPageInfo()->setPage((int) ceil($offset / $limit) + 1);
+                } else {
+                    $this->connection->getPageInfo()->setPage(1);
+                }
+            } else {
+                $this->connection->setPages(0);
+                $this->connection->getPageInfo()->setPage(0);
+            }
             $this->connection->getPageInfo()->setEndCursor($cursor);
         }
     }
@@ -125,6 +136,19 @@ class DoctrineOffsetCursorPaginator implements DoctrineCursorPaginatorInterface
 
         if ($pagination->getLast() && !$pagination->getBefore() && !$pagination->getAfter()) {
             $offset = $count - $pagination->getLast();
+            if ($offset < 0) {
+                $offset = 0;
+            }
+        }
+
+        $page = $pagination->getPage();
+        if ($page > 0) {
+            $pages = (int) ceil($count / $limit);
+            if ($page > $pages) {
+                $page = $pages;
+            }
+
+            $offset = ($page - 1) * $limit;
             if ($offset < 0) {
                 $offset = 0;
             }
