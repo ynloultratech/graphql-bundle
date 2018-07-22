@@ -238,6 +238,17 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
     protected function copyFieldsFromInterface(InterfaceDefinition $intDef, FieldsAwareDefinitionInterface $fieldsAwareDefinition)
     {
         foreach ($intDef->getFields() as $field) {
+            //copy endpoints from interface to fields
+            if ($interfaceEndpoints = $intDef->getMeta('endpoints')) {
+                $interfaceEndpoints = $interfaceEndpoints['endpoints'];
+                if ($fieldEndpoints = $field->getMeta('endpoints')) {
+                    $fieldEndpoints = $fieldEndpoints['endpoints'];
+                    $field->setMeta('endpoints', ['endpoints' => array_merge($interfaceEndpoints, $fieldEndpoints)]);
+                } else {
+                    $field->setMeta('endpoints', ['endpoints' => $interfaceEndpoints]);
+                }
+            }
+
             if (!$fieldsAwareDefinition->hasField($field->getName())) {
                 $newField = clone $field;
                 $newField->addInheritedFrom($intDef->getName());
