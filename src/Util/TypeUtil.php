@@ -34,7 +34,12 @@ final class TypeUtil
      */
     public static function resolveObjectType(Endpoint $endpoint, $object): ?string
     {
-        $types = $endpoint->getTypesForClass(DoctrineClassUtils::getClass($object));
+        $class = DoctrineClassUtils::getClass($object);
+        if (!$endpoint->hasTypeForClass($class)) {
+            return null;
+        }
+
+        $types = $endpoint->getTypesForClass($class);
 
         //if only one type for given object class return the type
         if (count($types) === 1) {

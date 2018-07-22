@@ -3,6 +3,7 @@ v1.2.2 - (Unreleased)
  * Added support to use collection filters for interfaces (polymorphic nodes)
  * Added support to set filters type with modifiers `[]` or `!` 
  * Added support to use page based pagination
+ * Fixed issue checking permissions on specific objects
   
 v1.2.1 - 2018-07-16
 ----
