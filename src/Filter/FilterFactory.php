@@ -83,6 +83,8 @@ class FilterFactory
                 }
                 $field = new FieldDefinition();
                 $field->setName($filter->name);
+                $field->setDescription($filter->description);
+                $field->setDeprecationReason($filter->deprecationReason);
                 $field->setType(TypeUtil::normalize($filter->type));
                 $field->setList(TypeUtil::isTypeList($filter->type));
                 $field->setNonNullList(TypeUtil::isTypeNonNullList($filter->type));

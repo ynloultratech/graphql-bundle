@@ -7,6 +7,7 @@ v1.2.2 - (Unreleased)
  * Fixed fields from interface use same endpoints as interface definition
  * Fixed issue in lists not ordering correctly parent fields
  * Fixed issue when use @Pagination to customize @QueryList options
+ * Fixed custom filter description does not appear in schema
   
 v1.2.1 - 2018-07-16
 ----
