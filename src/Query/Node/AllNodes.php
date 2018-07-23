@@ -98,7 +98,7 @@ class AllNodes extends AbstractResolver
                 [$relation, $column] = explode('.', $column);
                 $childAlias = 'orderBy'.ucfirst($relation);
                 $qb->leftJoin("{$this->queryAlias}.{$relation}", $childAlias);
-                $qb->addOrderBy("{$this->queryAlias}.$column", $order->getDirection());
+                $qb->addOrderBy("$childAlias.$column", $order->getDirection());
             } else {
                 if ($this->objectDefinition && $this->objectDefinition->hasField($column)) {
                     $column = $this->objectDefinition->getField($column)->getOriginName() ?: $column;
