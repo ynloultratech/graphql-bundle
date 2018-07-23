@@ -40,6 +40,11 @@ class Pagination extends PluginConfigAnnotation
     public $filters = ['*'];
 
     /**
+     * @var string[]
+     */
+    public $searchFields = ['*'];
+
+    /**
      * Target node to properly paginate.
      * If is possible will be auto-resolved using naming conventions
      *

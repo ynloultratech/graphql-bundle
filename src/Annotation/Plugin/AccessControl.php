@@ -18,10 +18,10 @@ class AccessControl extends PluginConfigAnnotation
     /**
      * @var string
      */
-    protected $expression;
+    public $expression;
 
     /**
      * @var string
      */
-    protected $message;
+    public $message;
 }

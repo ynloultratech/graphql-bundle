@@ -23,26 +23,13 @@ abstract class PluginConfigAnnotation
         $ref = new \ReflectionClass(get_class($this));
         $properties = $ref->getProperties();
 
-        //set default values
-        foreach ($properties as $property) {
-            $property->setAccessible(true);
-            $value = $property->getValue($this);
-            if (null !== $value) {
-                $this->config[Inflector::tableize($property->getName())] = $property->getValue($this);
-            }
-        }
-
         //if only one value is given, the first property is set with the given value
-        if (isset($config['value']) && count($config) === 1) {
-            if ($properties) {
-                $propName = $ref->getProperties()[0]->getName();
-                $this->$propName = $config['value'];
-                $this->config[Inflector::tableize($propName)] = $config['value'];
-            }
+        if ($properties && isset($config['value']) && \count($config) === 1) {
+            $propName = $properties[0]->getName();
+            $this->$propName = $config['value'];
         } else {
             foreach ($config as $key => $value) {
-                //dynamically added to avoid ide auto-complete for this property
-                $this->config[Inflector::tableize($key)] = $value;
+                $this->$key = $value;
             }
         }
     }
@@ -54,7 +41,19 @@ abstract class PluginConfigAnnotation
      */
     public function getConfig(): array
     {
-        return $this->config ?? [];
+        $ref = new \ReflectionClass(get_class($this));
+        $properties = $ref->getProperties();
+        $config = [];
+
+        //set default values
+        foreach ($properties as $property) {
+            $value = $property->getValue($this);
+            if (null !== $value) {
+                $config[Inflector::tableize($property->getName())] = $property->getValue($this);
+            }
+        }
+
+        return $config;
     }
 
     /**

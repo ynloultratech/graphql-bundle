@@ -19,5 +19,5 @@ class Endpoints extends PluginConfigAnnotation
     /**
      * @var array
      */
-    protected $endpoints = [];
+    public $endpoints = [];
 }

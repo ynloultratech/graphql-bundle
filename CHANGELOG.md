@@ -6,6 +6,7 @@ v1.2.2 - (Unreleased)
  * Fixed issue checking permissions on specific objects
  * Fixed fields from interface use same endpoints as interface definition
  * Fixed issue in lists not ordering correctly parent fields
+ * Fixed issue when use @Pagination to customize @QueryList options
   
 v1.2.1 - 2018-07-16
 ----

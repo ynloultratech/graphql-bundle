@@ -48,34 +48,34 @@ class QueryListAnnotationParser extends QueryAnnotationParser
 
         $annotation->name = $annotation->name ?? 'all'.Inflector::pluralize(ucfirst($definition->getName()));
         $annotation->type = sprintf('[%s]', TypeUtil::normalize($annotation->type ?? $definition->getName()));
-        $annotation->options = array_merge(['pagination' => true], $annotation->options);
+
+        $pagination = new Annotation\Plugin\Pagination();
+        $pagination->enabled = true;
+        $paginationDefined = false;
+        foreach ($annotation->options as $option) {
+            if ($option instanceof Annotation\Plugin\Pagination) {
+                $paginationDefined = true;
+                $pagination = $option;
+            }
+        }
+        if (!$paginationDefined) {
+            $annotation->options[] = $pagination;
+        }
 
         if ($annotation->limit) {
-            if (!\is_array($annotation->options['pagination'])) {
-                $annotation->options['pagination'] = [];
-            }
-            $annotation->options['pagination']['limit'] = $annotation->limit;
+            $pagination->limit = $annotation->limit;
         }
 
         if ($annotation->filters) {
-            if (!\is_array($annotation->options['pagination'])) {
-                $annotation->options['pagination'] = [];
-            }
-            $annotation->options['pagination']['filters'] = $annotation->filters;
+            $pagination->filters = $annotation->filters;
         }
 
         if ($annotation->orderBy) {
-            if (!\is_array($annotation->options['pagination'])) {
-                $annotation->options['pagination'] = [];
-            }
-            $annotation->options['pagination']['order_by'] = $annotation->orderBy;
+            $pagination->orderBy = $annotation->orderBy;
         }
 
         if ($annotation->searchFields) {
-            if (!\is_array($annotation->options['pagination'])) {
-                $annotation->options['pagination'] = [];
-            }
-            $annotation->options['pagination']['search_fields'] = $annotation->searchFields;
+            $pagination->searchFields = $annotation->searchFields;
         }
 
         $bundleNamespace = ClassUtils::relatedBundleNamespace($refClass->getName());
