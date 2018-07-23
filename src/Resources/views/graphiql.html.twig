@@ -77,7 +77,7 @@
     }
 
     function graphQLFetcher(graphQLParams) {
-        return fetch('{{ url('api_root') }}', {
+        return fetch('{{ url }}', {
             method: '{{ method }}',
             headers: {{ headers|json_encode|raw }},
             body: JSON.stringify(graphQLParams)

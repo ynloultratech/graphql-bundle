@@ -9,6 +9,7 @@ v1.2.2 - (Unreleased)
  * Fixed issue when use @Pagination to customize @QueryList options
  * Fixed custom filter description does not appear in schema
  * Fixed resolve correctly extensions related to interface definitions
+ * Added support to use Xdebug to debug queries using the GraphiQL API Explorer
   
 v1.2.1 - 2018-07-16
 ----

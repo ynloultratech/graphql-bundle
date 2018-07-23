@@ -98,9 +98,14 @@ class ExplorerController extends AbstractController
 
     public function graphiQL()
     {
+        $params = [];
+        if (isset($_COOKIE['XDEBUG_SESSION'])) {
+            $params['XDEBUG_SESSION_START'] = 'PHPSTORM';
+        }
+
         $request = new GraphiQLRequest(
             $this->generateUrl('api_root'),
-            [],
+            $params,
             [
                 'Accept' => 'application/json',
                 'Content-Type' => 'application/json',
