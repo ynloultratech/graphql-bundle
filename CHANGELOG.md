@@ -8,6 +8,7 @@ v1.2.2 - (Unreleased)
  * Fixed issue in lists not ordering correctly parent fields
  * Fixed issue when use @Pagination to customize @QueryList options
  * Fixed custom filter description does not appear in schema
+ * Fixed resolve correctly extensions related to interface definitions
   
 v1.2.1 - 2018-07-16
 ----

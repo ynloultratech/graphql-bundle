@@ -10,10 +10,10 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Plugin;
 
+use Ynlo\GraphQLBundle\Definition\ClassAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\HasExtensionsInterface;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
-use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Util\ClassUtils;
 
@@ -40,7 +40,7 @@ class CRUDExtensionResolverPlugin extends AbstractDefinitionPlugin
             $this->resolveInterfaceExtension($definition, $endpoint);
         }
 
-        if ($definition instanceof ObjectDefinition) {
+        if ($definition instanceof ClassAwareDefinitionInterface) {
             $this->resolveObjectRealInterfaceExtensions($definition);
         }
     }
@@ -73,11 +73,11 @@ class CRUDExtensionResolverPlugin extends AbstractDefinitionPlugin
      *
      * This method use PHP real interfaces instead of registered interface types.
      *
-     * @param ObjectDefinition $definition
+     * @param ClassAwareDefinitionInterface $definition
      *
      * @throws \ReflectionException
      */
-    protected function resolveObjectRealInterfaceExtensions(ObjectDefinition $definition): void
+    protected function resolveObjectRealInterfaceExtensions(ClassAwareDefinitionInterface $definition): void
     {
         $class = $definition->getClass();
 
