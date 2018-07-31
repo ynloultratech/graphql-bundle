@@ -82,6 +82,10 @@ class CleanUpDefinitionPlugin extends AbstractDefinitionPlugin
      */
     protected function used($definition): void
     {
+        if (!$definition) {
+            return;
+        }
+
         if (\is_string($definition)) {
             if (!$this->endpoint->hasType($definition)) {
                 return;

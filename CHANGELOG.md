@@ -1,3 +1,7 @@
+v1.2.3 - (Unreleased)
+----
+ * Fix exception in `cleanUp` plugin when some definition is empty
+ 
 v1.2.2 - 2018-07-25
 ----
  * Added support to use collection filters for interfaces (polymorphic nodes)
