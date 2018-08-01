@@ -61,9 +61,17 @@ class NodeFilter implements FilterInterface
             case ClassMetadataInfo::ONE_TO_ONE:
             case ClassMetadataInfo::ONE_TO_MANY:
                 if ($condition->getOp() === NodeComparisonOperatorType::IN) {
-                    $qb->andWhere($qb->expr()->in("{$alias}.{$column}", $ids));
+                    if (empty($ids)) {
+                        $qb->andWhere($qb->expr()->isNull("{$alias}.{$column}"));
+                    } else {
+                        $qb->andWhere($qb->expr()->in("{$alias}.{$column}", $ids));
+                    }
                 } else {
-                    $qb->andWhere($qb->expr()->notIn("{$alias}.{$column}", $ids));
+                    if (empty($ids)) {
+                        $qb->andWhere($qb->expr()->isNotNull("{$alias}.{$column}"));
+                    } else {
+                        $qb->andWhere($qb->expr()->notIn("{$alias}.{$column}", $ids));
+                    }
                 }
                 break;
             case ClassMetadataInfo::MANY_TO_MANY:

@@ -30,6 +30,11 @@ or exclude values with given ids
 op: NIN
 value: ['Q2nk6MQ==', 'Q2cnk6Mg==']
 ````
+
+or include all records without any relation
+````
+value: []
+````
 ")
  */
 class NodeComparisonExpression
