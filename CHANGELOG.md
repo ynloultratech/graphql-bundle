@@ -1,4 +1,4 @@
-v1.2.3 - (Unreleased)
+v1.2.3 - 2018-08-01
 ----
  * Fix exception in `cleanUp` plugin when some definition is empty
  * Added support to filer nodes using empty array to select records without relation
