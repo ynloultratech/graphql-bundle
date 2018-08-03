@@ -57,7 +57,7 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
             return;
         }
 
-        $pagination = [];
+        $pagination = $definition->getMeta('pagination') ?: [];
         $targetNode = null;
 
         /** @var Column $column */
@@ -85,9 +85,9 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
             $definition->setType($targetNode = $oneToMany->targetEntity);
             $definition->setList(true);
             if ($oneToMany->fetch === 'EXTRA_LAZY') {
-                $pagination['target'] = $targetNode;
-                $pagination['parent_field'] = $oneToMany->mappedBy;
-                $pagination['parent_relation'] = 'ONE_TO_MANY';
+                $pagination['target'] = $pagination['target'] ?? $targetNode;
+                $pagination['parent_field'] = $pagination['parent_field'] ?? $oneToMany->mappedBy;
+                $pagination['parent_relation'] = $pagination['parent_relation'] ?? 'ONE_TO_MANY';
             }
         }
 
@@ -101,9 +101,9 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
             $definition->setType($targetNode = $manyToMany->targetEntity);
             $definition->setList(true);
             if ($manyToMany->fetch === 'EXTRA_LAZY') {
-                $pagination['target'] = $targetNode;
-                $pagination['parent_field'] = $manyToMany->mappedBy ?? $manyToMany->inversedBy;
-                $pagination['parent_relation'] = 'MANY_TO_MANY';
+                $pagination['target'] = $pagination['target'] ?? $targetNode;
+                $pagination['parent_field'] = $pagination['parent_field'] ?? $manyToMany->mappedBy ?? $manyToMany->inversedBy;
+                $pagination['parent_relation'] = $pagination['parent_relation'] ?? 'MANY_TO_MANY';
             }
         }
 

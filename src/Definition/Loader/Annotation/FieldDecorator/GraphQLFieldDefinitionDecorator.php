@@ -61,7 +61,17 @@ class GraphQLFieldDefinitionDecorator implements FieldDefinitionDecoratorInterfa
         }
 
         if ($metas = $this->resolveFieldMetas($field)) {
-            $definition->setMetas(array_merge($metas, $definition->getMetas()));
+            foreach ($metas as $metaName => $metaConfig) {
+                if ($metaConfig instanceof Annotation\Plugin\PluginConfigAnnotation) {
+                    $metaName = $metaConfig->getName();
+                    $metaConfig = $metaConfig->getConfig();
+                }
+                $existentConfig = $definition->getMeta($metaName, []);
+                if (\is_array($existentConfig)) {
+                    $metaConfig = array_merge($existentConfig, $metaConfig);
+                }
+                $definition->setMeta($metaName, $metaConfig);
+            }
         }
 
         if (null !== $deprecationReason = $this->resolveFieldDeprecationReason($field)) {

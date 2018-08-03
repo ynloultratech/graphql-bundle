@@ -306,7 +306,7 @@ class AllNodesWithPagination extends AllNodes
             throw new \RuntimeException(
                 sprintf(
                     'Missing parent field to filter "%s" by given parent.
-             The "parent_field" should be specified.',
+             The "parentField" should be specified in @Pagination annotation.',
                     $this->queryDefinition->getName()
                 )
             );

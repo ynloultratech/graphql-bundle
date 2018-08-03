@@ -1,3 +1,7 @@
+v1.2.5 - (Unreleased)
+----
+ * Fixed #12 Missing pagination `parentField` when set `@Pagination` annotation on existent field (EXTRA_LAZY)
+
 v1.2.4 - 2018-08-03
 ----
  * Fixed can't disable specific fields on `QueryList.orderBy`
