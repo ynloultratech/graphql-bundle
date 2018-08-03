@@ -49,12 +49,12 @@ final class QueryList
     public $resolver;
 
     /**
-     * @var string[]
+     * @var array
      */
     public $searchFields = ['*'];
 
     /**
-     * @var string[]
+     * @var array
      */
     public $orderBy = ['*'];
 

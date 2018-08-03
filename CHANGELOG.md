@@ -1,3 +1,7 @@
+v1.2.4 - 2018-07-03
+----
+ * Fixed can't disable specific fields on `QueryList.orderBy`
+ 
 v1.2.3 - 2018-08-01
 ----
  * Fix exception in `cleanUp` plugin when some definition is empty

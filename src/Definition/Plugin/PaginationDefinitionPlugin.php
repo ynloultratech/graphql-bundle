@@ -252,6 +252,8 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin implements Bac
             $orderByFields = new EnumDefinition();
             $orderByFields->setName("{$node->getName()}OrderByField");
             $options = $query->getMeta('pagination')['order_by'] ?? ['*'];
+            $options = FieldOptionsHelper::normalize($options);
+
             foreach ($node->getFields() as $field) {
                 if (!FieldOptionsHelper::isEnabled($options, $field->getName())) {
                     continue;
@@ -277,7 +279,7 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin implements Bac
 
             //configure custom orderBy and support for children, like "parentName" => parent.name
             foreach ($options as $fieldName => $config) {
-                if ('*' === $fieldName || '*' === $config) {
+                if ('*' === $fieldName || '*' === $config || !FieldOptionsHelper::isEnabled($options, $fieldName)) {
                     continue;
                 }
 
