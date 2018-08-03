@@ -1,4 +1,4 @@
-v1.2.4 - 2018-07-03
+v1.2.4 - 2018-08-03
 ----
  * Fixed can't disable specific fields on `QueryList.orderBy`
  
