@@ -80,6 +80,20 @@ class MutationAddUpdateAnnotationParser extends MutationAnnotationParser
         } elseif (class_exists($generalForm)) {
             $formType = $generalForm;
             $options['operation'] = $annotation->name;
+
+            //in case the form has activated namespace operation alias
+            //the operation name will be the alias
+            foreach ($annotation->options as $name => $option) {
+                if ($option instanceof Annotation\Plugin\Namespaces && $option->alias) {
+                    $options['operation'] = $option->alias;
+
+                }
+
+                //support for BC using array
+                if (\is_array($option) && 'namespace' === $name && $option['alias'] ?? false) {
+                    $options['operation'] = $option->alias;
+                }
+            }
         }
 
         $annotation->options = array_merge(['form' => ['type' => $formType, 'options' => $options]], $annotation->options);
