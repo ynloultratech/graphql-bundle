@@ -1,4 +1,4 @@
-v1.2.5 - (Unreleased)
+v1.2.5 - 2018-08-6
 ----
  * Fixed #12 Missing pagination `parentField` when set `@Pagination` annotation on existent field (EXTRA_LAZY)
  * Fixed invalid `operation` name in forms when use namespace alias
