@@ -1,3 +1,7 @@
+v1.2.6 - (Unreleased)
+----
+ * Now invalid types or malformed graphql requests are displayed as client errors (400 Bad Request)
+
 v1.2.5 - 2018-08-6
 ----
  * Fixed #12 Missing pagination `parentField` when set `@Pagination` annotation on existent field (EXTRA_LAZY)

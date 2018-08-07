@@ -56,7 +56,7 @@ class DefaultErrorFormatter implements ErrorFormatterInterface
                 }
 
             } elseif ($originError instanceof ClientAware && $originError->isClientSafe()) {
-                $errorCode = null;
+                $errorCode = 400;
             } elseif ($originError instanceof HttpException) {
                 $errorCode = $originError->getStatusCode();
                 $formattedError['message'] = Response::$statusTexts[$errorCode] ?? $formattedError['message'];

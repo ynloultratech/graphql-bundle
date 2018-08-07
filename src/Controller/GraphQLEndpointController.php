@@ -11,13 +11,13 @@
 
 namespace Ynlo\GraphQLBundle\Controller;
 
+use GraphQL\Error\ClientAware;
 use GraphQL\Error\Debug;
 use GraphQL\Error\Error;
 use GraphQL\GraphQL;
 use GraphQL\Validator\DocumentValidator;
 use GraphQL\Validator\Rules;
 use Psr\Log\LoggerInterface;
-use Symfony\Component\EventDispatcher\EventDispatcher;
 use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -219,6 +219,11 @@ class GraphQLEndpointController
             $errors = $this->errorHandler->handle([$error], $this->errorFormatter, $this->debug);
             if ($e instanceof HttpException) {
                 $statusCode = $e->getStatusCode();
+            } elseif ($e instanceof ClientAware) {
+                // usually client's exceptions do not arrive until here
+                // but sometimes this exception happen during compilation time, like: Ynlo\GraphQLBundle\Type\Registry\InvalidTypeException
+                // due to invalid user request
+                $statusCode = Response::HTTP_BAD_REQUEST;
             } else {
                 $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
             }

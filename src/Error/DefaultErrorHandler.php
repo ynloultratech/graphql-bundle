@@ -47,7 +47,7 @@ class DefaultErrorHandler implements ErrorHandlerInterface
                     $context = [
                         'file' => $originError->getFile(),
                         'line' => $originError->getLine(),
-                        'error' => get_class($originError),
+                        'error' => \get_class($originError),
                         'trace' => $originError->getTraceAsString(),
                     ];
                 }

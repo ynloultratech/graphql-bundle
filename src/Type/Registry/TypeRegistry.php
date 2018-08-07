@@ -93,7 +93,7 @@ class TypeRegistry
             return self::$types[$name];
         }
 
-        throw new \UnexpectedValueException(sprintf('Can`t find a valid type for given type "%s"', $name));
+        throw new InvalidTypeException($name);
     }
 
     public static function create(string $name): void
