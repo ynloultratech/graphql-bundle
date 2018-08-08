@@ -22,18 +22,18 @@ use Ynlo\GraphQLBundle\Type\NodeComparisonOperatorType;
 
 Include all values with given ids
 ````
-value: ['Q2nk6MQ==', 'Q2cnk6Mg==']
+nodes: ['Q2nk6MQ==', 'Q2cnk6Mg==']
 ````
 
 or exclude values with given ids
 ````
 op: NIN
-value: ['Q2nk6MQ==', 'Q2cnk6Mg==']
+nodes: ['Q2nk6MQ==', 'Q2cnk6Mg==']
 ````
 
 or include all records without any relation
 ````
-value: []
+nodes: []
 ````
 ")
  */

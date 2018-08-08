@@ -1,6 +1,7 @@
 v1.2.6 - (Unreleased)
 ----
  * Now invalid types or malformed graphql requests are displayed as client errors (400 Bad Request)
+ * Fix documentation for `NodeComparisonExpression`
 
 v1.2.5 - 2018-08-6
 ----
