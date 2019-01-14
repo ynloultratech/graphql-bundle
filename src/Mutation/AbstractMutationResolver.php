@@ -321,12 +321,12 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
 
         $contextForm = $form;
         foreach ($pathArray as &$propName) {
-            //for some reason some inputs are resolved as "inputName.data"
+            //for some reason some inputs are resolved as "inputName.data" or "inputName.children"
             //because the original form property is children[inputName].data
             //this is the case of DEMO AddUserInput form the login field is validated as path children[login].data
             //the following statements remove the trailing ".data"
-            if (preg_match('/\.data$/', $propName)) {
-                $propName = preg_replace('/\.data$/', null, $propName);
+            if (preg_match('/\.(data|children)$/', $propName)) {
+                $propName = preg_replace('/\.(data|children)/', null, $propName);
             }
 
             $index = null;
