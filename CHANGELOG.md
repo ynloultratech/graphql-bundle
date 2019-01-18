@@ -1,7 +1,12 @@
-v1.2.6 - (Unreleased)
+v1.2.7 - (Unreleased)
+----
+ 
+ 
+v1.2.6 - 2019-01-14
 ----
  * Now invalid types or malformed graphql requests are displayed as client errors (400 Bad Request)
  * Fix documentation for `NodeComparisonExpression`
+ * Fix issue with validation and "children" in property path in symfony form ^4.1
 
 v1.2.5 - 2018-08-6
 ----
