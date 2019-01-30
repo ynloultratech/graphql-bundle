@@ -17,6 +17,7 @@ use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
+use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
 use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class LexikJWTGraphiQLAuthenticator implements GraphiQLAuthenticationProviderInterface
@@ -118,7 +119,12 @@ class LexikJWTGraphiQLAuthenticator implements GraphiQLAuthenticationProviderInt
         $username = $form->get('username')->getData();
         $password = $form->get('password')->getData();
 
-        $user = $this->userProvider->loadUserByUsername($username);
+        try {
+            $user = $this->userProvider->loadUserByUsername($username);
+        } catch (UsernameNotFoundException $exception) {
+            $user = null;
+        }
+
         if (!$user || !$this->encoder->isPasswordValid($user, $password)) {
             throw new AuthenticationFailedException();
         }
