@@ -1,7 +1,8 @@
-v1.2.7 - 2019-01-29
+v1.2.7 - 2019-01-30
 ----
  * Fix bug with LexikJWTGraphiQLAuthenticator when username does not exist
  * Update LexikJWTGraphiQLAuthenticator constructor to support auto wiring
+ * Fix a bug when try to guess a form type for types with modifiers
  
 v1.2.6 - 2019-01-14
 ----

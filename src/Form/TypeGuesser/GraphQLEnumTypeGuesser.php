@@ -65,7 +65,7 @@ class GraphQLEnumTypeGuesser extends DoctrineOrmTypeGuesser
             /** @var Annotation\Field $annotation */
             $annotation = $this->reader->getPropertyAnnotation($refClass->getProperty($property), Annotation\Field::class);
 
-            if ($annotation && $annotation->type && $type = TypeRegistry::get($annotation->type)) {
+            if ($annotation && $annotation->type && $type = TypeRegistry::get(TypeUtil::normalize($annotation->type))) {
                 if ($type instanceof EnumType) {
                     return new TypeGuess(GraphQLType::class, ['graphql_type' => $annotation->type], Guess::VERY_HIGH_CONFIDENCE);
                 }
