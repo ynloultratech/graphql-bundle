@@ -14,7 +14,7 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Form\FormInterface;
-use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\SessionInterface;
 use Symfony\Component\Security\Core\Encoder\EncoderFactoryInterface;
 use Symfony\Component\Security\Core\Encoder\UserPasswordEncoderInterface;
 use Symfony\Component\Security\Core\Exception\UsernameNotFoundException;
@@ -40,7 +40,7 @@ class LexikJWTGraphiQLAuthenticator implements GraphiQLAuthenticationProviderInt
     private $jwtTokenManager;
 
     /**
-     * @var Session
+     * @var SessionInterface
      */
     private $session;
 
@@ -55,9 +55,9 @@ class LexikJWTGraphiQLAuthenticator implements GraphiQLAuthenticationProviderInt
      * @param UserPasswordEncoderInterface $encoder
      * @param UserProviderInterface        $userProvider
      * @param JWTTokenManagerInterface     $jwtTokenManager
-     * @param Session                      $session
+     * @param SessionInterface             $session
      */
-    public function __construct(UserPasswordEncoderInterface $encoder, UserProviderInterface $userProvider, JWTTokenManagerInterface $jwtTokenManager, Session $session)
+    public function __construct(UserPasswordEncoderInterface $encoder, UserProviderInterface $userProvider, JWTTokenManagerInterface $jwtTokenManager, SessionInterface $session)
     {
         $this->encoder = $encoder;
         $this->userProvider = $userProvider;

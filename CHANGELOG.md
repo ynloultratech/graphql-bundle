@@ -1,6 +1,7 @@
 v1.2.7 - 2019-01-29
 ----
  * Fix bug with LexikJWTGraphiQLAuthenticator when username does not exist
+ * Update LexikJWTGraphiQLAuthenticator constructor to support auto wiring
  
 v1.2.6 - 2019-01-14
 ----
