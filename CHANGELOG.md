@@ -1,3 +1,6 @@
+v1.2.8 - Unreleased
+----
+
 v1.2.7 - 2019-01-30
 ----
  * Fix bug with LexikJWTGraphiQLAuthenticator when username does not exist

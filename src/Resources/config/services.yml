@@ -249,6 +249,7 @@ services:
             - '@session'
         calls:
             - ['setConfig', ['%graphql.graphiql_auth_lexik_jwt%']]
+            - ['setAuthenticationSuccessHandler', ['@lexik_jwt_authentication.handler.authentication_success']]
 
     Ynlo\GraphQLBundle\Cache\DefinitionCacheWarmer:
         public: false

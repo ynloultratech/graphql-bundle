@@ -10,6 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\GraphiQL;
 
+use Lexik\Bundle\JWTAuthenticationBundle\Security\Http\Authentication\AuthenticationSuccessHandler;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\Form\Extension\Core\Type\PasswordType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -22,32 +23,37 @@ use Symfony\Component\Security\Core\User\UserProviderInterface;
 
 class LexikJWTGraphiQLAuthenticator implements GraphiQLAuthenticationProviderInterface
 {
-    private const SESSION_PATH = 'graphiql_jwt_api_token';
+    protected const SESSION_PATH = 'graphiql_jwt_api_token';
 
     /**
      * @var EncoderFactoryInterface
      */
-    private $encoder;
+    protected $encoder;
 
     /**
      * @var UserProviderInterface
      */
-    private $userProvider;
+    protected $userProvider;
 
     /**
      * @var JWTTokenManagerInterface
      */
-    private $jwtTokenManager;
+    protected $jwtTokenManager;
 
     /**
      * @var SessionInterface
      */
-    private $session;
+    protected $session;
+
+    /**
+     * @var AuthenticationSuccessHandler|null
+     */
+    protected $authenticationSuccessHandler;
 
     /**
      * @var array
      */
-    private $config = [];
+    protected $config = [];
 
     /**
      * LexikJWTGraphiQLAuthenticator constructor.
@@ -67,6 +73,14 @@ class LexikJWTGraphiQLAuthenticator implements GraphiQLAuthenticationProviderInt
             'username_label' => 'Username',
             'password_label' => 'Password',
         ];
+    }
+
+    /**
+     * @param AuthenticationSuccessHandler|null $authenticationSuccessHandler
+     */
+    public function setAuthenticationSuccessHandler(?AuthenticationSuccessHandler $authenticationSuccessHandler): void
+    {
+        $this->authenticationSuccessHandler = $authenticationSuccessHandler;
     }
 
     /**
@@ -130,6 +144,10 @@ class LexikJWTGraphiQLAuthenticator implements GraphiQLAuthenticationProviderInt
         }
 
         $token = $this->jwtTokenManager->create($user);
+
+        if ($this->authenticationSuccessHandler) {
+            $this->authenticationSuccessHandler->handleAuthenticationSuccess($user, $token);
+        }
 
         $this->session->set(self::SESSION_PATH, $token);
     }
