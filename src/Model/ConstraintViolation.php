@@ -54,7 +54,7 @@ class ConstraintViolation
      * @GraphQL\Field(type="[Ynlo\GraphQLBundle\Model\ConstraintViolationParameter]",
      *     description="Returns the parameters to be inserted into the raw violation message.")
      */
-    protected $parameters;
+    protected $parameters = [];
 
     /**
      * @var int
