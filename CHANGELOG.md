@@ -1,6 +1,7 @@
 v1.2.8 - Unreleased
 ----
  *  LexikJWTGraphiQLAuthenticator now trigger a event `lexik_jwt_authentication.on_authentication_success`
+ *  Fix bug with endpoints and inherited fields from interfaces
 
 v1.2.7 - 2019-01-30
 ----

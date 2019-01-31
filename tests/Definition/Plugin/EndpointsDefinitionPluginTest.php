@@ -21,8 +21,8 @@ use Ynlo\GraphQLBundle\Model\DeleteNodePayload;
 use Ynlo\GraphQLBundle\Model\OrderBy;
 use Ynlo\GraphQLBundle\Model\PageInfo;
 use Ynlo\GraphQLBundle\Model\UpdateNodePayload;
-use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\PostComment;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\Post;
+use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\PostComment;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\User;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Model\HasAuthorInterface;
 use Ynlo\GraphQLBundle\Tests\TestDefinitionHelper;
@@ -88,6 +88,8 @@ class EndpointsDefinitionPluginTest extends TestCase
         $endpoint->getType('User')->setMeta('endpoints', ['endpoints' => 'system_admin']);
         $endpoint->getType('Customer')->setMeta('endpoints', ['endpoints' => 'system_admin']);
         $endpoint->getType('Administrator')->setMeta('endpoints', ['endpoints' => 'system_admin']);
+        $endpoint->getType('Message')->setMeta('endpoints', ['endpoints' => 'admin']);
+        $endpoint->getType('Comment')->setMeta('endpoints', ['endpoints' => 'admin']);
         $endpoint->getMutation('addPost')->setMeta('endpoints', ['endpoints' => 'admin']);
         $endpoint->getMutation('updatePost')->setMeta('endpoints', ['endpoints' => 'admin']);
         $endpoint->getMutation('deletePost')->setMeta('endpoints', ['endpoints' => 'admin']);
@@ -123,6 +125,10 @@ class EndpointsDefinitionPluginTest extends TestCase
         self::assertFalse($endpoint->hasType(HasAuthorInterface::class));
         self::assertFalse($endpoint->getType(Post::class)->hasField('hasTags'));
 
-        // print_r();
+        // these fields should not exist because interfaces (Messages and Comment) are forbidden and these fields are inherited
+        /** @var ObjectDefinition $postComment */
+        $postComment = $endpoint->getType('PostComment');
+        self::assertFalse($postComment->hasField('date'));
+        self::assertFalse($postComment->hasField('body'));
     }
 }

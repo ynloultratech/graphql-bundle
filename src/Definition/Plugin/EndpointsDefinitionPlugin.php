@@ -149,6 +149,22 @@ class EndpointsDefinitionPlugin extends AbstractDefinitionPlugin
                             $type->removeField($field->getName());
                         }
 
+                        // remove field inherited from forbidden interface
+                        if ($field->getInheritedFrom()) {
+                            $inheritedFromArray = $field->getInheritedFrom();
+                            foreach ($field->getInheritedFrom() as $index => $inheritedFrom) {
+                                if (in_array($inheritedFrom, $forbiddenTypes, true)) {
+                                    // remove inheritance
+                                    unset($inheritedFromArray[$index]);
+                                }
+                            }
+                            $field->setInheritedFrom($inheritedFromArray);
+                            // if all parents are removed, remove the field
+                            if (empty($inheritedFromArray)) {
+                                $type->removeField($field->getName());
+                            }
+                        }
+
                         foreach ($field->getArguments() as $argument) {
                             //remove forbidden argument
                             if (!$this->isGranted($endpoint, $argument)) {
