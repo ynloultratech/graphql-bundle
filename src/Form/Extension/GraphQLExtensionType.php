@@ -27,6 +27,7 @@ class GraphQLExtensionType extends AbstractTypeExtension
         $resolver->setDefault('graphql_type', null);
         $resolver->setDefault('graphql_description', null);
         $resolver->setDefault('graphql_deprecation_reason', null);
+        $resolver->setDefault('endpoint', null);
     }
 
     /**

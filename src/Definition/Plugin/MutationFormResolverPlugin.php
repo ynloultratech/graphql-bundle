@@ -146,8 +146,9 @@ class MutationFormResolverPlugin extends AbstractDefinitionPlugin
 
         if ($formType) {
             $config['type'] = $formType;
-
-            $form = $this->formFactory->create($formType, null, $config['options'] ?? []);
+            $options = $config['options'] ?? [];
+            $options['endpoint'] = $endpoint->getName();
+            $form = $this->formFactory->create($formType, null, $options);
             $inputObject = $this->createFormInputObject($endpoint, $form, ucfirst($definition->getName()));
             $endpoint->addType($inputObject);
 
@@ -204,8 +205,9 @@ class MutationFormResolverPlugin extends AbstractDefinitionPlugin
             } elseif (is_a($formField->getConfig()->getType()->getInnerType(), CollectionType::class)) {
                 $childName = $name.ucfirst($formField->getName());
                 $childFormType = $formField->getConfig()->getOptions()['entry_type'];
-                $childFormOptions = $formField->getConfig()->getOptions()['entry_options'];
-                $childForm = $this->formFactory->create($childFormType, null, $childFormOptions ?? []);
+                $childFormOptions = $formField->getConfig()->getOptions()['entry_options'] ?? [];
+                $childFormOptions['endpoint'] = $endpoint->getName();
+                $childForm = $this->formFactory->create($childFormType, null, $childFormOptions);
                 $childForm->setParent($form);
                 try {
                     //resolve type if is a valid scalar type or predefined type

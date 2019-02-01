@@ -249,6 +249,7 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
 
         $options = [
             'allow_extra_fields' => true,
+            'endpoint' => $this->context->getEndpoint()->getName(),
         ];
 
         if ($this->container->hasParameter('form.type_extension.csrf.enabled')

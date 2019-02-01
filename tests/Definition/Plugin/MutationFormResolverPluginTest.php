@@ -12,16 +12,14 @@ namespace Ynlo\GraphQLBundle\Tests\Definition\Plugin;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
-use Symfony\Component\Form\AbstractExtension;
-use Symfony\Component\Form\FormFactory;
-use Symfony\Component\Form\FormRegistry;
-use Symfony\Component\Form\ResolvedFormTypeFactory;
+use Symfony\Component\Form\Forms;
 use Ynlo\GraphQLBundle\Annotation\ObjectType;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\MutationDefinition;
 use Ynlo\GraphQLBundle\Definition\Plugin\MutationFormResolverPlugin;
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\Form\Extension\GraphQLExtensionType;
 use Ynlo\GraphQLBundle\Form\Input\GraphQLInputTypeGuesser;
 use Ynlo\GraphQLBundle\Form\Input\SymfonyFormInputTypeGuesser;
 use Ynlo\GraphQLBundle\Form\Type\IDType;
@@ -35,28 +33,10 @@ class MutationFormResolverPluginTest extends MockeryTestCase
         $endpoint = new Endpoint('default');
         TestDefinitionHelper::loadAnnotationDefinitions(User::class, $endpoint, [ObjectType::class]);
 
-        //extension only for tests purposes to
-        $idTypeExtension = new class extends AbstractExtension
-        {
-            /**
-             * @inheritDoc
-             */
-            public function getType($name)
-            {
-                return new IDType(\Mockery::mock(EntityManagerInterface::class), \Mockery::mock(DefinitionRegistry::class));
-            }
-
-            /**
-             * @inheritDoc
-             */
-            public function hasType($name)
-            {
-                return $name === IDType::class;
-            }
-        };
-
-        $registry = new FormRegistry([$idTypeExtension], new ResolvedFormTypeFactory());
-        $factory = new FormFactory($registry);
+        $factory = Forms::createFormFactoryBuilder()
+                        ->addTypeExtension(new GraphQLExtensionType())
+                        ->addType(new IDType(\Mockery::mock(EntityManagerInterface::class), \Mockery::mock(DefinitionRegistry::class)))
+                        ->getFormFactory();
         $guessers[] = new GraphQLInputTypeGuesser();
         $guessers[] = new SymfonyFormInputTypeGuesser();
         $plugin = new MutationFormResolverPlugin($factory, $guessers);

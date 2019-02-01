@@ -1,5 +1,6 @@
 v1.2.8 - Unreleased
 ----
+ *  Added support to use endpoints with forms
  *  LexikJWTGraphiQLAuthenticator now trigger a event `lexik_jwt_authentication.on_authentication_success`
  *  Fix bug with endpoints and inherited fields from interfaces
 
