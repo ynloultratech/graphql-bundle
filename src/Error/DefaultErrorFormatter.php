@@ -14,6 +14,7 @@ use GraphQL\Error\ClientAware;
 use GraphQL\Error\Error;
 use GraphQL\Error\FormattedError;
 use GraphQL\Language\AST\FieldNode;
+use GraphQL\Type\Schema;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Ynlo\GraphQLBundle\Exception\Controlled\ValidationError;
@@ -76,7 +77,7 @@ class DefaultErrorFormatter implements ErrorFormatterInterface
                 ]
             );
 
-        } elseif ($originError instanceof FieldNode) {
+        } elseif ($originError instanceof FieldNode || $originError instanceof Schema) {
             $errorCode = Response::HTTP_BAD_REQUEST;
             $trackingId = Uuid::createFromData($formattedError['message'] ?? null);
         }
