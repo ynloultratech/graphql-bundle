@@ -12,6 +12,7 @@ cache:
 
 before_install:
   - alias composer=composer\ -n && composer self-update
+  - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
 install:
   - travis_retry composer global require hirak/prestissimo
