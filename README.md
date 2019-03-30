@@ -12,6 +12,7 @@
 
 - [X] GraphQL types using doctrine annotations
 - [X] GraphQL Relay Specification
+- [X] GraphQL Subscriptions using [Mercure](https://mercure.rocks) protocol
 - [X] API explorer and documentation with [GraphiQL](https://github.com/graphql/graphiql)
 - [X] Common CRUD operations (Queries & Mutations)
 - [X] Customizable mutations using Symfony Forms & Validator
