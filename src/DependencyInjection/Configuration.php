@@ -19,6 +19,8 @@ use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Ynlo\GraphQLBundle\Encoder\SecureIDEncoder;
 use Ynlo\GraphQLBundle\Error\DefaultErrorFormatter;
 use Ynlo\GraphQLBundle\Error\DefaultErrorHandler;
+use Ynlo\GraphQLBundle\Subscription\PubSub\RedisPubSubHandler;
+use Ynlo\GraphQLBundle\Subscription\Subscriber;
 
 /**
  * Class Configuration
@@ -34,6 +36,7 @@ class Configuration implements ConfigurationInterface
         /** @var NodeBuilder $rootNode */
         $rootNode = $treeBuilder->root('graphql')->addDefaultsIfNotSet()->children();
         $this->configureEndpoints($rootNode);
+        $this->configureSubscriptions($rootNode);
         $this->configureErrorHandling($rootNode);
         $this->configureCORS($rootNode);
         $this->configureGraphiQL($rootNode);
@@ -43,6 +46,27 @@ class Configuration implements ConfigurationInterface
         $this->configureBCCompatibility($rootNode);
 
         return $treeBuilder;
+    }
+
+    protected function configureSubscriptions(NodeBuilder $root)
+    {
+        $subscriptions = $root->arrayNode('subscriptions')
+                              ->info('Manage subscriptions settings')
+                              ->addDefaultsIfNotSet()
+                              ->children();
+
+        $subscriptions->scalarNode('ttl')->defaultValue(Subscriber::DEFAULT_SUBSCRIPTION_TTL)
+                      ->info('Time to live for subscriptions. The subscription will be deleted after this time, a heartbeat is required to keep-alive');
+        $subscriptions->scalarNode('mercure_hub')->defaultValue('default');
+        $subscriptions->scalarNode('pubsub_handler')->defaultValue(RedisPubSubHandler::class);
+        $redis = $subscriptions->arrayNode('redis')->info('Configure redis server to use as subscription handler')
+                               ->addDefaultsIfNotSet()
+                               ->children();
+
+        $redis->scalarNode('host')->defaultValue('localhost');
+        $redis->integerNode('port')->defaultValue(6379);
+        $redis->integerNode('prefix')->defaultValue('GraphQLSubscription:')
+              ->info('Define custom prefix to avoid collisions between applications');
     }
 
     protected function configureErrorHandling(NodeBuilder $root)
@@ -354,6 +378,10 @@ On large schemas is  helpful to keep schemas grouped by bundle and node'
                 ->info('The following suffix will be used for bundle mutation groups')
                 ->defaultValue('BundleMutation');
 
+        $bundles->scalarNode('subscription_suffix')
+                ->info('The following suffix will be used for bundle subscription groups')
+                ->defaultValue('BundleSubscription');
+
         $bundles->variableNode('ignore')
                 ->info('The following bundles will be ignore for grouping, all definitions will be placed in the root query or mutation')
                 ->defaultValue(['AppBundle']);
@@ -381,6 +409,10 @@ Can be used to group multiple bundles or publish a bundle with a different name'
         $nodes->scalarNode('mutation_suffix')
               ->info('The following suffix will be used to create the name for mutations to the same node')
               ->defaultValue('Mutation');
+
+        $nodes->scalarNode('subscription_suffix')
+              ->info('The following suffix will be used to create the name for subscriptions to the same node')
+              ->defaultValue('Subscriptions');
 
         $nodes->variableNode('ignore')
               ->info('The following nodes will be ignore for grouping, all definitions will be placed in the root query or mutation')

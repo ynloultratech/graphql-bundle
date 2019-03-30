@@ -1,5 +1,6 @@
-v1.2.8 - Unreleased
+v1.3.0 - Unreleased
 ----
+ *  Added support for GraphQL Subscriptions (experimental) using [mercure](https://github.com/dunglas/mercure) & redis
  *  Added support to use endpoints with forms
  *  LexikJWTGraphiQLAuthenticator now trigger a event `lexik_jwt_authentication.on_authentication_success`
  *  Fix bug with endpoints and inherited fields from interfaces

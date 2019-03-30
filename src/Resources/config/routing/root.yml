@@ -3,6 +3,18 @@ api_root:
     controller: Ynlo\GraphQLBundle\Controller\GraphQLEndpointController
     methods: [POST, OPTIONS]
 
+api_subscriptions:
+    path: /subscription/{subscription}
+    requirements: { subscription: "^[a-zA-Z0-9-]*$" }
+    controller: Ynlo\GraphQLBundle\Controller\SubscriptionsController
+    methods: [GET, OPTIONS]
+
+api_subscriptions_heartbeat:
+    path: /subscription/{subscription}/heartbeat
+    requirements: { subscription: "^[a-zA-Z0-9-]*$" }
+    controller: Ynlo\GraphQLBundle\Controller\SubscriptionsHeartbeatController
+    methods: [GET, OPTIONS]
+
 api_schema:
     path: /schema.graphql
     controller: Ynlo\GraphQLBundle\Controller\SchemaController

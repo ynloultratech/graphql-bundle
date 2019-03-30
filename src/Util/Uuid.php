@@ -16,17 +16,18 @@ class Uuid
      * Create universal identifier for given data.
      * Helpful to create unique across then system, but the same when use the same data
      *
-     * @param mixed $data
+     * @param mixed   $data
+     * @param boolean $upper
      *
      * @return string
      */
-    public static function createFromData($data)
+    public static function createFromData($data, $upper = false): string
     {
         if (\is_array($data) || \is_object($data)) {
             $data = serialize($data);
         }
 
-        $hash = strtoupper(md5($data));
+        $hash = $upper ? strtoupper(md5($data)) : strtolower(md5($data));
 
         return implode(
             '-',

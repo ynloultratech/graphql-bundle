@@ -78,6 +78,10 @@ class SchemaCompiler implements ContainerAwareInterface
             $config['mutation'] = TypeRegistry::get('Mutation');
         }
 
+        if ($endpoint->allSubscriptions()) {
+            $config['subscription'] = TypeRegistry::get('Subscription');
+        }
+
         if (isset($config['query']) || isset($config['mutation'])) {
             return new Schema($config);
         }

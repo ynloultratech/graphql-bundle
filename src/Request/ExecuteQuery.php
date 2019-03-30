@@ -10,6 +10,8 @@
 
 namespace Ynlo\GraphQLBundle\Request;
 
+use Ynlo\GraphQLBundle\Subscription\SubscriptionRequest;
+
 class ExecuteQuery
 {
     /**
@@ -35,6 +37,11 @@ class ExecuteQuery
      * @var array
      */
     protected $variables = [];
+
+    /**
+     * @var SubscriptionRequest|null
+     */
+    protected $subscriptionRequest;
 
     /**
      * @return string
@@ -92,6 +99,26 @@ class ExecuteQuery
     public function setVariables(array $variables): ExecuteQuery
     {
         $this->variables = $variables;
+
+        return $this;
+    }
+
+    /**
+     * @return SubscriptionRequest|null
+     */
+    public function getSubscriptionRequest(): ?SubscriptionRequest
+    {
+        return $this->subscriptionRequest;
+    }
+
+    /**
+     * @param SubscriptionRequest $subscriptionRequest
+     *
+     * @return ExecuteQuery
+     */
+    public function setSubscriptionRequest(SubscriptionRequest $subscriptionRequest): ExecuteQuery
+    {
+        $this->subscriptionRequest = $subscriptionRequest;
 
         return $this;
     }

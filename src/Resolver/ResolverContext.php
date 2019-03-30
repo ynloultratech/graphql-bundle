@@ -12,14 +12,18 @@ namespace Ynlo\GraphQLBundle\Resolver;
 
 use GraphQL\Type\Definition\ResolveInfo;
 use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
+use Ynlo\GraphQLBundle\Definition\MetaAwareInterface;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\Definition\Traits\MetaAwareTrait;
 
 /**
  * Context used for resolvers
  */
-class ResolverContext
+class ResolverContext implements MetaAwareInterface
 {
+    use MetaAwareTrait;
+
     /**
      * @var Endpoint
      */
@@ -68,7 +72,8 @@ class ResolverContext
         $root = null,
         ?ObjectDefinitionInterface $node = null,
         array $args = [],
-        ?ResolveInfo $resolveInfo = null
+        ?ResolveInfo $resolveInfo = null,
+        ?array $metas = []
     ) {
         $this->endpoint = $endpoint;
         $this->definition = $definition;
@@ -76,6 +81,7 @@ class ResolverContext
         $this->node = $node;
         $this->args = $args;
         $this->resolveInfo = $resolveInfo;
+        $this->metas = $metas;
     }
 
     /**

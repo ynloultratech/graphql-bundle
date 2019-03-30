@@ -15,19 +15,30 @@ use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
+use Symfony\Component\DependencyInjection\Parameter;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Ynlo\GraphQLBundle\Cache\DefinitionCacheWarmer;
+use Ynlo\GraphQLBundle\Command\SubscriptionConsumerCommand;
 use Ynlo\GraphQLBundle\Controller\GraphQLEndpointController;
+use Ynlo\GraphQLBundle\Controller\SubscriptionsController;
+use Ynlo\GraphQLBundle\Controller\SubscriptionsHeartbeatController;
 use Ynlo\GraphQLBundle\Encoder\IDEncoderManager;
 use Ynlo\GraphQLBundle\GraphiQL\JWTGraphiQLAuthentication;
 use Ynlo\GraphQLBundle\GraphiQL\LexikJWTGraphiQLAuthenticator;
+use Ynlo\GraphQLBundle\Request\SubscriptionsRequestMiddleware;
+use Ynlo\GraphQLBundle\Subscription\Publisher;
+use Ynlo\GraphQLBundle\Subscription\PubSub\RedisPubSubHandler;
+use Ynlo\GraphQLBundle\Subscription\Subscriber;
+use Ynlo\GraphQLBundle\Subscription\SubscriptionManager;
 
 /**
  * Class YnloGraphQLExtension
  */
 class YnloGraphQLExtension extends Extension
 {
+    protected $subscriptionsDependenciesInstalled = true;
+
     /**
      * {@inheritdoc}
      */
@@ -51,6 +62,8 @@ class YnloGraphQLExtension extends Extension
         $container->setParameter('graphql.graphiql_auth_jwt', $config['graphiql']['authentication']['provider']['jwt'] ?? []);//DEPRECATED
         $container->setParameter('graphql.graphiql_auth_lexik_jwt', $config['graphiql']['authentication']['provider']['lexik_jwt'] ?? []);
         $container->setParameter('graphql.security.validation_rules', $config['security']['validation_rules'] ?? []);
+        $container->setParameter('graphql.subscriptions.redis', $config['subscriptions']['redis'] ?? []);
+        $container->setParameter('graphql.subscriptions.ttl', $config['subscriptions']['ttl'] ?? []);
 
         $endpointsConfig = [];
         $endpointsConfig['endpoints'] = $config['endpoints'] ?? [];
@@ -109,6 +122,39 @@ class YnloGraphQLExtension extends Extension
         $container->getDefinition(GraphQLEndpointController::class)
                   ->addMethodCall('setErrorFormatter', [$container->getDefinition($config['error_handling']['formatter'])])
                   ->addMethodCall('setErrorHandler', [$container->getDefinition($config['error_handling']['handler'])]);
+
+        $bundles = $container->getParameter('kernel.bundles');
+        if (isset($bundles['MercureBundle'])) {
+            $mercureHub = $config['subscriptions']['mercure_hub'];
+
+            $mercurePublisherReference = new Reference(sprintf('mercure.hub.%s.publisher', $mercureHub));
+
+            $container->getDefinition(SubscriptionManager::class)
+                      ->addArgument($container->getDefinition($config['subscriptions']['pubsub_handler']))
+                      ->addArgument(new Parameter('kernel.secret'));
+
+            $container->getDefinition(SubscriptionsController::class)
+                      ->addArgument($container->getDefinition($config['subscriptions']['pubsub_handler']))
+                      ->addMethodCall('setMercureHubUrl', [new Parameter('mercure.hubs'), $mercureHub]);
+
+            $container->getDefinition(SubscriptionsHeartbeatController::class)
+                      ->addArgument($container->getDefinition($config['subscriptions']['pubsub_handler']))
+                      ->addMethodCall('setMercureHubUrl', [new Parameter('mercure.hubs'), $mercureHub]);
+
+            $container->getDefinition(SubscriptionConsumerCommand::class)
+                      ->addArgument($mercurePublisherReference);
+
+            $container->getDefinition(GraphQLEndpointController::class)->addMethodCall('setPublisher', [$mercurePublisherReference]);
+        } else {
+            $container->removeDefinition(SubscriptionManager::class);
+            $container->removeDefinition(SubscriptionConsumerCommand::class);
+            $container->removeDefinition(SubscriptionsController::class);
+            $container->removeDefinition(SubscriptionsHeartbeatController::class);
+            $container->removeDefinition(SubscriptionsRequestMiddleware::class);
+            $container->removeDefinition(Subscriber::class);
+            $container->removeDefinition(Publisher::class);
+            $container->removeDefinition(RedisPubSubHandler::class);
+        }
     }
 
     /**

@@ -30,6 +30,7 @@ class AnnotationLoader implements DefinitionLoaderInterface
         'Model', //non persistent models like interfaces, or abstract classes
         'Entity', //doctrine entities
         'Mutation', //custom actions
+        'Subscription', //custom subscriptions
         'Query', //custom actions
     ];
 

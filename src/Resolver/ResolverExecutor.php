@@ -23,10 +23,17 @@ use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\HasExtensionsInterface;
+use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\Definition\UnionDefinition;
 use Ynlo\GraphQLBundle\Events\EventDispatcherAwareInterface;
 use Ynlo\GraphQLBundle\Extension\ExtensionInterface;
 use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Extension\ExtensionsAwareInterface;
+use Ynlo\GraphQLBundle\Subscription\AsynchronousJobInterface;
+use Ynlo\GraphQLBundle\Subscription\FilteredSubscriptionInterface;
+use Ynlo\GraphQLBundle\Subscription\Subscriber;
+use Ynlo\GraphQLBundle\Subscription\SubscriptionEvent;
+use Ynlo\GraphQLBundle\Subscription\SubscriptionRequest;
 use Ynlo\GraphQLBundle\Type\Types;
 use Ynlo\GraphQLBundle\Util\IDEncoder;
 
@@ -64,11 +71,6 @@ class ResolverExecutor implements ContainerAwareInterface
     protected $context;
 
     /**
-     * @var array
-     */
-    protected $args = [];
-
-    /**
      * ResolverExecutor constructor.
      *
      * @param ContainerInterface            $container
@@ -93,7 +95,6 @@ class ResolverExecutor implements ContainerAwareInterface
     public function __invoke($root, array $args, ResolverContext $context, ResolveInfo $resolveInfo)
     {
         $this->root = $root;
-        $this->args = $args;
         $this->resolveInfo = $resolveInfo;
         $this->endpoint = $context->getEndpoint();
 
@@ -127,14 +128,20 @@ class ResolverExecutor implements ContainerAwareInterface
             $refMethod = new \ReflectionMethod(ClassUtils::getClass($root), $resolverName);
         }
 
+        /** @var SubscriptionRequest|null $subscriptionRequest */
+        $subscriptionRequest = $context->getMeta('subscriptionRequest');
+
+        $isSubscriptionSubscribe = $resolveInfo->operation->operation === 'subscription' && !$subscriptionRequest && !$resolver instanceof EmptyObjectResolver;
+        $isSubscriptionRequest = $resolveInfo->operation->operation === 'subscription' && $subscriptionRequest && !$resolver instanceof EmptyObjectResolver;
+
         if ($resolver && $refMethod) {
             $this->context = ContextBuilder::create($context->getEndpoint())
                                            ->setRoot($root)
                                            ->setResolveInfo($resolveInfo)
                                            ->setArgs($args)
+                                           ->setMetas($context->getMetas())
                                            ->setDefinition($this->executableDefinition)
                                            ->build();
-
 
             if ($resolver instanceof ResolverInterface) {
                 $resolver->setContext($this->context);
@@ -149,12 +156,48 @@ class ResolverExecutor implements ContainerAwareInterface
                 $resolver->setEventDispatcher($this->container->get(EventDispatcherInterface::class));
             }
 
-            $params = $this->prepareMethodParameters($refMethod, $args);
+            if ($subscriptionRequest) {
+                $args = array_merge($args, $subscriptionRequest->getData());
+            }
 
-            return $refMethod->invokeArgs($resolver, $params);
+            $params = $this->prepareMethodParameters($refMethod, $args, !$subscriptionRequest);
+
+            // resolve filters
+            $filters = [];
+            if ($isSubscriptionSubscribe && $resolver instanceof FilteredSubscriptionInterface) {
+                $filterMethod = new \ReflectionMethod(get_class($resolver), 'getFilters');
+                $filters = $filterMethod->invoke($resolver);
+            }
+
+            // call the async queue
+            if ($isSubscriptionSubscribe && $resolver instanceof AsynchronousJobInterface) {
+                $asyncMethod = new \ReflectionMethod(get_class($resolver), 'onSubscribe');
+                $asyncMethod->invokeArgs($resolver, $params);
+            }
+
+            if ($isSubscriptionSubscribe) {
+                $resolver = $this->container->get(Subscriber::class);
+                $result = $resolver->__invoke($this->context, array_merge($this->normalizeArguments($args), $filters));
+            } else {
+                $result = $refMethod->invokeArgs($resolver, $params);
+            }
+
+            if ($isSubscriptionRequest) {
+                if (!$result) {
+                    exit;
+                }
+
+                $subscriptionUnion = $this->endpoint->getType($this->executableDefinition->getType());
+                $result = new SubscriptionEvent($result);
+                if ($subscriptionUnion instanceof UnionDefinition) {
+                    $result->setConcreteType(array_values($subscriptionUnion->getTypes())[0]->getType());
+                }
+            }
+
+            return $result;
         }
 
-        $error = sprintf('The resolver "%s" for executableDefinition "%s" is not a valid resolver. Resolvers should have a method "__invoke(...)"', $resolverName, $this->executableDefinition->getName());
+        $error = sprintf('The resolver "%s" for "%s" is not a valid resolver. Resolvers should have a method "__invoke(...)"', $resolverName, $this->executableDefinition->getName());
         throw new \RuntimeException($error);
     }
 
@@ -197,12 +240,31 @@ class ResolverExecutor implements ContainerAwareInterface
     /**
      * @param \ReflectionMethod $refMethod
      * @param array             $args
+     * @param bool              $removeUnknownArguments
      *
      * @throws \Exception
      *
      * @return array
      */
-    private function prepareMethodParameters(\ReflectionMethod $refMethod, array $args): array
+    private function prepareMethodParameters(\ReflectionMethod $refMethod, array $args, $removeUnknownArguments = true): array
+    {
+        $normalizedArguments = $this->normalizeArguments($args);
+        if (!$removeUnknownArguments) {
+            $normalizedArguments = array_merge($args, $normalizedArguments);
+        }
+        $normalizedArguments['args'] = $normalizedArguments;
+        $indexedArguments = $this->resolveMethodArguments($refMethod, $normalizedArguments);
+        ksort($indexedArguments);
+
+        return $indexedArguments;
+    }
+
+    /**
+     * @param array $args
+     *
+     * @return array
+     */
+    protected function normalizeArguments(array $args)
     {
         //normalize arguments
         $normalizedArguments = [];
@@ -231,11 +293,8 @@ class ResolverExecutor implements ContainerAwareInterface
                 $normalizedArguments[$argument->getInternalName()] = $normalizedValue;
             }
         }
-        $normalizedArguments['args'] = $normalizedArguments;
-        $indexedArguments = $this->resolveMethodArguments($refMethod, $normalizedArguments);
-        ksort($indexedArguments);
 
-        return $indexedArguments;
+        return $normalizedArguments;
     }
 
     /**

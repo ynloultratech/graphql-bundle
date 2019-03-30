@@ -53,9 +53,10 @@ class CleanUpDefinitionPlugin extends AbstractDefinitionPlugin
 
         $this->used = [];
         $this->endpoint = $endpoint;
-
+return;
         $this->processOperations($endpoint->allQueries());
         $this->processOperations($endpoint->allMutations());
+        $this->processOperations($endpoint->allSubscriptions());
 
         foreach ($endpoint->allTypes() as $type) {
             if (!\in_array($type->getName(), $this->used)) {

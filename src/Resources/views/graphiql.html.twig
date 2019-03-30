@@ -2,6 +2,124 @@
 <html>
 <head>
     <style>
+        .subscription {
+            margin: 5px;
+            display: block;
+            position: relative;
+        }
+
+        .subscription .container {
+            border-radius: 16px;
+            border: 1px solid #3c81a7;
+            font-size: 0.7rem;
+            color: #fff;
+            padding: 4px 10px;
+            cursor: pointer;
+            display: block;
+            background-color: rgb(69, 163, 194);
+            box-shadow: inset 0 2px 9px rgba(255, 255, 255, 0.3),
+            inset 0 -2px 6px rgba(0, 0, 0, 0.4);
+            overflow: hidden;
+        }
+
+        .subscription .container:hover {
+            border: 1px solid #a72d28;
+            background-color: rgb(194, 67, 69);
+        }
+
+        .subscription.active .container {
+            border: 1px solid #28a745;
+            background-color: rgb(43, 194, 83);
+        }
+
+        .subscription .container:after {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            background-image: linear-gradient(
+                    -45deg,
+                    rgba(255, 255, 255, .2) 25%,
+                    transparent 25%,
+                    transparent 50%,
+                    rgba(255, 255, 255, .2) 50%,
+                    rgba(255, 255, 255, .2) 75%,
+                    transparent 75%,
+                    transparent
+            );
+            z-index: 1;
+            background-size: 50px 50px;
+            animation: move 2s linear infinite;
+            border-top-right-radius: 8px;
+            border-bottom-right-radius: 8px;
+            border-top-left-radius: 20px;
+            border-bottom-left-radius: 20px;
+        }
+
+        .subscription .response {
+            display: none;
+            width: 100%;
+            height: 400px;
+            position: absolute;
+            background: #fff;
+            margin-top: -410px;
+            border-radius: 10px;
+            z-index: 100;
+            margin-left: -10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+            color: #333;
+        }
+
+        .subscription .response .close {
+            position: absolute;
+            right: 20px;
+            top: 15px;
+            cursor: pointer;
+            font-size: 1rem;
+        }
+
+        .subscription h6 {
+            font-size: 0.9rem;
+            font-weight: 400;
+            margin: 0;
+            padding: 0 20px 10px 20px;
+            color: #939393;
+        }
+
+        .subscription h4 {
+            font-size: 1.2rem;
+            font-weight: bold;
+            margin: 0;
+            padding: 10px 20px 3px 20px;
+        }
+
+        .subscription .body {
+            font-size: 0.8rem;
+            font-weight: 300;
+            padding: 10px 20px;
+            overflow: auto;
+            height: 300px;
+        }
+
+        @-webkit-keyframes move {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 50px 50px;
+            }
+        }
+
+        @-moz-keyframes move {
+            0% {
+                background-position: 0 0;
+            }
+            100% {
+                background-position: 50px 50px;
+            }
+        }
         {% block inline_styles %}
 
 
@@ -12,9 +130,11 @@
         <script src="{{ asset('bundles/ynlographql/js/fetch.min.js') }}"></script>
         <script src="{{ asset('bundles/ynlographql/js/react.min.js') }}"></script>
         <script src="{{ asset('bundles/ynlographql/js/react-dom.min.js') }}"></script>
+        <script src="{{ asset('bundles/ynlographql/js/jquery-3.1.1.slim.min.js') }}"></script>
         <script src="{{ asset('bundles/ynlographql/graphiql/graphiql.min.js') }}"></script>
         <link rel="stylesheet" href="{{ asset('bundles/ynlographql/graphiql/graphiql.css') }}"/>
         <link rel="stylesheet" href="{{ asset('bundles/ynlographql/css/graphiql-theme.css') }}"/>
+        <link rel="stylesheet" href="{{ asset('bundles/ynlographql/css/animate.css') }}"/>
     {% endblock %}
 </head>
 <body>
@@ -27,6 +147,119 @@
 {% endblock %}
 <script>
     {% block build_script %}
+    var Subscriptions = {};
+    var HeatBeats = {};
+    var findSubscriptionsInResponse = function (obj, stack) {
+        for (var property in obj) {
+            if (obj.hasOwnProperty(property)) {
+                if (typeof obj[property] == "object") {
+                    findSubscriptionsInResponse(obj[property], stack + '.' + property);
+                } else {
+                    var value = obj[property];
+                    if (value && typeof value === 'string') {
+                        var matches = value.match(/https?.+subscription\/(\w+)/);
+                        if (property === 'url' && matches) {
+                            var url = obj[property];
+                            var heartbeatUrl = obj['heartbeatUrl'];
+                            var ttl = obj['ttl'];
+                            var id = matches[1];
+                            if (url && heartbeatUrl && ttl) {
+                                addSubscription(id, url, ttl, heartbeatUrl);
+                            } else {
+                                alert('To subscribe to ' +
+                                    'subscriptions must select all fields in SubscriptionLink:\n\n' +
+                                    '... on SubscriptionLink {\n' +
+                                    '        url\n' +
+                                    '        heartbeatUrl\n' +
+                                    '        ttl\n' +
+                                    '   }')
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    };
+
+    var addSubscription = function (id, url, ttl, heartbeatUrl) {
+        if (Subscriptions[id] === undefined) {
+            var subscription = $('<div class="subscription">' +
+                '<div class="response">' +
+                '<h4>Subscription Response <div class="close">X</div></h4>' +
+                '<h6></h6>' +
+                '<pre class="body"></pre>' +
+                '</div>' +
+                '<div class="container">' + url + '</div>' +
+                '</div>')
+                .attr('id', id);
+
+            $('.graphiql-container .resultWrap .footer').append(subscription);
+            subscription.find('.container').on('click', function () {
+                if (subscription.hasClass('active')) {
+                    subscription.find('.response .close').click();
+                } else {
+                    clearInterval(HeatBeats[id]);
+                    Subscriptions[id].close();
+                    Subscriptions[id] = undefined;
+                    subscription.remove();
+                }
+            });
+
+            var eventSource = new EventSource(url);
+            Subscriptions[id] = eventSource;
+            eventSource.onopen = function (evt) {
+                HeatBeats[id] = setInterval(function () {
+                    var xmlHttp = new XMLHttpRequest();
+                    xmlHttp.open("GET", heartbeatUrl);
+                    xmlHttp.send(null);
+                }, ttl / 3 * 1000);
+            };
+            eventSource.onmessage = function (e) {
+                var response = subscription.find('.response');
+                if (response.is(':visible')){
+                    response.addClass('animated shake').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+                        response.removeClass('animated shake');
+                    });
+                }else{
+                    response.addClass('animated bounceIn').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+                        response.removeClass('animated bounceIn');
+                    });
+                }
+                response.show();
+                subscription.addClass('active');
+                response.find('.body').html(JsonSyntaxHighlight(JSON.parse(e.data)));
+                response.find('h6').html(url);
+                response.find('.close').on('click', function () {
+                    response.hide();
+                    subscription.removeClass('active');
+                })
+            };
+
+        }
+    };
+
+    function JsonSyntaxHighlight(json) {
+        if (typeof json != 'string') {
+            json = JSON.stringify(json, undefined, 2);
+        }
+        json = json.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+        return json.replace(/("(\\u[a-zA-Z0-9]{4}|\\[^u]|[^\\"])*"(\s*:)?|\b(true|false|null)\b|-?\d+(?:\.\d*)?(?:[eE][+\-]?\d+)?)/g, function (match) {
+            var cls = 'number';
+            if (/^"/.test(match)) {
+                if (/:$/.test(match)) {
+                    cls = 'cm-property';
+                } else {
+                    cls = 'cm-string';
+                }
+            } else if (/true|false/.test(match)) {
+                cls = 'cm-builtin';
+            } else if (/null/.test(match)) {
+                cls = 'null';
+            }
+            return '<span class="' + cls + '">' + match + '</span>';
+        });
+    }
+
     // Parse the search string to get url parameters.
     var search = window.location.search;
     var parameters = {};
@@ -85,6 +318,7 @@
             return response.text();
         }).then(function (responseBody) {
             try {
+                findSubscriptionsInResponse(JSON.parse(responseBody));
                 return JSON.parse(responseBody);
             } catch (error) {
                 return responseBody;
@@ -92,6 +326,9 @@
         });
     }
 
+    var children = [
+        React.createElement(GraphiQL.Footer)
+    ];
     ReactDOM.render(
         React.createElement(GraphiQL, {
             fetcher: graphQLFetcher,
@@ -101,10 +338,12 @@
             onEditQuery: onEditQuery,
             onEditVariables: onEditVariables,
             onEditOperationName: onEditOperationName,
-            defaultQuery: '{{ defaultQuery|raw }}'
+            defaultQuery: '{{ defaultQuery|raw }}',
+            children: children
         }),
         document.getElementById('graphiql')
     );
+
     {% endblock %}
 </script>
 </body>

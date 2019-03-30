@@ -26,6 +26,7 @@ class ReorderDefinitionsPlugin extends AbstractDefinitionPlugin
     {
         $endpoint->setQueries($this->sortQueries($endpoint->allQueries()));
         $endpoint->setMutations($this->sortQueries($endpoint->allMutations()));
+        $endpoint->setSubscriptions($this->sortQueries($endpoint->allSubscriptions()));
     }
 
     /**
