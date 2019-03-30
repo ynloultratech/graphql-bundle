@@ -12,9 +12,13 @@ matrix:
     - php: 7.1
     - php: 7.2
     - php: 7.3
+    - php: 7.3
+      env: LATEST_DEPENDENCIES=true
     - php: hhvm
   allow_failures:
     - php: hhvm
+    - php: 7.3
+      env: LATEST_DEPENDENCIES=true
 
 cache:
   directories:
@@ -26,7 +30,8 @@ before_install:
 
 install:
   - travis_retry composer global require hirak/prestissimo
-  - travis_retry composer install --no-interaction
+  - if [ "$LATEST_DEPENDENCIES" == "" ]; then travis_retry composer install --no-interaction; fi;
+  - if [ "$LATEST_DEPENDENCIES" == "true" ]; then travis_retry composer update --prefer-dist --no-interaction; fi;
 
 script:
   - mkdir -p build/logs
