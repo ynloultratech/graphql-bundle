@@ -92,6 +92,7 @@ class ObjectFieldResolver implements ContainerAwareInterface
                                      ->setRoot($root)
                                      ->setDefinition($queryDefinition)
                                      ->setResolveInfo($info)
+                                     ->setMetas($context->getMetas())
                                      ->build();
 
             $resolver = new ResolverExecutor($this->container, $queryDefinition);

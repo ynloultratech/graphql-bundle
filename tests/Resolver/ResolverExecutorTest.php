@@ -10,6 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Tests\Resolver;
 
+use GraphQL\Language\AST\OperationDefinitionNode;
 use GraphQL\Type\Definition\ResolveInfo;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Symfony\Component\DependencyInjection\ContainerInterface;
@@ -177,6 +178,8 @@ class ResolverExecutorTest extends MockeryTestCase
                                  ->setArgs($args)
                                  ->build();
 
-        $resolverExecutor(new User(0), $args, $context, new ResolveInfo([]));
+        $resolverInfo = new ResolveInfo([]);
+        $resolverInfo->operation = new OperationDefinitionNode([]);
+        $resolverExecutor(new User(0), $args, $context, $resolverInfo);
     }
 }

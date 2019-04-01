@@ -12,9 +12,25 @@ services:
             - [ setConfig, ['%graphql.config%'] ]
             - [ setDispatcher, ['@event_dispatcher'] ]
 
+    Ynlo\GraphQLBundle\Controller\SubscriptionsController:
+        public: true
+        calls:
+            - ['setTtl', ['%graphql.subscriptions.ttl%']]
+
+    Ynlo\GraphQLBundle\Controller\SubscriptionsHeartbeatController:
+        public: true
+        calls:
+            - ['setTtl', ['%graphql.subscriptions.ttl%']]
+
     Ynlo\GraphQLBundle\Request\StandardGraphQLRequestMiddleware:
          public: true
          tags:
+            - { name: 'graphql.middleware' }
+
+    Ynlo\GraphQLBundle\Request\SubscriptionsRequestMiddleware:
+        public: true
+        arguments: ['%kernel.secret%']
+        tags:
             - { name: 'graphql.middleware' }
 
     Ynlo\GraphQLBundle\Request\MultiPartFileUploadMiddleware:
@@ -94,6 +110,11 @@ services:
             - { name: 'graphql.definition_annotation_parser', priority: 100 }
 
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\MutationAnnotationParser:
+        arguments: ['@annotations.reader']
+        tags:
+            - { name: 'graphql.definition_annotation_parser', priority: 100 }
+
+    Ynlo\GraphQLBundle\Definition\Loader\Annotation\SubscriptionAnnotationParser:
         arguments: ['@annotations.reader']
         tags:
             - { name: 'graphql.definition_annotation_parser', priority: 100 }
@@ -336,6 +357,13 @@ services:
         tags:
             - 'console.command'
 
+    Ynlo\GraphQLBundle\Command\SubscriptionConsumerCommand:
+        arguments:
+            - '@kernel'
+            - '@Ynlo\GraphQLBundle\Subscription\SubscriptionManager'
+        tags:
+            - 'console.command'
+
     Ynlo\GraphQLBundle\Error\DefaultErrorFormatter:
        arguments:
           - '@Ynlo\GraphQLBundle\Error\ControlledErrorManager'
@@ -406,3 +434,23 @@ services:
         arguments: ['@annotations.reader' ]
         tags:
           - graphql.filter_resolver
+
+    Ynlo\GraphQLBundle\Subscription\Subscriber:
+        public: true
+        arguments: ['@request_stack','@router.default','@?Ynlo\GraphQLBundle\Subscription\SubscriptionManager']
+        calls:
+            - ['setSubscriptionsTtl', ['%graphql.subscriptions.ttl%']]
+        tags:
+            - kernel.event_subscriber
+
+    Ynlo\GraphQLBundle\Subscription\Publisher:
+        arguments: ['@?Ynlo\GraphQLBundle\Subscription\SubscriptionManager', '@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry']
+
+    Ynlo\GraphQLBundle\Subscription\SubscriptionManager:
+        arguments:
+            - '@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry'
+
+    Ynlo\GraphQLBundle\Subscription\PubSub\RedisPubSubHandler:
+        arguments:
+            - '%graphql.subscriptions.redis%'
+

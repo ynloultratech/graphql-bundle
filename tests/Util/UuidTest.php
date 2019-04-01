@@ -21,7 +21,9 @@ class UuidTest extends TestCase
         $data = ['message' => 'hello'];
         $uuid = Uuid::createFromData($data);
         $uuid2 = Uuid::createFromData($data);
+        $uuid3 = Uuid::createFromData($data, true);
         self::assertEquals($uuid, $uuid2);
-        self::assertEquals('822B802D-B7C5-A74C-4A84-18F70A90', $uuid);
+        self::assertEquals(strtolower('822B802D-B7C5-A74C-4A84-18F70A90'), $uuid);
+        self::assertEquals('822B802D-B7C5-A74C-4A84-18F70A90', $uuid3);
     }
 }

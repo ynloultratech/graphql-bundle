@@ -15,6 +15,8 @@ use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\MutationDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
+use Ynlo\GraphQLBundle\Definition\SubscriptionDefinition;
+use Ynlo\GraphQLBundle\Resolver\EmptyObjectResolver;
 
 /**
  * Class Endpoint
@@ -50,6 +52,18 @@ class Endpoint
      * @var QueryDefinition[]
      */
     protected $queries = [];
+
+    /**
+     * @var SubscriptionDefinition[]
+     */
+    protected $subscriptions = [];
+
+    /**
+     * Map subscriptions names to a resolver
+     *
+     * @var string[]
+     */
+    protected $subscriptionsMap = [];
 
     /**
      * Endpoint constructor.
@@ -168,6 +182,44 @@ class Endpoint
     }
 
     /**
+     * @return array|SubscriptionDefinition[]
+     */
+    public function allSubscriptions(): array
+    {
+        return $this->subscriptions;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getSubscriptionsResolvers(): array
+    {
+        return $this->subscriptionsMap;
+    }
+
+    /**
+     * @param string $resolver
+     *
+     * @return string
+     */
+    public function getSubscriptionNameForResolver($resolver): string
+    {
+        $byResolver = array_flip($this->subscriptionsMap);
+
+        return $byResolver[$resolver] ?? null;
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return string
+     */
+    public function getSubscriptionResolver($name): string
+    {
+        return $this->subscriptionsMap[$name] ?? null;
+    }
+
+    /**
      * @param DefinitionInterface[] $types
      */
     public function setTypes(array $types)
@@ -198,6 +250,17 @@ class Endpoint
         $this->queries = [];
         foreach ($queries as $query) {
             $this->addQuery($query);
+        }
+    }
+
+    /**
+     * @param SubscriptionDefinition[] $subscriptions
+     */
+    public function setSubscriptions(array $subscriptions)
+    {
+        $this->subscriptions = [];
+        foreach ($subscriptions as $subscription) {
+            $this->addSubscription($subscription);
         }
     }
 
@@ -236,6 +299,16 @@ class Endpoint
     public function hasQuery($name): bool
     {
         return array_key_exists($name, $this->queries);
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return bool
+     */
+    public function hasSubscription($name): bool
+    {
+        return array_key_exists($name, $this->subscriptions);
     }
 
     /**
@@ -287,6 +360,18 @@ class Endpoint
     /**
      * @param string $name
      *
+     * @return Endpoint
+     */
+    public function removeSubscription($name): Endpoint
+    {
+        unset($this->subscriptions[$name]);
+
+        return $this;
+    }
+
+    /**
+     * @param string $name
+     *
      * @return DefinitionInterface
      *
      * @throws \UnexpectedValueException
@@ -314,6 +399,16 @@ class Endpoint
     public function getMutation($name): MutationDefinition
     {
         return $this->mutations[$name];
+    }
+
+    /**
+     * @param string $name
+     *
+     * @return SubscriptionDefinition
+     */
+    public function getSubscription($name): SubscriptionDefinition
+    {
+        return $this->subscriptions[$name];
     }
 
     /**
@@ -398,6 +493,24 @@ class Endpoint
             throw new \RuntimeException(sprintf('Duplicate definition for query with name "%s"', $query->getName()));
         }
         $this->queries[$query->getName()] = $query;
+
+        return $this;
+    }
+
+    /**
+     * @param SubscriptionDefinition $subscription
+     *
+     * @return Endpoint
+     */
+    public function addSubscription(SubscriptionDefinition $subscription): Endpoint
+    {
+        if ($this->hasSubscription($subscription->getName())) {
+            throw new \RuntimeException(sprintf('Duplicate definition for subscription with name "%s"', $subscription->getName()));
+        }
+        if (!is_a($subscription->getResolver(), EmptyObjectResolver::class, true)) {
+            $this->subscriptionsMap[$subscription->getName()] = $subscription->getResolver();
+        }
+        $this->subscriptions[$subscription->getName()] = $subscription;
 
         return $this;
     }

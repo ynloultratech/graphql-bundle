@@ -26,6 +26,7 @@
   },
   "require": {
     "php": ">=7.1",
+    "ext-json": "*",
     "symfony/form": "^3.0 || ^4.0",
     "symfony/framework-bundle": "^3.0 || ^4.0",
     "symfony/security-bundle": "^3.0 || ^4.0",
@@ -33,6 +34,7 @@
     "symfony/validator": "^3.0 || ^4.0",
     "symfony/templating": "^3.0 || ^4.0",
     "symfony/expression-language": "^3.0 || ^4.0",
+    "symfony/process" : "^3.0 || ^4.0",
     "doctrine/orm": "^2.5",
     "doctrine/doctrine-bundle": "^1.6",
     "twig/twig": "^2.0",
@@ -41,9 +43,11 @@
     "doctrine/common": "^2.8",
     "myclabs/deep-copy": "^1.7",
     "mindplay/readable": "^1.1",
-    "mtdowling/jmespath.php": "^2.4"
+    "mtdowling/jmespath.php": "^2.4",
+    "lcobucci/jwt": "^3.2"
   },
   "require-dev": {
+    "ext-redis": "*",
     "symfony/symfony": "^3.4",
     "phpunit/phpunit": "^6.2",
     "symfony/phpunit-bridge": "^3.1",
@@ -55,9 +59,12 @@
     "escapestudios/symfony2-coding-standard": "3.x-dev",
     "behat/behat": "^3.4",
     "behat/symfony2-extension": "^2.1",
-    "friendsofsymfony/user-bundle": "^2.1"
+    "friendsofsymfony/user-bundle": "^2.1",
+    "symfony/mercure-bundle": "^0.1.1"
   },
   "suggest": {
+    "ext-redis": "Needed to support GraphQL subscriptions",
+    "symfony/mercure-bundle": "Needed to support GraphQL subscriptions",
     "behat/behat": "Integration with Behat BDD tests",
     "behat/symfony2-extension": "Integration of Behat tests with Symfony",
     "phpunit/phpunit": "To use assertions in Behat tests",

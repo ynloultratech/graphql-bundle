@@ -44,6 +44,7 @@ class ObjectDefinitionType extends ObjectType implements ContainerAwareInterface
                                              ->setRoot($root)
                                              ->setResolveInfo($resolveInfo)
                                              ->setArgs($args)
+                                             ->setMetas($context->getMetas())
                                              ->setDefinition($definition->getField($resolveInfo->fieldName))
                                              ->build();
 

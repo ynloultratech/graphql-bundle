@@ -18,11 +18,13 @@ use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\Definition\UnionDefinition;
 use Ynlo\GraphQLBundle\Type\Definition\EndpointAwareInterface;
 use Ynlo\GraphQLBundle\Type\Definition\EnumDefinitionType;
 use Ynlo\GraphQLBundle\Type\Definition\InputObjectDefinitionType;
 use Ynlo\GraphQLBundle\Type\Definition\InterfaceDefinitionType;
 use Ynlo\GraphQLBundle\Type\Definition\ObjectDefinitionType;
+use Ynlo\GraphQLBundle\Type\Definition\UnionDefinitionType;
 use Ynlo\GraphQLBundle\Type\Types;
 
 class TypeRegistry
@@ -121,6 +123,10 @@ class TypeRegistry
 
             if ($definition instanceof ObjectDefinition) {
                 $type = new ObjectDefinitionType($definition);
+            }
+
+            if ($definition instanceof UnionDefinition) {
+                $type = new UnionDefinitionType($definition);
             }
 
             if ($definition instanceof InputObjectDefinition) {

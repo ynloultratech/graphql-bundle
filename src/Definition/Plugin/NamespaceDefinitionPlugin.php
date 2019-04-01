@@ -21,6 +21,7 @@ use Ynlo\GraphQLBundle\Definition\NodeAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\Definition\SubscriptionDefinition;
 use Ynlo\GraphQLBundle\Resolver\EmptyObjectResolver;
 
 /**
@@ -46,6 +47,9 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
      *      # The following suffix will be used for bundle mutation groups
      *      mutation_suffix:      BundleMutation
      *
+     *      # The following suffix will be used for bundle subscriptions groups
+     *      subscription_suffix:      BundleSubscription
+     *
      *      # The following bundles will be ignore for grouping, all definitions will be placed in the root query or mutation
      *      ignore:
      *
@@ -68,6 +72,9 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
      *
      *      # The following suffix will be used to create the name for mutations to the same node
      *      mutation_suffix:      Mutation
+     *
+     *      # The following suffix will be used to create the name for subscriptions to the same node
+     *      subscription_suffix:      Subscription
      *
      *      # The following nodes will be ignore for grouping, all definitions will be placed in the root query or mutation
      *      ignore:
@@ -95,7 +102,7 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
     public function buildConfig(ArrayNodeDefinition $root): void
     {
         $config = $root
-            ->info('Enable/Disable namespace for queries and mutations')
+            ->info('Enable/Disable namespace for queries, subscriptions & mutations')
             ->canBeDisabled()
             ->children();
 
@@ -185,6 +192,7 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
         if ($groupByBundle || $groupByNode) {
             $endpoint->setQueries($this->namespaceDefinitions($endpoint->allQueries(), $endpoint));
             $endpoint->setMutations($this->namespaceDefinitions($endpoint->allMutations(), $endpoint));
+            $endpoint->setSubscriptions($this->namespaceDefinitions($endpoint->allSubscriptions(), $endpoint));
         }
     }
 
@@ -211,15 +219,23 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
             if ($namespacePath) {
                 $querySuffix = $this->globalConfig['nodes']['query_suffix'] ?? 'Query';
                 $mutationSuffix = $this->globalConfig['nodes']['mutation_suffix'] ?? 'Mutation';
+                $subscriptionSuffix = $this->globalConfig['nodes']['subscription_suffix'] ?? 'Subscription';
                 $namespaces = explode('/', $namespacePath);
                 foreach ($namespaces as $namespace) {
                     $name = lcfirst($namespace);
-                    $typeName = ucfirst($namespace).(($definition instanceof MutationDefinition) ? $mutationSuffix : $querySuffix);
+                    $suffix = $querySuffix;
+                    if ($definition instanceof MutationDefinition) {
+                        $suffix = $mutationSuffix;
+                    }
+                    if ($definition instanceof SubscriptionDefinition) {
+                        $suffix = $subscriptionSuffix;
+                    }
+                    $typeName = ucfirst($name).$suffix;
                     if (!$root) {
                         if (isset($namespacedDefinitions[$name])) {
                             $root = $namespacedDefinitions[$name];
                         } else {
-                            $root = $this->createRootNamespace(\get_class($definition), $name, $typeName, $endpoint);
+                            $root = $this->createRootNamespace($definition, $name, $typeName, $endpoint);
                         }
                         $parent = $endpoint->getType($root->getType());
                         $namespacedDefinitions[$root->getName()] = $root;
@@ -230,17 +246,24 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
                 if ($alias = $namespaceConfig['alias'] ?? null) {
                     $definition->setName($alias);
                 }
-                $this->addDefinitionToNamespace($parent, $definition);
+                $this->addDefinitionToNamespace($parent, $definition, $definition->getName());
                 continue;
             }
 
             if ($bundle = $namespaceConfig['bundle'] ?? null) {
                 $bundleQuerySuffix = $this->globalConfig['bundle']['query_suffix'] ?? 'BundleQuery';
                 $bundleMutationSuffix = $this->globalConfig['bundle']['mutation_suffix'] ?? 'BundleMutation';
-
+                $bundleSubscriptionSuffix = $this->globalConfig['bundle']['subscription_suffix'] ?? 'BundleSubscription';
                 $name = lcfirst($bundle);
-                $typeName = ucfirst($name).(($definition instanceof MutationDefinition) ? $bundleMutationSuffix : $bundleQuerySuffix);
-                $root = $this->createRootNamespace(\get_class($definition), $name, $typeName, $endpoint);
+                $suffix = $bundleQuerySuffix;
+                if ($definition instanceof MutationDefinition) {
+                    $suffix = $bundleMutationSuffix;
+                }
+                if ($definition instanceof SubscriptionDefinition) {
+                    $suffix = $bundleSubscriptionSuffix;
+                }
+                $typeName = ucfirst($name).$suffix;
+                $root = $this->createRootNamespace($definition, $name, $typeName, $endpoint);
                 $parent = $endpoint->getType($root->getType());
             }
 
@@ -253,26 +276,37 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
 
                 $querySuffix = $this->globalConfig['nodes']['query_suffix'] ?? 'Query';
                 $mutationSuffix = $this->globalConfig['nodes']['mutation_suffix'] ?? 'Mutation';
+                $subscriptionSuffix = $this->globalConfig['nodes']['subscription_suffix'] ?? 'Subscription';
 
-                $typeName = ucfirst($nodeName).(($definition instanceof MutationDefinition) ? $mutationSuffix : $querySuffix);
+                $suffix = $querySuffix;
+                if ($definition instanceof MutationDefinition) {
+                    $suffix = $mutationSuffix;
+                }
+                if ($definition instanceof SubscriptionDefinition) {
+                    $suffix = $subscriptionSuffix;
+                }
+
+                $typeName = ucfirst($nodeName).$suffix;
                 if (!$root) {
-                    $root = $this->createRootNamespace(\get_class($definition), $name, $typeName, $endpoint);
+                    $root = $this->createRootNamespace($definition, $name, $typeName, $endpoint);
                     $parent = $endpoint->getType($root->getType());
                 } elseif ($parent) {
                     $parent = $this->createChildNamespace($parent, $name, $typeName, $endpoint);
                 }
 
                 if ($alias = $namespaceConfig['alias'] ?? null) {
+                    $originName = $definition->getName();
                     $definition->setName($alias);
                 } else {
                     //remove node suffix on namespaced definitions
+                    $originName = $definition->getName();
                     $definition->setName(preg_replace(sprintf("/(\w+)%s$/", $nodeName), '$1', $definition->getName()));
                     $definition->setName(preg_replace(sprintf("/(\w+)%s$/", Inflector::pluralize($nodeName)), '$1', $definition->getName()));
                 }
             }
 
             if ($root && $parent) {
-                $this->addDefinitionToNamespace($parent, $definition);
+                $this->addDefinitionToNamespace($parent, $definition, $originName);
                 $namespacedDefinitions[$root->getName()] = $root;
             } else {
                 $namespacedDefinitions[$definition->getName()] = $definition;
@@ -285,11 +319,13 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
     /**
      * @param FieldsAwareDefinitionInterface $fieldsAwareDefinition
      * @param ExecutableDefinitionInterface  $definition
+     * @param string                         $originName
      */
-    private function addDefinitionToNamespace(FieldsAwareDefinitionInterface $fieldsAwareDefinition, ExecutableDefinitionInterface $definition): void
+    private function addDefinitionToNamespace(FieldsAwareDefinitionInterface $fieldsAwareDefinition, ExecutableDefinitionInterface $definition, $originName): void
     {
         $field = new FieldDefinition();
         $field->setName($definition->getName());
+        $field->setOriginName($originName);
         $field->setDescription($definition->getDescription());
         $field->setDeprecationReason($definition->getDeprecationReason());
         $field->setType($definition->getType());
@@ -331,17 +367,19 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
     }
 
     /**
-     * @param string   $rootType Class of the root type to create QueryDefinition or MutationDefinition
-     * @param string   $name     name of the root field
-     * @param string   $typeName name for the root type
-     * @param Endpoint $endpoint Endpoint interface to extract existent definitions
+     * @param DefinitionInterface $definition Definition to create the root
+     * @param string              $name       name of the root field
+     * @param string              $typeName   name for the root type
+     * @param Endpoint            $endpoint   Endpoint interface to extract existent definitions
      *
      * @return ExecutableDefinitionInterface
      */
-    private function createRootNamespace($rootType, $name, $typeName, Endpoint $endpoint): ExecutableDefinitionInterface
+    private function createRootNamespace($definition, $name, $typeName, Endpoint $endpoint): ExecutableDefinitionInterface
     {
+        $class = get_class($definition);
+
         /** @var ExecutableDefinitionInterface $rootDefinition */
-        $rootDefinition = new $rootType();
+        $rootDefinition = new $class();
         $rootDefinition->setName($name);
         $rootDefinition->setResolver(EmptyObjectResolver::class);
 

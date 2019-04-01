@@ -53,6 +53,11 @@ final class ContextBuilder
     private $resolveInfo;
 
     /**
+     * @var array
+     */
+    private $metas = [];
+
+    /**
      * ContextBuilder constructor.
      *
      * @param Endpoint $endpoint
@@ -77,14 +82,42 @@ final class ContextBuilder
      */
     public function build(): ResolverContext
     {
-        return new ResolverContext(
+        $context = new ResolverContext(
             $this->endpoint,
             $this->definition,
             $this->root,
             $this->node,
             $this->args,
-            $this->resolveInfo
+            $this->resolveInfo,
+            $this->metas
         );
+
+        return $context;
+    }
+
+    /**
+     * @param array $metas
+     *
+     * @return ContextBuilder
+     */
+    public function setMetas(array $metas): ContextBuilder
+    {
+        $this->metas = $metas;
+
+        return $this;
+    }
+
+    /**
+     * @param string $key
+     * @param mixed  $value
+     *
+     * @return ContextBuilder
+     */
+    public function setMeta(string $key, $value): ContextBuilder
+    {
+        $this->metas[$key] = $value;
+
+        return $this;
     }
 
     /**

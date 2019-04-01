@@ -17,6 +17,7 @@ use Ynlo\GraphQLBundle\Definition\ClassAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\PolymorphicDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\Model\PolymorphicObjectInterface;
 use Ynlo\GraphQLBundle\Type\Types;
 
 /**
@@ -34,6 +35,10 @@ final class TypeUtil
      */
     public static function resolveObjectType(Endpoint $endpoint, $object): ?string
     {
+        if ($object instanceof PolymorphicObjectInterface && $object->getConcreteType()) {
+            return $object->getConcreteType();
+        }
+
         $class = DoctrineClassUtils::getClass($object);
         if (!$endpoint->hasTypeForClass($class)) {
             return null;

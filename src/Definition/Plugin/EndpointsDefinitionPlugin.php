@@ -23,6 +23,8 @@ use Ynlo\GraphQLBundle\Definition\NodeAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\Definition\SubscriptionDefinition;
+use Ynlo\GraphQLBundle\Definition\UnionDefinition;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 
 class EndpointsDefinitionPlugin extends AbstractDefinitionPlugin
@@ -123,6 +125,10 @@ class EndpointsDefinitionPlugin extends AbstractDefinitionPlugin
             $this->secureOperations($endpoint, $mutations, $forbiddenTypes);
         }
 
+        foreach ($endpoint->allSubscriptions() as $subscriptions) {
+            $this->secureOperations($endpoint, $subscriptions, $forbiddenTypes);
+        }
+
         foreach ($endpoint->allTypes() as $type) {
             //remove implementations of forbidden interfaces
             if ($type instanceof ImplementorInterface) {
@@ -132,6 +138,25 @@ class EndpointsDefinitionPlugin extends AbstractDefinitionPlugin
                     }
                 }
             }
+
+            if ($type instanceof UnionDefinition) {
+                foreach ($type->getTypes() as $subType) {
+                    //remove union sub-type related to forbidden type
+                    $fieldType = $endpoint->hasType($subType->getType()) ? $endpoint->getType($subType->getType()) : null;
+                    if (($fieldType && in_array($fieldType->getName(), $forbiddenTypes))) {
+                        $type->removeType($subType->getType());
+                    }
+                }
+
+                //after delete sub-types related to forbidden objects,
+                //verify if the union has at least one sub-type
+                //otherwise mark this type as forbidden
+                if (!$type->getTypes()) {
+                    $forbiddenTypes[] = $type->getName();
+                    $this->processForbiddenTypes($endpoint, $forbiddenTypes);
+                }
+            }
+
             //remove fields related to forbidden interfaces
             if ($type instanceof FieldsAwareDefinitionInterface) {
                 if ($type->getFields()) {
@@ -251,6 +276,8 @@ class EndpointsDefinitionPlugin extends AbstractDefinitionPlugin
         if (!$granted) {
             if ($executableDefinition instanceof MutationDefinition) {
                 $endpoint->removeMutation($executableDefinition->getName());
+            } elseif ($executableDefinition instanceof SubscriptionDefinition) {
+                $endpoint->removeSubscription($executableDefinition->getName());
             } else {
                 $endpoint->removeQuery($executableDefinition->getName());
             }

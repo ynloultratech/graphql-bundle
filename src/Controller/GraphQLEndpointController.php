@@ -24,6 +24,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
+use Symfony\Component\Mercure\Publisher;
+use Symfony\Component\Mercure\Update;
 use Ynlo\GraphQLBundle\Error\ErrorFormatterInterface;
 use Ynlo\GraphQLBundle\Error\ErrorHandlerInterface;
 use Ynlo\GraphQLBundle\Error\ErrorQueue;
@@ -34,6 +36,7 @@ use Ynlo\GraphQLBundle\Request\RequestMiddlewareInterface;
 use Ynlo\GraphQLBundle\Resolver\ResolverContext;
 use Ynlo\GraphQLBundle\Schema\SchemaCompiler;
 use Ynlo\GraphQLBundle\Security\EndpointResolver;
+use Ynlo\GraphQLBundle\Subscription\SubscriptionRequest;
 
 class GraphQLEndpointController
 {
@@ -83,6 +86,11 @@ class GraphQLEndpointController
      * @var iterable
      */
     protected $middlewares = [];
+
+    /**
+     * @var Publisher
+     */
+    protected $publisher;
 
     /**
      * GraphQLEndpointController constructor.
@@ -152,6 +160,19 @@ class GraphQLEndpointController
         $this->middlewares = $middlewares;
     }
 
+    /**
+     * @param Publisher $publisher
+     */
+    public function setPublisher(Publisher $publisher): void
+    {
+        $this->publisher = $publisher;
+    }
+
+    /**
+     * @param Request $request
+     *
+     * @return JsonResponse
+     */
     public function __invoke(Request $request): JsonResponse
     {
         $operationEvent = null;
@@ -183,6 +204,10 @@ class GraphQLEndpointController
 
             $schema = $this->compiler->compile($endpoint);
             $schema->assertValid();
+
+            if ($subscriptionRequest = $query->getSubscriptionRequest()) {
+                $context->setMeta('subscriptionRequest', $subscriptionRequest);
+            }
 
             $result = GraphQL::executeQuery(
                 $schema,
@@ -235,6 +260,10 @@ class GraphQLEndpointController
 
         if ($this->dispatcher && $operationEvent) {
             $this->dispatcher->dispatch(GraphQLEvents::OPERATION_END, $operationEvent);
+        }
+
+        if ($this->publisher && isset($subscriptionRequest) && $subscriptionRequest instanceof SubscriptionRequest) {
+            ($this->publisher)(new Update($subscriptionRequest->getId(), json_encode($output)));
         }
 
         return JsonResponse::create($output, $statusCode);

@@ -147,7 +147,7 @@ class DefinitionRegistry
      *
      * @param string $name
      */
-    protected function initialize(string $name)
+    protected function initialize(string $name): void
     {
         $rawDefault = $this->loadCache('default.raw');
         if (!$rawDefault) {
@@ -166,6 +166,7 @@ class DefinitionRegistry
             self::$endpoints[$name]->setTypes($rawDefault->allTypes());
             self::$endpoints[$name]->setMutations($rawDefault->allMutations());
             self::$endpoints[$name]->setQueries($rawDefault->allQueries());
+            self::$endpoints[$name]->setSubscriptions($rawDefault->allSubscriptions());
 
             $this->compile(self::$endpoints[$name]);
         }
@@ -229,6 +230,14 @@ class DefinitionRegistry
             foreach ($endpoint->allMutations() as $mutation) {
                 $this->configureDefinition($plugin, $mutation, $endpoint);
                 foreach ($mutation->getArguments() as $argument) {
+                    $this->configureDefinition($plugin, $argument, $endpoint);
+                }
+            }
+
+            //run extensions in all subscriptions
+            foreach ($endpoint->allSubscriptions() as $subscription) {
+                $this->configureDefinition($plugin, $subscription, $endpoint);
+                foreach ($subscription->getArguments() as $argument) {
                     $this->configureDefinition($plugin, $argument, $endpoint);
                 }
             }

@@ -55,6 +55,7 @@ class InputObjectDefinitionType extends InputObjectType implements
                                              ->setRoot($root)
                                              ->setResolveInfo($resolveInfo)
                                              ->setArgs($args)
+                                             ->setMetas($context->getMetas())
                                              ->setDefinition($definition->getField($resolveInfo->fieldName))
                                              ->build();
 
