@@ -1,4 +1,4 @@
-v1.3.0 - Unreleased
+v1.3.0 - 2019-04-01
 ----
  *  Added support for GraphQL Subscriptions (experimental) using [mercure](https://github.com/dunglas/mercure) & redis
  *  Added support to use endpoints with forms
