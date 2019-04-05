@@ -1,4 +1,4 @@
-v1.3.1 - Unreleased
+v1.3.1 - 2019-04-5
 ----
  *  Fixed #14 Can't load custom services in the bundle configuration
 
