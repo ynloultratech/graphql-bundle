@@ -1,3 +1,7 @@
+v1.3.1 - Unreleased
+----
+ *  Fixed #14 Can't load custom services in the bundle configuration
+
 v1.3.0 - 2019-04-01
 ----
  *  Added support for GraphQL Subscriptions (experimental) using [mercure](https://github.com/dunglas/mercure) & redis

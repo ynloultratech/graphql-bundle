@@ -115,13 +115,13 @@ class YnloGraphQLExtension extends Extension
         //build the ID encoder manager with configured encoder
         $container->getDefinition(IDEncoderManager::class)
                   ->setPublic(true)
-                  ->replaceArgument(0, $container->getDefinition($config['id_encoder']));
+                  ->replaceArgument(0, new Reference($config['id_encoder']));
 
 
         //endpoint definition
         $container->getDefinition(GraphQLEndpointController::class)
-                  ->addMethodCall('setErrorFormatter', [$container->getDefinition($config['error_handling']['formatter'])])
-                  ->addMethodCall('setErrorHandler', [$container->getDefinition($config['error_handling']['handler'])]);
+                  ->addMethodCall('setErrorFormatter', [new Reference($config['error_handling']['formatter'])])
+                  ->addMethodCall('setErrorHandler', [new Reference($config['error_handling']['handler'])]);
 
         $bundles = $container->getParameter('kernel.bundles');
         if (isset($bundles['MercureBundle'])) {
@@ -130,15 +130,15 @@ class YnloGraphQLExtension extends Extension
             $mercurePublisherReference = new Reference(sprintf('mercure.hub.%s.publisher', $mercureHub));
 
             $container->getDefinition(SubscriptionManager::class)
-                      ->addArgument($container->getDefinition($config['subscriptions']['pubsub_handler']))
+                      ->addArgument(new Reference($config['subscriptions']['pubsub_handler']))
                       ->addArgument(new Parameter('kernel.secret'));
 
             $container->getDefinition(SubscriptionsController::class)
-                      ->addArgument($container->getDefinition($config['subscriptions']['pubsub_handler']))
+                      ->addArgument(new Reference($config['subscriptions']['pubsub_handler']))
                       ->addMethodCall('setMercureHubUrl', [new Parameter('mercure.hubs'), $mercureHub]);
 
             $container->getDefinition(SubscriptionsHeartbeatController::class)
-                      ->addArgument($container->getDefinition($config['subscriptions']['pubsub_handler']))
+                      ->addArgument(new Reference($config['subscriptions']['pubsub_handler']))
                       ->addMethodCall('setMercureHubUrl', [new Parameter('mercure.hubs'), $mercureHub]);
 
             $container->getDefinition(SubscriptionConsumerCommand::class)
