@@ -19,6 +19,7 @@ use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\Definition\UnionDefinition;
 
 /**
  * This plugin remove non used definitions
@@ -112,6 +113,12 @@ class CleanUpDefinitionPlugin extends AbstractDefinitionPlugin
         if ($definition instanceof InterfaceDefinition) {
             foreach ($definition->getImplementors() as $implementor) {
                 $this->used($implementor);
+            }
+        }
+
+        if ($definition instanceof UnionDefinition) {
+            foreach ($definition->getTypes() as $type) {
+                $this->used($type->getType());
             }
         }
 
