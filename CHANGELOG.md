@@ -1,3 +1,7 @@
+v1.3.2 - 2019-04-15
+----
+ *  Fix bug with subscription and undefined event type
+
 v1.3.1 - 2019-04-5
 ----
  *  Fixed #14 Can't load custom services in the bundle configuration
