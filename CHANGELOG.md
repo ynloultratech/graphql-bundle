@@ -1,3 +1,7 @@
+v1.3.3 - Unreleased
+----
+ *  Fix bug with subscription prefix
+ 
 v1.3.2 - 2019-04-15
 ----
  *  Fix bug with subscription and undefined event type

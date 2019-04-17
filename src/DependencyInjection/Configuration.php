@@ -65,7 +65,7 @@ class Configuration implements ConfigurationInterface
 
         $redis->scalarNode('host')->defaultValue('localhost');
         $redis->integerNode('port')->defaultValue(6379);
-        $redis->integerNode('prefix')->defaultValue('GraphQLSubscription:')
+        $redis->scalarNode('prefix')->defaultValue('GraphQLSubscription:')
               ->info('Define custom prefix to avoid collisions between applications');
     }
 
