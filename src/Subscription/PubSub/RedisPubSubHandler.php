@@ -83,10 +83,13 @@ class RedisPubSubHandler implements PubSubHandlerInterface
      */
     public function touch(string $id, \DateTime $expireAt): void
     {
-        while ($keys = $this->client->scan($iterator, "*:$id*")) {
-            foreach ($keys as $key) {
-                $key = $this->unprefix($key);
-                $this->client->expireAt($key, $expireAt->format('U'));
+        $iterator = null;
+        while ($iterator !== 0) {
+            while ($keys = $this->client->scan($iterator, "*:$id*")) {
+                foreach ($keys as $key) {
+                    $key = $this->unprefix($key);
+                    $this->client->expireAt($key, $expireAt->format('U'));
+                }
             }
         }
     }
@@ -96,8 +99,11 @@ class RedisPubSubHandler implements PubSubHandlerInterface
      */
     public function del(string $id): void
     {
-        while ($keys = $this->client->scan($iterator, "*:$id*")) {
-            $this->client->del($keys);
+        $iterator = null;
+        while ($iterator !== 0) {
+            while ($keys = $this->client->scan($iterator, "*:$id*")) {
+                $this->client->del($keys);
+            }
         }
     }
 
@@ -106,7 +112,15 @@ class RedisPubSubHandler implements PubSubHandlerInterface
      */
     public function exists(string $id): bool
     {
-        return !empty($this->client->scan($iterator, "*:$id*"));
+        $iterator = null;
+        while ($iterator !== 0) {
+            $keys = $this->client->scan($iterator, "*:$id*");
+            if (!empty($keys)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     /**
@@ -118,23 +132,26 @@ class RedisPubSubHandler implements PubSubHandlerInterface
             $this->consumer->subscribe(
                 $channels,
                 function (\Redis $redis, $chan, $event) use ($dispatch) {
-                    while ($keys = $this->client->scan($iterator, "*$chan:*", 100)) {
-                        [$filters, $data] = unserialize($event, [true]);
-                        foreach ($keys as $key) {
-                            $key = $this->unprefix($key);
-                            $chan = $this->unprefix($chan);
-                            $meta = $this->client->get($key);
-                            preg_match("/$chan:(.+)/", $key, $matches);
-                            if ($matches) {
-                                $message = new SubscriptionMessage(
-                                    $chan,
-                                    $matches[1],
-                                    $data,
-                                    $filters,
-                                    unserialize($meta, [true])
-                                );
+                    $iterator = null;
+                    while ($iterator !== 0) {
+                        while ($keys = $this->client->scan($iterator, "*$chan:*", 100)) {
+                            [$filters, $data] = unserialize($event, [true]);
+                            foreach ($keys as $key) {
+                                $key = $this->unprefix($key);
+                                $chan = $this->unprefix($chan);
+                                $meta = $this->client->get($key);
+                                preg_match("/$chan:(.+)/", $key, $matches);
+                                if ($matches) {
+                                    $message = new SubscriptionMessage(
+                                        $chan,
+                                        $matches[1],
+                                        $data,
+                                        $filters,
+                                        unserialize($meta, [true])
+                                    );
 
-                                $dispatch($message);
+                                    $dispatch($message);
+                                }
                             }
                         }
                     }
