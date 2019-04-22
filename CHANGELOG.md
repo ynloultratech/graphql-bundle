@@ -2,6 +2,7 @@ v1.3.3 - Unreleased
 ----
  *  Fix bug with subscription prefix
  *  Fix bug with subscription redis pub/sub handler
+ *  Fix bug with subscription & secure(https) api endpoint
  
 v1.3.2 - 2019-04-15
 ----

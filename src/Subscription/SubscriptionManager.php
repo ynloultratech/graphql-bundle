@@ -182,7 +182,7 @@ class SubscriptionManager
         $port = $originRequest->getPort();
         $path = $originRequest->getPathInfo();
 
-        $handle = fsockopen($host, $port, $errno, $errstr, 10);
+        $handle = fsockopen($originRequest->isSecure() ? 'ssl://'.$host : $host, $port, $errno, $errstr, 10);
 
         $signer = new Sha256();
         $subscriptionToken = (new Builder())->setId($message->getId())
