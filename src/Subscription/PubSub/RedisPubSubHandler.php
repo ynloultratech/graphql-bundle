@@ -34,6 +34,9 @@ class RedisPubSubHandler implements PubSubHandlerInterface
      */
     public function __construct(array $config)
     {
+        // solution to fix phpredis connection error bug: https://github.com/phpredis/phpredis/issues/70
+        ini_set('default_socket_timeout', -1);
+
         $host = $config['host'] ?? 'localhost';
         $port = $config['port'] ?? 6379;
         $this->prefix = $config['prefix'] ?? 'GraphQLSubscription:';
@@ -128,38 +131,34 @@ class RedisPubSubHandler implements PubSubHandlerInterface
      */
     public function consume(array $channels, callable $dispatch): void
     {
-        try {
-            $this->consumer->subscribe(
-                $channels,
-                function (\Redis $redis, $chan, $event) use ($dispatch) {
-                    $iterator = null;
-                    while ($iterator !== 0) {
-                        while ($keys = $this->client->scan($iterator, "*$chan:*", 100)) {
-                            [$filters, $data] = unserialize($event, [true]);
-                            foreach ($keys as $key) {
-                                $key = $this->unprefix($key);
-                                $chan = $this->unprefix($chan);
-                                $meta = $this->client->get($key);
-                                preg_match("/$chan:(.+)/", $key, $matches);
-                                if ($matches) {
-                                    $message = new SubscriptionMessage(
-                                        $chan,
-                                        $matches[1],
-                                        $data,
-                                        $filters,
-                                        unserialize($meta, [true])
-                                    );
+        $this->consumer->subscribe(
+            $channels,
+            function (\Redis $redis, $chan, $event) use ($dispatch) {
+                $iterator = null;
+                while ($iterator !== 0) {
+                    while ($keys = $this->client->scan($iterator, "*$chan:*", 100)) {
+                        [$filters, $data] = unserialize($event, [true]);
+                        foreach ($keys as $key) {
+                            $key = $this->unprefix($key);
+                            $chan = $this->unprefix($chan);
+                            $meta = $this->client->get($key);
+                            preg_match("/$chan:(.+)/", $key, $matches);
+                            if ($matches) {
+                                $message = new SubscriptionMessage(
+                                    $chan,
+                                    $matches[1],
+                                    $data,
+                                    $filters,
+                                    unserialize($meta, [true])
+                                );
 
-                                    $dispatch($message);
-                                }
+                                $dispatch($message);
                             }
                         }
                     }
                 }
-            );
-        } catch (\RedisException $redisException) {
-            $this->consume($channels, $dispatch);
-        }
+            }
+        );
     }
 
     /**
