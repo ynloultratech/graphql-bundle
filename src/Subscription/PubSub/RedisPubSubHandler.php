@@ -39,11 +39,11 @@ class RedisPubSubHandler implements PubSubHandlerInterface
         $this->prefix = $config['prefix'] ?? 'GraphQLSubscription:';
 
         $this->client = new \Redis();
-        $this->client->connect($host, $port, 5);
+        $this->client->connect($host, $port);
         $this->client->setOption(\Redis::OPT_PREFIX, $this->prefix);
 
         $this->consumer = new \Redis();
-        $this->consumer->connect($host, $port, 5);
+        $this->consumer->connect($host, $port);
         $this->consumer->setOption(\Redis::OPT_PREFIX, $this->prefix);
     }
 
