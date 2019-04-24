@@ -1,4 +1,4 @@
-v1.3.3 - Unreleased
+v1.3.3 - 2019-04-24
 ----
  *  Fix bug with subscription prefix
  *  Fix bug with subscription redis pub/sub handler
