@@ -3,6 +3,7 @@ v1.3.3 - Unreleased
  *  Fix bug with subscription prefix
  *  Fix bug with subscription redis pub/sub handler
  *  Fix bug with subscription & secure(https) api endpoint
+ *  Update to "webonyx/graphql-php" dependency to ^v0.13
  
 v1.3.2 - 2019-04-15
 ----
