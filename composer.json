@@ -38,7 +38,7 @@
     "doctrine/orm": "^2.5",
     "doctrine/doctrine-bundle": "^1.6",
     "twig/twig": "^2.0",
-    "webonyx/graphql-php": "^0.11.4",
+    "webonyx/graphql-php": "^0.13",
     "doctrine/annotations": "^1.5",
     "doctrine/common": "^2.8",
     "myclabs/deep-copy": "^1.7",
