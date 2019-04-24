@@ -14,22 +14,7 @@ use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Type\StringComparisonOperatorType;
 
 /**
- * @GraphQL\InputObjectType(
- *     description="Create string comparison expression to filter values by contents.
-
-#### Example:
-
-To select values containing given string:
-````
-value: 'Lorem Itsum'
-````
-
-or records starting with given string
-````
-op: STARTS_WITH
-value: 'Lorem'
-````
-")
+ * @GraphQL\InputObjectType(description="Create string comparison expression to filter values by contents")
  */
 class StringComparisonExpression
 {

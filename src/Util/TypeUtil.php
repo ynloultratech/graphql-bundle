@@ -11,7 +11,7 @@
 namespace Ynlo\GraphQLBundle\Util;
 
 use Doctrine\Common\Util\ClassUtils as DoctrineClassUtils;
-use Doctrine\Common\Util\Inflector;
+use Doctrine\Common\Inflector\Inflector;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Ynlo\GraphQLBundle\Definition\ClassAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;

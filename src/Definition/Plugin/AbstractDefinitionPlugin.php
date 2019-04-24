@@ -10,7 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Plugin;
 
-use Doctrine\Common\Util\Inflector;
+use Doctrine\Common\Inflector\Inflector;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;

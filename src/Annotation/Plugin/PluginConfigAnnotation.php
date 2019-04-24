@@ -10,7 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Annotation\Plugin;
 
-use Doctrine\Common\Util\Inflector;
+use Doctrine\Common\Inflector\Inflector;
 
 /**
  * Can use this annotation as base to se plugin options.

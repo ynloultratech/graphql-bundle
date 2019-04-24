@@ -35,6 +35,15 @@ class GraphQLExtensionType extends AbstractTypeExtension
      */
     public function getExtendedType()
     {
-        return FormType::class;
+        // support BC with symfony <4.1
+        return self::getExtendedTypes()[0];
+    }
+
+    /**
+     * {@inheritdoc}
+     */
+    public static function getExtendedTypes()
+    {
+        return [FormType::class];
     }
 }

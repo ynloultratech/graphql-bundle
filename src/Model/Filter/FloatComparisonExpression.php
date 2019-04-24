@@ -14,24 +14,7 @@ use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Type\NumberComparisonOperatorType;
 
 /**
- * @GraphQL\InputObjectType(
- *     description="Create float comparison expression to compare values.
-
-#### Example:
-
-To select values greater than or equal to 10.00
-````
-op: GTE
-value: 10.00
-````
-
-or range of values
-````
-op: BETWEEN
-value: 10.00
-maxValue: 20.00
-````
-")
+ * @GraphQL\InputObjectType(description="Create float comparison expression to compare values.")
  */
 class FloatComparisonExpression
 {

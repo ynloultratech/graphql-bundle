@@ -14,16 +14,7 @@ use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Type\CollectionComparisonOperatorType;
 
 /**
- * @GraphQL\InputObjectType(
- *     description="Create array comparison expression to filter records by values in array.
-
-#### Example:
-
-Include all records with given values
-````
-value: ['value1', 'value2']
-````
-")
+ * @GraphQL\InputObjectType(description="Create array comparison expression to filter records by values in array.")
  */
 class ArrayComparisonExpression
 {

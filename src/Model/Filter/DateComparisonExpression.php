@@ -13,25 +13,7 @@ namespace Ynlo\GraphQLBundle\Model\Filter;
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
 
 /**
- * @GraphQL\InputObjectType(
- *     description="Create date comparison expression to filter values by date.
-
-#### Example:
-
-To select values with date after January 15, 2018:
-````
-op: AFTER
-strict: true
-date: '2018-01-15'
-````
-
-or values using date range to select all records in January, 2018:
-````
-op: BETWEEN
-date: '2018-01-01'
-maxDate: '2018-01-31'
-````
-")
+ * @GraphQL\InputObjectType(description="Create date comparison expression to filter values by date.")
  */
 class DateComparisonExpression
 {

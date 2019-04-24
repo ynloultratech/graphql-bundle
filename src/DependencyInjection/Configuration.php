@@ -32,7 +32,7 @@ class Configuration implements ConfigurationInterface
      */
     public function getConfigTreeBuilder()
     {
-        $treeBuilder = new TreeBuilder();
+        $treeBuilder = new TreeBuilder('graphql');
         /** @var NodeBuilder $rootNode */
         $rootNode = $treeBuilder->root('graphql')->addDefaultsIfNotSet()->children();
         $this->configureEndpoints($rootNode);

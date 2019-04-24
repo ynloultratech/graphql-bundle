@@ -13,16 +13,7 @@ namespace Ynlo\GraphQLBundle\Model\Filter;
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
 
 /**
- * @GraphQL\InputObjectType(
- *     description="Create enum comparison expression to filter records by current values.
-
-#### Example:
-
-Include all records with given values
-````
-value: ['{VALUE_1}', '{VALUE_2}']
-````
-")
+ * @GraphQL\InputObjectType(description="Create enum comparison expression to filter records by current values.")
  */
 class EnumComparisonExpression extends ArrayComparisonExpression
 {

@@ -10,7 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Registry;
 
-use Doctrine\Common\Util\Inflector;
+use Doctrine\Common\Inflector\Inflector;
 use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
@@ -255,7 +255,7 @@ class DefinitionRegistry
     {
         $config = [];
         if ($definition instanceof MetaAwareInterface) {
-            $treeBuilder = new TreeBuilder();
+            $treeBuilder = new TreeBuilder($plugin->getName());
             /** @var NodeBuilder $root */
             $root = $treeBuilder->root($plugin->getName());
             $plugin->buildConfig($root);

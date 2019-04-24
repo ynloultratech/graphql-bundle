@@ -11,7 +11,7 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation;
 
-use Doctrine\Common\Util\Inflector;
+use Doctrine\Common\Inflector\Inflector;
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Model\NodeInterface;

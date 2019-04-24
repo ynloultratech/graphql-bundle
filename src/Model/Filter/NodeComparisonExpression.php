@@ -15,27 +15,7 @@ use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Type\NodeComparisonOperatorType;
 
 /**
- * @GraphQL\InputObjectType(
- *     description="Create Node comparison expression to filter values by related nodes.
-
-#### Example:
-
-Include all values with given ids
-````
-nodes: ['Q2nk6MQ==', 'Q2cnk6Mg==']
-````
-
-or exclude values with given ids
-````
-op: NIN
-nodes: ['Q2nk6MQ==', 'Q2cnk6Mg==']
-````
-
-or include all records without any relation
-````
-nodes: []
-````
-")
+ * @GraphQL\InputObjectType(description="Create Node comparison expression to filter values by related nodes.")
  */
 class NodeComparisonExpression
 {

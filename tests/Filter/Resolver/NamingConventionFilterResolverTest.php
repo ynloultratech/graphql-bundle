@@ -32,6 +32,7 @@ class NamingConventionFilterResolverTest extends MockeryTestCase
 
         $kernel = \Mockery::mock(KernelInterface::class);
         $kernel->expects('getBundles')->andReturn([$bundle]);
+        $kernel->expects('getRootDir')->times(5)->andReturn(__DIR__);
 
         $reader = TestAnnotationReader::create();
 
