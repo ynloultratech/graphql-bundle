@@ -70,13 +70,9 @@ class DateTimeType extends ScalarType
     }
 
     /**
-     * @param \GraphQL\Language\AST\Node $valueNode
-     *
-     * @return string
-     *
-     * @throws Error
+     * @inheritDoc
      */
-    public function parseLiteral($valueNode)
+    public function parseLiteral($valueNode, ?array $variables = null)
     {
         if (!$valueNode instanceof StringValueNode) {
             throw new Error(sprintf('Query error: Can only parse strings got: %s', $valueNode->kind), [$valueNode]);

@@ -178,7 +178,7 @@ class ResolverExecutorTest extends MockeryTestCase
                                  ->setArgs($args)
                                  ->build();
 
-        $resolverInfo = new ResolveInfo([]);
+        $resolverInfo = \Mockery::mock(ResolveInfo::class);
         $resolverInfo->operation = new OperationDefinitionNode([]);
         $resolverExecutor(new User(0), $args, $context, $resolverInfo);
     }

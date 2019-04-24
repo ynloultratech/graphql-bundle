@@ -63,13 +63,9 @@ In any case to remove the warning can set the object inside a string.';
     }
 
     /**
-     * @param \GraphQL\Language\AST\Node $valueNode
-     *
-     * @return string
-     *
-     * @throws \Error
+     * @inheritDoc
      */
-    public function parseLiteral($valueNode)
+    public function parseLiteral($valueNode, ?array $variables = null)
     {
         return $valueNode->value;
     }

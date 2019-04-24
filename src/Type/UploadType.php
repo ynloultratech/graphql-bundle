@@ -60,7 +60,7 @@ Instead got: '.Utils::printSafe($value)
     /**
      * {@inheritdoc}
      */
-    public function parseLiteral($valueNode)
+    public function parseLiteral($valueNode, ?array $variables = null)
     {
         throw new Error(
             '`Upload` cannot be hardcoded in query, be sure to conform to GraphQL multipart request specification.
