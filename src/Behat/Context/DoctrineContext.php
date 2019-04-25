@@ -16,6 +16,7 @@ use Doctrine\Common\Persistence\ObjectRepository;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\Assert;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Ynlo\GraphQLBundle\Behat\Client\ClientAwareInterface;
 use Ynlo\GraphQLBundle\Behat\Client\ClientAwareTrait;
 use Ynlo\GraphQLBundle\Behat\Gherkin\YamlStringNode;
@@ -31,6 +32,24 @@ final class DoctrineContext implements Context, ClientAwareInterface, StorageAwa
 {
     use ClientAwareTrait;
     use StorageAwareTrait;
+
+    /**
+     * @Given /^the following records in the repository "([^"]*)"$/
+     */
+    public function theFollowingRecordsInTheRepository($entity, YamlStringNode $records)
+    {
+        $manager = $this->getDoctrine()->getManager();
+        $accessor = new PropertyAccessor();
+        foreach ($records->toArray() as $record) {
+            $instance = new $entity;
+            foreach ($record as $prop => $value) {
+                $accessor->setValue($instance, $prop, $value);
+            }
+
+            $manager->persist($instance);
+        }
+        $manager->flush();
+    }
 
     /**
      * Use a YAML syntax to create a criteria to match a record in given repository
