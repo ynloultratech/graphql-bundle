@@ -34,6 +34,16 @@ final class DoctrineContext implements Context, ClientAwareInterface, StorageAwa
     use StorageAwareTrait;
 
     /**
+     * Use a YAML syntax to populate a repository with multiple records
+     *
+     * Example: Given the following records in the repository "App\Entity\Post"
+     *          """
+     *          - title: "Welcome"
+     *            body: "Welcome to web page"
+     *          - title: "Another Post"
+     *            body: "This is another post"
+     *          """
+     *
      * @Given /^the following records in the repository "([^"]*)"$/
      */
     public function theFollowingRecordsInTheRepository($entity, YamlStringNode $records)
@@ -41,7 +51,7 @@ final class DoctrineContext implements Context, ClientAwareInterface, StorageAwa
         $manager = $this->getDoctrine()->getManager();
         $accessor = new PropertyAccessor();
         foreach ($records->toArray() as $record) {
-            $instance = new $entity;
+            $instance = new $entity();
             foreach ($record as $prop => $value) {
                 $accessor->setValue($instance, $prop, $value);
             }
