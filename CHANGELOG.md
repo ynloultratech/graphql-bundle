@@ -1,3 +1,8 @@
+v1.3.4 - Unreleased
+----
+ *  Fix bugs with symfony dependencies >= 4.2
+ *  Add behat step to populate a repository during tests
+ 
 v1.3.3 - 2019-04-24
 ----
  *  Fix bug with subscription prefix
