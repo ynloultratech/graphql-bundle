@@ -51,6 +51,28 @@ final class DatabaseContext implements Context, ClientAwareInterface
     }
 
     /**
+     * Use a YAML syntax to create a criteria to match many records in given table
+     *
+     * Example: Then should exist in table "post" a record matching:
+     *   """
+     *   - title: "Welcome"
+     *     body: "Welcome to web page"
+     *   - title: "Another Post"
+     *     body: "This is another Post"
+     *   """
+     *
+     *
+     * @Given /^should exist in table "([^"]*)" records matching:$/
+     */
+    public function shouldExistInTableRecordsMatching($table, YamlStringNode $criteria)
+    {
+        foreach ($criteria->toArray() as $row) {
+            $count = $this->countRecordsInTableMatching($table, $row);
+            Assert::assertEquals(1, $count, sprintf('Does not exist any record in the database "%s" matching given conditions', $table));
+        }
+    }
+
+    /**
      * Use a YAML syntax to create a criteria to not match a record in given table
      *
      * Example: Then should not exist in table "post" a record matching:

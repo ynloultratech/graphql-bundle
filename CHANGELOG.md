@@ -2,6 +2,7 @@ v1.3.4 - Unreleased
 ----
  *  Fix bugs with symfony dependencies >= 4.2
  *  Add behat step to populate a repository during tests
+ *  Add behat step to verify if multiple records exists at once
  
 v1.3.3 - 2019-04-24
 ----
