@@ -13,6 +13,7 @@ namespace Ynlo\GraphQLBundle\Type;
 use GraphQL\Error\Error;
 use GraphQL\Language\AST\StringValueNode;
 use GraphQL\Type\Definition\ScalarType;
+use GraphQL\Utils\Utils;
 
 /**
  * Class DateType
