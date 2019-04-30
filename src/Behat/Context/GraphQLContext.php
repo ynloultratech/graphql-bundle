@@ -110,6 +110,9 @@ final class GraphQLContext implements Context, ClientAwareInterface
      */
     public function theOperationNamedInFile($queryName, $file)
     {
+        // TODO: add support for fragments
+        // if a fragment is not used in some operation in the same file a error is thrown
+
         $this->theOperationInFile($file);
         $this->operationName = $queryName;
         if ($this->client->getGraphQL()) {
