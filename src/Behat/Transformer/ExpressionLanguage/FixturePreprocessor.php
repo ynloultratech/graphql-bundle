@@ -38,20 +38,22 @@ class FixturePreprocessor implements ExpressionPreprocessorInterface
     public function setUp(ExpressionLanguage $el, string &$expression, array &$values)
     {
         // parse fixtures IDs
-        preg_match_all('/#([\w\/\\-]+)/', $expression, $matches);
+        preg_match_all('/#([\w\/\\\\-]+)/', $expression, $matches);
         if ($matches[0] ?? false) {
             foreach ($matches[0] as $index => $match) {
-                $expression = preg_replace('/#([\w\/\\-]+)/', '$1_id', $expression);
-                $values[$matches[1][$index].'_id'] = $this->fixtureManager->getFixtureGlobalId($matches[1][$index]);
+                $expression = preg_replace('/#([\w\/\\\\-]+)/', '$1_id', $match);
+                $expression = preg_replace('/[\/\\\\-]/', '_', $expression); // replace invalid chars
+                $values[preg_replace('/[\/\\\\-]/', '_', $matches[1][$index]).'_id'] = $this->fixtureManager->getFixtureGlobalId($matches[1][$index]);
             }
         }
 
         // parse fixtures references
-        preg_match_all('/@([\w\/\\-]+)/', $expression, $matches);
+        preg_match_all('/@([\w\/\\\\-]+)/', $expression, $matches);
         if ($matches[0] ?? false) {
             foreach ($matches[0] as $index => $match) {
-                $expression = preg_replace('/@([\w\/\\-]+)/', '$1', $expression);
-                $values[$matches[1][$index]] = $this->fixtureManager->getFixture($matches[1][$index]);
+                $expression = preg_replace('/@([\w\/\\\\-]+)/', '$1', $expression);
+                $expression = preg_replace('/[\/\\\\-]/', '_', $expression); // replace invalid chars
+                $values[preg_replace('/[\/\\\\-]/', '_', $matches[1][$index])] = $this->fixtureManager->getFixture($matches[1][$index]);
             }
         }
     }
