@@ -4,6 +4,7 @@ v1.3.4 - Unreleased
  *  Add behat step to populate a repository during tests
  *  Add behat step to verify if multiple records exists at once
  *  Fix bug with fixtures names containing special chars like `/\-_`
+ *  Add form type `NodeCollectionType` to allow update collections in a single request
  
 v1.3.3 - 2019-04-24
 ----
