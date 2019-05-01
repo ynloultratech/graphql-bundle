@@ -114,7 +114,11 @@ final class DatabaseContext implements Context, ClientAwareInterface
             if ($where) {
                 $where .= ' AND ';
             }
-            $where .= sprintf('%s = :%s', $field, $field);
+            if ($vale === null) {
+                $where .= sprintf('%s IS NULL', $field);
+            } else {
+                $where .= sprintf('%s = :%s', $field, $field);
+            }
         }
         $query = sprintf('SELECT count(*) AS records FROM %s WHERE %s', $table, $where);
 
