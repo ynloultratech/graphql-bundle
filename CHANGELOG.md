@@ -1,4 +1,4 @@
-v1.3.4 - Unreleased
+v1.3.4 - 2019-05-03
 ----
  *  Fix bugs with symfony dependencies >= 4.2
  *  Add behat step to populate a repository during tests
