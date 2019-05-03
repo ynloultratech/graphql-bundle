@@ -5,6 +5,8 @@ v1.3.4 - Unreleased
  *  Add behat step to verify if multiple records exists at once
  *  Fix bug with fixtures names containing special chars like `/\-_`
  *  Add form type `NodeCollectionType` to allow update collections in a single request
+ *  Throw BadRequest exception when invalid argument type is given to a resolver
+ *  Throw NotFound exception when invalid node ID is given
  
 v1.3.3 - 2019-04-24
 ----

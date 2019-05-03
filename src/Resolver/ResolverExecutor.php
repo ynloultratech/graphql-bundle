@@ -11,6 +11,7 @@
 namespace Ynlo\GraphQLBundle\Resolver;
 
 use Doctrine\Common\Util\ClassUtils;
+use Doctrine\ORM\EntityNotFoundException;
 use GraphQL\Type\Definition\ResolveInfo;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
@@ -26,9 +27,12 @@ use Ynlo\GraphQLBundle\Definition\HasExtensionsInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Definition\UnionDefinition;
 use Ynlo\GraphQLBundle\Events\EventDispatcherAwareInterface;
+use Ynlo\GraphQLBundle\Exception\Controlled\BadRequestError;
+use Ynlo\GraphQLBundle\Exception\Controlled\NotFoundError;
 use Ynlo\GraphQLBundle\Extension\ExtensionInterface;
 use Ynlo\GraphQLBundle\Extension\ExtensionManager;
 use Ynlo\GraphQLBundle\Extension\ExtensionsAwareInterface;
+use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Subscription\AsynchronousJobInterface;
 use Ynlo\GraphQLBundle\Subscription\FilteredSubscriptionInterface;
 use Ynlo\GraphQLBundle\Subscription\Subscriber;
@@ -332,6 +336,26 @@ class ResolverExecutor implements ContainerAwareInterface
             }
         }
 
+        // verify required arguments and types
+        foreach ($method->getParameters() as $index => $parameter) {
+            $givenValue = $orderedArguments[$index] ?? null;
+            // does not allow null on required arguments
+            if (null === $givenValue && !$parameter->allowsNull()) {
+                throw new BadRequestError();
+            }
+
+            // does not allow different class to expected class
+            $expectedType = $parameter->getType();
+            if ($expectedType && !$expectedType->isBuiltin() && !is_a($givenValue, $expectedType->getName(), true)) {
+                throw new BadRequestError();
+            }
+
+            // does not allow different scalar type
+            if ($expectedType && $expectedType->isBuiltin() && gettype($givenValue) !== $expectedType->getName()) {
+                throw new BadRequestError();
+            }
+        }
+
         return $orderedArguments;
     }
 
@@ -348,16 +372,35 @@ class ResolverExecutor implements ContainerAwareInterface
                 $idsArray = [];
                 foreach ($value as $id) {
                     if ($id) {
-                        $idsArray[] = IDEncoder::decode($id);
+                        $idsArray[] = $this->decodeID($id);
                     }
                 }
                 $value = $idsArray;
             } else {
-                $value = IDEncoder::decode($value);
+                $value = $this->decodeID($value);
             }
         }
 
         return $value;
+    }
+
+    /**
+     * @param string $globalId
+     *
+     * @return NodeInterface
+     */
+    private function decodeID(string $globalId): NodeInterface
+    {
+        try {
+            $node = IDEncoder::decode($globalId);
+            if (!$node) {
+                throw new EntityNotFoundException();
+            }
+
+            return $node;
+        } catch (EntityNotFoundException $exception) {
+            throw new NotFoundError(sprintf('The given Node "%s" does not exists.', $globalId));
+        }
     }
 
     /**
