@@ -343,17 +343,6 @@ class ResolverExecutor implements ContainerAwareInterface
             if (null === $givenValue && !$parameter->allowsNull()) {
                 throw new BadRequestError();
             }
-
-            // does not allow different class to expected class
-            $expectedType = $parameter->getType();
-            if ($expectedType && !$expectedType->isBuiltin() && !is_a($givenValue, $expectedType->getName(), true)) {
-                throw new BadRequestError();
-            }
-
-            // does not allow different scalar type
-            if ($expectedType && $expectedType->isBuiltin() && gettype($givenValue) !== $expectedType->getName()) {
-                throw new BadRequestError();
-            }
         }
 
         return $orderedArguments;

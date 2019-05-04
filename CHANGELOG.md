@@ -1,3 +1,7 @@
+v1.3.5 - Unreleased
+----
+ * Fix type verification in resolver arguments, GraphQL Schema must do this
+
 v1.3.4 - 2019-05-03
 ----
  *  Fix bugs with symfony dependencies >= 4.2
