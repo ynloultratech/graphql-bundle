@@ -46,7 +46,7 @@ class RedisPubSubHandler implements PubSubHandlerInterface
         // the timeout is specified to avoid redis connection error after some time running the consumer
         // the `default_socket_timeout` to -1 like described here https://github.com/phpredis/phpredis/issues/70
         // can't be used because create a conflict with others sock open functions like used in Ynlo\GraphQLBundle\Subscription\SubscriptionManager::sendRequest
-        $this->consumer->connect($host, $port, 5, null, 0, 100000000);
+        $this->consumer->connect($host, $port, 0, null, 0, 100000000);
         $this->consumer->setOption(\Redis::OPT_PREFIX, $this->prefix);
     }
 
