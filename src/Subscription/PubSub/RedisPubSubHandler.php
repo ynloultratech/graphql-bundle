@@ -34,9 +34,6 @@ class RedisPubSubHandler implements PubSubHandlerInterface
      */
     public function __construct(array $config)
     {
-        // solution to fix phpredis connection error bug: https://github.com/phpredis/phpredis/issues/70
-        ini_set('default_socket_timeout', -1);
-
         $host = $config['host'] ?? 'localhost';
         $port = $config['port'] ?? 6379;
         $this->prefix = $config['prefix'] ?? 'GraphQLSubscription:';
@@ -46,7 +43,10 @@ class RedisPubSubHandler implements PubSubHandlerInterface
         $this->client->setOption(\Redis::OPT_PREFIX, $this->prefix);
 
         $this->consumer = new \Redis();
-        $this->consumer->connect($host, $port);
+        // the timeout is specified to avoid redis connection error after some time running the consumer
+        // the `default_socket_timeout` to -1 like described here https://github.com/phpredis/phpredis/issues/70
+        // can't be used because create a conflict with others sock open functions like used in Ynlo\GraphQLBundle\Subscription\SubscriptionManager::sendRequest
+        $this->consumer->connect($host, $port, 5, null, 0, 100000000);
         $this->consumer->setOption(\Redis::OPT_PREFIX, $this->prefix);
     }
 
