@@ -215,8 +215,8 @@ class SubscriptionManager
             if (!$buffer) {
                 break;
             }
+            $emptyResponse = false;
             if ($debug) {
-                $emptyResponse = false;
                 $output->write($buffer);
             }
         }
