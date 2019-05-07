@@ -13,6 +13,16 @@ namespace Ynlo\GraphQLBundle\Subscription\PubSub;
 class RedisPubSubHandler implements PubSubHandlerInterface
 {
     /**
+     * @var string
+     */
+    protected $redisHost;
+
+    /**
+     * @var string
+     */
+    protected $redisPort;
+
+    /**
      * @var \Redis
      */
     protected $client;
@@ -34,20 +44,13 @@ class RedisPubSubHandler implements PubSubHandlerInterface
      */
     public function __construct(array $config)
     {
-        $host = $config['host'] ?? 'localhost';
-        $port = $config['port'] ?? 6379;
+        $this->redisHost = $config['host'] ?? 'localhost';
+        $this->redisPort = $config['port'] ?? 6379;
         $this->prefix = $config['prefix'] ?? 'GraphQLSubscription:';
 
         $this->client = new \Redis();
-        $this->client->connect($host, $port);
+        $this->client->connect($this->redisHost, $this->redisPort);
         $this->client->setOption(\Redis::OPT_PREFIX, $this->prefix);
-
-        $this->consumer = new \Redis();
-        // the timeout is specified to avoid redis connection error after some time running the consumer
-        // the `default_socket_timeout` to -1 like described here https://github.com/phpredis/phpredis/issues/70
-        // can't be used because create a conflict with others sock open functions like used in Ynlo\GraphQLBundle\Subscription\SubscriptionManager::sendRequest
-        $this->consumer->connect($host, $port, 0, null, 0, 100000000);
-        $this->consumer->setOption(\Redis::OPT_PREFIX, $this->prefix);
     }
 
     /**
@@ -131,6 +134,13 @@ class RedisPubSubHandler implements PubSubHandlerInterface
      */
     public function consume(array $channels, callable $dispatch): void
     {
+        $this->consumer = new \Redis();
+        // the timeout is specified to avoid redis connection error after some time running the consumer
+        // the `default_socket_timeout` to -1 like described here https://github.com/phpredis/phpredis/issues/70
+        // can't be used because create a conflict with others sock open functions like used in Ynlo\GraphQLBundle\Subscription\SubscriptionManager::sendRequest
+        $this->consumer->connect($this->redisHost, $this->redisPort, 0, null, 0, 100000);
+        $this->consumer->setOption(\Redis::OPT_READ_TIMEOUT, 1000000);
+        $this->consumer->setOption(\Redis::OPT_PREFIX, $this->prefix);
         $this->consumer->subscribe(
             $channels,
             function (\Redis $redis, $chan, $event) use ($dispatch) {
