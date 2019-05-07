@@ -178,6 +178,9 @@ class SubscriptionManager
      */
     private function sendRequest(Request $originRequest, SubscriptionMessage $message, OutputInterface $output, bool $debug = false): void
     {
+        // TODO: execute this code ASYNC in order to send multiple request at the same time
+        // call fsockopen and not wait for response does not works as expected and sometimes does not trigger the subscription
+
         $host = $originRequest->getHost();
         $port = $originRequest->getPort();
         $path = $originRequest->getPathInfo();
@@ -206,17 +209,21 @@ class SubscriptionManager
         $out .= $body;
         fwrite($handle, $out);
 
-        if ($debug) {
-            /// in debug mode wait for response
-            $output->writeln(sprintf('[DEBUG] Getting response for subscription %s', $message->getId()));
-            while (true) {
-                $buffer = fgets($handle);
-                if (!$buffer) {
-                    break;
-                }
-
+        $emptyResponse = true;
+        while (true) {
+            $buffer = fgets($handle);
+            if (!$buffer) {
+                break;
+            }
+            if ($debug) {
+                $emptyResponse = false;
                 $output->write($buffer);
             }
+        }
+        if ($emptyResponse) {
+            $output->writeln(sprintf('[INFO] Empty response for subscription %s', $message->getId()));
+        } else {
+            $output->writeln(sprintf('[INFO] Response received successfully for subscription %s', $message->getId()));
         }
         fclose($handle);
     }
