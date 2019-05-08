@@ -277,14 +277,14 @@ class AllNodesWithPagination extends AllNodes
                     $searchArray = explode(' ', $search);
 
                     $partialAnd = new Andx();
-                    foreach ($searchArray as $q) {
-                        $q = trim($q);
-                        $partialAnd->add("$alias.$column LIKE '%$q%'");
+                    foreach ($searchArray as $index => $q) {
+                        $partialAnd->add("$alias.$column LIKE :query_search_$index");
+                        $qb->setParameter("query_search_$index", '%'.addcslashes($q, '%_').'%');
                     }
                     $orx->add($partialAnd);
                 } else {
-                    $q = trim($search);
-                    $orx->add("$alias.$column LIKE '$q'");
+                    $orx->add("$alias.$column LIKE :query_search");
+                    $qb->setParameter('query_search', trim($search));
                 }
             }
 
