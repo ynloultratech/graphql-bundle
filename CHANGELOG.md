@@ -3,6 +3,7 @@ v1.3.5 - Unreleased
  * Fix type verification in resolver arguments, GraphQL Schema must do this
  * Fix bug with redis pub/sub handler and socket timeouts
  * Fix bug when use search in node pagination with  chars like `'%_`
+ * Add support to use native javascript date objects as input for dates
 
 v1.3.4 - 2019-05-03
 ----
