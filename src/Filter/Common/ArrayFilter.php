@@ -37,6 +37,9 @@ class ArrayFilter implements FilterInterface
         $entity = $context->getNode()->getClass();
         $metadata = $qb->getEntityManager()->getClassMetadata($entity);
         $column = $context->getField()->getOriginName();
+        if ($context->getField()->getOriginType() === 'ReflectionMethod') {
+            $column = $context->getField()->getName();
+        }
 
         if (!$metadata->hasField($column)) {
             throw new \RuntimeException(sprintf('There are not valid column in %s called %s.', $entity, $column));

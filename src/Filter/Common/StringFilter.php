@@ -36,6 +36,9 @@ class StringFilter implements FilterInterface
 
         $alias = $qb->getRootAliases()[0];
         $column = $context->getField()->getOriginName();
+        if ($context->getField()->getOriginType() === 'ReflectionMethod') {
+            $column = $context->getField()->getName();
+        }
         switch ($condition->getOp()) {
             case StringComparisonOperatorType::EQUAL:
                 $qb->andWhere("{$alias}.{$column} = '{$condition->getValue()}'");

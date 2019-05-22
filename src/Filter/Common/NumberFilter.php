@@ -36,6 +36,9 @@ class NumberFilter implements FilterInterface
 
         $alias = $qb->getRootAliases()[0];
         $column = $context->getField()->getOriginName();
+        if ($context->getField()->getOriginType() === 'ReflectionMethod') {
+            $column = $context->getField()->getName();
+        }
         switch ($condition->getOp()) {
             case NumberComparisonOperatorType::EQ:
                 $qb->andWhere("{$alias}.{$column} = {$condition->getValue()}");

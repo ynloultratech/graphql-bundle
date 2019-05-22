@@ -31,6 +31,9 @@ class BooleanFilter implements FilterInterface
 
         $alias = $qb->getRootAliases()[0];
         $column = $context->getField()->getOriginName();
+        if ($context->getField()->getOriginType() === 'ReflectionMethod') {
+            $column = $context->getField()->getName();
+        }
 
         $condition = (int) $condition;
         $qb->andWhere("{$alias}.{$column} = $condition");

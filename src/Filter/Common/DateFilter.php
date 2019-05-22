@@ -33,6 +33,9 @@ class DateFilter implements FilterInterface
 
         $alias = $qb->getRootAliases()[0];
         $column = $context->getField()->getOriginName();
+        if ($context->getField()->getOriginType() === 'ReflectionMethod') {
+            $column = $context->getField()->getName();
+        }
         $operator = null;
 
         $date = $condition->getDate()->format('Y-m-d H:i:s');
