@@ -307,13 +307,10 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
     {
         $pathArray = [$path];
 
+        $path = str_replace([']', '['], [null, '.'], $path);
+
         if (strpos($path, '.') !== false) { // object.child.property
             $pathArray = explode('.', $path);
-        }
-
-        if (strpos($path, '[') !== false) { //[array][child][property]
-            $path = str_replace(']', null, $path);
-            $pathArray = explode('[', $path);
         }
 
         if (in_array($pathArray[0], ['data', 'children'])) {

@@ -5,6 +5,7 @@ v1.3.5 - Unreleased
  * Fix bug when use search in node pagination with  chars like `'%_`
  * Add support to use native javascript date objects as input for dates
  * Fix bug with list filters for interface fields
+ * Fix bug with validation of collection fields
 
 v1.3.4 - 2019-05-03
 ----
