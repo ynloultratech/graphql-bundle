@@ -277,7 +277,6 @@ services:
         arguments: ['@kernel','@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry']
         tags:
             - { name: 'kernel.cache_warmer', priority: 200 }
-            - { name: 'kernel.event_subscriber', priority: 200 }
 
     Ynlo\GraphQLBundle\Resolver\DeferredBuffer:
         public: true

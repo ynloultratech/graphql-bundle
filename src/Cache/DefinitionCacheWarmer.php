@@ -10,17 +10,15 @@
 
 namespace Ynlo\GraphQLBundle\Cache;
 
-use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmer;
 use Symfony\Component\HttpKernel\Kernel;
-use Symfony\Component\HttpKernel\KernelEvents;
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
 
 /**
  * DefinitionCacheWarmer
  */
-class DefinitionCacheWarmer extends CacheWarmer implements EventSubscriberInterface
+class DefinitionCacheWarmer extends CacheWarmer
 {
     /**
      * @var DefinitionRegistry
@@ -62,27 +60,8 @@ class DefinitionCacheWarmer extends CacheWarmer implements EventSubscriberInterf
     }
 
     /**
-     * warmUp the cache on request
-     * NOTE: this behavior its switched in the YnloGraphQLExtension
+     * @return bool
      */
-    public function warmUpOnEveryRequest()
-    {
-        if (!$this->isFreshCache()) {
-            $this->warmUp(null);
-            $this->updateControlFile();
-        }
-    }
-
-    /**
-     * {@inheritDoc}
-     */
-    public static function getSubscribedEvents()
-    {
-        return [
-            KernelEvents::REQUEST => 'warmUpOnEveryRequest',
-        ];
-    }
-
     protected function isFreshCache()
     {
         if (!file_exists($this->getControlFileName())) {

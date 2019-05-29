@@ -7,6 +7,8 @@ v1.4.0 - Unreleased
  * Fix bug with list filters for interface fields
  * Fix bug with validation of collection fields
  * Refactoring filters for easy extends & overwrite
+ * Improve performance during development (removed live schema refresh).
+ Now the schema should be refreshed manually using a `cache:clear` or `cache:warmup`
 
 v1.3.4 - 2019-05-03
 ----
