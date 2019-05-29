@@ -39,6 +39,18 @@ class StringFilter implements FilterInterface
         if ($context->getField()->getOriginType() === 'ReflectionMethod') {
             $column = $context->getField()->getName();
         }
+
+        $this->applyFilter($qb, $alias, $column, $condition);
+    }
+
+    /**
+     * @param QueryBuilder               $qb
+     * @param string                     $alias
+     * @param string                     $column
+     * @param StringComparisonExpression $condition
+     */
+    protected function applyFilter(QueryBuilder $qb, $alias, $column, StringComparisonExpression $condition): void
+    {
         switch ($condition->getOp()) {
             case StringComparisonOperatorType::EQUAL:
                 $qb->andWhere("{$alias}.{$column} = '{$condition->getValue()}'");

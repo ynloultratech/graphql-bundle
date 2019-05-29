@@ -39,6 +39,18 @@ class NumberFilter implements FilterInterface
         if ($context->getField()->getOriginType() === 'ReflectionMethod') {
             $column = $context->getField()->getName();
         }
+
+        $this->applyFilter($qb, $alias, $column, $condition);
+    }
+
+    /**
+     * @param QueryBuilder              $qb
+     * @param string                    $alias
+     * @param string                    $column
+     * @param FloatComparisonExpression $condition
+     */
+    protected function applyFilter(QueryBuilder $qb, $alias, $column, FloatComparisonExpression $condition): void
+    {
         switch ($condition->getOp()) {
             case NumberComparisonOperatorType::EQ:
                 $qb->andWhere("{$alias}.{$column} = {$condition->getValue()}");

@@ -1,4 +1,4 @@
-v1.3.5 - Unreleased
+v1.4.0 - Unreleased
 ----
  * Fix type verification in resolver arguments, GraphQL Schema must do this
  * Fix bug with redis pub/sub handler and socket timeouts
@@ -6,6 +6,7 @@ v1.3.5 - Unreleased
  * Add support to use native javascript date objects as input for dates
  * Fix bug with list filters for interface fields
  * Fix bug with validation of collection fields
+ * Refactoring filters for easy extends & overwrite
 
 v1.3.4 - 2019-05-03
 ----

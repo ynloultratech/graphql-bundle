@@ -36,6 +36,18 @@ class EnumFilter implements FilterInterface
         if ($context->getField()->getOriginType() === 'ReflectionMethod') {
             $column = $context->getField()->getName();
         }
+
+        $this->applyFilter($qb, $alias, $column, $condition);
+    }
+
+    /**
+     * @param QueryBuilder             $qb
+     * @param string                   $alias
+     * @param string                   $column
+     * @param EnumComparisonExpression $condition
+     */
+    protected function applyFilter(QueryBuilder $qb, $alias, $column, EnumComparisonExpression $condition): void
+    {
         switch ($condition->getOp()) {
             case NodeComparisonOperatorType::IN:
                 $qb->andWhere($qb->expr()->in("{$alias}.{$column}", $condition->getValues()));

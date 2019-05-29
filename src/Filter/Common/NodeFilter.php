@@ -49,6 +49,20 @@ class NodeFilter implements FilterInterface
 
         $association = $metadata->getAssociationMapping($column);
 
+        $alias = $qb->getRootAliases()[0];
+
+        $this->applyFilter($qb, $association['type'], $alias, $column, $condition);
+    }
+
+    /**
+     * @param QueryBuilder             $qb
+     * @param string                   $assocType
+     * @param string                   $alias
+     * @param string                   $column
+     * @param NodeComparisonExpression $condition
+     */
+    protected function applyFilter(QueryBuilder $qb, $assocType, $alias, $column, NodeComparisonExpression $condition): void
+    {
         $ids = [];
         foreach ($condition->getNodes() as $node) {
             if ($node instanceof NodeInterface) {
@@ -57,9 +71,7 @@ class NodeFilter implements FilterInterface
         }
         $ids = array_filter($ids);
 
-        $alias = $qb->getRootAliases()[0];
-
-        switch ($association['type']) {
+        switch ($assocType) {
             case ClassMetadataInfo::MANY_TO_ONE:
             case ClassMetadataInfo::ONE_TO_ONE:
             case ClassMetadataInfo::ONE_TO_MANY:

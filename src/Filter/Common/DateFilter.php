@@ -36,8 +36,18 @@ class DateFilter implements FilterInterface
         if ($context->getField()->getOriginType() === 'ReflectionMethod') {
             $column = $context->getField()->getName();
         }
-        $operator = null;
 
+        $this->applyFilter($qb, $alias, $column, $condition);
+    }
+
+    /**
+     * @param QueryBuilder             $qb
+     * @param string                   $alias
+     * @param string                   $column
+     * @param DateComparisonExpression $condition
+     */
+    protected function applyFilter(QueryBuilder $qb, $alias, $column, DateComparisonExpression $condition): void
+    {
         $date = $condition->getDate()->format('Y-m-d H:i:s');
         $maxDate = $date;
         if ($condition->getMaxDate()) {
