@@ -44,7 +44,7 @@ class DateTimeType extends ScalarType
     {
         // Assuming internal representation of email is always correct:
         if ($value instanceof \DateTime) {
-            return $value->format('c');
+            return $value->format(DATE_ATOM);
         }
 
         return $value;
@@ -72,7 +72,7 @@ class DateTimeType extends ScalarType
         }
 
         if (!$date) {
-            throw new Error(sprintf("Cannot represent following value as date: %s", Utils::printSafeJson($value)));
+            throw new Error(sprintf('Cannot represent following value as date: %s', Utils::printSafeJson($value)));
         }
 
         return $date;
@@ -86,10 +86,10 @@ class DateTimeType extends ScalarType
         if (!$valueNode instanceof StringValueNode) {
             throw new Error(sprintf('Query error: Can only parse strings got: %s', $valueNode->kind), [$valueNode]);
         }
-        if (!$date = \DateTime::createFromFormat('c', $valueNode->value)) {
-            throw new Error("Not a valid date", [$valueNode]);
+        if (!$date = \DateTime::createFromFormat(DATE_ATOM, $valueNode->value)) {
+            throw new Error('Not a valid date', [$valueNode]);
         }
 
-        return $valueNode->value;
+        return $date;
     }
 }
