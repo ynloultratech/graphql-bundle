@@ -1,4 +1,8 @@
-v1.4.0 - Unreleased
+v1.4.1 - Unreleased
+----
+ * Fix bug with validation and property names
+ 
+v1.4.0 - 2019-05-30
 ----
  * Fix type verification in resolver arguments, GraphQL Schema must do this
  * Fix bug with redis pub/sub handler and socket timeouts
