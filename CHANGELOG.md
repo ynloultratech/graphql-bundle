@@ -1,4 +1,4 @@
-v1.4.1 - Unreleased
+v1.4.1 - 2019-06-04
 ----
  * Fix bug with validation and property names
  
