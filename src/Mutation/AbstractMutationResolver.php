@@ -322,6 +322,8 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
 
         if (strpos($path, '.') !== false) { // object.child.property
             $pathArray = explode('.', $path);
+        } else {
+            $pathArray = [$path];
         }
 
         if (in_array($pathArray[0], ['data', 'children'])) {
