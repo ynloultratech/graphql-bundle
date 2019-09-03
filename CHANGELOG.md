@@ -1,3 +1,8 @@
+v1.4.2 - (Unreleased)
+----
+ * Support enum comparison in custom filters
+ * Some bugs fixed
+  
 v1.4.1 - 2019-06-04
 ----
  * Fix bug with validation and property names

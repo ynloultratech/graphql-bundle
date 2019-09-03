@@ -16,12 +16,14 @@ use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Ynlo\GraphQLBundle\Annotation\Filter;
 use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
+use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\ImplementorInterface;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\NodeAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Filter\FilterResolverInterface;
+use Ynlo\GraphQLBundle\Util\TypeUtil;
 
 /**
  * Resolve custom filters using naming convention.
@@ -111,6 +113,22 @@ class NamingConventionFilterResolver implements FilterResolverInterface
                     if ($filter) {
                         $filter->resolver = $fullyClassName;
                         $filter->name = $filter->name ?: $name;
+
+                        // convert standard defined type to advanced mode
+                        // example [Enum] => EnumComparisonExpression
+                        if ($filter->type) {
+                            $field = new FieldDefinition();
+                            $field->setName($filter->name);
+                            $field->setType(TypeUtil::normalize($filter->type));
+                            $field->setNonNull(TypeUtil::isTypeNonNull($filter->type));
+                            $field->setList(TypeUtil::isTypeList($filter->type));
+                            $field->setNonNullList(TypeUtil::isTypeNonNullList($filter->type));
+                            $guessedFilter = FilterUtil::createFilter($endpoint, $field);
+                            if ($guessedFilter->type) {
+                                $filter->type = $guessedFilter->type;
+                            }
+                        }
+
                         if (!$filter->type && $node->hasField($filter->name)) {
                             $guessedFilter = FilterUtil::createFilter($endpoint, $node->getField($filter->name));
                             $filter->type = $guessedFilter->type;
