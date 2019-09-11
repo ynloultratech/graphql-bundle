@@ -48,7 +48,7 @@ class StringFilterTest extends AbstractFilterTest
     public function testDefaultFilter()
     {
         (new StringFilter())($this->context, $this->qb, $this->condition);
-        self::assertEquals('SELECT p FROM Post p WHERE p.fieldName = \'Lorem\'', $this->qb->getDQL());
+        self::assertEquals('SELECT p FROM Post p WHERE p.fieldName LIKE \'%Lorem%\'', $this->qb->getDQL());
     }
 
     public function testEqualFilter()
