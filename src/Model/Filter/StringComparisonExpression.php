@@ -23,7 +23,7 @@ class StringComparisonExpression
      *
      * @GraphQL\Field(type="StringComparisonOperator", description="Comparison operator, default value: `CONTAINS`")
      */
-    private $op = StringComparisonOperatorType::EQUAL;
+    private $op = StringComparisonOperatorType::CONTAINS;
 
     /**
      * @var string|null
