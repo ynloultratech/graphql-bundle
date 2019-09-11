@@ -30,12 +30,34 @@ class BooleanFilter implements FilterInterface
         }
 
         $alias = $qb->getRootAliases()[0];
+        $condition = (int) $condition;
+        $this->applyFilter($qb, $alias, $this->resolveColumn($context), $condition);
+    }
+
+    /**
+     * @param FilterContext $context
+     *
+     * @return string
+     */
+    protected function resolveColumn(FilterContext $context): string
+    {
         $column = $context->getField()->getOriginName();
         if ($context->getField()->getOriginType() === 'ReflectionMethod') {
             $column = $context->getField()->getName();
         }
 
-        $condition = (int) $condition;
-        $qb->andWhere("{$alias}.{$column} = $condition");
+        return $column;
+    }
+
+    /**
+     * @param QueryBuilder $qb
+     * @param string       $alias
+     * @param string       $column
+     * @param bool         $condition
+     */
+    protected function applyFilter(QueryBuilder $qb, $alias, $column, bool $condition): void
+    {
+        $value = (int) $condition;
+        $qb->andWhere("{$alias}.{$column} = $value");
     }
 }
