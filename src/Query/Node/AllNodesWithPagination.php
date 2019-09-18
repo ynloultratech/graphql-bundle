@@ -223,7 +223,7 @@ class AllNodesWithPagination extends AllNodes
                 $searchColumn = $field->getName();
             }
 
-            if ($metadata->hasField($field->getOriginName())) {
+            if (!$searchColumn && $metadata->hasField($field->getOriginName())) {
                 $searchColumn = $field->getOriginName();
             }
 
