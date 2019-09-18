@@ -15,6 +15,8 @@ use Doctrine\ORM\Query\Expr\Andx;
 use Doctrine\ORM\Query\Expr\Orx;
 use Doctrine\ORM\QueryBuilder;
 use GraphQL\Error\Error;
+use Ynlo\GraphQLBundle\Definition\EnumDefinition;
+use Ynlo\GraphQLBundle\Definition\EnumValueDefinition;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\Plugin\PaginationDefinitionPlugin;
@@ -23,6 +25,10 @@ use Ynlo\GraphQLBundle\Filter\FilterInterface;
 use Ynlo\GraphQLBundle\Model\ConnectionInterface;
 use Ynlo\GraphQLBundle\Model\NodeConnection;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
+use Ynlo\GraphQLBundle\Model\OrderBy;
+use Ynlo\GraphQLBundle\OrderBy\Common\OrderBySimpleField;
+use Ynlo\GraphQLBundle\OrderBy\OrderByContext;
+use Ynlo\GraphQLBundle\OrderBy\OrderByInterface;
 use Ynlo\GraphQLBundle\Pagination\DoctrineCursorPaginatorInterface;
 use Ynlo\GraphQLBundle\Pagination\DoctrineOffsetCursorPaginator;
 use Ynlo\GraphQLBundle\Pagination\PaginationRequest;
@@ -157,6 +163,48 @@ class AllNodesWithPagination extends AllNodes
                     $qb->andWhere($qb->expr()->isNull($entityField));
                     break;
             }
+        }
+    }
+
+    /**
+     * @param QueryBuilder    $qb
+     * @param array|OrderBy[] $orderBy
+     *
+     * @throws Error
+     */
+    protected function applyOrderBy(QueryBuilder $qb, $orderBy)
+    {
+        $query = $this->queryDefinition;
+
+        $orderByType = $this->getContext()->getDefinition()->getArgument('order')->getType();
+
+        /** @var InputObjectDefinition $orderByDefinition */
+        $orderByDefinition = $this->getContext()->getEndpoint()->getType($orderByType);
+        $orderByFieldName = $orderByDefinition->getField('field')->getType();
+        /** @var EnumDefinition $orderByFieldDefinition */
+        $orderByFieldDefinition = $this->getContext()->getEndpoint()->getType($orderByFieldName);
+        /** @var ObjectDefinition $node */
+        $node = $this->getContext()->getEndpoint()->getType($this->getContext()->getDefinition()->getNode());
+
+        foreach ($orderBy as $order) {
+            /** @var EnumValueDefinition $enumValueDeifinition */
+            $enumValueDefinition = $orderByFieldDefinition->getValues()[$order->getField()];
+            $orderByResolver = $enumValueDefinition->getMeta('resolver', OrderBySimpleField::class);
+
+            //set with local name
+            $order->setField($enumValueDefinition->getMeta('field', $order->getField()));
+
+            /** @var OrderByInterface $orderByInstance */
+            $orderByInstance = (new \ReflectionClass($orderByResolver))->newInstanceWithoutConstructor();
+
+            if ($order->getField() && $node->hasField($order->getField())) {
+                $relatedField = $node->getField($order->getField());
+                $context = new OrderByContext($this->getContext()->getEndpoint(), $node, $relatedField);
+            } else {
+                $context = new OrderByContext($this->getContext()->getEndpoint(), $node);
+            }
+
+            $orderByInstance($context, $qb, $this->queryAlias, $order);
         }
     }
 

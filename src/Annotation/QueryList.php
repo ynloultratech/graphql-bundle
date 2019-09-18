@@ -54,6 +54,14 @@ final class QueryList
     public $searchFields = ['*'];
 
     /**
+     * Example:
+     *
+     * - *: to keep all default order fields
+     * - custom: to add custom orderBy using \Ynlo\GraphQLBundle\OrderBy\OrderByInterface
+     * - user.name: to add order by based on related entity field
+     *
+     * orderBy={"*", "custom": "App\OrderBy\OrderByCustom", "merchant":"user.name"}
+     *
      * @var array
      */
     public $orderBy = ['*'];

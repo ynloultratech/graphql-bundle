@@ -89,6 +89,8 @@ class AllNodes extends AbstractResolver
      * @param array|OrderBy[] $orderBy
      *
      * @throws Error
+     *
+     * @deprecated only All nodes with pagination should have orderBy
      */
     protected function applyOrderBy(QueryBuilder $qb, $orderBy)
     {

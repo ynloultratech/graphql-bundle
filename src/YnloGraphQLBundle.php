@@ -20,6 +20,7 @@ use Ynlo\GraphQLBundle\Error\Exporter\ErrorListExporterInterface;
 use Ynlo\GraphQLBundle\Extension\ExtensionInterface;
 use Ynlo\GraphQLBundle\Filter\FilterResolverInterface;
 use Ynlo\GraphQLBundle\Form\Input\InputFieldTypeGuesser;
+use Ynlo\GraphQLBundle\OrderBy\OrderByInterface;
 use Ynlo\GraphQLBundle\Type\Loader\TypeAutoLoader;
 use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 use Ynlo\GraphQLBundle\Util\IDEncoder;

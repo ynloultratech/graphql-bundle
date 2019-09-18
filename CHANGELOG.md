@@ -1,6 +1,7 @@
 v1.4.2 - (Unreleased)
 ----
  * Support enum comparison in custom filters
+ * Support for advanced `orderBy` in lists using custom resolver
  * Some bugs fixed
   
 v1.4.1 - 2019-06-04

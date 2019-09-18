@@ -29,6 +29,9 @@ use Ynlo\GraphQLBundle\DependencyInjection\BackwardCompatibilityAwareInterface;
 use Ynlo\GraphQLBundle\DependencyInjection\BackwardCompatibilityAwareTrait;
 use Ynlo\GraphQLBundle\Filter\FilterFactory;
 use Ynlo\GraphQLBundle\Model\OrderBy;
+use Ynlo\GraphQLBundle\OrderBy\Common\OrderByRelatedField;
+use Ynlo\GraphQLBundle\OrderBy\Common\OrderBySimpleField;
+use Ynlo\GraphQLBundle\OrderBy\OrderByInterface;
 use Ynlo\GraphQLBundle\Query\Node\AllNodesWithPagination;
 use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 use Ynlo\GraphQLBundle\Util\FieldOptionsHelper;
@@ -274,7 +277,11 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin implements Bac
                     continue;
                 }
 
-                $orderByFields->addValue(new EnumValueDefinition($field->getName()));
+                $definition = new EnumValueDefinition($field->getName());
+                $definition->setMeta('resolver', OrderBySimpleField::class);
+                $definition->setMeta('field', $field->getName());
+
+                $orderByFields->addValue($definition);
             }
 
             //configure custom orderBy and support for children, like "parentName" => parent.name
@@ -287,7 +294,23 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin implements Bac
                     continue;
                 }
 
-                $orderByFields->addValue(new EnumValueDefinition($fieldName, $config));
+                $field = $fieldName;
+                $resolver = OrderBySimpleField::class;
+                if (strpos($config, '.') !== false) {
+                    $resolver = OrderByRelatedField::class;
+                    $field = $config;
+                }
+
+                if (class_exists($config) && is_a($config, OrderByInterface::class, true)) {
+                    $resolver = $config;
+                    $field = $fieldName;
+                }
+
+                $definition = new EnumValueDefinition($fieldName);
+                $definition->setMeta('resolver', $resolver);
+                $definition->setMeta('field', $field);
+
+                $orderByFields->addValue($definition);
             }
 
             if ($orderByFields->getValues()) {
