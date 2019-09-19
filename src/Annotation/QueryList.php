@@ -59,8 +59,9 @@ final class QueryList
      * - *: to keep all default order fields
      * - custom: to add custom orderBy using \Ynlo\GraphQLBundle\OrderBy\OrderByInterface
      * - user.name: to add order by based on related entity field
+     * - alias: to export a column with a alias, like: "number":"id"
      *
-     * orderBy={"*", "custom": "App\OrderBy\OrderByCustom", "merchant":"user.name"}
+     * orderBy={"*", "custom": "App\OrderBy\OrderByCustom", "merchant":"user.name", "{alias}": "id"}
      *
      * @var array
      */

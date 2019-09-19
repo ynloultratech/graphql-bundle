@@ -299,6 +299,8 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin implements Bac
                 if (strpos($config, '.') !== false) {
                     $resolver = OrderByRelatedField::class;
                     $field = $config;
+                } elseif (is_string($config)) {
+                    $field = $config;
                 }
 
                 if (class_exists($config) && is_a($config, OrderByInterface::class, true)) {
