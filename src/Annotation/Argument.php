@@ -15,6 +15,8 @@ namespace Ynlo\GraphQLBundle\Annotation;
  */
 final class Argument
 {
+    public const UNDEFINED_ARGUMENT = 'UNDEFINED_ARGUMENT';
+
     /**
      * @var string
      */
@@ -31,9 +33,9 @@ final class Argument
     public $description;
 
     /**
-     * @var string
+     * @var mixed
      */
-    public $defaultValue;
+    public $defaultValue = self::UNDEFINED_ARGUMENT;
 
     /**
      * Use when public argument name does not match with method name

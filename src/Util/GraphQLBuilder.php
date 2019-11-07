@@ -12,6 +12,7 @@ namespace Ynlo\GraphQLBundle\Util;
 
 use GraphQL\Type\Definition\Type;
 use Symfony\Component\ExpressionLanguage\ExpressionLanguage;
+use Ynlo\GraphQLBundle\Annotation\Argument;
 use Ynlo\GraphQLBundle\Definition\ArgumentAwareInterface;
 use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
@@ -77,7 +78,7 @@ class GraphQLBuilder
             }
 
             $arg['type'] = $argType;
-            if ($argDefinition->getDefaultValue()) {
+            if ($argDefinition->getDefaultValue() !== Argument::UNDEFINED_ARGUMENT) {
                 $arg['defaultValue'] = $argDefinition->getDefaultValue();
             }
             $args[$argDefinition->getName()] = $arg;
