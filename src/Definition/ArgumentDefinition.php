@@ -10,6 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Definition;
 
+use Ynlo\GraphQLBundle\Annotation\Argument;
 use Ynlo\GraphQLBundle\Definition\Traits\DefinitionTrait;
 
 /**
@@ -40,9 +41,9 @@ class ArgumentDefinition implements DefinitionInterface
     protected $nonNullList = false;
 
     /**
-     * @var string
+     * @var mixed
      */
-    protected $defaultValue;
+    protected $defaultValue = Argument::UNDEFINED_ARGUMENT;
 
     /**
      * Use when public argument name does not match with method name
