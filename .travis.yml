@@ -25,6 +25,7 @@ cache:
     - .composer/cache
 
 before_install:
+  - phpenv config-add .travis.php.ini
   - alias composer=composer\ -n && composer self-update
   - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
 
