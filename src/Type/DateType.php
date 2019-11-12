@@ -62,6 +62,15 @@ class DateType extends ScalarType
     public function parseValue($value)
     {
         $date = \DateTime::createFromFormat('Y-m-d', $value);
+
+        // add support to convert native javascript date object
+        // Allow a client to use javascript Date object as input object of any date
+        // the javascript date is represented as string like: 1985-06-18T06:20:00.000Z
+        // NOTE: ony supported for input objects
+        if (!$date && preg_match('/Z$/', $value)) {
+            $date = \DateTime::createFromFormat('U', strtotime($value))->setTimezone(new \DateTimeZone(date_default_timezone_get()));
+        }
+
         if (!$date) {
             throw new Error(sprintf("Cannot represent following value as date: %s", Utils::printSafeJson($value)));
         }
