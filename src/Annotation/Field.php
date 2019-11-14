@@ -23,6 +23,11 @@ final class Field
     /**
      * @var string
      */
+    public $resolver;
+
+    /**
+     * @var string
+     */
     public $name;
 
     /**

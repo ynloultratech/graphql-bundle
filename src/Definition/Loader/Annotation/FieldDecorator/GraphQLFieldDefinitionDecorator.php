@@ -78,6 +78,10 @@ class GraphQLFieldDefinitionDecorator implements FieldDefinitionDecoratorInterfa
             $definition->setDeprecationReason($deprecationReason);
         }
 
+        if (null !== $customResolver = $this->resolveFieldCustomResolver($field)) {
+            $definition->setResolver($customResolver);
+        }
+
         if (null !== $complexity = $this->resolveFieldComplexity($field)) {
             $definition->setComplexity($complexity);
         }
@@ -129,6 +133,21 @@ class GraphQLFieldDefinitionDecorator implements FieldDefinitionDecoratorInterfa
         /** @var Annotation\Field $annotation */
         if ($annotation = $this->getFieldAnnotation($prop, Annotation\Field::class)) {
             return $annotation->options;
+        }
+
+        return null;
+    }
+
+    /**
+     * @param \ReflectionMethod|\ReflectionProperty $prop
+     *
+     * @return string|null
+     */
+    protected function resolveFieldCustomResolver($prop): ?string
+    {
+        /** @var Annotation\Field $annotation */
+        if ($annotation = $this->getFieldAnnotation($prop, Annotation\Field::class)) {
+            return $annotation->resolver;
         }
 
         return null;
