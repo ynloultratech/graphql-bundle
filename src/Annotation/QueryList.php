@@ -49,6 +49,13 @@ final class QueryList
     public $resolver;
 
     /**
+     * Example:
+     *  - *: to keep all default order fields
+     *  "name": "partial" - to search by given field using LIKE
+     *  "name": "exact" - to search by given field using exact match
+     *  "name, details": "partial" - add some fields at once
+     *  "category.name, category.parent.name": "partial" - find by parent field recursively
+     *
      * @var array
      */
     public $searchFields = ['*'];

@@ -310,8 +310,8 @@ class AllNodesWithPagination extends AllNodes
             $orx = new Orx();
             foreach ($columns as $column => $mode) {
                 $alias = $qb->getRootAliases()[0];
-                if (strpos($column, '.') !== false) {
-                    [$child, $column] = explode('.', $column);
+                while (strpos($column, '.') !== false) {
+                    [$child, $column] = explode('.', $column, 2);
                     $parentAlias = $alias;
                     $alias = 'searchJoin'.ucfirst($child);
                     if (!\in_array($alias, $joins, true)) {
