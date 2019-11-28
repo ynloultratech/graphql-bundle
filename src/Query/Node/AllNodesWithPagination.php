@@ -199,9 +199,9 @@ class AllNodesWithPagination extends AllNodes
 
             if ($order->getField() && $node->hasField($order->getField())) {
                 $relatedField = $node->getField($order->getField());
-                $context = new OrderByContext($this->getContext()->getEndpoint(), $node, $relatedField);
+                $context = new OrderByContext($this->getContext(), $node, $relatedField);
             } else {
-                $context = new OrderByContext($this->getContext()->getEndpoint(), $node);
+                $context = new OrderByContext($this->getContext(), $node);
             }
 
             $orderByInstance($context, $qb, $this->queryAlias, $order);
