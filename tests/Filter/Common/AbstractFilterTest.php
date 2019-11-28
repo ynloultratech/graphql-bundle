@@ -19,6 +19,7 @@ use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Filter\FilterContext;
+use Ynlo\GraphQLBundle\Resolver\ResolverContext;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\Post;
 
 abstract class AbstractFilterTest extends MockeryTestCase
@@ -44,12 +45,13 @@ abstract class AbstractFilterTest extends MockeryTestCase
     protected function setUp()
     {
         $endpoint = new Endpoint('default');
+        $context = new ResolverContext($endpoint);
         $node = new ObjectDefinition();
         $node->setClass(Post::class);
         $field = new FieldDefinition();
         $field->setName('fieldName');
         $field->setOriginName('fieldName');
-        $this->context = new FilterContext($endpoint, $node, $field);
+        $this->context = new FilterContext($context, $node, $field);
 
         $this->em = \Mockery::mock(EntityManagerInterface::class);
         $this->em->allows('getExpressionBuilder')->andReturn(new Expr());

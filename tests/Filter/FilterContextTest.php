@@ -15,15 +15,17 @@ use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Filter\FilterContext;
+use Ynlo\GraphQLBundle\Resolver\ResolverContext;
 
 class FilterContextTest extends TestCase
 {
     public function testContext()
     {
         $endpoint = new Endpoint('default');
+        $context = new ResolverContext($endpoint);
         $node = new ObjectDefinition();
         $field = new FieldDefinition();
-        $context = new FilterContext($endpoint, $node, $field);
+        $context = new FilterContext($context, $node, $field);
 
         self::assertEquals($endpoint, $context->getEndpoint());
         self::assertEquals($node, $context->getNode());

@@ -13,6 +13,7 @@ namespace Ynlo\GraphQLBundle\Filter;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\Resolver\ResolverContext;
 
 /**
  * Context where the filter is applied
@@ -20,9 +21,9 @@ use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 class FilterContext
 {
     /**
-     * @var Endpoint
+     * @var ResolverContext
      */
-    private $endpoint;
+    private $parentContext;
 
     /**
      * @var FieldsAwareDefinitionInterface
@@ -37,13 +38,13 @@ class FilterContext
     /**
      * FilterContext constructor.
      *
-     * @param Endpoint                       $endpoint
+     * @param ResolverContext                $parentContext
      * @param FieldsAwareDefinitionInterface $node
      * @param null|FieldDefinition           $field
      */
-    public function __construct(Endpoint $endpoint, FieldsAwareDefinitionInterface $node, ?FieldDefinition $field = null)
+    public function __construct(ResolverContext $parentContext, FieldsAwareDefinitionInterface $node, ?FieldDefinition $field = null)
     {
-        $this->endpoint = $endpoint;
+        $this->parentContext = $parentContext;
         $this->node = $node;
         $this->field = $field;
     }
@@ -53,7 +54,7 @@ class FilterContext
      */
     public function getEndpoint(): Endpoint
     {
-        return $this->endpoint;
+        return $this->parentContext->getEndpoint();
     }
 
     /**
@@ -78,5 +79,13 @@ class FilterContext
     public function setField(?FieldDefinition $field): void
     {
         $this->field = $field;
+    }
+
+    /**
+     * @return ResolverContext
+     */
+    public function getParentContext(): ResolverContext
+    {
+        return $this->parentContext;
     }
 }

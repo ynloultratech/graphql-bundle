@@ -234,9 +234,9 @@ class AllNodesWithPagination extends AllNodes
             $fieldName = $filterDefinition->getMeta('filter_field');
             if ($fieldName && $node->hasField($fieldName)) {
                 $relatedField = $node->getField($fieldName);
-                $filterContext = new FilterContext($this->getContext()->getEndpoint(), $node, $relatedField);
+                $filterContext = new FilterContext($this->getContext(), $node, $relatedField);
             } else {
-                $filterContext = new FilterContext($this->getContext()->getEndpoint(), $node);
+                $filterContext = new FilterContext($this->getContext(), $node);
             }
 
             $filter($filterContext, $qb, $condition);
