@@ -28,9 +28,16 @@ class StringComparisonExpression
     /**
      * @var string|null
      *
-     * @GraphQL\Field(type="string!", description="String value to search")
+     * @GraphQL\Field(type="string", description="String value to search")
      */
     private $value;
+
+    /**
+     * @var string[]
+     *
+     * @GraphQL\Field(type="[string!]", description="Multiple strings to search (using OR), retrieve records matching ONE OF this values.")
+     */
+    private $values = [];
 
     /**
      * @return null|string
@@ -62,5 +69,21 @@ class StringComparisonExpression
     public function setValue(?string $value): void
     {
         $this->value = $value;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getValues(): array
+    {
+        return $this->values;
+    }
+
+    /**
+     * @param string[] $values
+     */
+    public function setValues(array $values): void
+    {
+        $this->values = $values;
     }
 }

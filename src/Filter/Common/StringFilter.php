@@ -10,6 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Filter\Common;
 
+use Doctrine\ORM\Query\Expr\Orx;
 use Doctrine\ORM\QueryBuilder;
 use Ynlo\GraphQLBundle\Filter\FilterContext;
 use Ynlo\GraphQLBundle\Filter\FilterInterface;
@@ -53,16 +54,48 @@ class StringFilter implements FilterInterface
     {
         switch ($condition->getOp()) {
             case StringComparisonOperatorType::EQUAL:
-                $qb->andWhere("{$alias}.{$column} = '{$condition->getValue()}'");
+                if ($condition->getValue()) {
+                    $qb->andWhere("{$alias}.{$column} = '{$condition->getValue()}'");
+                } elseif ($condition->getValues()) {
+                    $orx = new Orx();
+                    foreach ($condition->getValues() as $value) {
+                        $orx->add("{$alias}.{$column} = '{$value}'");
+                    }
+                    $qb->andWhere($orx);
+                }
                 break;
             case StringComparisonOperatorType::CONTAINS:
-                $qb->andWhere("{$alias}.{$column} LIKE '%{$condition->getValue()}%'");
+                if ($condition->getValue()) {
+                    $qb->andWhere("{$alias}.{$column} LIKE '%{$condition->getValue()}%'");
+                } elseif ($condition->getValues()) {
+                    $orx = new Orx();
+                    foreach ($condition->getValues() as $value) {
+                        $orx->add("{$alias}.{$column} LIKE '%{$value}%'");
+                    }
+                    $qb->andWhere($orx);
+                }
                 break;
             case StringComparisonOperatorType::STARTS_WITH:
-                $qb->andWhere("{$alias}.{$column} LIKE '{$condition->getValue()}%'");
+                if ($condition->getValue()) {
+                    $qb->andWhere("{$alias}.{$column} LIKE '{$condition->getValue()}%'");
+                } elseif ($condition->getValues()) {
+                    $orx = new Orx();
+                    foreach ($condition->getValues() as $value) {
+                        $orx->add("{$alias}.{$column} LIKE '{$value}%'");
+                    }
+                    $qb->andWhere($orx);
+                }
                 break;
             case StringComparisonOperatorType::ENDS_WITH:
-                $qb->andWhere("{$alias}.{$column} LIKE '%{$condition->getValue()}'");
+                if ($condition->getValue()) {
+                    $qb->andWhere("{$alias}.{$column} LIKE '%{$condition->getValue()}'");
+                } elseif ($condition->getValues()) {
+                    $orx = new Orx();
+                    foreach ($condition->getValues() as $value) {
+                        $orx->add("{$alias}.{$column} LIKE '%{$value}'");
+                    }
+                    $qb->andWhere($orx);
+                }
                 break;
         }
     }
