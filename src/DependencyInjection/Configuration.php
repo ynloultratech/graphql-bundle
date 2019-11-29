@@ -52,7 +52,6 @@ class Configuration implements ConfigurationInterface
     {
         $subscriptions = $root->arrayNode('subscriptions')
                               ->info('Manage subscriptions settings')
-                              ->canBeDisabled()
                               ->addDefaultsIfNotSet()
                               ->children();
 

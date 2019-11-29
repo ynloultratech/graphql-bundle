@@ -62,11 +62,8 @@ class YnloGraphQLExtension extends Extension
         $container->setParameter('graphql.graphiql_auth_jwt', $config['graphiql']['authentication']['provider']['jwt'] ?? []);//DEPRECATED
         $container->setParameter('graphql.graphiql_auth_lexik_jwt', $config['graphiql']['authentication']['provider']['lexik_jwt'] ?? []);
         $container->setParameter('graphql.security.validation_rules', $config['security']['validation_rules'] ?? []);
-
-        if ($config['subscriptions']) {
-            $container->setParameter('graphql.subscriptions.redis', $config['subscriptions']['redis'] ?? []);
-            $container->setParameter('graphql.subscriptions.ttl', $config['subscriptions']['ttl'] ?? []);
-        }
+        $container->setParameter('graphql.subscriptions.redis', $config['subscriptions']['redis'] ?? []);
+        $container->setParameter('graphql.subscriptions.ttl', $config['subscriptions']['ttl'] ?? []);
 
         $endpointsConfig = [];
         $endpointsConfig['endpoints'] = $config['endpoints'] ?? [];
@@ -127,7 +124,7 @@ class YnloGraphQLExtension extends Extension
                   ->addMethodCall('setErrorHandler', [new Reference($config['error_handling']['handler'])]);
 
         $bundles = $container->getParameter('kernel.bundles');
-        if (isset($bundles['MercureBundle']) && $config['subscriptions']) {
+        if (isset($bundles['MercureBundle'])) {
             $mercureHub = $config['subscriptions']['mercure_hub'];
 
             $mercurePublisherReference = new Reference(sprintf('mercure.hub.%s.publisher', $mercureHub));
