@@ -124,7 +124,7 @@ class YnloGraphQLExtension extends Extension
                   ->addMethodCall('setErrorHandler', [new Reference($config['error_handling']['handler'])]);
 
         $bundles = $container->getParameter('kernel.bundles');
-        if (isset($bundles['MercureBundle'])) {
+        if (isset($bundles['MercureBundle']) && $config['subscriptions']['enabled']) {
             $mercureHub = $config['subscriptions']['mercure_hub'];
 
             $mercurePublisherReference = new Reference(sprintf('mercure.hub.%s.publisher', $mercureHub));

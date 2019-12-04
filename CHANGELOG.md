@@ -3,6 +3,7 @@ v1.4.2 - (Unreleased)
  * Support enum comparison in custom filters
  * Support for advanced `orderBy` in lists using custom resolver
  * Support to filter strings using multiple values, added `values` in `StringComparisonExpression`
+ * Allow disable subscriptions using configuration
  * Some bugs fixed
   
 v1.4.1 - 2019-06-04
