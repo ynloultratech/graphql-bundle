@@ -108,7 +108,7 @@ class AnnotationLoader implements DefinitionLoaderInterface
             if (Kernel::VERSION_ID >= 40000) {
                 $path = $this->kernel->getRootDir().'/'.$definitionLocation;
                 if (file_exists($path)) {
-                    $classes[] = $this->extractNamespaceClasses($path, 'App', $definitionLocation);
+                    $classes[] = $this->extractNamespaceClasses($path, (new \ReflectionClass($this->kernel))->getNamespaceName(), $definitionLocation);
                 }
             }
         }

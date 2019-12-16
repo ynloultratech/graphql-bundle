@@ -3,6 +3,7 @@ v1.5.0 - (Unreleased)
  * Support enum comparison in custom filters
  * Support for advanced `orderBy` in lists using custom resolver
  * Support to filter strings using multiple values, added `values` in `StringComparisonExpression`
+ * Support to use custom `App` namespace for Symfony ^4 applications
  * Allow disable subscriptions using configuration
  * Some bugs fixed
   
