@@ -132,10 +132,15 @@ class DefinitionRegistry
      */
     public function clearCache($warmUp = false)
     {
-        @unlink($this->cacheFileName('default.raw'));
+        if (file_exists($this->cacheFileName('default.raw')) && is_writable($this->cacheFileName('default.raw'))) {
+            unlink($this->cacheFileName('default.raw'));
+        }
+
         foreach ($this->endpointsConfig as $name => $config) {
             unset(self::$endpoints[$name]);
-            @unlink($this->cacheFileName($name));
+            if (file_exists($this->cacheFileName($name)) && is_writable($this->cacheFileName($name))) {
+                unlink($this->cacheFileName($name));
+            }
             if ($warmUp) {
                 $this->initialize($name);
             }
