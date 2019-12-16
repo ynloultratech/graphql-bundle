@@ -261,8 +261,7 @@ class DefinitionRegistry
         $config = [];
         if ($definition instanceof MetaAwareInterface) {
             $treeBuilder = new TreeBuilder($plugin->getName());
-            /** @var NodeBuilder $root */
-            $root = $treeBuilder->root($plugin->getName());
+            $root = $treeBuilder->getRootNode();
             $plugin->buildConfig($root);
 
             if ($definition->hasMeta($plugin->getName())) {
