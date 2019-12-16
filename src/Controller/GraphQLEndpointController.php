@@ -161,9 +161,9 @@ class GraphQLEndpointController
     }
 
     /**
-     * @param Publisher $publisher
+     * @param PublisherInterface $publisher
      */
-    public function setPublisher(Publisher $publisher): void
+    public function setPublisher(PublisherInterface $publisher): void
     {
         $this->publisher = $publisher;
     }
