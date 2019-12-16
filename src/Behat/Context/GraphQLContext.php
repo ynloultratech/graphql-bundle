@@ -18,7 +18,6 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\File\File;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
-use Symfony\Component\Stopwatch\Stopwatch;
 use Ynlo\GraphQLBundle\Behat\Client\ClientAwareInterface;
 use Ynlo\GraphQLBundle\Behat\Client\ClientAwareTrait;
 use Ynlo\GraphQLBundle\Behat\Gherkin\YamlStringNode;
@@ -149,10 +148,7 @@ final class GraphQLContext implements Context, ClientAwareInterface
      */
     public function send()
     {
-        $watch = new Stopwatch();
-        $watch->start('query');
         $this->client->sendQuery();
-        $watch->stop('query');
     }
 
     /**

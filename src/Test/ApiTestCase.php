@@ -17,7 +17,6 @@ use Symfony\Bundle\FrameworkBundle\Client;
 use Symfony\Bundle\FrameworkBundle\Test\WebTestCase;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Stopwatch\Stopwatch;
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
 use Ynlo\GraphQLBundle\Model\ID;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
@@ -173,11 +172,7 @@ class ApiTestCase extends WebTestCase
         $client = static::getClient();
         $client->insulate($insulate);
 
-        $watch = new Stopwatch();
-        $watch->start('query');
         $client->request(Request::METHOD_POST, self::$endpoint, [], [], [], json_encode(self::$lastQuery));
-        $watch->stop('query');
-        self::$lastQueryExecutionTime = $watch->getEvent('query')->getDuration();
 
         return $client->getResponse();
     }
