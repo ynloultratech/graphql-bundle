@@ -15,7 +15,7 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\KernelInterface;
-use Symfony\Component\Mercure\Publisher;
+use Symfony\Component\Mercure\PublisherInterface;
 use Ynlo\GraphQLBundle\Subscription\SubscriptionManager;
 
 class SubscriptionConsumerCommand extends Command
@@ -31,7 +31,7 @@ class SubscriptionConsumerCommand extends Command
     protected $kernel;
 
     /**
-     * @var Publisher
+     * @var PublisherInterface
      */
     protected $publisher;
 
@@ -40,9 +40,9 @@ class SubscriptionConsumerCommand extends Command
      *
      * @param Kernel              $kernel
      * @param SubscriptionManager $subscriptionManager
-     * @param Publisher           $publisher
+     * @param PublisherInterface  $publisher
      */
-    public function __construct(Kernel $kernel, SubscriptionManager $subscriptionManager, Publisher $publisher)
+    public function __construct(Kernel $kernel, SubscriptionManager $subscriptionManager, PublisherInterface $publisher)
     {
         parent::__construct();
 

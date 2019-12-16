@@ -60,7 +60,7 @@
     "behat/behat": "^3.4",
     "behat/symfony2-extension": "^2.1",
     "friendsofsymfony/user-bundle": "^2.1",
-    "symfony/mercure-bundle": "^0.1.1"
+    "symfony/mercure-bundle": "^0.2.0"
   },
   "suggest": {
     "ext-redis": "Needed to support GraphQL subscriptions",

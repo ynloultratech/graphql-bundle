@@ -24,7 +24,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
 use Symfony\Component\HttpKernel\Exception\HttpException;
-use Symfony\Component\Mercure\Publisher;
+use Symfony\Component\Mercure\PublisherInterface;
 use Symfony\Component\Mercure\Update;
 use Ynlo\GraphQLBundle\Error\ErrorFormatterInterface;
 use Ynlo\GraphQLBundle\Error\ErrorHandlerInterface;
@@ -88,7 +88,7 @@ class GraphQLEndpointController
     protected $middlewares = [];
 
     /**
-     * @var Publisher
+     * @var PublisherInterface
      */
     protected $publisher;
 
