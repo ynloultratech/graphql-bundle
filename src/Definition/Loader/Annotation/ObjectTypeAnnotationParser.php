@@ -202,6 +202,7 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
 
                 $intDef->setMetas($intAnnot->options);
                 $intDef->setDescription($intAnnot->description);
+                $intDef->setDeprecationReason($intAnnot->deprecationReason);
                 $intDef->setDiscriminatorMap($intAnnot->discriminatorMap);
                 $intDef->setDiscriminatorProperty($intAnnot->discriminatorProperty);
                 $intDef->setExclusionPolicy($intAnnot->exclusionPolicy);

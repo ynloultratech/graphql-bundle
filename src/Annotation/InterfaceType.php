@@ -47,6 +47,11 @@ final class InterfaceType
     public $discriminatorProperty;
 
     /**
+     * @var string
+     */
+    public $deprecationReason;
+
+    /**
      * When a interface extends from another interface in PHP but you need ignore this
      * second interface in the list of implemented interfaces in graphql.
      * For example when the interface is implemented partially

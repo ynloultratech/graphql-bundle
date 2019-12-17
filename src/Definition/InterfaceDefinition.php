@@ -12,6 +12,7 @@ namespace Ynlo\GraphQLBundle\Definition;
 
 use Ynlo\GraphQLBundle\Definition\Traits\ClassAwareDefinitionTrait;
 use Ynlo\GraphQLBundle\Definition\Traits\DefinitionTrait;
+use Ynlo\GraphQLBundle\Definition\Traits\DeprecateTrait;
 use Ynlo\GraphQLBundle\Definition\Traits\ExtensionsAwareTrait;
 use Ynlo\GraphQLBundle\Definition\Traits\FieldsAwareDefinitionTrait;
 use Ynlo\GraphQLBundle\Definition\Traits\ObjectDefinitionTrait;
@@ -20,7 +21,7 @@ use Ynlo\GraphQLBundle\Definition\Traits\PolymorphicDefinitionTrait;
 /**
  * Class InterfaceDefinition
  */
-class InterfaceDefinition implements ObjectDefinitionInterface, HasExtensionsInterface, PolymorphicDefinitionInterface
+class InterfaceDefinition implements ObjectDefinitionInterface, HasExtensionsInterface, PolymorphicDefinitionInterface, DeprecateInterface
 {
     use DefinitionTrait;
     use FieldsAwareDefinitionTrait;
@@ -28,6 +29,7 @@ class InterfaceDefinition implements ObjectDefinitionInterface, HasExtensionsInt
     use ObjectDefinitionTrait;
     use ExtensionsAwareTrait;
     use PolymorphicDefinitionTrait;
+    use DeprecateTrait;
 
     /**
      * @var string[]
