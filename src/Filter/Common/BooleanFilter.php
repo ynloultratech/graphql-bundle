@@ -42,7 +42,7 @@ class BooleanFilter implements FilterInterface
     protected function resolveColumn(FilterContext $context): string
     {
         $column = $context->getField()->getOriginName();
-        if ($context->getField()->getOriginType() === 'ReflectionMethod') {
+        if (!$column || $context->getField()->getOriginType() === 'ReflectionMethod') {
             $column = $context->getField()->getName();
         }
 

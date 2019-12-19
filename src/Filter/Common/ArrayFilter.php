@@ -37,7 +37,7 @@ class ArrayFilter implements FilterInterface
         $entity = $context->getNode()->getClass();
         $metadata = $qb->getEntityManager()->getClassMetadata($entity);
         $column = $context->getField()->getOriginName();
-        if ($context->getField()->getOriginType() === 'ReflectionMethod') {
+        if (!$column || $context->getField()->getOriginType() === 'ReflectionMethod') {
             $column = $context->getField()->getName();
         }
 

@@ -37,7 +37,7 @@ class StringFilter implements FilterInterface
 
         $alias = $qb->getRootAliases()[0];
         $column = $context->getField()->getOriginName();
-        if ($context->getField()->getOriginType() === 'ReflectionMethod') {
+        if (!$column || $context->getField()->getOriginType() === 'ReflectionMethod') {
             $column = $context->getField()->getName();
         }
 
