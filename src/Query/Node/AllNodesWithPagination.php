@@ -227,9 +227,12 @@ class AllNodesWithPagination extends AllNodes
         foreach ($where as $filterName => $condition) {
             $filterDefinition = $whereDefinition->getField($filterName);
 
-            //TODO: load filters from services
             /** @var FilterInterface $filter */
-            $filter = (new \ReflectionClass($filterDefinition->getResolver()))->newInstanceWithoutConstructor();
+            if ($this->container->has($filterDefinition->getResolver())) {
+                $filter = $this->container->get($filterDefinition->getResolver());
+            } else {
+                $filter = (new \ReflectionClass($filterDefinition->getResolver()))->newInstanceWithoutConstructor();
+            }
 
             $fieldName = $filterDefinition->getMeta('filter_field');
             if ($fieldName && $node->hasField($fieldName)) {

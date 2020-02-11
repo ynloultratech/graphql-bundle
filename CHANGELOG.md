@@ -4,6 +4,7 @@ v1.5.0 - (Unreleased)
  * Support for advanced `orderBy` in lists using custom resolver
  * Support to filter strings using multiple values, added `values` in `StringComparisonExpression`
  * Support to use custom `App` namespace for Symfony ^4 applications
+ * Support to resolve list filters from services using class name as service ID
  * Upgrade subscriptions to use mercure-bundle ^0.2
  * Allow disable subscriptions using configuration
  * Some minors bugs fixed
