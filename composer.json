@@ -50,7 +50,7 @@
     "ext-redis": "*",
     "symfony/symfony": "^4.2",
     "phpunit/phpunit": "^6.2",
-    "symfony/phpunit-bridge": "^3.1",
+    "symfony/phpunit-bridge": "4.1.12",
     "lexik/jwt-authentication-bundle": "^2.4",
     "mockery/mockery": "^1.1",
     "doctrine/doctrine-fixtures-bundle": "^2.4",
