@@ -1,3 +1,7 @@
+v1.5.1 - (Unreleased)
+----
+ * Some minors bugs fixed
+
 v1.5.0 - 2020-02-19
 ----
  * Support enum comparison in custom filters

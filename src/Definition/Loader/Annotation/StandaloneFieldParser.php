@@ -56,15 +56,17 @@ class StandaloneFieldParser extends QueryAnnotationParser
         /** @var ObjectDefinitionInterface $objectDefinition */
         $objectDefinition = $endpoint->getType($matches[1]);
 
-        if ($annotation->in && !\in_array($objectDefinition->getName(), $annotation->in, true)) {
-            return;
-        }
+        if ($annotation->in || $annotation->notIn) {
+            if ($annotation->in && \in_array($objectDefinition->getName(), $annotation->in, true)) {
+                $objectDefinition->addField($field);
+            }
 
-        if ($annotation->notIn && \in_array($objectDefinition->getName(), $annotation->notIn, true)) {
-            return;
+            if ($annotation->notIn && !\in_array($objectDefinition->getName(), $annotation->notIn, true)) {
+                $objectDefinition->addField($field);
+            }
+        } else {
+            $objectDefinition->addField($field);
         }
-
-        $objectDefinition->addField($field);
 
         $argAnnotations = $this->reader->getClassAnnotations($refClass);
         foreach ($argAnnotations as $argAnnotation) {
@@ -92,7 +94,17 @@ class StandaloneFieldParser extends QueryAnnotationParser
             foreach ($implementors as $implementor) {
                 $childType = $endpoint->getType($implementor);
                 if ($childType instanceof FieldsAwareDefinitionInterface) {
-                    $childType->addField($field);
+                    if ($annotation->in || $annotation->notIn) {
+                        if ($annotation->in && \in_array($childType->getName(), $annotation->in, true)) {
+                            $childType->addField($field);
+                        }
+
+                        if ($annotation->notIn && !\in_array($childType->getName(), $annotation->notIn, true)) {
+                            $childType->addField($field);
+                        }
+                    } else {
+                        $childType->addField($field);
+                    }
                 }
             }
         }
