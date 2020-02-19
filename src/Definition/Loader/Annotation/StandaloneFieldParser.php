@@ -55,6 +55,15 @@ class StandaloneFieldParser extends QueryAnnotationParser
         }
         /** @var ObjectDefinitionInterface $objectDefinition */
         $objectDefinition = $endpoint->getType($matches[1]);
+
+        if ($annotation->in && !\in_array($objectDefinition->getName(), $annotation->in, true)) {
+            return;
+        }
+
+        if ($annotation->notIn && \in_array($objectDefinition->getName(), $annotation->notIn, true)) {
+            return;
+        }
+
         $objectDefinition->addField($field);
 
         $argAnnotations = $this->reader->getClassAnnotations($refClass);
