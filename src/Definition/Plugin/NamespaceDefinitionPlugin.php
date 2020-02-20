@@ -263,7 +263,12 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
                     $suffix = $bundleSubscriptionSuffix;
                 }
                 $typeName = ucfirst($name).$suffix;
-                $root = $this->createRootNamespace($definition, $name, $typeName, $endpoint);
+
+                if (isset($namespacedDefinitions[$name])) {
+                    $root = $namespacedDefinitions[$name];
+                } else {
+                    $root = $this->createRootNamespace($definition, $name, $typeName, $endpoint);
+                }
                 $parent = $endpoint->getType($root->getType());
             }
 
@@ -288,7 +293,11 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
 
                 $typeName = ucfirst($nodeName).$suffix;
                 if (!$root) {
-                    $root = $this->createRootNamespace($definition, $name, $typeName, $endpoint);
+                    if (isset($namespacedDefinitions[$name])) {
+                        $root = $namespacedDefinitions[$name];
+                    } else {
+                        $root = $this->createRootNamespace($definition, $name, $typeName, $endpoint);
+                    }
                     $parent = $endpoint->getType($root->getType());
                 } elseif ($parent) {
                     $parent = $this->createChildNamespace($parent, $name, $typeName, $endpoint);
