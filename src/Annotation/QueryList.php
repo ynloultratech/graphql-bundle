@@ -39,7 +39,7 @@ final class QueryList
     public $deprecationReason;
 
     /**
-     * @var Argument[]
+     * @var \Ynlo\GraphQLBundle\Annotation\Argument[]
      */
     public $arguments = [];
 
