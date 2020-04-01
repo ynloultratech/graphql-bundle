@@ -174,7 +174,9 @@ class AllNodesWithPagination extends AllNodes
      */
     protected function applyOrderBy(QueryBuilder $qb, $orderBy)
     {
-        $query = $this->queryDefinition;
+        if (!$this->getContext()->getDefinition()->hasArgument('order')) {
+            return;
+        }
 
         $orderByType = $this->getContext()->getDefinition()->getArgument('order')->getType();
 
