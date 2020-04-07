@@ -10,7 +10,6 @@
 
 namespace Ynlo\GraphQLBundle\Error;
 
-use GraphQL\Language\AST\FieldNode;
 use Psr\Log\LoggerInterface;
 
 class DefaultErrorHandler implements ErrorHandlerInterface
@@ -56,7 +55,7 @@ class DefaultErrorHandler implements ErrorHandlerInterface
                     $message = sprintf('(%s) %s', $trackingId, $message);
                 }
 
-                if ($originError instanceof FieldNode) {
+                if (!$originError || !$originError instanceof \Throwable) {
                     $this->logger->debug($message, $context); //graphql error
                 } elseif ($error->isClientSafe()) {
                     $this->logger->notice($message, $context); // client aware error
