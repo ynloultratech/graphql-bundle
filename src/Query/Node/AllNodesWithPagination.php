@@ -303,7 +303,7 @@ class AllNodesWithPagination extends AllNodes
                 $mode = 'exact';
             }
 
-            if ('*' === $field) {
+            if ('*' === $field || $mode === false) {
                 continue;
             }
             $columns[$field] = $mode;
