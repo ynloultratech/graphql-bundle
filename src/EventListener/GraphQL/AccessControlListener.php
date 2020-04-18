@@ -11,6 +11,9 @@
 namespace Ynlo\GraphQLBundle\EventListener\GraphQL;
 
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Ynlo\GraphQLBundle\Definition\FieldDefinition;
+use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
+use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Events\GraphQLEvents;
 use Ynlo\GraphQLBundle\Events\GraphQLFieldEvent;
 use Ynlo\GraphQLBundle\Events\GraphQLMutationEvent;
@@ -57,19 +60,21 @@ class AccessControlListener implements EventSubscriberInterface
 
     public function preReadField(GraphQLFieldEvent $event)
     {
+        $definition = $event->getContext()->getDefinition();
+
         //check firstly if the user have rights to read the operation
-        $node = $event->getContext()->getNode();
-        if ($node && $this->accessControlChecker->isControlled($node)
-            && !$this->accessControlChecker->isGranted($node, $event->getContext()->getRoot())
+        if ($definition instanceof QueryDefinition && $this->accessControlChecker->isControlled($definition)
+            && !$this->accessControlChecker->isGranted($definition, $event->getContext()->getRoot())
         ) {
             $event->stopPropagation();
             $event->setValue(null);
-            throw new ForbiddenError($this->accessControlChecker->getMessage($node));
+            throw new ForbiddenError($this->accessControlChecker->getMessage($definition));
         }
 
         //check if user have rights to read the object
         if (\is_object($event->getContext()->getRoot())) {
             $concreteType = TypeUtil::resolveObjectType($event->getContext()->getEndpoint(), $event->getContext()->getRoot());
+
             if ($concreteType) {
                 $objectDefinition = $event->getContext()->getEndpoint()->getType($concreteType);
                 if ($this->accessControlChecker->isControlled($objectDefinition)
@@ -79,15 +84,28 @@ class AccessControlListener implements EventSubscriberInterface
                     $event->setValue(null);
                     throw new ForbiddenError($this->accessControlChecker->getMessage($objectDefinition));
                 }
+
+                // check access on interfaces
+                if ($objectDefinition instanceof ObjectDefinition){
+                    foreach ($objectDefinition->getInterfaces() as $interface){
+                        $interfaceDef =$event->getContext()->getEndpoint()->getType($interface);
+                        if ($this->accessControlChecker->isControlled($interfaceDef)
+                            && !$this->accessControlChecker->isGranted($interfaceDef, $event->getContext()->getRoot())
+                        ) {
+                            $event->stopPropagation();
+                            $event->setValue(null);
+                            throw new ForbiddenError($this->accessControlChecker->getMessage($interfaceDef));
+                        }
+                    }
+                }
             }
         }
 
         //check then if the user have rights to read the field
-        $field = $event->getContext()->getDefinition();
-        if ($this->accessControlChecker->isControlled($field)
-            && !$this->accessControlChecker->isGranted($field, $event->getContext()->getRoot())
+        if ($definition instanceof FieldDefinition && $this->accessControlChecker->isControlled($definition)
+            && !$this->accessControlChecker->isGranted($definition, $event->getContext()->getRoot())
         ) {
-            throw new ForbiddenError($this->accessControlChecker->getMessage($field));
+            throw new ForbiddenError($this->accessControlChecker->getMessage($definition));
         }
     }
 }

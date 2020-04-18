@@ -11,10 +11,16 @@
 namespace Ynlo\GraphQLBundle\Type;
 
 use GraphQL\Type\Definition\ObjectType;
+use GraphQL\Type\Definition\ResolveInfo;
 use GraphQL\Type\Definition\Type;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
+use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
+use Ynlo\GraphQLBundle\Events\GraphQLEvents;
+use Ynlo\GraphQLBundle\Events\GraphQLFieldEvent;
+use Ynlo\GraphQLBundle\Resolver\ContextBuilder;
+use Ynlo\GraphQLBundle\Resolver\ResolverContext;
 use Ynlo\GraphQLBundle\Resolver\ResolverExecutor;
 use Ynlo\GraphQLBundle\Type\Definition\EndpointAwareInterface;
 use Ynlo\GraphQLBundle\Type\Definition\EndpointAwareTrait;
@@ -66,7 +72,30 @@ class QueryType extends ObjectType implements
 
         $config['args'] = GraphQLBuilder::buildArguments($query);
 
-        $config['resolve'] = new ResolverExecutor($this->container, $query);
+
+        $container = $this->container;
+        $config['resolve'] = function ($root, array $args, ResolverContext $context, ResolveInfo $resolveInfo) use ($container, $query) {
+            $eventDispatcher = $this->container->get(EventDispatcherInterface::class);
+
+            $context = ContextBuilder::create($this->endpoint)
+                                     ->setRoot($root)
+                                     ->setDefinition($query)
+                                     ->setResolveInfo($resolveInfo)
+                                     ->setMetas($context->getMetas())
+                                     ->build();
+
+            $event = new GraphQLFieldEvent($context);
+            $eventDispatcher->dispatch(GraphQLEvents::PRE_READ_FIELD, $event);
+
+            $executor = new ResolverExecutor($container, $query);
+
+            $value = $executor($root, $args, $context, $resolveInfo);
+            $event->setValue($value);
+
+            $eventDispatcher->dispatch(GraphQLEvents::POST_READ_FIELD, $event);
+
+            return $value;
+        };
         $config['description'] = $query->getDescription();
         $config['deprecationReason'] = $query->getDeprecationReason();
 
