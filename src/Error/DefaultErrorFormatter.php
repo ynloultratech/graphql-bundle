@@ -45,7 +45,7 @@ class DefaultErrorFormatter implements ErrorFormatterInterface
     {
         $formattedError = FormattedError::createFromException($error, $debug);
 
-        $originError = $error->getTrace()[0]['args'][0] ?? null;
+        $originError = $error->getPrevious();
 
         $trackingId = null;
         $errorCode = Response::HTTP_INTERNAL_SERVER_ERROR;
