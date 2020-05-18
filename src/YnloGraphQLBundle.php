@@ -60,9 +60,6 @@ class YnloGraphQLBundle extends Bundle
         $container->registerForAutoconfiguration(FilterInterface::class)
                   ->addTag('graphql.list_filter')
                   ->setPublic(true);
-
-        $container->registerForAutoconfiguration(SubscriptionAwareInterface::class)
-                  ->addMethodCall('setPublisher', [new Reference(Publisher::class)]);
     }
 
     /**

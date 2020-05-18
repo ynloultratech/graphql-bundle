@@ -31,6 +31,7 @@ use Ynlo\GraphQLBundle\Request\SubscriptionsRequestMiddleware;
 use Ynlo\GraphQLBundle\Subscription\Publisher;
 use Ynlo\GraphQLBundle\Subscription\PubSub\RedisPubSubHandler;
 use Ynlo\GraphQLBundle\Subscription\Subscriber;
+use Ynlo\GraphQLBundle\Subscription\SubscriptionAwareInterface;
 use Ynlo\GraphQLBundle\Subscription\SubscriptionManager;
 
 /**
@@ -141,6 +142,9 @@ class YnloGraphQLExtension extends Extension
                       ->addArgument($mercurePublisherReference);
 
             $container->getDefinition(GraphQLEndpointController::class)->addMethodCall('setPublisher', [$mercurePublisherReference]);
+
+            $container->registerForAutoconfiguration(SubscriptionAwareInterface::class)
+                      ->addMethodCall('setPublisher', [new Reference(Publisher::class)]);
         } else {
             $container->removeDefinition(SubscriptionManager::class);
             $container->removeDefinition(MercureHubCommand::class);
