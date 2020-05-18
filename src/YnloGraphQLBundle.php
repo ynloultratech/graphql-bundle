@@ -11,6 +11,7 @@
 namespace Ynlo\GraphQLBundle;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
+use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
 use Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServicesCompilerPass;
 use Ynlo\GraphQLBundle\DependencyInjection\Compiler\ControllerPass;
@@ -21,6 +22,8 @@ use Ynlo\GraphQLBundle\Extension\ExtensionInterface;
 use Ynlo\GraphQLBundle\Filter\FilterInterface;
 use Ynlo\GraphQLBundle\Filter\FilterResolverInterface;
 use Ynlo\GraphQLBundle\Form\Input\InputFieldTypeGuesser;
+use Ynlo\GraphQLBundle\Subscription\Publisher;
+use Ynlo\GraphQLBundle\Subscription\SubscriptionAwareInterface;
 use Ynlo\GraphQLBundle\Type\Loader\TypeAutoLoader;
 use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 use Ynlo\GraphQLBundle\Util\IDEncoder;
@@ -57,6 +60,9 @@ class YnloGraphQLBundle extends Bundle
         $container->registerForAutoconfiguration(FilterInterface::class)
                   ->addTag('graphql.list_filter')
                   ->setPublic(true);
+
+        $container->registerForAutoconfiguration(SubscriptionAwareInterface::class)
+                  ->addMethodCall('setPublisher', [new Reference(Publisher::class)]);
     }
 
     /**
