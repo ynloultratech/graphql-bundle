@@ -12,5 +12,5 @@ namespace Ynlo\GraphQLBundle\Subscription;
 
 interface SubscriptionAwareInterface
 {
-    public function setPublisher(Publisher $publisher);
+    public function setPublisher(Publisher $publisher): void;
 }

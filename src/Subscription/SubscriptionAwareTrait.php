@@ -10,10 +10,18 @@
 
 namespace Ynlo\GraphQLBundle\Subscription;
 
-class SubscriptionAwareTrait
+trait SubscriptionAwareTrait
 {
     /**
      * @var Publisher
      */
     protected $publisher;
+
+    /**
+     * @param Publisher $publisher
+     */
+    public function setPublisher(Publisher $publisher): void
+    {
+        $this->publisher = $publisher;
+    }
 }
