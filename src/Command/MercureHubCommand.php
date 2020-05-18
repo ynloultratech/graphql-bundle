@@ -107,7 +107,6 @@ class MercureHubCommand extends Command
 
                             if (empty($subscribersByTopics[$subscription])) {
                                 unset($subscribersByTopics[$subscription]);
-                                echo $subscription;
                                 $subscriptionManager->handler()->del($subscription);
                             }
                         }
