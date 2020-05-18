@@ -60,16 +60,9 @@ class RedisPubSubHandler implements PubSubHandlerInterface
     {
         $key = sprintf('%s:%s', $channel, $id);
         $alreadyExists = $this->exists($id);
-        $ttl = $this->client->ttl($key);
         $this->client->set($key, serialize($meta));
 
-        if ($alreadyExists) {
-            if ($expireAt && $expireAt->getTimestamp() - $ttl > time()) {
-                $this->client->expireAt($key, $expireAt->format('U'));
-            } else {
-                $this->client->setTimeout($key, $ttl);
-            }
-        } elseif ($expireAt) {
+        if (!$alreadyExists && $expireAt) {
             $this->client->expireAt($key, $expireAt->format('U'));
         }
 
@@ -87,14 +80,13 @@ class RedisPubSubHandler implements PubSubHandlerInterface
     /**
      * @inheritDoc
      */
-    public function touch(string $id, \DateTime $expireAt): void
+    public function touch(string $id): void
     {
         $iterator = null;
         while ($iterator !== 0) {
             while ($keys = $this->client->scan($iterator, "*:$id*")) {
                 foreach ($keys as $key) {
-                    $key = $this->unprefix($key);
-                    $this->client->expireAt($key, $expireAt->format('U'));
+                    $this->client->persist($this->unprefix($key));
                 }
             }
         }
@@ -106,10 +98,19 @@ class RedisPubSubHandler implements PubSubHandlerInterface
     public function del(string $id): void
     {
         $iterator = null;
-        while ($iterator !== 0) {
-            while ($keys = $this->client->scan($iterator, "*:$id*")) {
-                $this->client->del($keys);
-            }
+        foreach ($this->client->keys("*:$id") as $key) {
+            $this->client->del($this->unprefix($key));
+        }
+    }
+
+    /**
+     * @inheritDoc
+     */
+    public function clear(): void
+    {
+        $iterator = null;
+        foreach ($this->client->keys('*') as $key) {
+            $this->client->del($this->unprefix($key));
         }
     }
 

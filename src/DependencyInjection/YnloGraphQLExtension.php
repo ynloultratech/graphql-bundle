@@ -19,6 +19,7 @@ use Symfony\Component\DependencyInjection\Parameter;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
 use Ynlo\GraphQLBundle\Cache\DefinitionCacheWarmer;
+use Ynlo\GraphQLBundle\Command\MercureHubCommand;
 use Ynlo\GraphQLBundle\Command\SubscriptionConsumerCommand;
 use Ynlo\GraphQLBundle\Controller\GraphQLEndpointController;
 use Ynlo\GraphQLBundle\Controller\SubscriptionsController;
@@ -133,12 +134,7 @@ class YnloGraphQLExtension extends Extension
                       ->addArgument(new Reference($config['subscriptions']['pubsub_handler']))
                       ->addArgument(new Parameter('kernel.secret'));
 
-            $container->getDefinition(SubscriptionsController::class)
-                      ->addArgument(new Reference($config['subscriptions']['pubsub_handler']))
-                      ->addMethodCall('setMercureHubUrl', [new Parameter('mercure.hubs'), $mercureHub]);
-
-            $container->getDefinition(SubscriptionsHeartbeatController::class)
-                      ->addArgument(new Reference($config['subscriptions']['pubsub_handler']))
+            $container->getDefinition(Subscriber::class)
                       ->addMethodCall('setMercureHubUrl', [new Parameter('mercure.hubs'), $mercureHub]);
 
             $container->getDefinition(SubscriptionConsumerCommand::class)
@@ -147,9 +143,8 @@ class YnloGraphQLExtension extends Extension
             $container->getDefinition(GraphQLEndpointController::class)->addMethodCall('setPublisher', [$mercurePublisherReference]);
         } else {
             $container->removeDefinition(SubscriptionManager::class);
+            $container->removeDefinition(MercureHubCommand::class);
             $container->removeDefinition(SubscriptionConsumerCommand::class);
-            $container->removeDefinition(SubscriptionsController::class);
-            $container->removeDefinition(SubscriptionsHeartbeatController::class);
             $container->removeDefinition(SubscriptionsRequestMiddleware::class);
             $container->removeDefinition(Subscriber::class);
             $container->removeDefinition(Publisher::class);

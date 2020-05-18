@@ -12,16 +12,6 @@ services:
             - [ setConfig, ['%graphql.config%'] ]
             - [ setDispatcher, ['@event_dispatcher'] ]
 
-    Ynlo\GraphQLBundle\Controller\SubscriptionsController:
-        public: true
-        calls:
-            - ['setTtl', ['%graphql.subscriptions.ttl%']]
-
-    Ynlo\GraphQLBundle\Controller\SubscriptionsHeartbeatController:
-        public: true
-        calls:
-            - ['setTtl', ['%graphql.subscriptions.ttl%']]
-
     Ynlo\GraphQLBundle\Request\StandardGraphQLRequestMiddleware:
          public: true
          tags:
@@ -363,6 +353,12 @@ services:
         tags:
             - 'console.command'
 
+    Ynlo\GraphQLBundle\Command\MercureHubCommand:
+        arguments:
+            - '@Ynlo\GraphQLBundle\Subscription\SubscriptionManager'
+        tags:
+            - 'console.command'
+
     Ynlo\GraphQLBundle\Error\DefaultErrorFormatter:
        arguments:
           - '@Ynlo\GraphQLBundle\Error\ControlledErrorManager'
@@ -436,9 +432,7 @@ services:
 
     Ynlo\GraphQLBundle\Subscription\Subscriber:
         public: true
-        arguments: ['@request_stack','@router.default','@?Ynlo\GraphQLBundle\Subscription\SubscriptionManager']
-        calls:
-            - ['setSubscriptionsTtl', ['%graphql.subscriptions.ttl%']]
+        arguments: ['@request_stack','@?Ynlo\GraphQLBundle\Subscription\SubscriptionManager']
         tags:
             - kernel.event_subscriber
 

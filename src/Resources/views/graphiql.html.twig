@@ -157,21 +157,17 @@
                 } else {
                     var value = obj[property];
                     if (value && typeof value === 'string') {
-                        var matches = value.match(/https?.+subscription\/(\w+)/);
+                        var matches = value.match(/https?.+mercure/);
                         if (property === 'url' && matches) {
                             var url = obj[property];
-                            var heartbeatUrl = obj['heartbeatUrl'];
-                            var ttl = obj['ttl'];
                             var id = matches[1];
-                            if (url && heartbeatUrl && ttl) {
-                                addSubscription(id, url, ttl, heartbeatUrl);
+                            if (url) {
+                                addSubscription(id, url);
                             } else {
                                 alert('To subscribe to ' +
                                     'subscriptions must select all fields in SubscriptionLink:\n\n' +
                                     '... on SubscriptionLink {\n' +
-                                    '        url\n' +
-                                    '        heartbeatUrl\n' +
-                                    '        ttl\n' +
+                                    '        url\n'+
                                     '   }')
                             }
                         }
@@ -181,7 +177,7 @@
         }
     };
 
-    var addSubscription = function (id, url, ttl, heartbeatUrl) {
+    var addSubscription = function (id, url) {
         if (Subscriptions[id] === undefined) {
             var subscription = $('<div class="subscription">' +
                 '<div class="response">' +
@@ -207,13 +203,6 @@
 
             var eventSource = new EventSource(url);
             Subscriptions[id] = eventSource;
-            eventSource.onopen = function (evt) {
-                HeatBeats[id] = setInterval(function () {
-                    var xmlHttp = new XMLHttpRequest();
-                    xmlHttp.open("GET", heartbeatUrl);
-                    xmlHttp.send(null);
-                }, ttl / 3 * 1000);
-            };
             eventSource.onmessage = function (e) {
                 var response = subscription.find('.response');
                 if (response.is(':visible')){

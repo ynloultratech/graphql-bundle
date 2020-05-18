@@ -12,6 +12,7 @@ namespace Ynlo\GraphQLBundle\Subscription;
 
 use Lcobucci\JWT\Builder;
 use Lcobucci\JWT\Signer\Hmac\Sha256;
+use Lcobucci\JWT\Signer\Key;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
@@ -49,6 +50,14 @@ class SubscriptionManager
         $this->registry = $definitionRegistry;
         $this->pubSubHandler = $pubSubHandler;
         $this->secret = $secret;
+    }
+
+    /**
+     * Get subscription handler
+     */
+    public function handler(): PubSubHandlerInterface
+    {
+        return $this->pubSubHandler;
     }
 
     /**
@@ -188,13 +197,12 @@ class SubscriptionManager
         $handle = fsockopen($originRequest->isSecure() ? 'ssl://'.$host : $host, $port, $errno, $errstr, 10);
 
         $signer = new Sha256();
-        $subscriptionToken = (new Builder())->setId($message->getId())
-                                            ->set('data', serialize($message->getData()))
-                                            ->setIssuedAt(time())
-                                            ->setNotBefore(time() + 60)
-                                            ->setExpiration(time() + 60)
-                                            ->sign($signer, $this->secret)
-                                            ->getToken();
+        $subscriptionToken = (new Builder())->identifiedBy($message->getId())
+                                            ->withClaim('data', serialize($message->getData()))
+                                            ->issuedAt(time())
+                                            ->canOnlyBeUsedAfter(time() + 60)
+                                            ->expiresAt(time() + 60)
+                                            ->getToken($signer, new Key($this->secret));
 
         $body = $originRequest->getContent();
         $length = strlen($body);

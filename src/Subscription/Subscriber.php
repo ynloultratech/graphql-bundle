@@ -10,9 +10,9 @@
 
 namespace Ynlo\GraphQLBundle\Subscription;
 
-use Symfony\Bundle\FrameworkBundle\Routing\Router;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\RequestStack;
+use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\Security\Core\AuthenticationEvents;
 use Symfony\Component\Security\Core\Event\AuthenticationEvent;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
@@ -27,17 +27,15 @@ use Ynlo\GraphQLBundle\Util\Uuid;
  */
 class Subscriber implements EventSubscriberInterface
 {
-    public const DEFAULT_SUBSCRIPTION_TTL = 300;
+    /**
+     * @var string
+     */
+    protected $mercureHubUrl;
 
     /**
      * @var SubscriptionManager
      */
     protected $subscriptionManager;
-
-    /**
-     * @var Router
-     */
-    protected $router;
 
     /**
      * @var RequestStack
@@ -55,30 +53,24 @@ class Subscriber implements EventSubscriberInterface
     protected $endpoint;
 
     /**
-     * @var int
-     */
-    protected $subscriptionsTtl = self::DEFAULT_SUBSCRIPTION_TTL;
-
-    /**
      * Subscriber constructor.
      *
      * @param RequestStack        $requestStack
-     * @param Router              $router
      * @param SubscriptionManager $subscriptionManager
      */
-    public function __construct(RequestStack $requestStack, Router $router, ?SubscriptionManager $subscriptionManager = null)
+    public function __construct(RequestStack $requestStack, ?SubscriptionManager $subscriptionManager = null)
     {
         $this->requestStack = $requestStack;
-        $this->router = $router;
         $this->subscriptionManager = $subscriptionManager;
     }
 
     /**
-     * @param int $subscriptionsTtl
+     * @param array  $mercureHubsUrls
+     * @param string $hub
      */
-    public function setSubscriptionsTtl(int $subscriptionsTtl): void
+    public function setMercureHubUrl(array $mercureHubsUrls, $hub)
     {
-        $this->subscriptionsTtl = $subscriptionsTtl;
+        $this->mercureHubUrl = $mercureHubsUrls[$hub];
     }
 
     /**
@@ -123,9 +115,14 @@ class Subscriber implements EventSubscriberInterface
             throw new \RuntimeException('Missing required request');
         }
 
+        if ($request->getSession()) {
+            //clear session
+            $request->setSession(new Session());
+        }
+
         // subscriptions are created with a very lowest expiration date
-        // the user must use the subscription otherwise will me marked as expired
-        $expireAt = new \DateTime('+20seconds');
+        // if the client does not connect to given subscription in x seconds the subscription is automatically deleted
+        $expireAt = new \DateTime('+10seconds');
 
         $id = Uuid::createFromData(
             [
@@ -138,9 +135,7 @@ class Subscriber implements EventSubscriberInterface
 
         $subscriptionName = $this->endpoint->getSubscriptionNameForResolver($context->getDefinition()->getResolver());
         $this->subscriptionManager->subscribe($id, $subscriptionName, $args, $request, $expireAt);
-        $url = $this->router->generate('api_subscriptions', ['subscription' => $id], Router::ABSOLUTE_URL);
-        $heartbeatUrl = $this->router->generate('api_subscriptions_heartbeat', ['subscription' => $id], Router::ABSOLUTE_URL);
 
-        return new SubscriptionLink($url, $heartbeatUrl, $this->subscriptionsTtl);
+        return new SubscriptionLink(sprintf('%s?topic=%s', $this->mercureHubUrl, $id));
     }
 }

@@ -34,12 +34,11 @@ interface PubSubHandlerInterface
     public function pub(string $channel, array $filters = [], array $data = []): void;
 
     /**
-     * Mark given id as used and increase expiration timestamp
+     * Mark given subscription as subscribed and remove expiration date
      *
      * @param string    $id
-     * @param \DateTime $expireAt
      */
-    public function touch(string $id, \DateTime $expireAt): void;
+    public function touch(string $id): void;
 
     /**
      * Delete given subscription
@@ -47,6 +46,11 @@ interface PubSubHandlerInterface
      * @param string $id
      */
     public function del(string $id): void;
+
+    /**
+     * Clear all subscriptions
+     */
+    public function clear(): void;
 
     /**
      * Delete given subscription

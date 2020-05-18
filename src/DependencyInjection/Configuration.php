@@ -55,8 +55,6 @@ class Configuration implements ConfigurationInterface
                               ->addDefaultsIfNotSet()
                               ->children();
 
-        $subscriptions->scalarNode('ttl')->defaultValue(Subscriber::DEFAULT_SUBSCRIPTION_TTL)
-                      ->info('Time to live for subscriptions. The subscription will be deleted after this time, a heartbeat is required to keep-alive');
         $subscriptions->scalarNode('mercure_hub')->defaultValue('default');
         $subscriptions->scalarNode('pubsub_handler')->defaultValue(RedisPubSubHandler::class);
         $redis = $subscriptions->arrayNode('redis')->info('Configure redis server to use as subscription handler')
