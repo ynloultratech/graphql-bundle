@@ -70,7 +70,7 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
         }
 
         /** @var Id $id */
-        if ($column = $this->reader->getPropertyAnnotation($field, Id::class)) {
+        if ($field->getName() === 'id' && ($column = $this->reader->getPropertyAnnotation($field, Id::class))) {
             $definition->setType(Types::ID);
             $definition->setNonNull(true);
         }

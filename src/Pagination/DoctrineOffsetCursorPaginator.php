@@ -10,6 +10,8 @@
 
 namespace Ynlo\GraphQLBundle\Pagination;
 
+use Doctrine\ORM\EntityManager;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Ynlo\GraphQLBundle\Model\ConnectionInterface;
 use Ynlo\GraphQLBundle\Model\NodeConnection;
@@ -23,6 +25,21 @@ class DoctrineOffsetCursorPaginator implements DoctrineCursorPaginatorInterface
      * @var NodeConnection
      */
     protected $connection;
+
+    /**
+     * @var EntityManager|EntityManagerInterface
+     */
+    protected $entityManager;
+
+    /**
+     * DoctrineOffsetCursorPaginator constructor.
+     *
+     * @param EntityManagerInterface $entityManager
+     */
+    public function __construct(EntityManagerInterface $entityManager)
+    {
+        $this->entityManager = $entityManager;
+    }
 
     /**
      * {@inheritdoc}
@@ -89,8 +106,11 @@ class DoctrineOffsetCursorPaginator implements DoctrineCursorPaginatorInterface
         $countQuery->setMaxResults(null);
         $countQuery->setFirstResult(0);
 
+        $rootEntity = $qb->getRootEntities()[0];
+        $metadata = $this->entityManager->getClassMetadata($rootEntity);
+
         $queryAlias = $qb->getAllAliases()[0];
-        $countQuery->select(sprintf('count(DISTINCT %s.%s) as total', $queryAlias, 'id'));
+        $countQuery->select(sprintf('count(DISTINCT %s.%s) as total', $queryAlias, $metadata->getIdentifier()[0]));
 
         return $countQuery->getQuery()->getSingleScalarResult();
     }

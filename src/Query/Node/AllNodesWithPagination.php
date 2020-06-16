@@ -124,7 +124,7 @@ class AllNodesWithPagination extends AllNodes
 
     protected function createPaginator(): DoctrineCursorPaginatorInterface
     {
-        return new DoctrineOffsetCursorPaginator();
+        return new DoctrineOffsetCursorPaginator($this->getManager());
     }
 
     /**

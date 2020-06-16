@@ -1,6 +1,7 @@
 v1.6.0 - (Unreleased)
 ----
  * Some minors bugs fixed
+ * Support to use custom entity primary id
  * Subscriptions refactoring and some improvements
 
 v1.5.0 - 2020-02-19
