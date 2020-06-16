@@ -53,7 +53,8 @@ class SimpleIDEncoder implements IDEncoderInterface
     public function decode($globalId): ?NodeInterface
     {
         if (strpos($globalId, self::DIVIDER) > 1) {
-            list($nodeType, $databaseId) = explode(self::DIVIDER, $globalId);
+            $divider = self::DIVIDER;
+            [$nodeType, $databaseId] = preg_split("/$divider/", $globalId, 2);
 
             $class = $this->definitionRegistry->getEndpoint()->getClassForType($nodeType);
             if (!class_exists($class)) {
