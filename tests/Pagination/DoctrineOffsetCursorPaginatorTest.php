@@ -12,6 +12,7 @@ namespace Ynlo\GraphQLBundle\Tests\Pagination;
 
 use Doctrine\ORM\AbstractQuery;
 use Doctrine\ORM\EntityManagerInterface;
+use Doctrine\ORM\Mapping\ClassMetadata;
 use Doctrine\ORM\QueryBuilder;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\Mock;
@@ -28,6 +29,10 @@ class DoctrineOffsetCursorPaginatorTest extends MockeryTestCase
 
         /** @var QueryBuilder|Mock $qb */
         $qb = \Mockery::mock(QueryBuilder::class, [$em])->makePartial();
+
+        $classMetadata = \Mockery::mock(ClassMetadata::class);
+        $classMetadata->expects('getIdentifier')->andReturn(['id']);
+        $em->expects('getClassMetadata')->andReturn($classMetadata);
 
         $countQuery = \Mockery::mock(AbstractQuery::class);
         $countQuery->allows('getSingleScalarResult')->andReturn(5);//total
@@ -46,7 +51,7 @@ class DoctrineOffsetCursorPaginatorTest extends MockeryTestCase
            ->from(Post::class, 'p')
            ->where('p.title = :title');
 
-        $paginator = new DoctrineOffsetCursorPaginator();
+        $paginator = new DoctrineOffsetCursorPaginator($em);
         $connection = new NodeConnection();
         $paginator->paginate($qb, new PaginationRequest(3), $connection);
 
@@ -74,6 +79,10 @@ class DoctrineOffsetCursorPaginatorTest extends MockeryTestCase
         /** @var QueryBuilder|Mock $qb */
         $qb = \Mockery::mock(QueryBuilder::class, [$em])->makePartial();
 
+        $classMetadata = \Mockery::mock(ClassMetadata::class);
+        $classMetadata->expects('getIdentifier')->andReturn(['id']);
+        $em->expects('getClassMetadata')->andReturn($classMetadata);
+
         $countQuery = \Mockery::mock(AbstractQuery::class);
         $countQuery->allows('getSingleScalarResult')->andReturn(5);
 
@@ -91,7 +100,7 @@ class DoctrineOffsetCursorPaginatorTest extends MockeryTestCase
            ->from(Post::class, 'p')
            ->where('p.title = :title');
 
-        $paginator = new DoctrineOffsetCursorPaginator();
+        $paginator = new DoctrineOffsetCursorPaginator($em);
         $connection = new NodeConnection();
         $paginator->paginate($qb, new PaginationRequest(3, null, base64_encode('cursor:1')), $connection);
 
@@ -119,6 +128,10 @@ class DoctrineOffsetCursorPaginatorTest extends MockeryTestCase
         /** @var QueryBuilder|Mock $qb */
         $qb = \Mockery::mock(QueryBuilder::class, [$em])->makePartial();
 
+        $classMetadata = \Mockery::mock(ClassMetadata::class);
+        $classMetadata->expects('getIdentifier')->andReturn(['id']);
+        $em->expects('getClassMetadata')->andReturn($classMetadata);
+
         $countQuery = \Mockery::mock(AbstractQuery::class);
         $countQuery->allows('getSingleScalarResult')->andReturn(5);
 
@@ -135,7 +148,7 @@ class DoctrineOffsetCursorPaginatorTest extends MockeryTestCase
            ->from(Post::class, 'p')
            ->where('p.title = :title');
 
-        $paginator = new DoctrineOffsetCursorPaginator();
+        $paginator = new DoctrineOffsetCursorPaginator($em);
         $connection = new NodeConnection();
         $paginator->paginate($qb, new PaginationRequest(3, null, null, base64_encode('cursor:2')), $connection);
 
@@ -161,6 +174,10 @@ class DoctrineOffsetCursorPaginatorTest extends MockeryTestCase
         /** @var QueryBuilder|Mock $qb */
         $qb = \Mockery::mock(QueryBuilder::class, [$em])->makePartial();
 
+        $classMetadata = \Mockery::mock(ClassMetadata::class);
+        $classMetadata->expects('getIdentifier')->andReturn(['id']);
+        $em->expects('getClassMetadata')->andReturn($classMetadata);
+
         $countQuery = \Mockery::mock(AbstractQuery::class);
         $countQuery->allows('getSingleScalarResult')->andReturn(5);
 
@@ -178,7 +195,7 @@ class DoctrineOffsetCursorPaginatorTest extends MockeryTestCase
            ->from(Post::class, 'p')
            ->where('p.title = :title');
 
-        $paginator = new DoctrineOffsetCursorPaginator();
+        $paginator = new DoctrineOffsetCursorPaginator($em);
         $connection = new NodeConnection();
         $paginator->paginate($qb, new PaginationRequest(null, 3), $connection);
 
@@ -206,6 +223,10 @@ class DoctrineOffsetCursorPaginatorTest extends MockeryTestCase
         /** @var QueryBuilder|Mock $qb */
         $qb = \Mockery::mock(QueryBuilder::class, [$em])->makePartial();
 
+        $classMetadata = \Mockery::mock(ClassMetadata::class);
+        $classMetadata->expects('getIdentifier')->andReturn(['id']);
+        $em->expects('getClassMetadata')->andReturn($classMetadata);
+
         $countQuery = \Mockery::mock(AbstractQuery::class);
         $countQuery->allows('getSingleScalarResult')->andReturn(5);
 
@@ -223,7 +244,7 @@ class DoctrineOffsetCursorPaginatorTest extends MockeryTestCase
            ->from(Post::class, 'p')
            ->where('p.title = :title');
 
-        $paginator = new DoctrineOffsetCursorPaginator();
+        $paginator = new DoctrineOffsetCursorPaginator($em);
         $connection = new NodeConnection();
         $paginator->paginate($qb, new PaginationRequest(null, 3, base64_encode('cursor:1')), $connection);
 
@@ -254,6 +275,10 @@ class DoctrineOffsetCursorPaginatorTest extends MockeryTestCase
         $countQuery = \Mockery::mock(AbstractQuery::class);
         $countQuery->allows('getSingleScalarResult')->andReturn(5);
 
+        $classMetadata = \Mockery::mock(ClassMetadata::class);
+        $classMetadata->expects('getIdentifier')->andReturn(['id']);
+        $em->expects('getClassMetadata')->andReturn($classMetadata);
+
         $countQuery->allows('execute')->andReturn(
             [
                 new Post(1),
@@ -268,7 +293,7 @@ class DoctrineOffsetCursorPaginatorTest extends MockeryTestCase
            ->from(Post::class, 'p')
            ->where('p.title = :title');
 
-        $paginator = new DoctrineOffsetCursorPaginator();
+        $paginator = new DoctrineOffsetCursorPaginator($em);
         $connection = new NodeConnection();
         $paginator->paginate($qb, new PaginationRequest(null, 3, null, base64_encode('cursor:2')), $connection);
 
