@@ -10,6 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Filter\Common;
 
+use Doctrine\ORM\Query\Expr\Orx;
 use Doctrine\ORM\QueryBuilder;
 use Ynlo\GraphQLBundle\Filter\FilterContext;
 use Ynlo\GraphQLBundle\Filter\FilterInterface;
@@ -75,6 +76,16 @@ class DateFilter implements FilterInterface
                     $qb->andWhere($qb->expr()->lt("{$alias}.{$column}", "'$maxDate'"));
                 } else {
                     $qb->andWhere($qb->expr()->between("{$alias}.{$column}", "'$date'", "'$maxDate'"));
+                }
+                break;
+            case DateComparisonOperatorType::NOT_BETWEEN:
+                if ($condition->isStrict()) {
+                    $orx = new Orx();
+                    $orx->add($qb->expr()->lt("{$alias}.{$column}", "'$date'"));
+                    $orx->add($qb->expr()->lt("{$alias}.{$column}", "'$maxDate'"));
+                    $qb->andWhere($orx);
+                } else {
+                    $qb->andWhere($qb->expr()->not($qb->expr()->between("{$alias}.{$column}", "'$date'", "'$maxDate'")));
                 }
                 break;
         }
