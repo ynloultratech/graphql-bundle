@@ -62,6 +62,9 @@ class RedisPubSubHandler implements PubSubHandlerInterface
         $alreadyExists = $this->exists($id);
         $this->client->set($key, serialize($meta));
 
+        if (!$expireAt) {
+            $expireAt = new \DateTime('+24Hours');
+        }
         if (!$alreadyExists && $expireAt) {
             $this->client->expireAt($key, $expireAt->format('U'));
         }
@@ -86,7 +89,7 @@ class RedisPubSubHandler implements PubSubHandlerInterface
         while ($iterator !== 0) {
             while ($keys = $this->client->scan($iterator, "*:$id*")) {
                 foreach ($keys as $key) {
-                    $this->client->persist($this->unprefix($key));
+                    $this->client->expireAt($this->unprefix($key), (new \DateTime('+24Hours'))->format('U'));
                 }
             }
         }
