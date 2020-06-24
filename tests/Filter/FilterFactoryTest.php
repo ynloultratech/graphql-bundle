@@ -14,6 +14,7 @@ use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Ynlo\GraphQLBundle\Annotation\Filter;
 use Ynlo\GraphQLBundle\Annotation\ObjectType;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
+use Ynlo\GraphQLBundle\Definition\Plugin\EndpointsDefinitionPlugin;
 use Ynlo\GraphQLBundle\Definition\QueryDefinition;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Filter\Common\DateFilter;
@@ -81,7 +82,10 @@ class FilterFactoryTest extends MockeryTestCase
         $resolver = \Mockery::mock(FilterResolverInterface::class);
         $resolver->expects('resolve')->andReturn($this->filters);
 
-        $this->factory = new FilterFactory([$resolver]);
+        $endpointPlugin =  \Mockery::mock(EndpointsDefinitionPlugin::class);
+        $endpointPlugin->allows('isGranted')->withAnyArgs()->andReturnTrue();
+
+        $this->factory = new FilterFactory([$resolver], $endpointPlugin);
     }
 
     public function testBuild()
