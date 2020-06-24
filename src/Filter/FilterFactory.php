@@ -16,6 +16,7 @@ use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
+use Ynlo\GraphQLBundle\Definition\Plugin\EndpointsDefinitionPlugin;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Util\FieldOptionsHelper;
 use Ynlo\GraphQLBundle\Util\TypeUtil;
@@ -28,13 +29,20 @@ class FilterFactory
     protected $resolvers;
 
     /**
+     * @var EndpointsDefinitionPlugin
+     */
+    protected $endpointsPlugin;
+
+    /**
      * FilterFactory constructor.
      *
      * @param iterable|FilterResolverInterface[] $resolvers
+     * @param EndpointsDefinitionPlugin          $endpointsPlugin
      */
-    public function __construct($resolvers)
+    public function __construct($resolvers, EndpointsDefinitionPlugin $endpointsPlugin)
     {
         $this->resolvers = $resolvers;
+        $this->endpointsPlugin = $endpointsPlugin;
     }
 
     /**
@@ -89,6 +97,12 @@ class FilterFactory
                 $field->setList(TypeUtil::isTypeList($filter->type));
                 $field->setNonNullList(TypeUtil::isTypeNonNullList($filter->type));
                 $field->setResolver($filter->resolver);
+                $field->setMetas($filter->options);
+
+                if (!$this->endpointsPlugin->isGranted($endpoint, $field)) {
+                    continue;
+                }
+
                 if ($filter->field) {
                     $field->setMeta('filter_field', $filter->field);
                 }

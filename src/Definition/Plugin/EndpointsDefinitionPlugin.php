@@ -115,6 +115,16 @@ class EndpointsDefinitionPlugin extends AbstractDefinitionPlugin
         $this->processForbiddenTypes($endpoint, $forbiddenTypes);
     }
 
+    public function isGranted(Endpoint $endpoint, DefinitionInterface $definition)
+    {
+        $endpoints = $this->normalizeConfig($definition, $definition->getMeta('endpoints', []));
+        if ($endpoints) {
+            $endpoints = $this->endpointsAliasToRealNames($endpoints);
+        }
+
+        return empty($endpoints) || \in_array($endpoint->getName(), $endpoints);
+    }
+
     protected function processForbiddenTypes(Endpoint $endpoint, $forbiddenTypes)
     {
         foreach ($endpoint->allQueries() as $queries) {
@@ -307,16 +317,6 @@ class EndpointsDefinitionPlugin extends AbstractDefinitionPlugin
         }
 
         return $forbiddenTypes;
-    }
-
-    protected function isGranted(Endpoint $endpoint, DefinitionInterface $definition)
-    {
-        $endpoints = $this->normalizeConfig($definition, $definition->getMeta('endpoints', []));
-        if ($endpoints) {
-            $endpoints = $this->endpointsAliasToRealNames($endpoints);
-        }
-
-        return empty($endpoints) || \in_array($endpoint->getName(), $endpoints);
     }
 
     /**

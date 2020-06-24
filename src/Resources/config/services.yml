@@ -414,6 +414,7 @@ services:
     Ynlo\GraphQLBundle\Filter\FilterFactory:
         arguments:
           - !tagged graphql.filter_resolver
+          - '@Ynlo\GraphQLBundle\Definition\Plugin\EndpointsDefinitionPlugin'
 
     Ynlo\GraphQLBundle\Filter\Resolver\DoctrineORMFilterResolver:
         arguments: ['@Doctrine\ORM\EntityManagerInterface']
