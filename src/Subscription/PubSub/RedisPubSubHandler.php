@@ -158,12 +158,13 @@ class RedisPubSubHandler implements PubSubHandlerInterface
                             $meta = $this->client->get($key);
                             preg_match("/$chan:(.+)/", $key, $matches);
                             if ($matches) {
+                                $metaArray = unserialize($meta, [true]);
                                 $message = new SubscriptionMessage(
                                     $chan,
                                     $matches[1],
                                     $data,
                                     $filters,
-                                    unserialize($meta, [true])
+                                    is_array($metaArray) ? $metaArray : []
                                 );
 
                                 $dispatch($message);
