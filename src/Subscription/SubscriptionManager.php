@@ -123,10 +123,10 @@ class SubscriptionManager
             $channels,
             function (SubscriptionMessage $message) use ($output, $debug) {
                 /** @var Request $request */
-                $request = $message->getMeta()['request'];
+                $request = $message->getMeta()['request'] ?? null;
                 $subscribedFilters = $message->getMeta()['arguments'] ?? [];
                 $subscribedChannel = $message->getMeta()['channel'] ?? null;
-                if (($subscribedChannel === $message->getChannel())
+                if ($request && ($subscribedChannel === $message->getChannel())
                     && $this->matchFilters($subscribedFilters, $message->getFilters())) {
                     $output->writeln(sprintf('[INFO] Process subscription "%s" of channel "%s"', $message->getId(), $message->getChannel()));
                     $this->sendRequest($request, $message, $output, $debug);
