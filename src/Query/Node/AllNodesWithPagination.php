@@ -12,7 +12,6 @@ namespace Ynlo\GraphQLBundle\Query\Node;
 
 use Doctrine\DBAL\Types\Type;
 use Doctrine\ORM\Mapping\MappingException;
-use Doctrine\ORM\Query\Expr\Andx;
 use Doctrine\ORM\Query\Expr\Orx;
 use Doctrine\ORM\QueryBuilder;
 use GraphQL\Error\Error;
@@ -33,6 +32,9 @@ use Ynlo\GraphQLBundle\OrderBy\OrderByInterface;
 use Ynlo\GraphQLBundle\Pagination\DoctrineCursorPaginatorInterface;
 use Ynlo\GraphQLBundle\Pagination\DoctrineOffsetCursorPaginator;
 use Ynlo\GraphQLBundle\Pagination\PaginationRequest;
+use Ynlo\GraphQLBundle\SearchBy\Common\SearchByDoctrineColumn;
+use Ynlo\GraphQLBundle\SearchBy\SearchByContext;
+use Ynlo\GraphQLBundle\SearchBy\SearchByInterface;
 use Ynlo\GraphQLBundle\Util\FieldOptionsHelper;
 
 /**
@@ -286,14 +288,14 @@ class AllNodesWithPagination extends AllNodes
                     switch ($metadata->getFieldMapping($searchColumn)['type']) {
                         case Type::STRING:
                         case Type::TEXT:
-                            $columns[$searchColumn] = $config ?? 'partial';
+                        $columns[$searchColumn] = $config ?? SearchByInterface::PARTIAL_SEARCH;
                             break;
                         case Type::INTEGER:
                         case Type::BIGINT:
                         case Type::FLOAT:
                         case Type::DECIMAL:
                         case Type::SMALLINT:
-                            $columns[$searchColumn] = $config ?? 'exact';
+                        $columns[$searchColumn] = $config ?? SearchByInterface::EXACT_MATCH;
                             break;
                     }
                 } catch (MappingException $exception) {
@@ -305,45 +307,30 @@ class AllNodesWithPagination extends AllNodes
         foreach ($searchFields as $field => $mode) {
             if (\is_int($field)) {
                 $field = $mode;
-                $mode = 'exact';
+                $mode = SearchByInterface::EXACT_MATCH;
             }
 
             if ('*' === $field || $mode === false) {
                 continue;
             }
+
+            if (class_exists($field) && is_a($field, SearchByInterface::class, true)) {
+                $mode = is_bool($mode) ? SearchByInterface::PARTIAL_SEARCH : $mode;
+            }
+
             $columns[$field] = $mode;
         }
 
-
         if (\count($columns) > 0) {
-            $joins = [];
             $orx = new Orx();
+            $searchContext = new SearchByContext($this->getContext(), $node);
             foreach ($columns as $column => $mode) {
-                $alias = $qb->getRootAliases()[0];
-                while (strpos($column, '.') !== false) {
-                    [$child, $column] = explode('.', $column, 2);
-                    $parentAlias = $alias;
-                    $alias = 'searchJoin'.ucfirst($child);
-                    if (!\in_array($alias, $joins, true)) {
-                        $qb->leftJoin("{$parentAlias}.{$child}", $alias);
-                        $joins[] = $alias;
-                    }
-                }
-
-                if ('partial' === $mode) {
-                    //search each word separate
-                    $searchArray = explode(' ', $search);
-
-                    $partialAnd = new Andx();
-                    foreach ($searchArray as $index => $q) {
-                        $partialAnd->add("$alias.$column LIKE :query_search_$index");
-                        $qb->setParameter("query_search_$index", '%'.addcslashes($q, '%_').'%');
-                    }
-                    $orx->add($partialAnd);
+                if (class_exists($column) && is_a($column, SearchByInterface::class, true) && $this->container->has($column)) {
+                    $searchBy = $this->container->get($column);
                 } else {
-                    $orx->add("$alias.$column LIKE :query_search");
-                    $qb->setParameter('query_search', trim($search));
+                    $searchBy = new SearchByDoctrineColumn();
                 }
+                $searchBy($searchContext, $qb, $orx, $this->queryAlias, $column, $mode, $search);
             }
 
             $qb->andWhere($orx);

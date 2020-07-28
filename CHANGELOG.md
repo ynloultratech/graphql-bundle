@@ -4,6 +4,7 @@ v1.6.0 - (Unreleased)
  * Support to use custom entity primary id
  * Subscriptions refactoring and some improvements
  * Add support to use NOT_BETWEEN in date filters
+ * Add support to use custom search in lists implementing `SearchByInterface`
 
 v1.5.0 - 2020-02-19
 ----

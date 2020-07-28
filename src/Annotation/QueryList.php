@@ -54,7 +54,9 @@ final class QueryList
      *  "name": "partial" - to search by given field using LIKE
      *  "name": "exact" - to search by given field using exact match
      *  "name, details": "partial" - add some fields at once
-     *  "category.name, category.parent.name": "partial" - find by parent field recursively
+     *  "price": false, - disable search by some field
+     *  "category.name, category.parent.name": "partial" - find by parent field recursively,
+     *  "App\SearchBy\CustomField" - search using custom logic implementing Ynlo\GraphQLBundle\SearchBy\SearchByInterface
      *
      * @var array
      */

@@ -22,6 +22,7 @@ use Ynlo\GraphQLBundle\Extension\ExtensionInterface;
 use Ynlo\GraphQLBundle\Filter\FilterInterface;
 use Ynlo\GraphQLBundle\Filter\FilterResolverInterface;
 use Ynlo\GraphQLBundle\Form\Input\InputFieldTypeGuesser;
+use Ynlo\GraphQLBundle\SearchBy\SearchByInterface;
 use Ynlo\GraphQLBundle\Subscription\Publisher;
 use Ynlo\GraphQLBundle\Subscription\SubscriptionAwareInterface;
 use Ynlo\GraphQLBundle\Type\Loader\TypeAutoLoader;
@@ -57,6 +58,9 @@ class YnloGraphQLBundle extends Bundle
         $container->registerForAutoconfiguration(ExtensionInterface::class)->addTag('graphql.extension');
         $container->registerForAutoconfiguration(InputFieldTypeGuesser::class)->addTag('graphql.input_type_guesser');
         $container->registerForAutoconfiguration(FilterResolverInterface::class)->addTag('graphql.filter_resolver');
+        $container->registerForAutoconfiguration(SearchByInterface::class)
+                  ->addTag('graphql.list_search')
+                  ->setPublic(true);
         $container->registerForAutoconfiguration(FilterInterface::class)
                   ->addTag('graphql.list_filter')
                   ->setPublic(true);
