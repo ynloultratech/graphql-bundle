@@ -26,7 +26,7 @@ class SearchByDoctrineColumn implements SearchByInterface
         while (strpos($column, '.') !== false) {
             [$child, $column] = explode('.', $column, 2);
             $parentAlias = $alias;
-            $alias = 'searchJoin'.ucfirst($child);
+            $alias = 'searchJoin'.ucfirst($child).mt_rand();
             if (!\in_array($alias, $qb->getAllAliases(), true)) {
                 $qb->leftJoin("{$parentAlias}.{$child}", $alias);
             }
