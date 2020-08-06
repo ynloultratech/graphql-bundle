@@ -40,9 +40,9 @@ class DeleteNode extends AbstractMutationResolver
         $this->getManager()->remove($data);
         $this->getManager()->flush();
 
-        $this->postDelete($data);
+        $this->postDelete($this->deletedNode);
         foreach ($this->extensions as $extension) {
-            $extension->postDelete($data, $this, $this->context);
+            $extension->postDelete($this->deletedNode, $this, $this->context);
         }
     }
 
