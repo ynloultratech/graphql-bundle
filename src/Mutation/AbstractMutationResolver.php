@@ -59,7 +59,7 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
             $extensionExecutor = function ($method) {
                 return function (FormEvent $event) use ($method) {
                     foreach ($this->extensions as $extension) {
-                        return call_user_func_array([$extension, $method], [$event]);
+                        call_user_func_array([$extension, $method], [$event]);
                     }
                 };
             };
