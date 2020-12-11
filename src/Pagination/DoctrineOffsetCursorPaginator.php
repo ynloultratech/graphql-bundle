@@ -54,6 +54,7 @@ class DoctrineOffsetCursorPaginator implements DoctrineCursorPaginatorInterface
 
         $limit = $pagination->getFirst() ?? $pagination->getLast();
         $query->setMaxResults($limit);
+        $query->distinct(true);
 
         $results = $query->getQuery()->execute();
 
