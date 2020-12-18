@@ -104,6 +104,10 @@ class DoctrineOffsetCursorPaginator implements DoctrineCursorPaginatorInterface
             $countQuery->resetDQLPart('orderBy');
         }
 
+        if ($countQuery->getDQLPart('groupBy')) {
+            $countQuery->resetDQLPart('groupBy');
+        }
+
         $countQuery->setMaxResults(null);
         $countQuery->setFirstResult(0);
 
