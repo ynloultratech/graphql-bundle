@@ -15,6 +15,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\QueryBuilder;
 use Ynlo\GraphQLBundle\Model\ConnectionInterface;
 use Ynlo\GraphQLBundle\Model\NodeConnection;
+use Ynlo\GraphQLBundle\Model\NodeInterface;
 
 /**
  * DoctrineOffsetCursorPaginator
@@ -62,14 +63,14 @@ class DoctrineOffsetCursorPaginator implements DoctrineCursorPaginatorInterface
 
         $cursorOffset = $offset - 1;
         foreach ($results as $result) {
-            $cursorOffset ++;
+            $cursorOffset++;
 
             if (!$this->connection->getPageInfo()->getStartCursor()) {
                 $this->connection->getPageInfo()->setStartCursor($this->encodeCursor($offset));
             }
 
             $cursor = $this->encodeCursor($cursorOffset);
-            $this->connection->addEdge($this->connection->createEdge($result, $cursor));
+            $this->connection->addEdge($this->connection->createEdge($this->parseNode($result), $cursor));
             if ($limit > 0) {
                 $this->connection->setPages((int) ceil($count / $limit));
                 if ($offset > 0) {
@@ -83,6 +84,22 @@ class DoctrineOffsetCursorPaginator implements DoctrineCursorPaginatorInterface
             }
             $this->connection->getPageInfo()->setEndCursor($cursor);
         }
+    }
+
+    /**
+     * Override this method to convert any arbitrary result into a node compatible result
+     *
+     * @param mixed $result
+     *
+     * @return NodeInterface
+     */
+    protected function parseNode($result): NodeInterface
+    {
+        if ($result instanceof NodeInterface){
+            return $result;
+        }
+
+        throw new \LogicException('Incompatible result exception, expected object of type Node');
     }
 
     /**
@@ -152,7 +169,7 @@ class DoctrineOffsetCursorPaginator implements DoctrineCursorPaginatorInterface
             if ($pagination->getLast()) {
                 $offset = $count - $pagination->getLast();
                 if ($offset < $this->decodeCursor($pagination->getAfter())) {
-                    $offset =  $this->decodeCursor($pagination->getAfter()) + 1;
+                    $offset = $this->decodeCursor($pagination->getAfter()) + 1;
                 }
             } else {
                 $offset = $this->decodeCursor($pagination->getAfter()) + 1;
