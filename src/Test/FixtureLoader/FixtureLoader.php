@@ -142,12 +142,9 @@ class FixtureLoader
                 }
             }
 
-            //load symfony4 data fixtures
-            if (Kernel::VERSION_ID >= 40000) {
-                $dir = $kernel->getRootDir().'/DataFixtures';
-                if (file_exists($dir)) {
-                    $loader->loadFromDirectory($dir);
-                }
+            $dir = $kernel->getProjectDir().'/DataFixtures';
+            if (file_exists($dir)) {
+                $loader->loadFromDirectory($dir);
             }
         }
 

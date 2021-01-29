@@ -37,7 +37,7 @@ class AnnotationLoaderTest extends MockeryTestCase
                 $bundle,
             ]
         );
-        $kernel->expects('getRootDir')->times(5)->andReturn(__DIR__);
+        $kernel->expects('getProjectDir')->times(5)->andReturn(__DIR__);
 
         $classes = new ArrayCollection();
 

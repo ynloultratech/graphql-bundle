@@ -149,12 +149,10 @@ class ControlledErrorManager
     private function controlledExceptions(): iterable
     {
         $paths = [];
-        if (Kernel::VERSION_ID >= 40000) {
-            foreach ($this->config['autoload']['locations'] ?? [] as $location) {
-                $path = $this->kernel->getRootDir().'/'.$location;
-                if (file_exists($path)) {
-                    $paths[$path] = 'App\\'.$location;
-                }
+        foreach ($this->config['autoload']['locations'] ?? [] as $location) {
+            $path = $this->kernel->getProjectDir().'/'.$location;
+            if (file_exists($path)) {
+                $paths[$path] = 'App\\'.$location;
             }
         }
 
@@ -213,7 +211,7 @@ class ControlledErrorManager
                     if ($ref->implementsInterface(ControlledErrorInterface::class) && $ref->isInstantiable()) {
                         /** @var ControlledErrorInterface $error */
                         $error = $ref->newInstanceWithoutConstructor();
-                        yield  new MappedControlledError(
+                        yield new MappedControlledError(
                             $error->getCategory(),
                             $error->getMessage(),
                             $error->getCode(),

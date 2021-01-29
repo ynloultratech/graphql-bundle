@@ -79,7 +79,7 @@ class AnnotationLoader implements DefinitionLoaderInterface
         foreach ($this->annotationParsers as $parser) {
             if ($parser instanceof AnnotationParserInterface) {
                 foreach ($annotationsMapping as $className => $map) {
-                    list($refClass, $annotations) = $map;
+                    [$refClass, $annotations] = $map;
                     foreach ($annotations as $annotation) {
                         if ($parser->supports($annotation)) {
                             $parser->parse($annotation, $refClass, $endpoint);
@@ -105,11 +105,9 @@ class AnnotationLoader implements DefinitionLoaderInterface
                 }
             }
 
-            if (Kernel::VERSION_ID >= 40000) {
-                $path = $this->kernel->getRootDir().'/'.$definitionLocation;
-                if (file_exists($path)) {
-                    $classes[] = $this->extractNamespaceClasses($path, (new \ReflectionClass($this->kernel))->getNamespaceName(), $definitionLocation);
-                }
+            $path = $this->kernel->getProjectDir().'/'.$definitionLocation;
+            if (file_exists($path)) {
+                $classes[] = $this->extractNamespaceClasses($path, (new \ReflectionClass($this->kernel))->getNamespaceName(), $definitionLocation);
             }
         }
 

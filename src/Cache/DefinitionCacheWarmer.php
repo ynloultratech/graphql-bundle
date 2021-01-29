@@ -71,14 +71,8 @@ class DefinitionCacheWarmer extends CacheWarmer
         $controlTime = filemtime($this->getControlFileName());
 
         $projectDir = $this->kernel->getProjectDir();
-
-        if (Kernel::VERSION_ID >= 40000) {
-            $dirs[] = $projectDir.'/config';
-            $dirs[] = $projectDir.'/src';
-        } else {
-            $dirs[] = $this->kernel->getRootDir();
-            $dirs[] = $this->kernel->getRootDir().'/../src';
-        }
+        $dirs[] = $projectDir.'/config';
+        $dirs[] = $projectDir.'/src';
 
         /** @var iterable $files */
         $files = Finder::create()
@@ -97,7 +91,7 @@ class DefinitionCacheWarmer extends CacheWarmer
 
     protected function getControlFileName()
     {
-        return $this->kernel->getCacheDir().'/graphal.schema.timestamp';
+        return $this->kernel->getCacheDir().'/graphql.schema.timestamp';
     }
 
     protected function updateControlFile()

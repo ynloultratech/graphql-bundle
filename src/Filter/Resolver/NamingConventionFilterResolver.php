@@ -83,12 +83,9 @@ class NamingConventionFilterResolver implements FilterResolverInterface
                 }
             }
 
-            //symfony ^4.0
-            if (Kernel::VERSION_ID >= 40000) {
-                $path = "{$this->kernel->getRootDir()}/Filter/$type";
-                if (file_exists($path)) {
-                    $paths[$path] = "App\Filter\\$type";
-                }
+            $path = "{$this->kernel->getProjectDir()}/Filter/$type";
+            if (file_exists($path)) {
+                $paths[$path] = "App\Filter\\$type";
             }
         }
 
