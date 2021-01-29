@@ -56,11 +56,9 @@ class TypeAutoLoader
             }
         }
 
-        if (Kernel::VERSION_ID >= 40000) {
-            $path = $this->kernel->getRootDir().'/Type';
-            if (file_exists($path)) {
-                $this->registerBundleTypes($path, 'App');
-            }
+        $path = $this->kernel->getProjectDir().'/Type';
+        if (file_exists($path)) {
+            $this->registerBundleTypes($path, 'App');
         }
 
         $this->saveCache();
