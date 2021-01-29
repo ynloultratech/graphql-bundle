@@ -106,7 +106,7 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
 
         if ($mutationEvent instanceof GraphQLMutationEvent) {
             $mutationEvent->setPayload($payload);
-            $this->eventDispatcher->dispatch(GraphQLEvents::MUTATION_COMPLETED, $mutationEvent);
+            $this->eventDispatcher->dispatch($mutationEvent, GraphQLEvents::MUTATION_COMPLETED);
             $payload = $mutationEvent->getPayload();
         }
 
