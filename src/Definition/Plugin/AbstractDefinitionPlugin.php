@@ -10,7 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Plugin;
 
-use Doctrine\Common\Inflector\Inflector;
+use Doctrine\Inflector\InflectorFactory;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
@@ -27,7 +27,7 @@ abstract class AbstractDefinitionPlugin implements DefinitionPluginInterface
         $name = preg_replace('/Plugin/', null, $matches[1]);
         $name = preg_replace('/Definition$/', null, $name);
 
-        return Inflector::tableize($name);
+        return InflectorFactory::create()->build()->tableize($name);
     }
 
     /**

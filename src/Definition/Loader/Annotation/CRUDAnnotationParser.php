@@ -10,7 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation;
 
-use Doctrine\Common\Inflector\Inflector;
+use Doctrine\Inflector\InflectorFactory;
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
@@ -142,7 +142,7 @@ class CRUDAnnotationParser implements AnnotationParserInterface
      */
     protected function createListOperation(ObjectDefinitionInterface $definition, Annotation\Query $query, Endpoint $endpoint, $bundleNamespace)
     {
-        $query->name = $query->name ?? 'all'.Inflector::pluralize(ucfirst($definition->getName()));
+        $query->name = $query->name ?? 'all'.InflectorFactory::create()->build()->pluralize(ucfirst($definition->getName()));
         $query->type = $query->type ?? $definition->getName();
         $query->options = array_merge(['pagination' => true], $query->options);
         $resolver = ClassUtils::applyNamingConvention($bundleNamespace, 'Query', $definition->getName(), $query->name);

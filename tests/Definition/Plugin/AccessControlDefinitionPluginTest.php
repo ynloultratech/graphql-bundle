@@ -25,7 +25,7 @@ class AccessControlDefinitionPluginTest extends TestCase
 
         $definition = new FieldDefinition();
         $config = [
-            'expression' => 'has_role("ADMIN")',
+            'expression' => 'is_granted("ADMIN")',
             'message' => 'Require admin role',
         ];
         $definition->setMeta('access_control', $config);

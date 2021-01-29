@@ -10,7 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Component\AutoWire;
 
-use Doctrine\Common\Inflector\Inflector;
+use Doctrine\Inflector\InflectorFactory;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 
@@ -57,7 +57,7 @@ class AutoWire implements ContainerAwareInterface
         $args = [];
         if ($refClass->getConstructor()) {
             foreach ($refClass->getConstructor()->getParameters() as $parameter) {
-                $name = Inflector::tableize(str_replace('_', '.', $parameter->getName()));
+                $name = InflectorFactory::create()->build()->tableize(str_replace('_', '.', $parameter->getName()));
                 $dependency = null;
                 if ($parameter->getClass()) {
                     if ($this->container->has($parameter->getClass()->getName())) {

@@ -1,3 +1,10 @@
+v2.0.0 - (Unreleased)
+
+* Drop support for symfony 3.4
+* Add support for symfony 5.0 
+* Removed the `has_role()` function from security expressions, use `is_granted()` instead.
+
+
 v1.6.0 - (Unreleased)
 ----
  * Some minors bugs fixed

@@ -85,14 +85,14 @@ class QueryType extends ObjectType implements
                                      ->build();
 
             $event = new GraphQLFieldEvent($context);
-            $eventDispatcher->dispatch(GraphQLEvents::PRE_READ_FIELD, $event);
+            $eventDispatcher->dispatch($event, GraphQLEvents::PRE_READ_FIELD);
 
             $executor = new ResolverExecutor($container, $query);
 
             $value = $executor($root, $args, $context, $resolveInfo);
             $event->setValue($value);
 
-            $eventDispatcher->dispatch(GraphQLEvents::POST_READ_FIELD, $event);
+            $eventDispatcher->dispatch($event, GraphQLEvents::POST_READ_FIELD);
 
             return $value;
         };

@@ -10,11 +10,10 @@
 
 namespace Ynlo\GraphQLBundle\Events;
 
-use Symfony\Component\EventDispatcher\Event;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Request\ExecuteQuery;
 
-class GraphQLOperationEvent extends Event
+class GraphQLOperationEvent extends GraphQLEventProxy
 {
     /**
      * @var ExecuteQuery

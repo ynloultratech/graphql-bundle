@@ -17,10 +17,10 @@ class EndpointNotValidException extends \RuntimeException
      */
     public function __construct(string $endpoint, array $registeredEndpoints)
     {
-        $message  = sprintf(
+        $message = sprintf(
             '"%s" is not a valid configured endpoint, use one of the following endpoints: [%s]',
             $endpoint,
-            implode($registeredEndpoints, ',')
+            implode(',', $registeredEndpoints)
         );
         parent::__construct($message);
     }

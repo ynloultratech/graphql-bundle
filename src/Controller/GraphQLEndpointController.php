@@ -196,7 +196,7 @@ class GraphQLEndpointController
 
             if ($this->dispatcher) {
                 $operationEvent = new GraphQLOperationEvent($query, $endpoint);
-                $this->dispatcher->dispatch(GraphQLEvents::OPERATION_START, $operationEvent);
+                $this->dispatcher->dispatch($operationEvent, GraphQLEvents::OPERATION_START);
             }
 
             $context = new ResolverContext($endpoint);
@@ -259,7 +259,7 @@ class GraphQLEndpointController
         }
 
         if ($this->dispatcher && $operationEvent) {
-            $this->dispatcher->dispatch(GraphQLEvents::OPERATION_END, $operationEvent);
+            $this->dispatcher->dispatch($operationEvent, GraphQLEvents::OPERATION_END);
         }
 
         if ($this->publisher && isset($subscriptionRequest) && $subscriptionRequest instanceof SubscriptionRequest) {

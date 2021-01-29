@@ -10,8 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Registry;
 
-use Doctrine\Common\Inflector\Inflector;
-use Symfony\Component\Config\Definition\Builder\NodeBuilder;
+use Doctrine\Inflector\InflectorFactory;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
@@ -181,7 +180,7 @@ class DefinitionRegistry
 
     protected function cacheFileName($name): string
     {
-        return sprintf('%s%sgraphql.registry_definitions_%s.meta', $this->cacheDir, DIRECTORY_SEPARATOR, Inflector::tableize($name));
+        return sprintf('%s%sgraphql.registry_definitions_%s.meta', $this->cacheDir, DIRECTORY_SEPARATOR, InflectorFactory::create()->build()->tableize($name));
     }
 
     protected function loadCache($name): ?Endpoint

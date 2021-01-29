@@ -49,7 +49,7 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
                 function (FormEvent $event) use (&$mutationEvent) {
                     if ($this->eventDispatcher) {
                         $mutationEvent = new GraphQLMutationEvent($this->context, $event);
-                        $this->eventDispatcher->dispatch(GraphQLEvents::MUTATION_SUBMITTED, $mutationEvent);
+                        $this->eventDispatcher->dispatch($mutationEvent, GraphQLEvents::MUTATION_SUBMITTED);
                     }
                 }
             );
@@ -230,6 +230,7 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
 
         return null;
     }
+
     /**
      * @param mixed|null $data
      *
@@ -334,7 +335,7 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
         foreach ($pathArray as &$propName) {
             $index = null;
             if (preg_match('/(\w+)(\[\d+\])$/', $propName, $matches)) {
-                list(, $propName, $index) = $matches;
+                [, $propName, $index] = $matches;
             }
             if (!$contextForm->has($propName)) {
                 foreach ($contextForm->all() as $child) {

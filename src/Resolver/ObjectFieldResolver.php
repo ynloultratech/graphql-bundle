@@ -63,10 +63,10 @@ class ObjectFieldResolver implements ContainerAwareInterface
         }
 
         $event = new GraphQLFieldEvent($context);
-        $eventDispatcher->dispatch(GraphQLEvents::PRE_READ_FIELD, $event);
+        $eventDispatcher->dispatch($event, GraphQLEvents::PRE_READ_FIELD);
 
         if ($event->isPropagationStopped() || $event->getValue()) {
-            $eventDispatcher->dispatch(GraphQLEvents::POST_READ_FIELD, $event);
+            $eventDispatcher->dispatch($event, GraphQLEvents::POST_READ_FIELD);
 
             return $event->getValue();
         }
@@ -115,7 +115,7 @@ class ObjectFieldResolver implements ContainerAwareInterface
         }
 
         $event->setValue($value);
-        $eventDispatcher->dispatch(GraphQLEvents::POST_READ_FIELD, $event);
+        $eventDispatcher->dispatch($event, GraphQLEvents::POST_READ_FIELD);
 
         return $event->getValue();
     }

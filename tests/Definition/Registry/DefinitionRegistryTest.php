@@ -201,7 +201,6 @@ class DefinitionRegistryTest extends MockeryTestCase
 
     public function testGetNotValidEndpoint()
     {
-
         self::expectException(EndpointNotValidException::class);
         $registry = new DefinitionRegistry();
         $registry->getEndpoint('backend');

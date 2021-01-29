@@ -10,11 +10,10 @@
 
 namespace Ynlo\GraphQLBundle\Events;
 
-use Symfony\Component\EventDispatcher\Event;
 use Symfony\Component\Form\FormEvent;
 use Ynlo\GraphQLBundle\Resolver\ResolverContext;
 
-class GraphQLMutationEvent extends Event
+class GraphQLMutationEvent extends GraphQLEventProxy
 {
     /**
      * @var ResolverContext

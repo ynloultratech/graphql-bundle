@@ -11,7 +11,7 @@
 namespace Ynlo\GraphQLBundle\Util;
 
 use Doctrine\Common\Util\ClassUtils as DoctrineClassUtils;
-use Doctrine\Common\Inflector\Inflector;
+use Doctrine\Inflector\InflectorFactory;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Ynlo\GraphQLBundle\Definition\ClassAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
@@ -192,6 +192,6 @@ final class TypeUtil
                 break;
         }
 
-        return Inflector::classify($type);
+        return InflectorFactory::create()->build()->classify($type);
     }
 }
