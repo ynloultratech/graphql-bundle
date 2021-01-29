@@ -158,23 +158,12 @@ services:
         tags:
             - { name: 'form.type_guesser' }
 
-    Ynlo\GraphQLBundle\Form\TypeGuesser\GraphQLEnumTypeGuesser:
-        public: true
-        arguments: ['@annotations.reader', '@doctrine', "%doctrine.dbal.connection_factory.types%"]
-        tags:
-            - { name: 'form.type_guesser', priority: 10}
-
-    # this alias is required to override Fresh\DoctrineEnumBundle\Form\EnumTypeGuesser
-    enum_type_guesser:
-        alias: Ynlo\GraphQLBundle\Form\TypeGuesser\GraphQLEnumTypeGuesser
-
     Ynlo\GraphQLBundle\Form\TypeGuesser\DoctrineOrmTypeGuesser:
         public: true
         arguments: ['@doctrine']
         tags:
             - { name: 'form.type_guesser'}
 
-    # this alias is required to override Fresh\DoctrineEnumBundle\Form\EnumTypeGuesser
     form.type_guesser.doctrine:
          alias: Ynlo\GraphQLBundle\Form\TypeGuesser\DoctrineOrmTypeGuesser
 
