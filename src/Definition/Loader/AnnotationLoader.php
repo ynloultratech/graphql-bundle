@@ -105,7 +105,7 @@ class AnnotationLoader implements DefinitionLoaderInterface
                 }
             }
 
-            $path = $this->kernel->getProjectDir().'/'.$definitionLocation;
+            $path = $this->kernel->getProjectDir().'/src/'.$definitionLocation;
             if (file_exists($path)) {
                 $classes[] = $this->extractNamespaceClasses($path, (new \ReflectionClass($this->kernel))->getNamespaceName(), $definitionLocation);
             }

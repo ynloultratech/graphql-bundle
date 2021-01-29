@@ -150,7 +150,7 @@ class ControlledErrorManager
     {
         $paths = [];
         foreach ($this->config['autoload']['locations'] ?? [] as $location) {
-            $path = $this->kernel->getProjectDir().'/'.$location;
+            $path = $this->kernel->getProjectDir().'/src/'.$location;
             if (file_exists($path)) {
                 $paths[$path] = 'App\\'.$location;
             }

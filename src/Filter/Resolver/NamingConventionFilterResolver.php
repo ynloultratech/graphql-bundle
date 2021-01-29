@@ -83,7 +83,7 @@ class NamingConventionFilterResolver implements FilterResolverInterface
                 }
             }
 
-            $path = "{$this->kernel->getProjectDir()}/Filter/$type";
+            $path = "{$this->kernel->getProjectDir()}/src/Filter/$type";
             if (file_exists($path)) {
                 $paths[$path] = "App\Filter\\$type";
             }

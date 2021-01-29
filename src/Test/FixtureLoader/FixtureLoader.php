@@ -142,7 +142,7 @@ class FixtureLoader
                 }
             }
 
-            $dir = $kernel->getProjectDir().'/DataFixtures';
+            $dir = $kernel->getProjectDir().'/src/DataFixtures';
             if (file_exists($dir)) {
                 $loader->loadFromDirectory($dir);
             }

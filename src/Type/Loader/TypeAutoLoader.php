@@ -56,7 +56,7 @@ class TypeAutoLoader
             }
         }
 
-        $path = $this->kernel->getProjectDir().'/Type';
+        $path = $this->kernel->getProjectDir().'/src/Type';
         if (file_exists($path)) {
             $this->registerBundleTypes($path, 'App');
         }
