@@ -17,6 +17,7 @@ use Ynlo\GraphQLBundle\Behat\Fixtures\FixtureManager;
  * Allow the use of fixtures inside expressions
  *
  * #fixtureName = to get the global id of existent fixture
+ *
  * @fixtureName = to get reference to given fixture name
  *
  * @example     "{@user1}" => User (object)
@@ -41,7 +42,7 @@ class FixturePreprocessor implements ExpressionPreprocessorInterface
         preg_match_all('/#([\w\/\\\\-]+)/', $expression, $matches);
         if ($matches[0] ?? false) {
             foreach ($matches[0] as $index => $match) {
-                $expression = preg_replace('/#([\w\/\\\\-]+)/', '$1_id', $match);
+                $expression = preg_replace('/#([\w\/\\\\-]+)/', '$1_id', $expression);
                 $expression = preg_replace('/[\/\\\\-]/', '_', $expression); // replace invalid chars
                 $values[preg_replace('/[\/\\\\-]/', '_', $matches[1][$index]).'_id'] = $this->fixtureManager->getFixtureGlobalId($matches[1][$index]);
             }
