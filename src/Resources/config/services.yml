@@ -78,12 +78,6 @@ services:
         tags:
             - { name: 'graphql.definition_loader' }
 
-    Ynlo\GraphQLBundle\Definition\Loader\DoctrineEnumLoader:
-        public: true
-        arguments: ['@doctrine']
-        tags:
-            - { name: 'graphql.definition_loader' }
-
     Ynlo\GraphQLBundle\Definition\Loader\Annotation\ObjectTypeAnnotationParser:
         arguments: ['@annotations.reader', !tagged graphql.field_definition_decorator]
         tags:
