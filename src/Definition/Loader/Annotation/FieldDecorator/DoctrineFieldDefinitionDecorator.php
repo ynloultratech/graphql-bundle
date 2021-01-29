@@ -11,7 +11,7 @@
 namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation\FieldDecorator;
 
 use Doctrine\Common\Annotations\Reader;
-use Doctrine\DBAL\Types\Type as DoctrineType;
+use Doctrine\DBAL\Types\Types as DBALTypes;
 use Doctrine\ORM\Mapping\Column;
 use Doctrine\ORM\Mapping\Embedded;
 use Doctrine\ORM\Mapping\Id;
@@ -125,36 +125,37 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
     protected function getGraphQLType(?string $type):?string
     {
         switch ($type) {
-            case DoctrineType::BOOLEAN:
+            case DBALTypes::BOOLEAN:
                 $type = Types::BOOLEAN;
                 break;
-            case DoctrineType::DECIMAL:
-            case DoctrineType::FLOAT:
+            case DBALTypes::DECIMAL:
+            case DBALTypes::FLOAT:
                 $type = Types::FLOAT;
                 break;
-            case DoctrineType::INTEGER:
-            case DoctrineType::BIGINT:
-            case DoctrineType::SMALLINT:
+            case DBALTypes::INTEGER:
+            case DBALTypes::BIGINT:
+            case DBALTypes::SMALLINT:
                 $type = Types::INT;
                 break;
-            case DoctrineType::STRING:
-            case DoctrineType::TEXT:
-            case DoctrineType::GUID:
+            case DBALTypes::STRING:
+            case DBALTypes::TEXT:
+            case DBALTypes::GUID:
                 $type = Types::STRING;
                 break;
-            case DoctrineType::TARRAY:
-            case DoctrineType::SIMPLE_ARRAY:
-            case DoctrineType::JSON_ARRAY:
+            case DBALTypes::ARRAY:
+            case DBALTypes::SIMPLE_ARRAY:
+            case DBALTypes::JSON_ARRAY:
+            case DBALTypes::JSON:
                 $type = Types::nonNull(Types::listOf(Types::STRING));
                 break;
-            case DoctrineType::TIME:
-            case DoctrineType::TIME_IMMUTABLE:
+            case DBALTypes::TIME_MUTABLE:
+            case DBALTypes::TIME_IMMUTABLE:
                 $type = Types::TIME;
                 break;
-            case DoctrineType::DATE:
+            case DBALTypes::DATE_MUTABLE:
                 $type = Types::DATE;
                 break;
-            case DoctrineType::DATETIME:
+            case DBALTypes::DATETIME_MUTABLE:
                 $type = Types::DATETIME;
                 break;
         }

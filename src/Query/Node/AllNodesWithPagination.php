@@ -10,7 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Query\Node;
 
-use Doctrine\DBAL\Types\Type;
+use Doctrine\DBAL\Types\Types as DBALTypes;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Query\Expr\Orx;
 use Doctrine\ORM\QueryBuilder;
@@ -286,15 +286,15 @@ class AllNodesWithPagination extends AllNodes
             if ($searchColumn) {
                 try {
                     switch ($metadata->getFieldMapping($searchColumn)['type']) {
-                        case Type::STRING:
-                        case Type::TEXT:
+                        case DBALTypes::STRING:
+                        case DBALTypes::TEXT:
                         $columns[$searchColumn] = $config ?? SearchByInterface::PARTIAL_SEARCH;
                             break;
-                        case Type::INTEGER:
-                        case Type::BIGINT:
-                        case Type::FLOAT:
-                        case Type::DECIMAL:
-                        case Type::SMALLINT:
+                        case DBALTypes::INTEGER:
+                        case DBALTypes::BIGINT:
+                        case DBALTypes::FLOAT:
+                        case DBALTypes::DECIMAL:
+                        case DBALTypes::SMALLINT:
                         $columns[$searchColumn] = $config ?? SearchByInterface::EXACT_MATCH;
                             break;
                     }
