@@ -10,7 +10,6 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation;
 
-use Doctrine\Inflector\InflectorFactory;
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
@@ -25,6 +24,7 @@ use Ynlo\GraphQLBundle\Mutation\DeleteNode;
 use Ynlo\GraphQLBundle\Mutation\UpdateNode;
 use Ynlo\GraphQLBundle\Query\Node\AllNodesWithPagination;
 use Ynlo\GraphQLBundle\Util\ClassUtils;
+use Ynlo\GraphQLBundle\Util\Inflector;
 
 /**
  * CRUDAnnotationParser
@@ -142,7 +142,7 @@ class CRUDAnnotationParser implements AnnotationParserInterface
      */
     protected function createListOperation(ObjectDefinitionInterface $definition, Annotation\Query $query, Endpoint $endpoint, $bundleNamespace)
     {
-        $query->name = $query->name ?? 'all'.InflectorFactory::create()->build()->pluralize(ucfirst($definition->getName()));
+        $query->name = $query->name ?? 'all'.Inflector::pluralize(ucfirst($definition->getName()));
         $query->type = $query->type ?? $definition->getName();
         $query->options = array_merge(['pagination' => true], $query->options);
         $resolver = ClassUtils::applyNamingConvention($bundleNamespace, 'Query', $definition->getName(), $query->name);

@@ -192,6 +192,6 @@ final class TypeUtil
                 break;
         }
 
-        return InflectorFactory::create()->build()->classify($type);
+        return Inflector::classify($type);
     }
 }

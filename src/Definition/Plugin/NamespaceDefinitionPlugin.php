@@ -10,7 +10,6 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Plugin;
 
-use Doctrine\Inflector\InflectorFactory;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\ExecutableDefinitionInterface;
@@ -23,6 +22,7 @@ use Ynlo\GraphQLBundle\Definition\ObjectDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Definition\SubscriptionDefinition;
 use Ynlo\GraphQLBundle\Resolver\EmptyObjectResolver;
+use Ynlo\GraphQLBundle\Util\Inflector;
 
 /**
  * This extension configure namespace in definitions
@@ -277,7 +277,7 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
                     $nodeName = $endpoint->getTypeForClass($nodeName);
                 }
 
-                $name = InflectorFactory::create()->build()->pluralize(lcfirst($nodeName));
+                $name = Inflector::pluralize(lcfirst($nodeName));
 
                 $querySuffix = $this->globalConfig['nodes']['query_suffix'] ?? 'Query';
                 $mutationSuffix = $this->globalConfig['nodes']['mutation_suffix'] ?? 'Mutation';
@@ -310,7 +310,7 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
                     //remove node suffix on namespaced definitions
                     $originName = $definition->getName();
                     $definition->setName(preg_replace(sprintf("/(\w+)%s$/", $nodeName), '$1', $definition->getName()));
-                    $definition->setName(preg_replace(sprintf("/(\w+)%s$/", InflectorFactory::create()->build()->pluralize($nodeName)), '$1', $definition->getName()));
+                    $definition->setName(preg_replace(sprintf("/(\w+)%s$/", Inflector::pluralize($nodeName)), '$1', $definition->getName()));
                 }
             }
 

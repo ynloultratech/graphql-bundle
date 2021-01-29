@@ -11,12 +11,12 @@
 
 namespace Ynlo\GraphQLBundle\Definition\Loader\Annotation;
 
-use Doctrine\Inflector\InflectorFactory;
 use Ynlo\GraphQLBundle\Annotation;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Query\Node\AllNodesWithPagination;
 use Ynlo\GraphQLBundle\Util\ClassUtils;
+use Ynlo\GraphQLBundle\Util\Inflector;
 use Ynlo\GraphQLBundle\Util\TypeUtil;
 
 class QueryListAnnotationParser extends QueryAnnotationParser
@@ -46,7 +46,7 @@ class QueryListAnnotationParser extends QueryAnnotationParser
 
         $definition = $endpoint->getType($endpoint->getTypeForClass($refClass->getName()));
 
-        $annotation->name = $annotation->name ?? 'all'.InflectorFactory::create()->build()->pluralize(ucfirst($definition->getName()));
+        $annotation->name = $annotation->name ?? 'all'.Inflector::pluralize(ucfirst($definition->getName()));
         $annotation->type = sprintf('[%s]', TypeUtil::normalize($annotation->type ?? $definition->getName()));
 
         $pagination = new Annotation\Plugin\Pagination();

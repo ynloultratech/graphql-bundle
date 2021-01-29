@@ -10,7 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Annotation\Plugin;
 
-use Doctrine\Inflector\InflectorFactory;
+use Ynlo\GraphQLBundle\Util\Inflector;
 
 /**
  * Can use this annotation as base to se plugin options.
@@ -49,7 +49,7 @@ abstract class PluginConfigAnnotation
         foreach ($properties as $property) {
             $value = $property->getValue($this);
             if (null !== $value) {
-                $config[InflectorFactory::create()->build()->tableize($property->getName())] = $property->getValue($this);
+                $config[Inflector::tableize($property->getName())] = $property->getValue($this);
             }
         }
 
@@ -65,6 +65,6 @@ abstract class PluginConfigAnnotation
     {
         preg_match('/\w+$/', get_class($this), $matches);
 
-        return InflectorFactory::create()->build()->tableize($matches[0]);
+        return Inflector::tableize($matches[0]);
     }
 }

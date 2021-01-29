@@ -35,7 +35,7 @@
     "symfony/templating": "^4.4 | ^5.0",
     "symfony/expression-language": "^4.4 | ^5.0",
     "symfony/process" : "^4.4 | ^5.0",
-    "doctrine/inflector": "^2.0",
+    "doctrine/inflector": "^1.0 | ^2.0",
     "doctrine/orm": "^2.5",
     "doctrine/doctrine-bundle": "^1.6 | ^2.0",
     "twig/twig": "^2.0 | ^3.0",
@@ -49,7 +49,7 @@
   },
   "require-dev": {
     "ext-redis": "*",
-    "symfony/symfony": "^4.0",
+    "symfony/symfony": "^4.4.0",
     "phpunit/phpunit": "^6.2",
     "symfony/phpunit-bridge": "^5.1",
     "lexik/jwt-authentication-bundle": "^2.4",
