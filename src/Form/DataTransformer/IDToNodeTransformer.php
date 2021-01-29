@@ -10,7 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Form\DataTransformer;
 
-use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\Persistence\ObjectRepository;
 use Symfony\Component\Form\DataTransformerInterface;
 use Symfony\Component\Form\Exception\TransformationFailedException;
 use Ynlo\GraphQLBundle\Model\NodeInterface;

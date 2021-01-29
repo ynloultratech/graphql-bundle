@@ -11,7 +11,7 @@
 namespace Ynlo\GraphQLBundle\Tests\Form\DataTransformer;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\Persistence\ObjectRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Symfony\Component\Form\Exception\TransformationFailedException;

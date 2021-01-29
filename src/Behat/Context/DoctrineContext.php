@@ -12,7 +12,7 @@ namespace Ynlo\GraphQLBundle\Behat\Context;
 
 use Behat\Behat\Context\Context;
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\Persistence\ObjectRepository;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\Assert;
 use Symfony\Component\HttpKernel\KernelInterface;

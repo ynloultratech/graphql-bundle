@@ -10,7 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Filter\Resolver;
 
-use Doctrine\Common\Persistence\Mapping\MappingException;
+use Doctrine\Persistence\Mapping\MappingException;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
 use Ynlo\GraphQLBundle\Definition\ClassAwareDefinitionInterface;

@@ -11,7 +11,7 @@
 namespace Ynlo\GraphQLBundle\Test\Helper;
 
 use Doctrine\Bundle\DoctrineBundle\Registry;
-use Doctrine\Common\Persistence\ObjectRepository;
+use Doctrine\Persistence\ObjectRepository;
 use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\Client;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
