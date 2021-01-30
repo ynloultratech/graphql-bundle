@@ -10,13 +10,13 @@
 
 namespace Ynlo\GraphQLBundle\Query\Node;
 
-use Doctrine\Common\Inflector\Inflector;
 use Doctrine\ORM\EntityRepository;
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Definition\ArgumentDefinition;
 use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
+use Ynlo\GraphQLBundle\Util\Inflector;
 
 /**
  * @GraphQL\Query(type="[]")
