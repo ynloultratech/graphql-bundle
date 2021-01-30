@@ -27,8 +27,11 @@ class OrderBySimpleField implements OrderByInterface
 
         // use alias
         $orderByFields = FieldOptionsHelper::normalize($context->getParentContext()->getDefinition()->getMeta('pagination')['order_by'] ?? ['*']);
-        if (isset($orderByFields[$column])){
+        if (isset($orderByFields[$column])) {
             $column = $orderByFields[$column];
+        } else {
+            $field = $context->getNode()->getField($column);
+            $column = $field->getOriginName();
         }
 
         $qb->addOrderBy("{$alias}.$column", $orderBy->getDirection());
