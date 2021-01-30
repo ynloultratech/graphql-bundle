@@ -431,3 +431,33 @@ services:
         arguments:
             - '%graphql.subscriptions.redis%'
 
+# Security User ---------
+
+    Ynlo\GraphQLBundle\Security\User\UserManagerInterface:
+        alias: Ynlo\GraphQLBundle\Doctrine\UserManager
+
+    Ynlo\GraphQLBundle\Security\User\UserProvider:
+        arguments:
+            - '@Ynlo\GraphQLBundle\Security\User\UserManagerInterface'
+
+    Ynlo\GraphQLBundle\Doctrine\UserManager:
+        arguments:
+            - '@Ynlo\GraphQLBundle\Security\User\PasswordUpdater'
+            - '@Doctrine\ORM\EntityManagerInterface'
+            # class param injected using DI
+
+    Ynlo\GraphQLBundle\Security\User\PasswordUpdater:
+        arguments:
+            - '@security.encoder_factory'
+
+    Ynlo\GraphQLBundle\Doctrine\UserListener:
+        arguments:
+            - '@Ynlo\GraphQLBundle\Security\User\UserManagerInterface'
+        tags:
+            - { name: doctrine.event_subscriber, connection: default }
+
+    Ynlo\GraphQLBundle\Security\User\LastLoginListener:
+        arguments:
+            - '@Ynlo\GraphQLBundle\Security\User\UserManagerInterface'
+        tags:
+            - { name: kernel.event_subscriber }

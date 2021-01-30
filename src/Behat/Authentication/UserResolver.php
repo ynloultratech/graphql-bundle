@@ -12,7 +12,7 @@ namespace Ynlo\GraphQLBundle\Behat\Authentication;
 
 use Symfony\Component\HttpKernel\Kernel;
 
-class FosUserResolver implements UserResolverInterface
+class UserResolver implements UserResolverInterface
 {
     /**
      * @var Kernel
@@ -27,7 +27,7 @@ class FosUserResolver implements UserResolverInterface
     public function findByUsername($username)
     {
         $container = $this->kernel->getContainer();
-        $userClass = $container->getParameter('fos_user.model.user.class');
+        $userClass = $container->getParameter('graphql.security.user.class');
 
         return $container->get('doctrine')->getManager()->getRepository($userClass)->findOneBy(['username' => $username]);
     }

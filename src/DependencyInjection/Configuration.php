@@ -16,11 +16,11 @@ use GraphQL\Validator\Rules\QueryDepth;
 use Symfony\Component\Config\Definition\Builder\NodeBuilder;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
+use Ynlo\GraphQLBundle\Doctrine\UserManager;
 use Ynlo\GraphQLBundle\Encoder\SecureIDEncoder;
 use Ynlo\GraphQLBundle\Error\DefaultErrorFormatter;
 use Ynlo\GraphQLBundle\Error\DefaultErrorHandler;
 use Ynlo\GraphQLBundle\Subscription\PubSub\RedisPubSubHandler;
-use Ynlo\GraphQLBundle\Subscription\Subscriber;
 
 /**
  * Class Configuration
@@ -432,6 +432,19 @@ Can be used to group multiple nodes or publish a node with a different group nam
             ->arrayNode('security')
             ->canBeEnabled()
             ->children();
+
+        $user = $securityNode
+            ->arrayNode('user')
+            ->children();
+
+        $user->scalarNode('class')
+             ->info('User class to use')
+             ->isRequired()
+             ->defaultNull();
+
+        $user->scalarNode('manager')
+             ->info('User class to use')
+             ->defaultValue(UserManager::class);
 
         $validationRulesNode = $securityNode
             ->arrayNode('validation_rules')

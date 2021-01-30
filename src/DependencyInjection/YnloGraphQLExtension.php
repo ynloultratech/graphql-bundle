@@ -24,10 +24,13 @@ use Ynlo\GraphQLBundle\Command\SubscriptionConsumerCommand;
 use Ynlo\GraphQLBundle\Controller\GraphQLEndpointController;
 use Ynlo\GraphQLBundle\Controller\SubscriptionsController;
 use Ynlo\GraphQLBundle\Controller\SubscriptionsHeartbeatController;
+use Ynlo\GraphQLBundle\Doctrine\UserManager;
 use Ynlo\GraphQLBundle\Encoder\IDEncoderManager;
 use Ynlo\GraphQLBundle\GraphiQL\JWTGraphiQLAuthentication;
 use Ynlo\GraphQLBundle\GraphiQL\LexikJWTGraphiQLAuthenticator;
 use Ynlo\GraphQLBundle\Request\SubscriptionsRequestMiddleware;
+use Ynlo\GraphQLBundle\Security\User\UserManagerInterface;
+use Ynlo\GraphQLBundle\Security\User\UserProvider;
 use Ynlo\GraphQLBundle\Subscription\Publisher;
 use Ynlo\GraphQLBundle\Subscription\PubSub\RedisPubSubHandler;
 use Ynlo\GraphQLBundle\Subscription\Subscriber;
@@ -64,6 +67,7 @@ class YnloGraphQLExtension extends Extension
         $container->setParameter('graphql.graphiql_auth_jwt', $config['graphiql']['authentication']['provider']['jwt'] ?? []);//DEPRECATED
         $container->setParameter('graphql.graphiql_auth_lexik_jwt', $config['graphiql']['authentication']['provider']['lexik_jwt'] ?? []);
         $container->setParameter('graphql.security.validation_rules', $config['security']['validation_rules'] ?? []);
+        $container->setParameter('graphql.security.user.class', $config['security']['user']['class'] ?? null);
         $container->setParameter('graphql.subscriptions.redis', $config['subscriptions']['redis'] ?? []);
         $container->setParameter('graphql.subscriptions.ttl', $config['subscriptions']['ttl'] ?? []);
 
@@ -153,6 +157,22 @@ class YnloGraphQLExtension extends Extension
             $container->removeDefinition(Subscriber::class);
             $container->removeDefinition(Publisher::class);
             $container->removeDefinition(RedisPubSubHandler::class);
+        }
+
+        // user support
+        $userClass = $config['security']['user']['class'] ?? null;
+        if ($userClass) {
+            $container->getDefinition(UserManager::class)
+                      ->addArgument($userClass);
+
+            $manager = $config['security']['user']['manager'] ?? null;
+            if (!$manager || $manager !== UserManager::class) {
+                $container->removeDefinition(UserManager::class);
+            }
+
+        } else {
+            $container->removeDefinition(UserProvider::class);
+            $container->removeDefinition(UserManager::class);
         }
     }
 

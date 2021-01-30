@@ -17,7 +17,7 @@ use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\FileLocator;
 use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
-use Ynlo\GraphQLBundle\Behat\Authentication\FosUserResolver;
+use Ynlo\GraphQLBundle\Behat\Authentication\UserResolver;
 use Ynlo\GraphQLBundle\Behat\Authentication\JWT\LexikJWTGenerator;
 use Ynlo\GraphQLBundle\Behat\Transformer\TransformStringToExpression;
 
@@ -76,7 +76,7 @@ Ensure you have "Behat\Symfony2Extension" inside your behat config file.'
             ->defaultValue(LexikJWTGenerator::class);
 
         $jwt->scalarNode('user_resolver')
-            ->defaultValue(FosUserResolver::class);
+            ->defaultValue(UserResolver::class);
     }
 
     public function process(ContainerBuilder $container)
