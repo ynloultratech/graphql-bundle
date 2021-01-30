@@ -10,7 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Behat\Client;
 
-use Symfony\Bundle\FrameworkBundle\Client;
+use Symfony\Bundle\FrameworkBundle\KernelBrowser;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\KernelInterface;
@@ -22,7 +22,7 @@ use Ynlo\GraphQLBundle\Behat\Deprecation\DeprecationAdviser;
  *
  * Bring access to the symfony kernel in order to get services etc.
  */
-class GraphQLClient extends Client
+class GraphQLClient extends KernelBrowser
 {
     /**
      * @var string
@@ -218,7 +218,12 @@ class GraphQLClient extends Client
 
         $this->sendRequest(Request::METHOD_POST, $this->getEndpoint(), $this->getRequestsParameters(), [], $this->getServerParameters(), $content);
 
-        return $this->response = $this->getResponse();
+        return $this->response;
+    }
+
+    public function getResponse()
+    {
+        return $this->response;
     }
 
     /**
