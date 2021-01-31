@@ -75,10 +75,6 @@ class AllNodesWithPagination extends AllNodes
             $this->search($qb, $search);
         }
 
-        if ($filters) {
-            $this->applyFilters($qb, $filters);
-        }
-
         if ($where) {
             $this->applyWhere($qb, $where);
         }
@@ -127,46 +123,6 @@ class AllNodesWithPagination extends AllNodes
     protected function createPaginator(): DoctrineCursorPaginatorInterface
     {
         return new DoctrineOffsetCursorPaginator($this->getManager());
-    }
-
-    /**
-     * Apply advanced filters
-     *
-     * @deprecated since v1.1, `applyWhere` should be used instead
-     */
-    protected function applyFilters(QueryBuilder $qb, array $filters)
-    {
-        $definition = $this->objectDefinition;
-        foreach ($filters as $field => $value) {
-            if (!$definition->hasField($field) || !$prop = $definition->getField($field)->getOriginName()) {
-                continue;
-            }
-
-            $entityField = sprintf('%s.%s', $this->queryAlias, $prop);
-
-            switch (gettype($value)) {
-                case 'string':
-                    $qb->andWhere($qb->expr()->eq($entityField, $qb->expr()->literal($value)));
-                    break;
-                case 'integer':
-                case 'double':
-                    $qb->andWhere($qb->expr()->eq($entityField, $value));
-                    break;
-                case 'boolean':
-                    $qb->andWhere($qb->expr()->eq($entityField, (int) $value));
-                    break;
-                case 'array':
-                    if (empty($value)) {
-                        $qb->andWhere($qb->expr()->isNull($entityField));
-                    } else {
-                        $qb->andWhere($qb->expr()->in($entityField, $value));
-                    }
-                    break;
-                case 'NULL':
-                    $qb->andWhere($qb->expr()->isNull($entityField));
-                    break;
-            }
-        }
     }
 
     /**
@@ -265,7 +221,6 @@ class AllNodesWithPagination extends AllNodes
         $em = $this->getManager();
         $metadata = $em->getClassMetadata($this->entity);
 
-        $node->getFields();
         $columns = [];
         $searchFields = FieldOptionsHelper::normalize($query->getMeta('pagination')['search_fields'] ?? ['*']);
         foreach ($node->getFields() as $field) {
