@@ -59,7 +59,6 @@ class AllNodesWithPagination extends AllNodes
         $after = $args['after'] ?? null;
         $page = $args['page'] ?? null;
         $search = $args['search'] ?? null;
-        $filters = $args['filters'] ?? null;
         $where = $args['where'] ?? null;
 
         $this->initialize();
@@ -72,7 +71,7 @@ class AllNodesWithPagination extends AllNodes
         }
 
         if ($search) {
-            $this->search($qb, $search);
+            $this->search($qb, (string) $search);
         }
 
         if ($where) {
@@ -174,8 +173,8 @@ class AllNodesWithPagination extends AllNodes
     }
 
     /**
-     * @param QueryBuilder    $qb
-     * @param array           $where
+     * @param QueryBuilder $qb
+     * @param array        $where
      *
      * @throws \ReflectionException
      */
@@ -247,14 +246,14 @@ class AllNodesWithPagination extends AllNodes
                     switch ($metadata->getFieldMapping($searchColumn)['type']) {
                         case DBALTypes::STRING:
                         case DBALTypes::TEXT:
-                        $columns[$searchColumn] = $config ?? SearchByInterface::PARTIAL_SEARCH;
+                            $columns[$searchColumn] = $config ?? SearchByInterface::PARTIAL_SEARCH;
                             break;
                         case DBALTypes::INTEGER:
                         case DBALTypes::BIGINT:
                         case DBALTypes::FLOAT:
                         case DBALTypes::DECIMAL:
                         case DBALTypes::SMALLINT:
-                        $columns[$searchColumn] = $config ?? SearchByInterface::EXACT_MATCH;
+                            $columns[$searchColumn] = $config ?? SearchByInterface::EXACT_MATCH;
                             break;
                     }
                 } catch (MappingException $exception) {
@@ -323,10 +322,10 @@ class AllNodesWithPagination extends AllNodes
         $paramName = 'root'.mt_rand();
         if ($this->queryDefinition->getMeta('pagination')['parent_relation'] === PaginationDefinitionPlugin::MANY_TO_MANY) {
             $qb->andWhere(sprintf(':%s MEMBER OF %s.%s', $paramName, $this->queryAlias, $parentField))
-                ->setParameter($paramName, $root);
+               ->setParameter($paramName, $root);
         } else {
             $qb->andWhere(sprintf('%s.%s = :%s', $this->queryAlias, $parentField, $paramName))
-                ->setParameter($paramName, $root);
+               ->setParameter($paramName, $root);
         }
     }
 }
