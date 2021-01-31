@@ -68,7 +68,7 @@ class UserManager extends \Ynlo\GraphQLBundle\Security\User\UserManager
     /**
      * {@inheritdoc}
      */
-    public function findUserBy(array $criteria): UserInterface
+    public function findUserBy(array $criteria): ?UserInterface
     {
         return $this->getRepository()->findOneBy($criteria);
     }
