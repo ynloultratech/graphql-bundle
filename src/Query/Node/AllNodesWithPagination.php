@@ -156,7 +156,11 @@ class AllNodesWithPagination extends AllNodes
             $order->setField($enumValueDefinition->getMeta('field', $order->getField()));
 
             /** @var OrderByInterface $orderByInstance */
-            $orderByInstance = (new \ReflectionClass($orderByResolver))->newInstanceWithoutConstructor();
+            if ($this->container->has($orderByResolver)) {
+                $orderByInstance = $this->container->get($orderByResolver);
+            } else {
+                $orderByInstance = (new \ReflectionClass($orderByResolver))->newInstanceWithoutConstructor();
+            }
 
             if ($order->getField() && $node->hasField($order->getField())) {
                 $relatedField = $node->getField($order->getField());
