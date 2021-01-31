@@ -29,7 +29,7 @@ class OrderBySimpleField implements OrderByInterface
         $orderByFields = FieldOptionsHelper::normalize($context->getParentContext()->getDefinition()->getMeta('pagination')['order_by'] ?? ['*']);
         if (isset($orderByFields[$column])) {
             $column = $orderByFields[$column];
-        } else {
+        } else if ($context->getNode()->hasField($column)) {
             $field = $context->getNode()->getField($column);
             $column = $field->getOriginName();
         }
