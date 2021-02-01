@@ -12,6 +12,7 @@
 namespace Ynlo\GraphQLBundle\Controller;
 
 use GraphQL\Error\ClientAware;
+use GraphQL\Error\Debug;
 use GraphQL\Error\DebugFlag;
 use GraphQL\Error\Error;
 use GraphQL\GraphQL;
@@ -303,9 +304,19 @@ class GraphQLEndpointController
         $debugFlags = false;
         if ($this->debug) {
             if ($this->config['error_handling']['show_trace'] ?? true) {
-                $debugFlags = DebugFlag::INCLUDE_DEBUG_MESSAGE | DebugFlag::INCLUDE_TRACE;
+                // webonyx/graphql-php ^14.0
+                if (class_exists('GraphQL\Error\DebugFlag')) {
+                    $debugFlags = DebugFlag::INCLUDE_DEBUG_MESSAGE | DebugFlag::INCLUDE_TRACE;
+                } else {
+                    $debugFlags = Debug::INCLUDE_DEBUG_MESSAGE | Debug::INCLUDE_TRACE;
+                }
             } else {
-                $debugFlags = DebugFlag::INCLUDE_DEBUG_MESSAGE;
+                // webonyx/graphql-php ^14.0
+                if (class_exists('GraphQL\Error\DebugFlag')) {
+                    $debugFlags = DebugFlag::INCLUDE_DEBUG_MESSAGE;
+                } else {
+                    $debugFlags = Debug::INCLUDE_DEBUG_MESSAGE;
+                }
             }
         }
 
