@@ -50,7 +50,7 @@
   },
   "require-dev": {
     "ext-redis": "*",
-    "symfony/symfony": "^4.4.0",
+    "symfony/symfony": "^4.4 | ^5.0",
     "phpunit/phpunit": "^6.2",
     "symfony/phpunit-bridge": "^5.1",
     "lexik/jwt-authentication-bundle": "^2.4",
