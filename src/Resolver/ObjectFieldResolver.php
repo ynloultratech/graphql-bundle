@@ -98,7 +98,7 @@ class ObjectFieldResolver implements ContainerAwareInterface
             $resolver = new ResolverExecutor($this->container, $queryDefinition);
             $value = $resolver($root, $args, $context, $info);
         } else {
-            $accessor = new PropertyAccessor(true);
+            $accessor = new PropertyAccessor(PropertyAccessor::MAGIC_GET | PropertyAccessor::MAGIC_SET);
             $originName = $fieldDefinition->getOriginName() ?: $fieldDefinition->getName();
             $value = $accessor->getValue($root, $originName);
         }
