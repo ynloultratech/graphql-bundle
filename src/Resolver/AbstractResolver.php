@@ -10,12 +10,11 @@
 
 namespace Ynlo\GraphQLBundle\Resolver;
 
-use Doctrine\ORM\EntityManager;
+use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
-use Ynlo\GraphQLBundle\Events\EventDispatcherAwareInterface;
-use Ynlo\GraphQLBundle\Events\EventDispatcherAwareTrait;
+use Symfony\Contracts\EventDispatcher\EventDispatcherInterface;
 use Ynlo\GraphQLBundle\Extension\ExtensionInterface;
 use Ynlo\GraphQLBundle\Extension\ExtensionsAwareInterface;
 
@@ -24,10 +23,9 @@ use Ynlo\GraphQLBundle\Extension\ExtensionsAwareInterface;
  *
  * It provides methods to common features needed in resolvers.
  */
-abstract class AbstractResolver implements ResolverInterface, ExtensionsAwareInterface, EventDispatcherAwareInterface
+abstract class AbstractResolver implements ResolverInterface, ExtensionsAwareInterface
 {
     use ContainerAwareTrait;
-    use EventDispatcherAwareTrait;
 
     /**
      * @var ResolverContext
@@ -38,6 +36,8 @@ abstract class AbstractResolver implements ResolverInterface, ExtensionsAwareInt
      * @var ExtensionInterface[]
      */
     protected $extensions = [];
+
+    protected ResolverServices $services;
 
     /**
      * {@inheritDoc}
@@ -64,6 +64,14 @@ abstract class AbstractResolver implements ResolverInterface, ExtensionsAwareInt
     }
 
     /**
+     * @param ResolverServices $services
+     */
+    public function setServices(ResolverServices $services): void
+    {
+        $this->services = $services;
+    }
+
+    /**
      * Gets a container service by its id.
      *
      * @param string $id The service id
@@ -76,11 +84,21 @@ abstract class AbstractResolver implements ResolverInterface, ExtensionsAwareInt
     }
 
     /**
-     * @return EntityManager
+     * @param string|null $name
+     *
+     * @return ObjectManager
      */
-    protected function getManager(): EntityManager
+    protected function getManager(string $name = null): ObjectManager
     {
-        return $this->get('doctrine')->getManager();
+        return $this->services->getDoctrine()->getManager($name);
+    }
+
+    /**
+     * @return EventDispatcherInterface|null
+     */
+    protected function getEventDispatcher(): ?EventDispatcherInterface
+    {
+        return $this->services->getEventDispatcher();
     }
 
     /**
@@ -88,7 +106,7 @@ abstract class AbstractResolver implements ResolverInterface, ExtensionsAwareInt
      */
     protected function getValidator(): ValidatorInterface
     {
-        return $this->get('validator');
+        return $this->services->getValidator();
     }
 
     /**
@@ -102,6 +120,6 @@ abstract class AbstractResolver implements ResolverInterface, ExtensionsAwareInt
      */
     protected function createFormBuilder($type, $data = null, array $options = [])
     {
-        return $this->container->get('form.factory')->createBuilder($type, $data, $options);
+        return $this->services->getFormFactory()->createBuilder($type, $data, $options);
     }
 }

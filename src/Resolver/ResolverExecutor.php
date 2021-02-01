@@ -16,7 +16,6 @@ use GraphQL\Type\Definition\ResolveInfo;
 use Symfony\Component\DependencyInjection\ContainerAwareInterface;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Ynlo\GraphQLBundle\Component\AutoWire\AutoWire;
 use Ynlo\GraphQLBundle\Definition\ClassAwareDefinitionInterface;
@@ -26,7 +25,6 @@ use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\HasExtensionsInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
 use Ynlo\GraphQLBundle\Definition\UnionDefinition;
-use Ynlo\GraphQLBundle\Events\EventDispatcherAwareInterface;
 use Ynlo\GraphQLBundle\Exception\Controlled\BadRequestError;
 use Ynlo\GraphQLBundle\Exception\Controlled\NotFoundError;
 use Ynlo\GraphQLBundle\Extension\ExtensionInterface;
@@ -156,8 +154,8 @@ class ResolverExecutor implements ContainerAwareInterface
                 $resolver->setExtensions($this->resolveObjectExtensions($node));
             }
 
-            if ($resolver instanceof EventDispatcherAwareInterface) {
-                $resolver->setEventDispatcher($this->container->get(EventDispatcherInterface::class));
+            if ($resolver instanceof AbstractResolver) {
+                $resolver->setServices($this->container->get(ResolverServices::class));
             }
 
             if ($subscriptionRequest) {

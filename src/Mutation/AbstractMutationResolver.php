@@ -47,9 +47,9 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
             $formBuilder->addEventListener(
                 FormEvents::SUBMIT,
                 function (FormEvent $event) use (&$mutationEvent) {
-                    if ($this->eventDispatcher) {
+                    if ($this->getEventDispatcher()) {
                         $mutationEvent = new GraphQLMutationEvent($this->context, $event);
-                        $this->eventDispatcher->dispatch($mutationEvent, GraphQLEvents::MUTATION_SUBMITTED);
+                        $this->getEventDispatcher()->dispatch($mutationEvent, GraphQLEvents::MUTATION_SUBMITTED);
                     }
                 }
             );
@@ -106,7 +106,9 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
 
         if ($mutationEvent instanceof GraphQLMutationEvent) {
             $mutationEvent->setPayload($payload);
-            $this->eventDispatcher->dispatch($mutationEvent, GraphQLEvents::MUTATION_COMPLETED);
+            if ($this->getEventDispatcher()) {
+                $this->getEventDispatcher()->dispatch($mutationEvent, GraphQLEvents::MUTATION_COMPLETED);
+            }
             $payload = $mutationEvent->getPayload();
         }
 

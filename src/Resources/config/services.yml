@@ -270,6 +270,14 @@ services:
             - '@security.authorization_checker'
             - '%graphql.endpoints%'
 
+    Ynlo\GraphQLBundle\Resolver\ResolverServices:
+        public: true
+        calls:
+            - ['setDoctrine', ['@doctrine'] ]
+            - ['setValidator', ['@validator'] ]
+            - ['setEventDispatcher', ['@?event_dispatcher'] ]
+            - ['setFormFactory', ['@form.factory'] ]
+
     Symfony\Component\EventDispatcher\EventDispatcherInterface:
         alias: event_dispatcher
         public: true

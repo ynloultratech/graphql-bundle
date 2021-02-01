@@ -29,6 +29,7 @@ use Ynlo\GraphQLBundle\Model\UpdateNodePayload;
 use Ynlo\GraphQLBundle\Resolver\ContextBuilder;
 use Ynlo\GraphQLBundle\Resolver\ResolverContext;
 use Ynlo\GraphQLBundle\Resolver\ResolverExecutor;
+use Ynlo\GraphQLBundle\Resolver\ResolverServices;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\Post;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\Profile;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\User;
@@ -55,13 +56,13 @@ class ResolverExecutorTest extends MockeryTestCase
         $extensionManager = \Mockery::mock(ExtensionManager::class);
         $extensionManager->allows('getExtensions')->andReturn($extensions);
 
-        $eventDispatcher = \Mockery::mock(EventDispatcherInterface::class);
+        $services = \Mockery::mock(ResolverServices::class);
 
         $resolver = \Mockery::mock(CustomResolver::class);
         $resolver->expects('setContainer')->with($container);
         $resolver->expects('setContext')->withAnyArgs();
         $resolver->expects('setExtensions')->with($extensions);
-        $resolver->expects('setEventDispatcher')->with($eventDispatcher);
+        $resolver->expects('setServices')->with($services);
         $resolver->expects('__invoke')->withArgs(
             function (ResolverContext $context, User $root, $args) {
                 self::assertInstanceOf(User::class, $root);
@@ -92,7 +93,7 @@ class ResolverExecutorTest extends MockeryTestCase
         $container->allows('has')->with($resolverClass)->andReturn(true);
         $container->allows('get')->with($resolverClass)->andReturn($resolver);
         $container->allows('get')->with(ExtensionManager::class)->andReturn($extensionManager);
-        $container->allows('get')->with(EventDispatcherInterface::class)->andReturn($eventDispatcher);
+        $container->allows('get')->with(ResolverServices::class)->andReturn($services);
 
         $endpoint = new Endpoint('default');
         TestDefinitionHelper::loadAnnotationDefinitions(AddNodePayload::class, $endpoint);
