@@ -41,7 +41,7 @@
     "doctrine/persistence": "^2.0",
     "doctrine/common": "^3.0",
     "twig/twig": "^2.0 | ^3.0",
-    "webonyx/graphql-php": "^14.0",
+    "webonyx/graphql-php": "^0.13 | ^14.0",
     "doctrine/annotations": "^1.5",
     "myclabs/deep-copy": "^1.7",
     "mindplay/readable": "^1.1",
