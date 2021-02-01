@@ -16,10 +16,10 @@ parameters:
 
 services:
   Ynlo\GraphQLBundle\Behat\Fixtures\FixtureManager:
-    arguments: ['@symfony2_extension.kernel']
+    arguments: ['@graphql.symfony_kernel']
 
   Ynlo\GraphQLBundle\Behat\Fixtures\LoadFixturesSubscriber:
-    arguments: ['@symfony2_extension.kernel', '@Ynlo\GraphQLBundle\Behat\Fixtures\FixtureManager']
+    arguments: ['@graphql.symfony_kernel', '@Ynlo\GraphQLBundle\Behat\Fixtures\FixtureManager']
     tags:
       - { name: 'event_dispatcher.subscriber' }
 
@@ -29,7 +29,7 @@ services:
       - { name: 'tester.suite.wrapper' }
 
   Ynlo\GraphQLBundle\Behat\Client\GraphQLClient:
-    arguments: ['@symfony2_extension.kernel', '@Ynlo\GraphQLBundle\Behat\Deprecation\DeprecationAdviser','%graphql.client_config%']
+    arguments: ['@graphql.symfony_kernel', '@Ynlo\GraphQLBundle\Behat\Deprecation\DeprecationAdviser','%graphql.client_config%']
 
   Ynlo\GraphQLBundle\Behat\Client\ClientResetSubscriber:
     arguments: ['@Ynlo\GraphQLBundle\Behat\Client\GraphQLClient']

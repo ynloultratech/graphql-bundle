@@ -1,9 +1,12 @@
 v2.0.0 - (Unreleased)
 
-* Drop support for symfony 3.4
-* Add support for symfony 5.0 
-* Removed the `has_role()` function from security expressions, use `is_granted()` instead.
-
+* Drop Symfony 3.4 support
+* Added Symfony 5.0 support
+* **[DEPRECATED]** Doctrine `json_array` has been deprecated use `json` instead
+* **[BC BREAK]** Removed the `has_role()` function from security expressions, use `is_granted()` instead.
+* **[BC BREAK]** Fixture load now use `Doctrine\Persistence\ObjectManager` instead of `Doctrine\Common\Persistence\ObjectManager` has first argument
+* **[BC BREAK]** Drop `fresh/doctrine-enum-bundle` support, ENUM types must be manually declared using EnumType
+* **[BC BREAK]** Drop `behat/symfony2-extension` support, now use build-in Behat symfony extension
 
 v1.6.0 - (Unreleased)
 ----

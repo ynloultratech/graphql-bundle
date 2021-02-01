@@ -12,7 +12,6 @@ namespace Ynlo\GraphQLBundle\Behat\Context;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeStepScope;
-use Behat\Symfony2Extension\Context\KernelAwareContext;
 use Symfony\Component\HttpKernel\Kernel;
 use Symfony\Component\HttpKernel\KernelInterface;
 use Ynlo\GraphQLBundle\Behat\Authentication\JWT\TokenGeneratorInterface;

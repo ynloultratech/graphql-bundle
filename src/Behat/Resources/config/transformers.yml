@@ -14,12 +14,12 @@ services:
       - { name: 'transformation.argument_transformer' }
 
   Ynlo\GraphQLBundle\Behat\Transformer\TransformFixtureNameToObject:
-    arguments: ['@symfony2_extension.kernel', '@Ynlo\GraphQLBundle\Behat\Fixtures\FixtureManager']
+    arguments: ['@graphql.symfony_kernel', '@Ynlo\GraphQLBundle\Behat\Fixtures\FixtureManager']
     tags:
       - { name: 'transformation.argument_transformer' }
 
   Ynlo\GraphQLBundle\Behat\Transformer\TransformFixtureNameToGlobalId:
-    arguments: ['@symfony2_extension.kernel', '@Ynlo\GraphQLBundle\Behat\Fixtures\FixtureManager']
+    arguments: ['@graphql.symfony_kernel', '@Ynlo\GraphQLBundle\Behat\Fixtures\FixtureManager']
     tags:
       - { name: 'transformation.argument_transformer' }
 

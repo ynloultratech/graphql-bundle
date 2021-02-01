@@ -19,7 +19,7 @@ use Behat\Testwork\Tester\SuiteTester;
 /**
  * Auto-load all API contexts
  *
- * @TODO: add some flat to only register for suites tagged with @api
+ * @TODO: add some flag to only register for suites tagged with @api
  */
 class ContextLoader implements SuiteTester
 {

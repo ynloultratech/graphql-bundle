@@ -65,7 +65,6 @@
     "ext-redis": "Needed to support GraphQL subscriptions",
     "symfony/mercure-bundle": "Needed to support GraphQL subscriptions",
     "behat/behat": "Integration with Behat BDD tests",
-    "behat/symfony2-extension": "Integration of Behat tests with Symfony",
     "phpunit/phpunit": "To use assertions in Behat tests",
     "doctrine/doctrine-fixtures-bundle": "If you want to create test fixtures",
     "fzaninotto/faker": "If you want to generate fake values during tests"

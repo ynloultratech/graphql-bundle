@@ -12,7 +12,6 @@ namespace Ynlo\GraphQLBundle\Behat\Context;
 
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\BeforeFeatureScope;
-use Behat\Symfony2Extension\Context\KernelAwareContext;
 use PHPUnit\Framework\Assert;
 use PHPUnit\Framework\ExpectationFailedException;
 use SebastianBergmann\Comparator\ComparisonFailure;
