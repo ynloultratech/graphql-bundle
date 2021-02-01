@@ -267,7 +267,7 @@ class GraphQLEndpointController
             ($this->publisher)(new Update($subscriptionRequest->getId(), json_encode($output)));
         }
 
-        return JsonResponse::create($output, $statusCode);
+        return new JsonResponse($output, $statusCode);
     }
 
     public function addGlobalValidationRules(array $validationRules): void
