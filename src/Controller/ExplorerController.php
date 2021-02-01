@@ -79,21 +79,24 @@ class ExplorerController extends AbstractController
             }
         }
 
-        return $this->render($this->config['template'], [
-            'form' => $form ? $form->createView() : null,
-            'favicon' => $this->config['favicon'] ?? null,
-            'documentation' => $this->config['documentation'] ?? [],
-            'isAuthenticated' => $isAuthenticated,
-            'title' => $this->config['title'],
-            'authenticationEnabled' => (bool) $this->provider,
-            'authenticationRequired' => $this->config['authentication']['required'],
-            'authenticationError' => $authenticationError,
-            'hasAuthenticationError' => $authenticationError || ($form && $form->getErrors(true)->count()),
-            'loginMessage' => $this->config['authentication']['login_message'],
-            'dataWarningMessage' => $this->config['data_warning_message'],
-            'dataWarningDismissible' => $this->config['data_warning_dismissible'],
-            'dataWarningStyle' => $this->config['data_warning_style'],
-        ]);
+        return $this->render(
+            $this->config['template'],
+            [
+                'form' => $form ? $form->createView() : null,
+                'favicon' => $this->config['favicon'] ?? null,
+                'documentation' => $this->config['documentation'] ?? [],
+                'isAuthenticated' => $isAuthenticated,
+                'title' => $this->config['title'],
+                'authenticationEnabled' => (bool) $this->provider,
+                'authenticationRequired' => $this->config['authentication']['required'],
+                'authenticationError' => $authenticationError,
+                'hasAuthenticationError' => $authenticationError || ($form && $form->getErrors(true)->count()),
+                'loginMessage' => $this->config['authentication']['login_message'],
+                'dataWarningMessage' => $this->config['data_warning_message'],
+                'dataWarningDismissible' => $this->config['data_warning_dismissible'],
+                'dataWarningStyle' => $this->config['data_warning_style'],
+            ]
+        );
     }
 
     public function graphiQL()
@@ -122,11 +125,14 @@ class ExplorerController extends AbstractController
             $defaultQuery = str_replace(["'", "\n"], ["\'", "\\n' + \n'"], $this->config['default_query']);
         }
 
-        return $this->render('@YnloGraphQL/graphiql.html.twig', [
-            'url' => $request->getUrl(),
-            'method' => 'post',
-            'headers' => $request->getHeaders(),
-            'defaultQuery' => $defaultQuery,
-        ]);
+        return $this->render(
+            '@YnloGraphQL/graphiql.html.twig',
+            [
+                'url' => $request->getUrl(),
+                'method' => 'post',
+                'headers' => $request->getHeaders(),
+                'defaultQuery' => $defaultQuery,
+            ]
+        );
     }
 }

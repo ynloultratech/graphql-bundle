@@ -30,6 +30,8 @@ services:
 
     Ynlo\GraphQLBundle\Controller\ExplorerController:
         public: true
+        calls:
+            - ['setContainer', ['@service_container']]
         arguments:
             - '%graphql.graphiql%'
             - ~ # <--- configured in ControllerPass --->
