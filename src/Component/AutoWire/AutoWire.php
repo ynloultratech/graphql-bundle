@@ -59,9 +59,9 @@ class AutoWire implements ContainerAwareInterface
             foreach ($refClass->getConstructor()->getParameters() as $parameter) {
                 $name = Inflector::tableize(str_replace('_', '.', $parameter->getName()));
                 $dependency = null;
-                if ($parameter->getClass()) {
-                    if ($this->container->has($parameter->getClass()->getName())) {
-                        $dependency = $this->container->get($parameter->getClass()->getName());
+                if ($type = $parameter->getType()) {
+                    if ($this->container->has($type->getName())) {
+                        $dependency = $this->container->get($type->getName());
                     } elseif ($this->container->has($name)) {
                         $dependency = $this->container->get($name);
                     }

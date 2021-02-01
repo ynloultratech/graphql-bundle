@@ -50,8 +50,8 @@ class TransformPystringToYamlstring implements ArgumentTransformer
         $refMethod = $definitionCall->getCallee()->getReflection();
         $refParam = $refMethod->getParameters()[$argumentIndex] ?? null;
 
-        if ($argumentValue instanceof PyStringNode && $refParam && $refClass = $refParam->getClass()) {
-            return is_a($refClass->getName(), YamlStringNode::class, true);
+        if ($argumentValue instanceof PyStringNode && $refParam && $type = $refParam->getType()) {
+            return is_a($type->getName(), YamlStringNode::class, true);
         }
     }
 

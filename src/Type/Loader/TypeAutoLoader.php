@@ -90,7 +90,7 @@ class TypeAutoLoader
                 if ($ref->isSubclassOf(Type::class) && $ref->isInstantiable()) {
                     $requiredParams = false;
                     foreach ($ref->getConstructor()->getParameters() as $parameter) {
-                        if ($parameter->getClass() && $parameter->getClass()->implementsInterface(DefinitionInterface::class)) {
+                        if (($type = $parameter->getType()) && is_a($type->getName(), DefinitionInterface::class, true)) {
                             continue 2;
                         }
                     }

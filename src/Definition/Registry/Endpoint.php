@@ -202,7 +202,7 @@ class Endpoint
      *
      * @return string
      */
-    public function getSubscriptionNameForResolver($resolver): string
+    public function getSubscriptionNameForResolver($resolver): ?string
     {
         $byResolver = array_flip($this->subscriptionsMap);
 
@@ -214,7 +214,7 @@ class Endpoint
      *
      * @return string
      */
-    public function getSubscriptionResolver($name): string
+    public function getSubscriptionResolver($name): ?string
     {
         return $this->subscriptionsMap[$name] ?? null;
     }

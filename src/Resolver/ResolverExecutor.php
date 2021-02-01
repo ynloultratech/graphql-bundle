@@ -246,9 +246,9 @@ class ResolverExecutor implements ContainerAwareInterface
      * @param array             $args
      * @param bool              $removeUnknownArguments
      *
+     * @return array
      * @throws \Exception
      *
-     * @return array
      */
     private function prepareMethodParameters(\ReflectionMethod $refMethod, array $args, $removeUnknownArguments = true): array
     {
@@ -329,8 +329,8 @@ class ResolverExecutor implements ContainerAwareInterface
             //inject context common argument
             if ($this->context
                 && 'context' === $parameter->getName()
-                && $parameter->getClass()
-                && is_a($parameter->getClass()->getName(), ResolverContext::class, true)
+                && ($type = $parameter->getType())
+                && is_a($type->getName(), ResolverContext::class, true)
             ) {
                 $orderedArguments[$parameter->getPosition()] = $this->context;
             }

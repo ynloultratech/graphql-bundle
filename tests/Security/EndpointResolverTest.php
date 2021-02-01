@@ -33,8 +33,8 @@ class EndpointResolverTest extends MockeryTestCase
         );
 
         $authChecker = \Mockery::mock(AuthorizationCheckerInterface::class);
-        $authChecker->allows('isGranted')->withArgs([['ROLE_ADMIN']])->andReturn(true);
-        $authChecker->allows('isGranted')->withArgs([['ROLE_USER']])->andReturn(false);
+        $authChecker->allows('isGranted')->withArgs(['ROLE_ADMIN'])->andReturn(true);
+        $authChecker->allows('isGranted')->withArgs(['ROLE_USER'])->andReturn(false);
 
         $resolver = new EndpointResolver($registry, $authChecker, $config);
         $endpoint = $resolver->resolveEndpoint($request);
