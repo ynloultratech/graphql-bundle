@@ -99,7 +99,13 @@ class EndpointResolver
 
             if (isset($config['roles'])) {
                 try {
-                    $rolePassed = $this->authorizationChecker->isGranted($config['roles']);
+                    $rolePassed = true;
+                    foreach ($config['roles'] as $role) {
+                        if (!$this->authorizationChecker->isGranted($role)) {
+                            $rolePassed = false;
+                            break;
+                        }
+                    }
                 } catch (AuthenticationCredentialsNotFoundException $exception) {
                     $rolePassed = false;
                 }
