@@ -114,5 +114,7 @@ class MercureHubCommand extends Command
                 }
             }
         );
+
+        return 0;
     }
 }

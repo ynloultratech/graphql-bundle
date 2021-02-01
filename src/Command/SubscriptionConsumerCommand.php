@@ -66,5 +66,7 @@ class SubscriptionConsumerCommand extends Command
     protected function execute(InputInterface $input, OutputInterface $output)
     {
         $this->subscriptionManager->consume($output, $input->getOption('verbose'));
+
+        return 0;
     }
 }

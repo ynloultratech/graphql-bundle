@@ -73,5 +73,7 @@ class SchemaExportCommand extends Command
         } else {
             $output->write($schema);
         }
+
+        return 0;
     }
 }

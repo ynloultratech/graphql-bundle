@@ -90,6 +90,8 @@ class SchemaSnapshotCommand extends Command
         } else {
             $this->createSnapshot($input->getOption('endpoint'), $dir, $strictMode);
         }
+
+        return 0;
     }
 
     /**

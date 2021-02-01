@@ -78,7 +78,7 @@ class ControlledErrorCommand extends Command
             if ($exporter->getName() === $input->getOption('exporter')) {
                 $exporter->export($errors, $result);
 
-                return;
+                return 0;
             }
         }
 
