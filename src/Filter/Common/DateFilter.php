@@ -75,10 +75,8 @@ class DateFilter implements FilterInterface
                     $qb->andWhere($qb->expr()->gt("{$alias}.{$column}", "'$date'"));
                     $qb->andWhere($qb->expr()->lt("{$alias}.{$column}", "'$maxDate'"));
                 } else {
-                    $orx = new Orx();
-                    $orx->add($qb->expr()->gte("{$alias}.{$column}", "'$date'"));
-                    $orx->add($qb->expr()->lte("{$alias}.{$column}", "'$maxDate'"));
-                    $qb->andWhere($orx);
+                    $qb->andWhere($qb->expr()->gte("{$alias}.{$column}", "'$date'"));
+                    $qb->andWhere($qb->expr()->lte("{$alias}.{$column}", "'$maxDate'"));
                 }
                 break;
             case DateComparisonOperatorType::NOT_BETWEEN:
