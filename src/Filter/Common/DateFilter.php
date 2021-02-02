@@ -49,10 +49,10 @@ class DateFilter implements FilterInterface
      */
     protected function applyFilter(QueryBuilder $qb, $alias, $column, DateComparisonExpression $condition): void
     {
-        $date = $condition->getDate()->format('Y-m-d H:i:s');
+        $date = $condition->getDate()->format(DATE_ATOM);
         $maxDate = $date;
         if ($condition->getMaxDate()) {
-            $maxDate = $condition->getMaxDate()->format('Y-m-d H:i:s');
+            $maxDate = $condition->getMaxDate()->format(DATE_ATOM);
         }
 
         switch ($condition->getOp()) {
