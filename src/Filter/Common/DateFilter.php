@@ -75,17 +75,23 @@ class DateFilter implements FilterInterface
                     $qb->andWhere($qb->expr()->gt("{$alias}.{$column}", "'$date'"));
                     $qb->andWhere($qb->expr()->lt("{$alias}.{$column}", "'$maxDate'"));
                 } else {
-                    $qb->andWhere($qb->expr()->between("{$alias}.{$column}", "'$date'", "'$maxDate'"));
+                    $orx = new Orx();
+                    $orx->add($qb->expr()->gte("{$alias}.{$column}", "'$date'"));
+                    $orx->add($qb->expr()->lte("{$alias}.{$column}", "'$maxDate'"));
+                    $qb->andWhere($orx);
                 }
                 break;
             case DateComparisonOperatorType::NOT_BETWEEN:
                 if ($condition->isStrict()) {
                     $orx = new Orx();
                     $orx->add($qb->expr()->lt("{$alias}.{$column}", "'$date'"));
-                    $orx->add($qb->expr()->lt("{$alias}.{$column}", "'$maxDate'"));
+                    $orx->add($qb->expr()->gt("{$alias}.{$column}", "'$maxDate'"));
                     $qb->andWhere($orx);
                 } else {
-                    $qb->andWhere($qb->expr()->not($qb->expr()->between("{$alias}.{$column}", "'$date'", "'$maxDate'")));
+                    $orx = new Orx();
+                    $orx->add($qb->expr()->lte("{$alias}.{$column}", "'$date'"));
+                    $orx->add($qb->expr()->gte("{$alias}.{$column}", "'$maxDate'"));
+                    $qb->andWhere($orx);
                 }
                 break;
         }
