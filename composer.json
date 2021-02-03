@@ -57,6 +57,7 @@
     "mockery/mockery": "^1.1",
     "doctrine/doctrine-fixtures-bundle": "^3.4",
     "fzaninotto/faker": "^1.7",
+    "fresh/doctrine-enum-bundle": "^6.2 | ^7.0",
     "escapestudios/symfony2-coding-standard": "3.x-dev",
     "behat/behat": "^3.4",
     "symfony/mercure-bundle": "^0.2.0"
