@@ -43,7 +43,7 @@ class SearchByDoctrineColumn implements SearchByInterface
             }
             $orx->add($partialAnd);
         } else {
-            $orx->add("$alias.$column LIKE :query_search");
+            $orx->add("$alias.$column = :query_search");
             $qb->setParameter('query_search', trim($search));
         }
     }
