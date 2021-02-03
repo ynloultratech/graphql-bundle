@@ -152,22 +152,68 @@ final class DoctrineContext implements Context, ClientAwareInterface, StorageAwa
      */
     public function grabInFromRepositoryFirstRecordsOrderedByMatching($variable, $repo, $limitAndOffset = null, $orderBy = null, YamlStringNode $criteria = null)
     {
+        $records = $this->findRecords($repo, $limitAndOffset, $orderBy, $criteria);
+        $this->storage->setValue($variable, $records);
+    }
+
+    /**
+     * Grab a record from database in a temp variable inside the `"storage"` in order to use latter in an expression
+     *
+     * The prefix `"grab in"` is optional and can be used in "Then" for readability
+     *
+     * <code>
+     * Given "user" from ....
+     * Then grab in "user" from ...
+     * </code>
+     *
+     * The suffix `"matching:"` is optional too and can be used to set array of conditions to match.
+     *
+     * ### Placeholders:
+     * - **$variable:** `(string)` name of the variable to save in the storage
+     * - **$entity:** `(string)` name of the entity using bundle notation `"AppBundle:Entity"` or FQN
+     * - **$criteria:** `(yaml)` YAML node to convert to array of criteria
+     *
+     * ### Examples:
+     *
+     * <code>
+     * - Given "user" from repository "AppBundle:User" first record matching:
+     *          """
+     *          username: admin
+     *          """
+     * </code>
+     *
+     * and later can be used:
+     *
+     * <code>
+     * - And "{user.getUsername()}" should be equal to "{response.data.users.all.edges[0].node.login}"
+     * </code>
+     *
+     * @Given /^(?:grab in )?"([^"]*)" from repository "([^"]*)" first record(?: matching:)?$/
+     */
+    public function grabInFromRepositoryFirstRecordMatching($variable, $repo, YamlStringNode $criteria = null)
+    {
+        $records = $this->findRecords($repo, 1, null, $criteria);
+        $this->storage->setValue($variable, $records[0] ?? null);
+    }
+
+    public function findRecords($repo, $limitAndOffset = null, $orderBy = null, YamlStringNode $criteria = null)
+    {
         //support to use "limit:offset"
         if (strpos($limitAndOffset, ':') !== false) {
-            list($limit, $offset) = explode(':', $limitAndOffset);
+            [$limit, $offset] = explode(':', $limitAndOffset);
         } else {
             $limit = $limitAndOffset;
             $offset = null;
         }
         // support field:ORDER, eg. name:ASC
-        if (is_string($orderBy)) {
-            list($field, $order) = explode(':', $orderBy);
+        if ($orderBy && is_string($orderBy)) {
+            [$field, $order] = explode(':', $orderBy);
             $orderBy = [$field => $order];
         }
-        $records = $this->getDoctrine()
-                        ->getRepository($repo)
-                        ->findBy($criteria ? $criteria->toArray() : [], $orderBy, $limit, $offset);
-        $this->storage->setValue($variable, $records);
+
+        return $this->getDoctrine()
+                    ->getRepository($repo)
+                    ->findBy($criteria ? $criteria->toArray() : [], $orderBy, $limit, $offset);
     }
 
     public function getDoctrine(): Registry
