@@ -80,7 +80,7 @@ class DateFilterTest extends AbstractFilterTest
         $this->condition->setOp(DateComparisonOperatorType::BETWEEN);
         $this->condition->setMaxDate(\DateTime::createFromFormat('Y/m/d H:i:s', '2018/01/31 12:30:00'));
         (new DateFilter())($this->context, $this->qb, $this->condition);
-        self::assertEquals('SELECT p FROM Post p WHERE p.fieldName BETWEEN \'2018-01-01 12:30:00\' AND \'2018-01-31 12:30:00\'', $this->qb->getDQL());
+        self::assertEquals('SELECT p FROM Post p WHERE p.fieldName >= \'2018-01-01 12:30:00\' AND p.fieldName <= \'2018-01-31 12:30:00\'', $this->qb->getDQL());
     }
 
     public function testDefaultBetweenStrict()
