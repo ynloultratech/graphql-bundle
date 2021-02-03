@@ -31,7 +31,9 @@ class OrderBySimpleField implements OrderByInterface
             $column = $orderByFields[$column];
         } else if ($context->getNode()->hasField($column)) {
             $field = $context->getNode()->getField($column);
-            $column = $field->getOriginName();
+            if ($field->getOriginType() === \ReflectionProperty::class) {
+                $column = $field->getOriginName();
+            }
         }
 
         $qb->addOrderBy("{$alias}.$column", $orderBy->getDirection());
