@@ -57,7 +57,7 @@ interface ConnectionInterface
     /**
      * @GraphQL\Field(type="[Ynlo\GraphQLBundle\Model\EdgeInterface]")
      *
-     * @return array
+     * @return array|EdgeInterface[]
      */
     public function getEdges(): array;
 
