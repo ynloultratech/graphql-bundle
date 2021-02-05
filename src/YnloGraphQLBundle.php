@@ -11,9 +11,7 @@
 namespace Ynlo\GraphQLBundle;
 
 use Symfony\Component\DependencyInjection\ContainerBuilder;
-use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\Bundle\Bundle;
-use Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServicesCompilerPass;
 use Ynlo\GraphQLBundle\DependencyInjection\Compiler\ControllerPass;
 use Ynlo\GraphQLBundle\DependencyInjection\YnloGraphQLExtension;
 use Ynlo\GraphQLBundle\Encoder\IDEncoderManager;
@@ -22,7 +20,6 @@ use Ynlo\GraphQLBundle\Extension\ExtensionInterface;
 use Ynlo\GraphQLBundle\Filter\FilterInterface;
 use Ynlo\GraphQLBundle\Filter\FilterResolverInterface;
 use Ynlo\GraphQLBundle\Form\Input\InputFieldTypeGuesser;
-use Ynlo\GraphQLBundle\Resolver\AbstractResolver;
 use Ynlo\GraphQLBundle\SearchBy\SearchByInterface;
 use Ynlo\GraphQLBundle\Type\Loader\TypeAutoLoader;
 use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
@@ -51,7 +48,6 @@ class YnloGraphQLBundle extends Bundle
      */
     public function build(ContainerBuilder $container)
     {
-        $container->addCompilerPass(new TaggedServicesCompilerPass());
         $container->addCompilerPass(new ControllerPass());
         $container->registerForAutoconfiguration(ErrorListExporterInterface::class)->addTag('graphql.error_list_exporter');
         $container->registerForAutoconfiguration(ExtensionInterface::class)->addTag('graphql.extension');

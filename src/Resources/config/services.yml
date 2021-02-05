@@ -42,10 +42,6 @@ services:
           - '@Ynlo\GraphQLBundle\Schema\SchemaExporter'
           - '@Ynlo\GraphQLBundle\Security\EndpointResolver'
 
-    Ynlo\GraphQLBundle\Component\TaggedServices\TaggedServices:
-        public: true
-        arguments: [ '@service_container' ]
-
     Ynlo\GraphQLBundle\Component\AutoWire\AutoWire:
         public: true
         calls:
