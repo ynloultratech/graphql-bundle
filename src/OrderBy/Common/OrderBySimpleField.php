@@ -28,7 +28,9 @@ class OrderBySimpleField implements OrderByInterface
         // use alias
         $orderByFields = FieldOptionsHelper::normalize($context->getParentContext()->getDefinition()->getMeta('pagination')['order_by'] ?? ['*']);
         if (isset($orderByFields[$column])) {
-            $column = $orderByFields[$column];
+            if (is_string($orderByFields[$column])) {
+                $column = $orderByFields[$column];
+            }
         } else if ($context->getNode()->hasField($column)) {
             $field = $context->getNode()->getField($column);
             if ($field->getOriginType() === \ReflectionProperty::class) {

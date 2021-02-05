@@ -88,6 +88,9 @@ class PaginationDefinitionPluginTest extends MockeryTestCase
         self::assertEquals(OrderBySimpleField::class, $values['topic']->getMeta('resolver'));
         self::assertEquals('topic', $values['topic']->getMeta('field'));
 
+        self::assertEquals(OrderBySimpleField::class, $values['rate']->getMeta('resolver'));
+        self::assertEquals('rate', $values['rate']->getMeta('field'));
+
         self::assertEquals(OrderBySimpleField::class, $values['status']->getMeta('resolver'));
         self::assertEquals('status', $values['status']->getMeta('field'));
 

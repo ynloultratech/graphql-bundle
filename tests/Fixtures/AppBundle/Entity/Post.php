@@ -24,7 +24,12 @@ use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Types\PostStatusType;
  *
  * @GraphQL\ObjectType()
  * @GraphQL\QueryList(
- *     orderBy={"*", "category":"category.name", "user": "Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\OrderBy\Post\OrderByUser"}
+ *     orderBy={
+ *     "*",
+ *     "rate",
+ *     "category":"category.name",
+ *     "user": "Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\OrderBy\Post\OrderByUser"
+ * }
  * )
  * @GraphQL\MutationAdd()
  * @GraphQL\MutationUpdate()
