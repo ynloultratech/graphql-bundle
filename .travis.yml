@@ -29,14 +29,7 @@ install:
   - if [ "$LATEST_DEPENDENCIES" == "true" ]; then travis_retry composer update --no-interaction; fi;
 
 script:
-  - mkdir -p build/logs
   - php bin/phpunit -c phpunit.xml.dist
-
-after_success:
- - composer require satooshi/php-coveralls
- - php bin/coveralls
- - wget https://scrutinizer-ci.com/ocular.phar
- - php ocular.phar code-coverage:upload --format=php-clover "$clover"
 
 notifications:
   email:
