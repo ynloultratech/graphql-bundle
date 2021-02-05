@@ -23,7 +23,9 @@ use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Types\PostStatusType;
  * @ORM\Entity()
  *
  * @GraphQL\ObjectType()
- * @GraphQL\QueryList()
+ * @GraphQL\QueryList(
+ *     orderBy={"*", "category":"category.name", "user": "Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\OrderBy\Post\OrderByUser"}
+ * )
  * @GraphQL\MutationAdd()
  * @GraphQL\MutationUpdate()
  * @GraphQL\MutationDelete()
