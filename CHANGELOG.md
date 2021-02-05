@@ -7,6 +7,8 @@ v2.0.0 - (Unreleased)
 * **[BC BREAK]** Fixture load now use `Doctrine\Persistence\ObjectManager` instead of `Doctrine\Common\Persistence\ObjectManager` has first argument
 * **[BC BREAK]** Drop `fresh/doctrine-enum-bundle` support, ENUM types must be manually declared using EnumType
 * **[BC BREAK]** Drop `behat/symfony2-extension` support, now use build-in Behat symfony extension
+* **[BC BREAK]** Drop `EventDispatcherAware` trait and interface
+* **[BC BREAK]** Drop `eventDispatcher` property in `AbstractResolver` use `getDispatcher()` instead
 
 v1.6.0 - (Unreleased)
 ----
