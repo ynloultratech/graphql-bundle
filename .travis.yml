@@ -1,7 +1,7 @@
 language: php
 
 php:
-  - 7.1
+  - 7.4
 
 env:
   - SYMFONY_DEPRECATIONS_HELPER: weak
@@ -9,15 +9,12 @@ env:
 matrix:
   fast_finish: true
   include:
-    - php: 7.1
-    - php: 7.2
-    - php: 7.3
-    - php: 7.3
+    - php: 7.4
+    - php: 8.0
+    - php: 7.4
       env: LATEST_DEPENDENCIES=true
-    - php: hhvm
   allow_failures:
-    - php: hhvm
-    - php: 7.3
+    - php: 7.4
       env: LATEST_DEPENDENCIES=true
 
 cache:
