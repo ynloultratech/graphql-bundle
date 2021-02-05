@@ -22,14 +22,13 @@ cache:
     - .composer/cache
 
 before_install:
-  - alias composer=composer\ -n && composer self-update
+  - alias composer=composer\ -n && composer self-update --2
   - echo "extension = redis.so" >> ~/.phpenv/versions/$(phpenv version-name)/etc/php.ini
   - phpenv config-add travis.php.ini
 
 install:
-  - travis_retry composer global require hirak/prestissimo
-  - if [ "$LATEST_DEPENDENCIES" == "" ]; then travis_retry composer install --no-interaction; fi;
-  - if [ "$LATEST_DEPENDENCIES" == "true" ]; then travis_retry composer update --prefer-dist --no-interaction; fi;
+  - if [ "$LATEST_DEPENDENCIES" == "" ]; then travis_retry composer update --prefer-lowest --no-interaction; fi;
+  - if [ "$LATEST_DEPENDENCIES" == "true" ]; then travis_retry composer update --no-interaction; fi;
 
 script:
   - mkdir -p build/logs
