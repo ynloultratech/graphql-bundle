@@ -12,9 +12,6 @@ matrix:
     - php: 7.4
     - php: 7.4
       env: LATEST_DEPENDENCIES=true SYMFONY_DEPRECATIONS_HELPER=weak COMPOSER_MEMORY_LIMIT=-1
-  allow_failures:
-    - php: 7.4
-      env: LATEST_DEPENDENCIES=true SYMFONY_DEPRECATIONS_HELPER=weak COMPOSER_MEMORY_LIMIT=-1
 
 cache:
   directories:
