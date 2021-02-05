@@ -171,11 +171,6 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin implements Bac
         }
 
         $this->filterFactory->build($definition, $targetNode, $endpoint);
-
-        //deprecated, keep for BC with v1
-        if ($this->bcConfig['filters'] ?? false) {
-            $this->addFilters($definition, $target, $endpoint);
-        }
     }
 
     /**
@@ -333,18 +328,6 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin implements Bac
         $arg->setList(true);
         $arg->setDescription('Ordering options for this list.');
         $query->addArgument($arg);
-
-        //to keep BC
-        if ($this->bcConfig['orderBy'] ?? false) {
-            $arg = new ArgumentDefinition();
-            $arg->setName('orderBy');
-            $arg->setType(OrderBy::class);
-            $arg->setNonNull(false);
-            $arg->setList(true);
-            $deprecateMessage = \is_string($this->bcConfig['orderBy']) ? $this->bcConfig['orderBy'] : '**DEPRECATED** use `order` instead.';
-            $arg->setDescription($deprecateMessage);
-            $query->addArgument($arg);
-        }
     }
 
     /**
@@ -386,75 +369,5 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin implements Bac
         $page->setNonNull(false);
         $page->setDescription('Page to fetch in order to use page pagination instead of cursor based');
         $definition->addArgument($page);
-    }
-
-    /**
-     * @param ExecutableDefinitionInterface $definition
-     * @param string                        $targetType
-     * @param Endpoint                      $endpoint
-     *
-     * @throws \ReflectionException
-     *
-     * @deprecated since v1.2, should use `where` instead
-     */
-    private function addFilters(ExecutableDefinitionInterface $definition, string $targetType, Endpoint $endpoint): void
-    {
-        $filterName = ucfirst($definition->getName()).'Filter';
-        if ($endpoint->hasType($filterName)) {
-            $filters = $endpoint->getType($filterName);
-        } else {
-            $filters = new InputObjectDefinition();
-            $filters->setName($filterName);
-            $endpoint->add($filters);
-
-            $object = $endpoint->getType($targetType);
-            if ($object instanceof FieldsAwareDefinitionInterface) {
-                foreach ($object->getFields() as $field) {
-                    if ('id' === $field->getName()
-                        || !$field->getOriginName()
-                        || \ReflectionProperty::class !== $field->getOriginType()) {
-                        continue;
-                    }
-
-                    $filter = new FieldDefinition();
-                    $filter->setName($field->getName());
-                    $type = $field->getType();
-                    if ($endpoint->hasType($type)) {
-                        $typeDefinition = $endpoint->getType($type);
-                        if (!$typeDefinition instanceof EnumDefinition) {
-                            $type = 'ID';
-                        }
-                        $filter->setList(true);
-                    }
-
-                    // fields using custom object as type
-                    // are not available for filters
-                    if (TypeRegistry::getTypeMapp()) {
-                        if (isset(TypeRegistry::getTypeMapp()[$type])) {
-                            $class = TypeRegistry::getTypeMapp()[$type];
-                            $ref = new \ReflectionClass($class);
-                            if ($ref->isSubclassOf(ObjectType::class)) {
-                                continue;
-                            }
-                        }
-                    }
-
-                    $filter->setType($type);
-                    $filters->addField($filter);
-                }
-            }
-        }
-
-        if (!$filters->getFields()) {
-            return;
-        }
-
-        $search = new ArgumentDefinition();
-        $search->setName('filters');
-        $search->setType($filters->getName());
-        $deprecateMessage = \is_string($this->bcConfig['filters']) ? $this->bcConfig['filters'] : '**DEPRECATED** use `where` instead to filter the list.';
-        $search->setDescription($deprecateMessage);
-        $search->setNonNull(false);
-        $definition->addArgument($search);
     }
 }
