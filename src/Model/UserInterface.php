@@ -103,7 +103,7 @@ interface UserInterface extends SymfonyUserInterface
      *
      * @return static
      */
-    public function setPlainPassword(?string $password);
+    public function setPlainPassword(?string $password): self;
 
     /**
      * Sets the hashed password.

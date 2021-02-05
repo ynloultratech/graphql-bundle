@@ -186,7 +186,7 @@ class User implements UserInterface, NodeInterface
     /**
      * {@inheritdoc}
      */
-    public function getUsername(): string
+    public function getUsername(): ?string
     {
         return $this->username;
     }
@@ -194,7 +194,7 @@ class User implements UserInterface, NodeInterface
     /**
      * {@inheritdoc}
      */
-    public function getUsernameCanonical(): string
+    public function getUsernameCanonical(): ?string
     {
         return $this->usernameCanonical;
     }
@@ -370,7 +370,7 @@ class User implements UserInterface, NodeInterface
     /**
      * {@inheritdoc}
      */
-    public function setPlainPassword($password)
+    public function setPlainPassword($password): self
     {
         $this->plainPassword = $password;
 
