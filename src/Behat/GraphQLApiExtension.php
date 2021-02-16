@@ -73,6 +73,10 @@ class GraphQLApiExtension implements Extension
 
         $root->scalarNode('route');
 
+        $root->scalarNode('extensions')
+             ->info('Extend behat extension with custom extensions and services')
+             ->defaultValue('%paths.base%/features/bootstrap/extensions.yml');
+
         $boolFilter = function ($v) {
             $filtered = filter_var($v, FILTER_VALIDATE_BOOLEAN, FILTER_NULL_ON_FAILURE);
 
@@ -160,6 +164,18 @@ class GraphQLApiExtension implements Extension
         $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/Resources/config'));
         $loader->load('services.yml');
         $container->setParameter('graphql.client_config', $config['client']);
+
+        $extensionsPath = $config['extensions'] ?? null;
+        if ($extensionsPath) {
+            if (preg_match('/%([^%]+)%/', $extensionsPath, $matches)) {
+                $param = $container->getParameter($matches[1]);
+                $extensionsPath = preg_replace('/%([^%]+)%/', $param, $extensionsPath);
+            }
+            if (file_exists($extensionsPath)) {
+                $loader = new YamlFileLoader($container, new FileLocator(__DIR__.'/Resources/config'));
+                $loader->load($extensionsPath);
+            }
+        }
 
         $this->processExpressionPreprocessors($container);
     }
