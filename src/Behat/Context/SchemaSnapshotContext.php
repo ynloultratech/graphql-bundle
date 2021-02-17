@@ -63,7 +63,7 @@ class SchemaSnapshotContext implements Context, KernelAwareContext
     }
 
     /**
-     * @Given /^previous schema snapshot of "([^"]*)" endpoint$/
+     * @Given /^previous schema snapshot of "(.*?)" endpoint$/
      */
     public function previousSnapshotOfEndpointSchema($endpoint)
     {

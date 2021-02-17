@@ -30,7 +30,7 @@ final class StorageContext implements Context, StorageAwareInterface
      *  - And grab "{response.data.add.order.items}" to use as "orderItems"
      * </code>
      *
-     * @Given /^grab "([^"]*)" to use as "([^"]*)"$/
+     * @Given /^grab "(.*?)" to use as "(.*?)"$/
      */
     public function grabToUseAs($value, $name)
     {

@@ -86,7 +86,7 @@ final class GraphQLContext implements Context, ClientAwareInterface
      *
      * Example: Given the operation in file 'some_query.graphql'
      *
-     * @Given /^the operation in file "([^"]*)"$/
+     * @Given /^the operation in file "(.*?)"$/
      */
     public function theOperationInFile($filename)
     {
@@ -105,7 +105,7 @@ final class GraphQLContext implements Context, ClientAwareInterface
      *
      * Example: Given the operation named "GetUser" in file 'queries.graphql'
      *
-     * @Given /^the operation named "([^"]*)" in file "([^"]*)"$/
+     * @Given /^the operation named "(.*?)" in file "(.*?)"$/
      */
     public function theOperationNamedInFile($queryName, $file)
     {
@@ -135,7 +135,7 @@ final class GraphQLContext implements Context, ClientAwareInterface
      *
      * Example: Given the operation named "GetUser"
      *
-     * @Given /^the operation named "([^"]*)"$/
+     * @Given /^the operation named "(.*?)"$/
      */
     public function theOperationNamed($queryName)
     {
@@ -159,7 +159,7 @@ final class GraphQLContext implements Context, ClientAwareInterface
      * Example: And variable "visible" is true
      * Example: And variable "orderBy" is { [{field:'login', direction: 'DESC'}] }
      *
-     * @Given /^variable "([^"]*)" is "?([^"]*)"?$/
+     * @Given /^variable "(.*?)" is "?(.*?)"?$/
      */
     public function setVariableEqualTo($path, $value)
     {

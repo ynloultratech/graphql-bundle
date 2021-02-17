@@ -55,7 +55,7 @@ final class ResponseContext implements Context, ClientAwareInterface
     /**
      * Assert that latest response is a GraphQL error with the given message
      *
-     * @Then /^the response is GraphQL error with "([^"]*)"$/
+     * @Then /^the response is GraphQL error with "(.*?)"$/
      */
     public function theResponseIsGraphQLErrorWith(string $message)
     {
@@ -80,7 +80,7 @@ final class ResponseContext implements Context, ClientAwareInterface
     /**
      * Assert that latest response is a GraphQL error with the given code
      *
-     * @Then /^the response is GraphQL error with code "([^"]*)"$/
+     * @Then /^the response is GraphQL error with code "(.*?)"$/
      */
     public function theResponseIsGraphQLErrorWithCode(string $code)
     {
