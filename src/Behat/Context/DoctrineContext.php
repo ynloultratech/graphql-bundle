@@ -44,7 +44,7 @@ final class DoctrineContext implements Context, ClientAwareInterface, StorageAwa
      *            body: "This is another post"
      *          """
      *
-     * @Given /^the following records in the repository "(.*?)"$/
+     * @Given /^the following records in the repository "([^"]*)"$/
      */
     public function theFollowingRecordsInTheRepository($entity, YamlStringNode $records)
     {
@@ -78,7 +78,7 @@ final class DoctrineContext implements Context, ClientAwareInterface, StorageAwa
      *   body: "{variables.input.body}"
      *   """
      *
-     * @Given /^should exist in repository "(.*?)" a record matching:$/
+     * @Given /^should exist in repository "([^"]*)" a record matching:$/
      */
     public function shouldExistInRepositoryARecordMatching($repo, YamlStringNode $criteria)
     {
@@ -103,7 +103,7 @@ final class DoctrineContext implements Context, ClientAwareInterface, StorageAwa
      *   body: "{variables.input.body}"
      *   """
      *
-     * @Given /^should not exist in repository "(.*?)" a record matching:$/
+     * @Given /^should not exist in repository "([^"]*)" a record matching:$/
      */
     public function shouldNotExistInRepositoryARecordMatching($repo, YamlStringNode $criteria)
     {
@@ -148,7 +148,7 @@ final class DoctrineContext implements Context, ClientAwareInterface, StorageAwa
      * - And "{orderedUsers[0].getUsername()}" should be equal to "{response.data.users.all.edges[0].node.login}"
      * </code>
      *
-     * @Given /^(?:grab in )?"(.*?)" from repository "(.*?)" first "?(.*?)"? records ordered by "(.*?)"(?: matching:)?$/
+     * @Given /^(?:grab in )?"([^"]*)" from repository "([^"]*)" first "?([^"]*)"? records ordered by "([^"]*)"(?: matching:)?$/
      */
     public function grabInFromRepositoryFirstRecordsOrderedByMatching($variable, $repo, $limitAndOffset = null, $orderBy = null, YamlStringNode $criteria = null)
     {
@@ -188,7 +188,7 @@ final class DoctrineContext implements Context, ClientAwareInterface, StorageAwa
      * - And "{user.getUsername()}" should be equal to "{response.data.users.all.edges[0].node.login}"
      * </code>
      *
-     * @Given /^(?:grab in )?"(.*?)" from repository "(.*?)" first record(?: matching:)?$/
+     * @Given /^(?:grab in )?"([^"]*)" from repository "([^"]*)" first record(?: matching:)?$/
      */
     public function grabInFromRepositoryFirstRecordMatching($variable, $repo, YamlStringNode $criteria = null)
     {

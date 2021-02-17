@@ -42,7 +42,7 @@ final class DatabaseContext implements Context, ClientAwareInterface
      *   body: "{variables.input.body}"
      *   """
      *
-     * @Given /^should exist in table "(.*?)" a record matching:$/
+     * @Given /^should exist in table "([^"]*)" a record matching:$/
      */
     public function shouldExistInTableARecordMatching($table, YamlStringNode $criteria)
     {
@@ -62,7 +62,7 @@ final class DatabaseContext implements Context, ClientAwareInterface
      *   """
      *
      *
-     * @Given /^should exist in table "(.*?)" records matching:$/
+     * @Given /^should exist in table "([^"]*)" records matching:$/
      */
     public function shouldExistInTableRecordsMatching($table, YamlStringNode $criteria)
     {
@@ -84,7 +84,7 @@ final class DatabaseContext implements Context, ClientAwareInterface
      *   """
      *
      *
-     * @Given /^should not exist in table "(.*?)" records matching:$/
+     * @Given /^should not exist in table "([^"]*)" records matching:$/
      */
     public function shouldNotExistInTableRecordsMatching($table, YamlStringNode $criteria)
     {
@@ -111,7 +111,7 @@ final class DatabaseContext implements Context, ClientAwareInterface
      *   body: "{variables.input.body}"
      *   """
      *
-     * @Given /^should not exist in table "(.*?)" a record matching:$/
+     * @Given /^should not exist in table "([^"]*)" a record matching:$/
      */
     public function shouldNotExistInTableARecordMatching($table, YamlStringNode $criteria)
     {

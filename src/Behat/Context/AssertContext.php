@@ -26,7 +26,7 @@ final class AssertContext implements Context
      * Example: Then "{response.data.title}" should be equal to "{@post1.getTitle()}"
      * Example: Then "{response.data.id}" should be equal to "#post1"
      *
-     * @Then /^"(.*?)" should be equal to "?(.*?)"?$/
+     * @Then /^"([^"]*)" should be equal to "?([^"]*)"?$/
      */
     public function shouldBeEqualTo($actual, $expected)
     {
@@ -40,7 +40,7 @@ final class AssertContext implements Context
      * Example: Then "{response.data.title}" should not be equal to "{@post1.getTitle()}"
      * Example: Then "{response.data.id}" should not be equal to "#post1"
      *
-     * @Then /^"(.*?)" should not be equal to "?(.*?)"?$/
+     * @Then /^"([^"]*)" should not be equal to "?([^"]*)"?$/
      */
     public function shouldNotBeEqualTo($actual, $expected)
     {
@@ -52,7 +52,7 @@ final class AssertContext implements Context
      *
      * Example: Then "{response.data.amount}" should be greater than 20
      *
-     * @Then /^"(.*?)" should be greater than (.*?)$/
+     * @Then /^"([^"]*)" should be greater than ([^"]*)$/
      */
     public function shouldBeGreaterThan($actual, $expected)
     {
@@ -64,7 +64,7 @@ final class AssertContext implements Context
      *
      * Example: Then "{response.data.amount}" should be greater or equal to 20
      *
-     * @Then /^"(.*?)" should be greater or equal to (.*?)$/
+     * @Then /^"([^"]*)" should be greater or equal to ([^"]*)$/
      */
     public function shouldBeGreaterOrEqual($actual, $expected)
     {
@@ -76,7 +76,7 @@ final class AssertContext implements Context
      *
      * Example: Then "{response.data.amount}" should be less than 20
      *
-     * @Then /^"(.*?)" should be less than (.*?)$/
+     * @Then /^"([^"]*)" should be less than ([^"]*)$/
      */
     public function shouldBeLessThan($actual, $expected)
     {
@@ -88,7 +88,7 @@ final class AssertContext implements Context
      *
      * Example: Then "{response.data.amount}" should be greater or equal to 20
      *
-     * @Then /^"(.*?)" should be less or equal to (.*?)$/
+     * @Then /^"([^"]*)" should be less or equal to ([^"]*)$/
      */
     public function shouldBeLessOrEqual($actual, $expected)
     {
@@ -100,7 +100,7 @@ final class AssertContext implements Context
      *
      * Example: Then "{response.data.enabled}" should be true
      *
-     * @Then /^"(.*?)" should be true$/
+     * @Then /^"([^"]*)" should be true$/
      */
     public function shouldBeTrue($value)
     {
@@ -112,7 +112,7 @@ final class AssertContext implements Context
      *
      * Example: Then "{response.data.enabled}" should be false
      *
-     * @Then /^"(.*?)" should be false$/
+     * @Then /^"([^"]*)" should be false$/
      */
     public function shouldBeFalse($actual)
     {
@@ -124,7 +124,7 @@ final class AssertContext implements Context
      *
      * Example: Then "{response.data.body}" should be empty
      *
-     * @Then /^"(.*?)" should be empty$/
+     * @Then /^"([^"]*)" should be empty$/
      */
     public function shouldBeEmpty($value)
     {
@@ -136,7 +136,7 @@ final class AssertContext implements Context
      *
      * Example: Then "{response.data.title}" should not be empty
      *
-     * @Then /^"(.*?)" should not be empty$/
+     * @Then /^"([^"]*)" should not be empty$/
      */
     public function shouldNotBeEmpty($value)
     {
@@ -148,7 +148,7 @@ final class AssertContext implements Context
      *
      * Example: Then "{response.data.title}" should be null
      *
-     * @Then /^"(.*?)" should be null$/
+     * @Then /^"([^"]*)" should be null$/
      */
     public function shouldBeNull($value)
     {
@@ -160,7 +160,7 @@ final class AssertContext implements Context
      *
      * Example: Then "{response.data.title}" should not be null
      *
-     * @Then /^"(.*?)" should not be null$/
+     * @Then /^"([^"]*)" should not be null$/
      */
     public function shouldNotBeNull($value)
     {
@@ -172,7 +172,7 @@ final class AssertContext implements Context
      *
      * Example: Then "{response.data.number}" should match /^\d+$/
      *
-     * @Then /^"(.*?)" should match "(.*?)"$/
+     * @Then /^"([^"]*)" should match "([^"]*)"$/
      */
     public function shouldMatchRegExp($value, $exp)
     {
@@ -184,7 +184,7 @@ final class AssertContext implements Context
      *
      * Example: Then "{response.data.number}" should not match /^\w+$/
      *
-     * @Then /^"(.*?)" should not match "(.*?)"$/
+     * @Then /^"([^"]*)" should not match "([^"]*)"$/
      */
     public function shouldNotMatchRegExp($value, $exp)
     {
@@ -196,7 +196,7 @@ final class AssertContext implements Context
      *
      * Example: Then "{response.data.tags}" should contains "php"
      *
-     * @Then /^"(.*?)" should contains "(.*?)"$/
+     * @Then /^"([^"]*)" should contains "([^"]*)"$/
      */
     public function shouldContains($haystack, $needle)
     {
@@ -208,7 +208,7 @@ final class AssertContext implements Context
      *
      * Example: Then "{response.data.tags}" should not contains "javascript"
      *
-     * @Then /^"(.*?)" should not contains "(.*?)"$/
+     * @Then /^"([^"]*)" should not contains "([^"]*)"$/
      */
     public function shouldNotContains($haystack, $needle)
     {
@@ -220,7 +220,7 @@ final class AssertContext implements Context
      *
      * Example: Then "{response.data.tags}" should have "3" items
      *
-     * @Then /^"(.*?)" should have (.*?) items$/
+     * @Then /^"([^"]*)" should have ([^"]*) items$/
      */
     public function shouldCountElements($haystack, $count)
     {
@@ -232,7 +232,7 @@ final class AssertContext implements Context
      *
      * Example: Then "{response.data.tags}" should don't have "3" items
      *
-     * @Then /^"(.*?)" should don't have (.*?) items$/
+     * @Then /^"([^"]*)" should don't have ([^"]*) items$/
      */
     public function shouldNotCountElements($haystack, $count)
     {
@@ -248,7 +248,7 @@ final class AssertContext implements Context
      *           - "{@post1.getTitle()}"
      *           """
      *
-     * @Then /^"(.*?)" should contains this subset:$/
+     * @Then /^"([^"]*)" should contains this subset:$/
      */
     public function shouldContainsASubset($actual, YamlStringNode $subset)
     {
