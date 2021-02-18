@@ -77,6 +77,7 @@ final class GraphQLContext implements Context, ClientAwareInterface
      */
     public function theOperation(PyStringNode $string)
     {
+        $this->client->setVariables([]);
         $this->client->setGraphQL($string->getRaw());
     }
 
@@ -114,6 +115,7 @@ final class GraphQLContext implements Context, ClientAwareInterface
 
         $this->theOperationInFile($file);
         $this->operationName = $queryName;
+        $this->client->setVariables([]);
         if ($this->client->getGraphQL()) {
             // remove non necessary operations to avoid errors with unsettled variables
             $pattern = '/(query|mutation|subscription)\s+(?!'.$queryName.'\s*[\({])(.+\n)+}\n*/';
