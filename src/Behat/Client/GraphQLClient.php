@@ -201,9 +201,11 @@ class GraphQLClient extends KernelBrowser
     /**
      * Send the configured query or mutation with given variables
      *
+     * @param bool|null $insulated
+     *
      * @return Response
      */
-    public function sendQuery(): Response
+    public function sendQuery($insulated = null): Response
     {
         $data = [
             'query' => $this->getGraphQL(),
@@ -214,7 +216,7 @@ class GraphQLClient extends KernelBrowser
         }
 
         $content = json_encode($data);
-        $this->insulated = $this->config['insulated'] ?? false;
+        $this->insulated = $insulated ?? ($this->config['insulated'] ?? false);
 
         $this->sendRequest(Request::METHOD_POST, $this->getEndpoint(), $this->getRequestsParameters(), [], $this->getServerParameters(), $content);
 

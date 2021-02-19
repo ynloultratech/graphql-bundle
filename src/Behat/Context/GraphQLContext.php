@@ -13,6 +13,7 @@ namespace Ynlo\GraphQLBundle\Behat\Context;
 use Behat\Behat\Context\Context;
 use Behat\Behat\Hook\Scope\AfterStepScope;
 use Behat\Behat\Hook\Scope\BeforeFeatureScope;
+use Behat\Behat\Hook\Scope\BeforeStepScope;
 use Behat\Gherkin\Node\PyStringNode;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\HttpFoundation\File\File;
@@ -21,6 +22,7 @@ use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Ynlo\GraphQLBundle\Behat\Client\ClientAwareInterface;
 use Ynlo\GraphQLBundle\Behat\Client\ClientAwareTrait;
 use Ynlo\GraphQLBundle\Behat\Gherkin\YamlStringNode;
+use Ynlo\GraphQLBundle\Behat\GraphQLApiExtension;
 
 /**
  * Context to work with GraphQL
@@ -37,12 +39,32 @@ final class GraphQLContext implements Context, ClientAwareInterface
      */
     private static $currentFeatureFile;
 
+    protected static $insulatedClient = false;
+
     /**
      * @BeforeFeature
      */
     public static function prepareGraphQLContext(BeforeFeatureScope $scope)
     {
         self::$currentFeatureFile = new File($scope->getFeature()->getFile());
+    }
+
+    /**
+     * @BeforeStep
+     */
+    public function beforeStep(BeforeStepScope $scope)
+    {
+        $config = GraphQLApiExtension::getConfig();
+        self::$insulatedClient = $config['client']['insulated'] ?? false;
+
+        $tags = $scope->getFeature()->getTags();
+        $featureUser = null;
+        foreach ($tags as $tag) {
+            if ($tag === 'insulated') {
+                self::$insulatedClient = true;
+                break;
+            }
+        }
     }
 
     /**
@@ -150,7 +172,7 @@ final class GraphQLContext implements Context, ClientAwareInterface
      */
     public function send()
     {
-        $this->client->sendQuery();
+        $this->client->sendQuery(self::$insulatedClient);
     }
 
     /**
