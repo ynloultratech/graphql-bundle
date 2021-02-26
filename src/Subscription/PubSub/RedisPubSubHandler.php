@@ -47,10 +47,17 @@ class RedisPubSubHandler implements PubSubHandlerInterface
         $this->redisHost = $config['host'] ?? 'localhost';
         $this->redisPort = $config['port'] ?? 6379;
         $this->prefix = $config['prefix'] ?? 'GraphQLSubscription:';
+    }
 
-        $this->client = new \Redis();
-        $this->client->connect($this->redisHost, $this->redisPort);
-        $this->client->setOption(\Redis::OPT_PREFIX, $this->prefix);
+    public function getClient(): \Redis
+    {
+        if (!$this->client) {
+            $this->client = new \Redis();
+            $this->client->connect($this->redisHost, $this->redisPort);
+            $this->client->setOption(\Redis::OPT_PREFIX, $this->prefix);
+        }
+
+        return $this->client;
     }
 
     /**
@@ -60,13 +67,13 @@ class RedisPubSubHandler implements PubSubHandlerInterface
     {
         $key = sprintf('%s:%s', $channel, $id);
         $alreadyExists = $this->exists($id);
-        $this->client->set($key, serialize($meta));
+        $this->getClient()->set($key, serialize($meta));
 
         if (!$expireAt) {
             $expireAt = new \DateTime('+24Hours');
         }
         if (!$alreadyExists && $expireAt) {
-            $this->client->expireAt($key, $expireAt->format('U'));
+            $this->getClient()->expireAt($key, $expireAt->format('U'));
         }
 
         $iterator = null;
@@ -77,7 +84,7 @@ class RedisPubSubHandler implements PubSubHandlerInterface
      */
     public function pub(string $channel, array $filters = [], array $data = []): void
     {
-        $this->client->publish($channel, serialize([$filters, $data]));
+        $this->getClient()->publish($channel, serialize([$filters, $data]));
     }
 
     /**
@@ -87,9 +94,9 @@ class RedisPubSubHandler implements PubSubHandlerInterface
     {
         $iterator = null;
         while ($iterator !== 0) {
-            while ($keys = $this->client->scan($iterator, "*:$id*")) {
+            while ($keys = $this->getClient()->scan($iterator, "*:$id*")) {
                 foreach ($keys as $key) {
-                    $this->client->expireAt($this->unprefix($key), (new \DateTime('+24Hours'))->format('U'));
+                    $this->getClient()->expireAt($this->unprefix($key), (new \DateTime('+24Hours'))->format('U'));
                 }
             }
         }
@@ -101,8 +108,8 @@ class RedisPubSubHandler implements PubSubHandlerInterface
     public function del(string $id): void
     {
         $iterator = null;
-        foreach ($this->client->keys("*:$id") as $key) {
-            $this->client->del($this->unprefix($key));
+        foreach ($this->getClient()->keys("*:$id") as $key) {
+            $this->getClient()->del($this->unprefix($key));
         }
     }
 
@@ -112,8 +119,8 @@ class RedisPubSubHandler implements PubSubHandlerInterface
     public function clear(): void
     {
         $iterator = null;
-        foreach ($this->client->keys('*') as $key) {
-            $this->client->del($this->unprefix($key));
+        foreach ($this->getClient()->keys('*') as $key) {
+            $this->getClient()->del($this->unprefix($key));
         }
     }
 
@@ -124,7 +131,7 @@ class RedisPubSubHandler implements PubSubHandlerInterface
     {
         $iterator = null;
         while ($iterator !== 0) {
-            $keys = $this->client->scan($iterator, "*:$id*");
+            $keys = $this->getClient()->scan($iterator, "*:$id*");
             if (!empty($keys)) {
                 return true;
             }
@@ -150,12 +157,12 @@ class RedisPubSubHandler implements PubSubHandlerInterface
             function (\Redis $redis, $chan, $event) use ($dispatch) {
                 $iterator = null;
                 while ($iterator !== 0) {
-                    while ($keys = $this->client->scan($iterator, "*$chan:*", 100)) {
+                    while ($keys = $this->getClient()->scan($iterator, "*$chan:*", 100)) {
                         [$filters, $data] = unserialize($event, [true]);
                         foreach ($keys as $key) {
                             $key = $this->unprefix($key);
                             $chan = $this->unprefix($chan);
-                            $meta = $this->client->get($key);
+                            $meta = $this->getClient()->get($key);
                             preg_match("/$chan:(.+)/", $key, $matches);
                             if ($matches) {
                                 $metaArray = unserialize($meta, [true]);
