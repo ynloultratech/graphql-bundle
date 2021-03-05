@@ -279,7 +279,11 @@ class ResolverExecutor implements ContainerAwareInterface
                     $normalizedValue = $this->normalizeValue($value, $argument->getType());
 
                     //normalize argument into respective inputs objects
-                    if (\is_array($normalizedValue) && $this->endpoint->hasType($argument->getType())) {
+                    if (\is_array($normalizedValue)
+                        && $this->endpoint->hasType($argument->getType())
+                        && ($type = $this->endpoint->getType($argument->getType()))
+                        && $type instanceof FieldsAwareDefinitionInterface
+                    ) {
                         if ($argument->isList()) {
                             $tmp = [];
                             foreach ($normalizedValue as $childValue) {
