@@ -22,6 +22,11 @@ use Doctrine\Inflector\InflectorFactory;
 class Inflector
 {
     /**
+     * @var \Doctrine\Inflector\Inflector|null
+     */
+    private static ?\Doctrine\Inflector\Inflector $inflector = null;
+
+    /**
      * Convert word in to the format for a Doctrine table name. Converts 'ModelName' to 'model_name'
      *
      * @param string $word Word to tableize
@@ -35,7 +40,7 @@ class Inflector
             return \Doctrine\Common\Inflector\Inflector::tableize($word);
         }
 
-        return InflectorFactory::create()->build()->tableize($word);
+        return self::getInflector()->tableize($word);
     }
 
     /**
@@ -52,7 +57,7 @@ class Inflector
             return \Doctrine\Common\Inflector\Inflector::classify($word);
         }
 
-        return InflectorFactory::create()->build()->classify($word);
+        return self::getInflector()->classify($word);
     }
 
     /**
@@ -69,7 +74,7 @@ class Inflector
             return \Doctrine\Common\Inflector\Inflector::camelize($word);
         }
 
-        return InflectorFactory::create()->build()->camelize($word);
+        return self::getInflector()->camelize($word);
     }
 
     /**
@@ -86,7 +91,7 @@ class Inflector
             return \Doctrine\Common\Inflector\Inflector::pluralize($word);
         }
 
-        return InflectorFactory::create()->build()->pluralize($word);
+        return self::getInflector()->pluralize($word);
     }
 
     /**
@@ -103,6 +108,18 @@ class Inflector
             return \Doctrine\Common\Inflector\Inflector::singularize($word);
         }
 
-        return InflectorFactory::create()->build()->singularize($word);
+        return self::getInflector()->singularize($word);
+    }
+
+    /**
+     * @return \Doctrine\Inflector\Inflector
+     */
+    private static function getInflector()
+    {
+        if (!self::$inflector) {
+            self::$inflector = InflectorFactory::create()->build();
+        }
+
+        return self::$inflector;
     }
 }
