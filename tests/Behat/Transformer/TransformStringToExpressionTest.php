@@ -55,7 +55,7 @@ class TransformStringToExpressionTest extends Mockery\Adapter\Phpunit\MockeryTes
      */
     protected $definition;
 
-    public function setUp()
+    public function setUp(): void
     {
         $this->transformer = new TransformStringToExpression();
 

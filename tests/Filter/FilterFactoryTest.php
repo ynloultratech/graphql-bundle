@@ -51,7 +51,7 @@ class FilterFactoryTest extends MockeryTestCase
     /**
      * @inheritDoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $titleFilter = new Filter();
         $titleFilter->name = 'title';
@@ -82,7 +82,7 @@ class FilterFactoryTest extends MockeryTestCase
         $resolver = \Mockery::mock(FilterResolverInterface::class);
         $resolver->expects('resolve')->andReturn($this->filters);
 
-        $endpointPlugin =  \Mockery::mock(EndpointsDefinitionPlugin::class);
+        $endpointPlugin = \Mockery::mock(EndpointsDefinitionPlugin::class);
         $endpointPlugin->allows('isGranted')->withAnyArgs()->andReturnTrue();
 
         $this->factory = new FilterFactory([$resolver], $endpointPlugin);

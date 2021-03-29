@@ -42,7 +42,7 @@ abstract class AbstractFilterTest extends MockeryTestCase
     /**
      * @inheritDoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $endpoint = new Endpoint('default');
         $context = new ResolverContext($endpoint);

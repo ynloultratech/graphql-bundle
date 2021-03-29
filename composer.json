@@ -25,7 +25,7 @@
     }
   },
   "require": {
-    "php": "^7.4",
+    "php": "^7.4 | ^8.0",
     "ext-json": "*",
     "symfony/form": "^4.4 | ^5.0",
     "symfony/framework-bundle": "^4.4 | ^5.0",
@@ -51,12 +51,12 @@
   "require-dev": {
     "ext-redis": "*",
     "symfony/symfony": "^4.4 | ^5.0",
-    "phpunit/phpunit": "^6.2",
+    "phpunit/phpunit": "^8.5",
     "symfony/phpunit-bridge": "^5.1",
     "lexik/jwt-authentication-bundle": "^2.4",
     "mockery/mockery": "^1.1",
     "doctrine/doctrine-fixtures-bundle": "^3.4",
-    "fzaninotto/faker": "^1.7",
+    "fzaninotto/faker": "dev-master",
     "fresh/doctrine-enum-bundle": "^6.2 | ^7.0",
     "escapestudios/symfony2-coding-standard": "3.x-dev",
     "behat/behat": "^3.4",

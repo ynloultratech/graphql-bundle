@@ -26,7 +26,7 @@ class NodeFilterTest extends AbstractFilterTest
     /**
      * @inheritDoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         parent::setUp();
 

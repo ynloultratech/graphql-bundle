@@ -39,7 +39,7 @@ class IDToNodeTransformerTest extends MockeryTestCase
     /**
      * @inheritDoc
      */
-    protected function setUp()
+    protected function setUp(): void
     {
         $endpoint = new Endpoint('default');
         TestDefinitionHelper::loadAnnotationDefinitions(Post::class, $endpoint, [ObjectType::class]);

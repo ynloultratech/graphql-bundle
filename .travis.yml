@@ -2,6 +2,7 @@ language: php
 
 php:
   - 7.4
+  - 8.0
 
 env:
   - SYMFONY_DEPRECATIONS_HELPER=weak COMPOSER_MEMORY_LIMIT=-1
@@ -11,6 +12,9 @@ matrix:
   include:
     - php: 7.4
     - php: 7.4
+      env: LATEST_DEPENDENCIES=true SYMFONY_DEPRECATIONS_HELPER=weak COMPOSER_MEMORY_LIMIT=-1
+    - php: 8.0
+    - php: 8.0
       env: LATEST_DEPENDENCIES=true SYMFONY_DEPRECATIONS_HELPER=weak COMPOSER_MEMORY_LIMIT=-1
 
 cache:
