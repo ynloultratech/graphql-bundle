@@ -51,10 +51,10 @@
   "require-dev": {
     "ext-redis": "*",
     "symfony/symfony": "^4.4 | ^5.0",
-    "phpunit/phpunit": "^8.5",
-    "symfony/phpunit-bridge": "^5.1",
+    "phpunit/phpunit": "^8.5.15",
+    "symfony/phpunit-bridge": "^5.2.6",
     "lexik/jwt-authentication-bundle": "^2.4",
-    "mockery/mockery": "^1.1",
+    "mockery/mockery": "^1.4",
     "doctrine/doctrine-fixtures-bundle": "^3.4",
     "fzaninotto/faker": "dev-master",
     "fresh/doctrine-enum-bundle": "^6.2 | ^7.0",
