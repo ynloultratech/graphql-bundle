@@ -135,7 +135,7 @@ class YnloGraphQLExtension extends Extension
             $mercurePublisherReference = new Reference(sprintf('mercure.hub.%s.publisher', $mercureHub));
 
 
-            $bucket = $config['subscriptions']['bucket'];
+            $bucket = $config['subscriptions']['bucket'] ?? 'local';
             switch ($bucket) {
                 case 'local':
                     $bucket = LocalSubscriptionBucket::class;
