@@ -16,7 +16,7 @@ use Doctrine\Common\DataFixtures\Loader;
 use Doctrine\Common\DataFixtures\ProxyReferenceRepository;
 use Doctrine\Common\DataFixtures\ReferenceRepository;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\Filesystem\Filesystem;
 use Ynlo\GraphQLBundle\Test\FixtureLoader\DataPopulator\DataLoaderInterface;
 use Ynlo\GraphQLBundle\Test\FixtureLoader\DataPopulator\ORMDataLoader;
 use Ynlo\GraphQLBundle\Test\FixtureLoader\SchemaUpdater\ORMSQLite;
@@ -62,7 +62,8 @@ class FixtureLoader
         $this->plugins = $plugins;
 
         $cacheDir = $container->getParameter('kernel.cache_dir').DIRECTORY_SEPARATOR.'tests';
-        $container->get('filesystem')->mkdir($cacheDir);
+        $fileSystem = new Filesystem();
+        $fileSystem->mkdir($cacheDir);
 
         $this->plugins[] = new ORMSQLite($cacheDir);
         $this->plugins[] = new ORMDataLoader($cacheDir);
