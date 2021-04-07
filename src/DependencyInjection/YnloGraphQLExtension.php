@@ -28,6 +28,7 @@ use Ynlo\GraphQLBundle\GraphiQL\JWTGraphiQLAuthentication;
 use Ynlo\GraphQLBundle\GraphiQL\LexikJWTGraphiQLAuthenticator;
 use Ynlo\GraphQLBundle\Request\SubscriptionsRequestMiddleware;
 use Ynlo\GraphQLBundle\Security\User\UserProvider;
+use Ynlo\GraphQLBundle\Subscription\Bucket\LocalSubscriptionBucket;
 use Ynlo\GraphQLBundle\Subscription\Bucket\RedisSubscriptionBucket;
 use Ynlo\GraphQLBundle\Subscription\Publisher;
 use Ynlo\GraphQLBundle\Subscription\Subscriber;
@@ -133,14 +134,30 @@ class YnloGraphQLExtension extends Extension
 
             $mercurePublisherReference = new Reference(sprintf('mercure.hub.%s.publisher', $mercureHub));
 
+
+            $bucket = $config['subscriptions']['bucket'];
+            switch ($bucket) {
+                case 'local':
+                    $bucket = LocalSubscriptionBucket::class;
+                    $container->removeDefinition(RedisSubscriptionBucket::class);
+                    break;
+                case 'redis':
+                    $bucket = RedisSubscriptionBucket::class;
+                    $container->removeDefinition(LocalSubscriptionBucket::class);
+                    break;
+                default:
+                    $container->removeDefinition(LocalSubscriptionBucket::class);
+                    $container->removeDefinition(RedisSubscriptionBucket::class);
+            }
+
             $container->getDefinition(SubscriptionManager::class)
                       ->addArgument(new Reference(MessageBusInterface::class))
-                      ->addArgument(new Reference($config['subscriptions']['bucket']))
+                      ->addArgument(new Reference($bucket))
                       ->addArgument(new Parameter('kernel.secret'));
 
             $container->getDefinition(SubscriptionPublishHandler::class)
                       ->addArgument(new Reference(MessageBusInterface::class))
-                      ->addArgument(new Reference($config['subscriptions']['bucket']));
+                      ->addArgument(new Reference($bucket));
 
             if ($subscriptionsUrl = $config['subscriptions']['subscriber_url'] ?? null) {
                 $container->getDefinition(Subscriber::class)

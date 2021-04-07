@@ -457,6 +457,10 @@ services:
         arguments:
             - '%graphql.subscriptions.redis%'
 
+    Ynlo\GraphQLBundle\Subscription\Bucket\LocalSubscriptionBucket:
+        arguments:
+            - '@cache.app'
+
 # Security User ---------
 
     Ynlo\GraphQLBundle\Security\User\UserManagerInterface:
