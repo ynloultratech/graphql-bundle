@@ -132,8 +132,11 @@ class Subscriber implements EventSubscriberInterface
         // if the client does not connect to given subscription in x seconds the subscription is automatically deleted
         $expireAt = new \DateTime('+10seconds');
 
+        $subscriptionName = $this->endpoint->getSubscriptionNameForResolver($context->getDefinition()->getResolver());
+
         $id = Uuid::createFromData(
             [
+                $subscriptionName,
                 $this->username,
                 $this->endpoint,
                 $request->getUri(),
@@ -141,8 +144,7 @@ class Subscriber implements EventSubscriberInterface
             ]
         );
 
-        $subscriptionName = $this->endpoint->getSubscriptionNameForResolver($context->getDefinition()->getResolver());
-        $this->subscriptionManager->subscribe($id, $subscriptionName, $args, $request, $expireAt);
+        $this->subscriptionManager->subscribe(new Subscription($subscriptionName, $id, $request, $args), $expireAt);
 
         return new SubscriptionLink(sprintf('%s?topic=%s', $this->subscriptionsUrl, $id));
     }

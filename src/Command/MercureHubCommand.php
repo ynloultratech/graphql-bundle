@@ -99,7 +99,7 @@ class MercureHubCommand extends Command
         $process = new Process([$mercure, 'run', '-config', $caddyFile], null, $env, null, null);
 
         $subscriptionManager = $this->subscriptionManager;
-        $subscriptionManager->handler()->clear();
+        $subscriptionManager->subscriptionBucket()->clear();
 
         $subscribersByTopics = [];
 
@@ -123,7 +123,7 @@ class MercureHubCommand extends Command
                                 $subscribersByTopics[$subscription] = [];
                             }
 
-                            $subscriptionManager->handler()->touch($subscription);
+                            $subscriptionManager->subscriptionBucket()->hit($subscription);
                             $subscribersByTopics[$subscription][$remoteAddr] = true;
                         } elseif ($disconnected) {
                             if (isset($subscribersByTopics[$subscription][$remoteAddr])) {
@@ -132,7 +132,7 @@ class MercureHubCommand extends Command
 
                             if (empty($subscribersByTopics[$subscription])) {
                                 unset($subscribersByTopics[$subscription]);
-                                $subscriptionManager->handler()->del($subscription);
+                                $subscriptionManager->subscriptionBucket()->remove($subscription);
                             }
                         }
                     }

@@ -20,7 +20,7 @@ use Ynlo\GraphQLBundle\Doctrine\UserManager;
 use Ynlo\GraphQLBundle\Encoder\SecureIDEncoder;
 use Ynlo\GraphQLBundle\Error\DefaultErrorFormatter;
 use Ynlo\GraphQLBundle\Error\DefaultErrorHandler;
-use Ynlo\GraphQLBundle\Subscription\PubSub\RedisPubSubHandler;
+use Ynlo\GraphQLBundle\Subscription\Bucket\RedisSubscriptionBucket;
 
 /**
  * Class Configuration
@@ -57,7 +57,7 @@ class Configuration implements ConfigurationInterface
 
         $subscriptions->scalarNode('subscriber_url')->info('Define subscriber public url in case the defined mercure hub use a internal address and port to publish');
         $subscriptions->scalarNode('mercure_hub')->defaultValue('default');
-        $subscriptions->scalarNode('pubsub_handler')->defaultValue(RedisPubSubHandler::class);
+        $subscriptions->scalarNode('bucket')->defaultValue(RedisSubscriptionBucket::class);
         $redis = $subscriptions->arrayNode('redis')->info('Configure redis server to use as subscription handler')
                                ->addDefaultsIfNotSet()
                                ->children();

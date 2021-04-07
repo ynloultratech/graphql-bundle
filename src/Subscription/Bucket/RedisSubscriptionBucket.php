@@ -8,9 +8,11 @@
  *  file that was distributed with this source code.
  ******************************************************************************/
 
-namespace Ynlo\GraphQLBundle\Subscription\PubSub;
+namespace Ynlo\GraphQLBundle\Subscription\Bucket;
 
-class RedisPubSubHandler implements PubSubHandlerInterface
+use Ynlo\GraphQLBundle\Subscription\Subscription;
+
+class RedisSubscriptionBucket implements SubscriptionBucketInterface
 {
     /**
      * @var string
@@ -63,11 +65,11 @@ class RedisPubSubHandler implements PubSubHandlerInterface
     /**
      * @inheritDoc
      */
-    public function sub(string $channel, string $id, array $meta, \DateTime $expireAt = null): void
+    public function add(Subscription $subscription, \DateTime $expireAt = null): void
     {
-        $key = sprintf('%s:%s', $channel, $id);
-        $alreadyExists = $this->exists($id);
-        $this->getClient()->set($key, serialize($meta));
+        $key = sprintf('%s:%s', $subscription->getChannel(), $subscription->getId());
+        $alreadyExists = $this->exists($subscription->getId());
+        $this->getClient()->set($key, serialize($subscription));
 
         if (!$expireAt) {
             $expireAt = new \DateTime('+24Hours');
@@ -79,18 +81,23 @@ class RedisPubSubHandler implements PubSubHandlerInterface
         $iterator = null;
     }
 
-    /**
-     * @inheritDoc
-     */
-    public function pub(string $channel, array $filters = [], array $data = []): void
+    public function all(string $channel): iterable
     {
-        $this->getClient()->publish($channel, serialize([$filters, $data]));
+        $iterator = null;
+        while ($iterator !== 0) {
+            while ($keys = $this->getClient()->scan($iterator, "*$channel:*", 100)) {
+                foreach ($keys as $key) {
+                    $data = $this->getClient()->get($this->unprefix($key));
+                    yield unserialize($data);
+                }
+            }
+        }
     }
 
     /**
      * @inheritDoc
      */
-    public function touch(string $id): void
+    public function hit(string $id): void
     {
         $iterator = null;
         while ($iterator !== 0) {
@@ -105,7 +112,7 @@ class RedisPubSubHandler implements PubSubHandlerInterface
     /**
      * @inheritDoc
      */
-    public function del(string $id): void
+    public function remove(string $id): void
     {
         $iterator = null;
         foreach ($this->getClient()->keys("*:$id") as $key) {
@@ -138,49 +145,6 @@ class RedisPubSubHandler implements PubSubHandlerInterface
         }
 
         return false;
-    }
-
-    /**
-     * @inheritDoc
-     */
-    public function consume(array $channels, callable $dispatch): void
-    {
-        $this->consumer = new \Redis();
-        // the timeout is specified to avoid redis connection error after some time running the consumer
-        // the `default_socket_timeout` to -1 like described here https://github.com/phpredis/phpredis/issues/70
-        // can't be used because create a conflict with others sock open functions like used in Ynlo\GraphQLBundle\Subscription\SubscriptionManager::sendRequest
-        $this->consumer->connect($this->redisHost, $this->redisPort, 0, null, 0, 100000);
-        $this->consumer->setOption(\Redis::OPT_READ_TIMEOUT, 1000000);
-        $this->consumer->setOption(\Redis::OPT_PREFIX, $this->prefix);
-        $this->consumer->subscribe(
-            $channels,
-            function (\Redis $redis, $chan, $event) use ($dispatch) {
-                $iterator = null;
-                while ($iterator !== 0) {
-                    while ($keys = $this->getClient()->scan($iterator, "*$chan:*", 100)) {
-                        [$filters, $data] = unserialize($event, [true]);
-                        foreach ($keys as $key) {
-                            $key = $this->unprefix($key);
-                            $chan = $this->unprefix($chan);
-                            $meta = $this->getClient()->get($key);
-                            preg_match("/$chan:(.+)/", $key, $matches);
-                            if ($matches) {
-                                $metaArray = unserialize($meta, [true]);
-                                $message = new SubscriptionMessage(
-                                    $chan,
-                                    $matches[1],
-                                    $data,
-                                    $filters,
-                                    is_array($metaArray) ? $metaArray : []
-                                );
-
-                                $dispatch($message);
-                            }
-                        }
-                    }
-                }
-            }
-        );
     }
 
     /**

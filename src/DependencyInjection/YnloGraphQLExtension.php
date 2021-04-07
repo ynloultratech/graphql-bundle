@@ -18,24 +18,22 @@ use Symfony\Component\DependencyInjection\Loader\YamlFileLoader;
 use Symfony\Component\DependencyInjection\Parameter;
 use Symfony\Component\DependencyInjection\Reference;
 use Symfony\Component\HttpKernel\DependencyInjection\Extension;
+use Symfony\Component\Messenger\MessageBusInterface;
 use Ynlo\GraphQLBundle\Cache\DefinitionCacheWarmer;
 use Ynlo\GraphQLBundle\Command\MercureHubCommand;
-use Ynlo\GraphQLBundle\Command\SubscriptionConsumerCommand;
 use Ynlo\GraphQLBundle\Controller\GraphQLEndpointController;
-use Ynlo\GraphQLBundle\Controller\SubscriptionsController;
-use Ynlo\GraphQLBundle\Controller\SubscriptionsHeartbeatController;
 use Ynlo\GraphQLBundle\Doctrine\UserManager;
 use Ynlo\GraphQLBundle\Encoder\IDEncoderManager;
 use Ynlo\GraphQLBundle\GraphiQL\JWTGraphiQLAuthentication;
 use Ynlo\GraphQLBundle\GraphiQL\LexikJWTGraphiQLAuthenticator;
 use Ynlo\GraphQLBundle\Request\SubscriptionsRequestMiddleware;
-use Ynlo\GraphQLBundle\Security\User\UserManagerInterface;
 use Ynlo\GraphQLBundle\Security\User\UserProvider;
+use Ynlo\GraphQLBundle\Subscription\Bucket\RedisSubscriptionBucket;
 use Ynlo\GraphQLBundle\Subscription\Publisher;
-use Ynlo\GraphQLBundle\Subscription\PubSub\RedisPubSubHandler;
 use Ynlo\GraphQLBundle\Subscription\Subscriber;
 use Ynlo\GraphQLBundle\Subscription\SubscriptionAwareInterface;
 use Ynlo\GraphQLBundle\Subscription\SubscriptionManager;
+use Ynlo\GraphQLBundle\Subscription\SubscriptionPublishHandler;
 
 /**
  * Class YnloGraphQLExtension
@@ -136,8 +134,13 @@ class YnloGraphQLExtension extends Extension
             $mercurePublisherReference = new Reference(sprintf('mercure.hub.%s.publisher', $mercureHub));
 
             $container->getDefinition(SubscriptionManager::class)
-                      ->addArgument(new Reference($config['subscriptions']['pubsub_handler']))
+                      ->addArgument(new Reference(MessageBusInterface::class))
+                      ->addArgument(new Reference($config['subscriptions']['bucket']))
                       ->addArgument(new Parameter('kernel.secret'));
+
+            $container->getDefinition(SubscriptionPublishHandler::class)
+                      ->addArgument(new Reference(MessageBusInterface::class))
+                      ->addArgument(new Reference($config['subscriptions']['bucket']));
 
             if ($subscriptionsUrl = $config['subscriptions']['subscriber_url'] ?? null) {
                 $container->getDefinition(Subscriber::class)
@@ -147,9 +150,6 @@ class YnloGraphQLExtension extends Extension
                           ->addMethodCall('setSubscriptionsUrlFromHub', [new Parameter('mercure.hubs'), $mercureHub]);
             }
 
-            $container->getDefinition(SubscriptionConsumerCommand::class)
-                      ->addArgument($mercurePublisherReference);
-
             $container->getDefinition(GraphQLEndpointController::class)->addMethodCall('setPublisher', [$mercurePublisherReference]);
 
             $container->registerForAutoconfiguration(SubscriptionAwareInterface::class)
@@ -157,11 +157,10 @@ class YnloGraphQLExtension extends Extension
         } else {
             $container->removeDefinition(SubscriptionManager::class);
             $container->removeDefinition(MercureHubCommand::class);
-            $container->removeDefinition(SubscriptionConsumerCommand::class);
             $container->removeDefinition(SubscriptionsRequestMiddleware::class);
             $container->removeDefinition(Subscriber::class);
             $container->removeDefinition(Publisher::class);
-            $container->removeDefinition(RedisPubSubHandler::class);
+            $container->removeDefinition(RedisSubscriptionBucket::class);
         }
 
         // user support

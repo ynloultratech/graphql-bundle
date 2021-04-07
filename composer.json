@@ -60,11 +60,13 @@
         "fresh/doctrine-enum-bundle": "^6.2 | ^7.0",
         "escapestudios/symfony2-coding-standard": "3.x-dev",
         "behat/behat": "^3.4",
-        "symfony/mercure-bundle": "^0.2.0"
+        "symfony/mercure-bundle": "^0.2.0",
+        "symfony/messenger": "^5.2"
     },
     "suggest": {
         "ext-redis": "Needed to support GraphQL subscriptions",
         "symfony/mercure-bundle": "Needed to support GraphQL subscriptions",
+        "symfony/messenger": "Needed to support GraphQL subscriptions",
         "behat/behat": "Integration with Behat BDD tests",
         "phpunit/phpunit": "To use assertions in Behat tests",
         "doctrine/doctrine-fixtures-bundle": "If you want to create test fixtures",

@@ -352,13 +352,6 @@ services:
         tags:
             - 'console.command'
 
-    Ynlo\GraphQLBundle\Command\SubscriptionConsumerCommand:
-        arguments:
-            - '@kernel'
-            - '@Ynlo\GraphQLBundle\Subscription\SubscriptionManager'
-        tags:
-            - 'console.command'
-
     Ynlo\GraphQLBundle\Command\MercureHubCommand:
         arguments:
             - '@Ynlo\GraphQLBundle\Subscription\SubscriptionManager'
@@ -451,7 +444,16 @@ services:
         arguments:
             - '@Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry'
 
-    Ynlo\GraphQLBundle\Subscription\PubSub\RedisPubSubHandler:
+    Ynlo\GraphQLBundle\Subscription\SubscriptionPublishHandler:
+        arguments: # dpi
+        tags: [messenger.message_handler]
+
+    Ynlo\GraphQLBundle\Subscription\SubscriptionUpdateHandler:
+        arguments:
+            - '%kernel.secret%'
+        tags: [messenger.message_handler]
+
+    Ynlo\GraphQLBundle\Subscription\Bucket\RedisSubscriptionBucket:
         arguments:
             - '%graphql.subscriptions.redis%'
 
