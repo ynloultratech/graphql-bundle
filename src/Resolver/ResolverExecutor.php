@@ -184,7 +184,7 @@ class ResolverExecutor implements ContainerAwareInterface
                 $result = $refMethod->invokeArgs($resolver, $params);
             }
 
-            if ($isSubscriptionRequest) {
+            if ($isSubscriptionRequest && $this->endpoint->getSubscriptionNameForResolver($this->executableDefinition->getResolver())) {
                 if (!$result) {
                     exit;
                 }
