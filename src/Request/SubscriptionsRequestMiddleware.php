@@ -10,8 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Request;
 
-use Lcobucci\JWT\Parser;
-use Lcobucci\JWT\Signer\Hmac\Sha256;
+use Firebase\JWT\JWT;
 use Symfony\Component\HttpFoundation\Request;
 use Ynlo\GraphQLBundle\Subscription\SubscriptionRequest;
 
@@ -44,15 +43,16 @@ class SubscriptionsRequestMiddleware implements RequestMiddlewareInterface
         if ($content
             && $request->headers->has('Subscription')
             && $subscriptionJWT = $request->headers->get('Subscription')) {
-            $token = (new Parser())->parse($subscriptionJWT);
-            if (!$token->verify(new Sha256(), $this->secret)) {
+            try {
+                $token = JWT::decode($subscriptionJWT, $this->secret, ['HS256']);
+            } catch (\Exception $exception) {
                 throw new \RuntimeException('Invalid subscription signature');
             }
 
             $query->setSubscriptionRequest(
                 new SubscriptionRequest(
-                    $token->getClaim('jti'),
-                    unserialize($token->getClaim('data'), [true])
+                    $token->jti,
+                    unserialize($token->data, [true])
                 )
             );
         }

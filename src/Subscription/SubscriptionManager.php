@@ -10,9 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Subscription;
 
-use Lcobucci\JWT\Builder;
-use Lcobucci\JWT\Signer\Hmac\Sha256;
-use Lcobucci\JWT\Signer\Key;
+use Firebase\JWT\JWT;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
@@ -196,13 +194,17 @@ class SubscriptionManager
 
         $handle = fsockopen($originRequest->isSecure() ? 'ssl://'.$host : $host, $port, $errno, $errstr, 10);
 
-        $signer = new Sha256();
-        $subscriptionToken = (new Builder())->identifiedBy($message->getId())
-                                            ->withClaim('data', serialize($message->getData()))
-                                            ->issuedAt(time())
-                                            ->canOnlyBeUsedAfter(time() + 60)
-                                            ->expiresAt(time() + 60)
-                                            ->getToken($signer, new Key($this->secret));
+        $subscriptionToken = JWT::encode(
+            [
+                'jti' => $message->getId(),
+                'iat' => time(),
+                'exp' => time() + 60,
+                'data' => serialize($message->getData()),
+            ],
+            $this->secret
+        );
+
+        $output->writeln($subscriptionToken);
 
         $body = $originRequest->getContent();
         $length = strlen($body);
@@ -224,9 +226,9 @@ class SubscriptionManager
                 break;
             }
             $emptyResponse = false;
-            if ($debug) {
+           // if ($debug) {
                 $output->write($buffer);
-            }
+           // }
         }
         if ($emptyResponse) {
             $output->writeln(sprintf('[INFO] Empty response for subscription %s', $message->getId()));

@@ -55,6 +55,7 @@ class Configuration implements ConfigurationInterface
                               ->addDefaultsIfNotSet()
                               ->children();
 
+        $subscriptions->scalarNode('subscriber_url')->info('Define subscriber public url in case the defined mercure hub use a internal address and port to publish');
         $subscriptions->scalarNode('mercure_hub')->defaultValue('default');
         $subscriptions->scalarNode('pubsub_handler')->defaultValue(RedisPubSubHandler::class);
         $redis = $subscriptions->arrayNode('redis')->info('Configure redis server to use as subscription handler')

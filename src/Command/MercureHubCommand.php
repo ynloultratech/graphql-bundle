@@ -11,8 +11,8 @@
 namespace Ynlo\GraphQLBundle\Command;
 
 use Symfony\Component\Console\Command\Command;
-use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Process\Process;
 use Ynlo\GraphQLBundle\Subscription\SubscriptionManager;
@@ -33,14 +33,12 @@ class MercureHubCommand extends Command
      */
     protected $subscriptionManager;
 
-    /**
-     * MercureHubCommand constructor.
-     *
-     * @param SubscriptionManager $subscriptionManager
-     */
-    public function __construct(SubscriptionManager $subscriptionManager)
+    protected bool $debug;
+
+    public function __construct(SubscriptionManager $subscriptionManager, bool $debug = false)
     {
         $this->subscriptionManager = $subscriptionManager;
+        $this->debug = $debug;
 
         parent::__construct();
     }
@@ -52,7 +50,14 @@ class MercureHubCommand extends Command
     {
         $this->setName('graphql:mercure:start')
              ->setDescription('Start mercure HUB server. Define mercure settings using env variables with MERCURE_* prefix in your .env file')
-             ->addArgument('mercure', InputArgument::REQUIRED, 'Mercure binary');
+             ->addOption('mercure', null, InputOption::VALUE_REQUIRED, 'Use custom mercure binary file otherwise the integrated binary will be used')
+             ->addOption('caddyFile', null, InputOption::VALUE_REQUIRED, 'Use custom configuration file')
+             ->addOption('serverName', null, InputOption::VALUE_REQUIRED, 'Server name and port to listen (if use port 443 with specific server name a Let\'s Encrypt TLS certificate will automatically generated) ', ':4000')
+             ->addOption('transportUrl', null, InputOption::VALUE_REQUIRED, 'URL representation of the transport to use. Use local://local to disabled history, (example bolt:///var/run/mercure.db?size=100&cleanup_frequency=0.4)')
+             ->addOption('corsOrigins', null, InputOption::VALUE_REQUIRED, 'Allow subscribers with no valid JWT to connect')
+             ->addOption('anonymous', null, InputOption::VALUE_NONE, 'Allow subscribers with no valid JWT to connect')
+             ->addOption('demo', null, InputOption::VALUE_NONE, 'Enable the debug UI and expose demo endpoints');
+
     }
 
     /**
@@ -60,10 +65,30 @@ class MercureHubCommand extends Command
      */
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        $mercure = $input->getOption('mercure');
+        if (!$mercure) {
+            $mercure = __DIR__.'/../Resources/mercure/mercure';
+        }
+
+        $caddyFile = $input->getOption('caddyFile');
+        if (!$caddyFile) {
+            $caddyFile = __DIR__.'/../Resources/mercure/Caddyfile';
+        }
+
         $env = [
-            'ALLOW_ANONYMOUS' => 1,
-            'CORS_ALLOWED_ORIGINS' => '*',
+            'MERCURE_SERVER_NAME' => $input->getOption('serverName'),
+            'MERCURE_DEBUG' => $this->debug ? 'debug' : '',
+            'MERCURE_ANONYMOUS' => $input->getOption('anonymous') ? 'anonymous' : '',
+            'MERCURE_DEMO' => $input->getOption('demo') ? 'demo' : '',
         ];
+
+        if ($transportUrl = $input->getOption('transportUrl')) {
+            $env['MERCURE_TRANSPORT_URL'] = $transportUrl;
+        }
+
+        if ($corsOrigins = $input->getOption('corsOrigins')) {
+            $env['MERCURE_CORS_ORIGINS'] = sprintf('cors_origins %s', $corsOrigins);
+        }
 
         foreach ($_ENV as $name => $value) {
             if (preg_match('/^MERCURE_(\w+)$/', $name, $matches)) {
@@ -71,7 +96,7 @@ class MercureHubCommand extends Command
             }
         }
 
-        $process = new Process([$input->getArgument('mercure')], null, $env, null, null);
+        $process = new Process([$mercure, 'run', '-config', $caddyFile], null, $env, null, null);
 
         $subscriptionManager = $this->subscriptionManager;
         $subscriptionManager->handler()->clear();
@@ -86,10 +111,10 @@ class MercureHubCommand extends Command
                 $disconnected = strpos($msg, '"Subscriber disconnected"') !== false;
 
                 if ($connected || $disconnected) {
-                    preg_match('/remote_addr="([^"]+)"/', $msg, $matches);
+                    preg_match('/"remote_addr":"([^"]+)"/', $msg, $matches);
                     $remoteAddr = $matches[1] ?? null;
 
-                    preg_match('/subscriber_topics="\[([^]]+)/', $msg, $matches);
+                    preg_match('/topics":\["([\w+-]+)"/', $msg, $matches);
                     $subscription = $matches[1] ?? null;
 
                     if ($subscription && $remoteAddr) {

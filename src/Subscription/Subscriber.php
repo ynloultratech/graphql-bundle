@@ -30,7 +30,7 @@ class Subscriber implements EventSubscriberInterface
     /**
      * @var string
      */
-    protected $mercureHubUrl;
+    protected $subscriptionsUrl;
 
     /**
      * @var SubscriptionManager
@@ -68,9 +68,17 @@ class Subscriber implements EventSubscriberInterface
      * @param array  $mercureHubsUrls
      * @param string $hub
      */
-    public function setMercureHubUrl(array $mercureHubsUrls, $hub)
+    public function setSubscriptionsUrlFromHub(array $mercureHubsUrls, $hub)
     {
-        $this->mercureHubUrl = $mercureHubsUrls[$hub];
+        $this->subscriptionsUrl = $mercureHubsUrls[$hub];
+    }
+
+    /**
+     * @param string $subscriptionsUrl
+     */
+    public function setSubscriptionsUrl(string $subscriptionsUrl): void
+    {
+        $this->subscriptionsUrl = $subscriptionsUrl;
     }
 
     /**
@@ -136,6 +144,6 @@ class Subscriber implements EventSubscriberInterface
         $subscriptionName = $this->endpoint->getSubscriptionNameForResolver($context->getDefinition()->getResolver());
         $this->subscriptionManager->subscribe($id, $subscriptionName, $args, $request, $expireAt);
 
-        return new SubscriptionLink(sprintf('%s?topic=%s', $this->mercureHubUrl, $id));
+        return new SubscriptionLink(sprintf('%s?topic=%s', $this->subscriptionsUrl, $id));
     }
 }

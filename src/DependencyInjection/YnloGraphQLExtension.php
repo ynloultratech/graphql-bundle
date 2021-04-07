@@ -139,8 +139,13 @@ class YnloGraphQLExtension extends Extension
                       ->addArgument(new Reference($config['subscriptions']['pubsub_handler']))
                       ->addArgument(new Parameter('kernel.secret'));
 
-            $container->getDefinition(Subscriber::class)
-                      ->addMethodCall('setMercureHubUrl', [new Parameter('mercure.hubs'), $mercureHub]);
+            if ($subscriptionsUrl = $config['subscriptions']['subscriber_url'] ?? null) {
+                $container->getDefinition(Subscriber::class)
+                          ->addMethodCall('setSubscriptionsUrl', [$subscriptionsUrl]);
+            } else {
+                $container->getDefinition(Subscriber::class)
+                          ->addMethodCall('setSubscriptionsUrlFromHub', [new Parameter('mercure.hubs'), $mercureHub]);
+            }
 
             $container->getDefinition(SubscriptionConsumerCommand::class)
                       ->addArgument($mercurePublisherReference);

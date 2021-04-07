@@ -362,6 +362,7 @@ services:
     Ynlo\GraphQLBundle\Command\MercureHubCommand:
         arguments:
             - '@Ynlo\GraphQLBundle\Subscription\SubscriptionManager'
+            - '%kernel.debug%'
         tags:
             - 'console.command'
 

@@ -1,83 +1,83 @@
 {
-  "name": "ynloultratech/graphql-bundle",
-  "description": "Bundle designed to easily create API projects based on GraphQL",
-  "license": "MIT",
-  "type": "symfony-bundle",
-  "authors": [
-    {
-      "name": "YNLO-Ultratech Development Team",
-      "email": "developer@ynloultratech.com",
-      "homepage": "https://github.com/ynloultratech"
+    "name": "ynloultratech/graphql-bundle",
+    "description": "Bundle designed to easily create API projects based on GraphQL",
+    "license": "MIT",
+    "type": "symfony-bundle",
+    "authors": [
+        {
+            "name": "YNLO-Ultratech Development Team",
+            "email": "developer@ynloultratech.com",
+            "homepage": "https://github.com/ynloultratech"
+        }
+    ],
+    "keywords": [
+        "api",
+        "graphql"
+    ],
+    "autoload": {
+        "psr-4": {
+            "Ynlo\\GraphQLBundle\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Ynlo\\GraphQLBundle\\Tests\\": "tests/"
+        }
+    },
+    "require": {
+        "php": "^7.4 | ^8.0",
+        "ext-json": "*",
+        "symfony/form": "^4.4 | ^5.0",
+        "symfony/framework-bundle": "^4.4 | ^5.0",
+        "symfony/security-bundle": "^4.4 | ^5.0",
+        "symfony/twig-bundle": "^4.4 | ^5.0",
+        "symfony/validator": "^4.4 | ^5.0",
+        "symfony/templating": "^4.4 | ^5.0",
+        "symfony/expression-language": "^4.4 | ^5.0",
+        "symfony/process": "^4.4 | ^5.0",
+        "doctrine/inflector": "^1.0 | ^2.0",
+        "doctrine/orm": "^2.8",
+        "doctrine/doctrine-bundle": "^2.1",
+        "doctrine/persistence": "^2.0",
+        "doctrine/common": "^3.0",
+        "twig/twig": "^2.0 | ^3.0",
+        "webonyx/graphql-php": "^0.13 | ^14.0",
+        "doctrine/annotations": "^1.5",
+        "myclabs/deep-copy": "^1.7",
+        "mindplay/readable": "^1.1",
+        "mtdowling/jmespath.php": "^2.4",
+        "firebase/php-jwt": "^5.2"
+    },
+    "require-dev": {
+        "ext-redis": "*",
+        "symfony/symfony": "^4.4 | ^5.0",
+        "phpunit/phpunit": "^8.5.15",
+        "symfony/phpunit-bridge": "^5.2.6",
+        "lexik/jwt-authentication-bundle": "^2.4",
+        "mockery/mockery": "^1.4",
+        "doctrine/doctrine-fixtures-bundle": "^3.4",
+        "fzaninotto/faker": "dev-master",
+        "fresh/doctrine-enum-bundle": "^6.2 | ^7.0",
+        "escapestudios/symfony2-coding-standard": "3.x-dev",
+        "behat/behat": "^3.4",
+        "symfony/mercure-bundle": "^0.2.0"
+    },
+    "suggest": {
+        "ext-redis": "Needed to support GraphQL subscriptions",
+        "symfony/mercure-bundle": "Needed to support GraphQL subscriptions",
+        "behat/behat": "Integration with Behat BDD tests",
+        "phpunit/phpunit": "To use assertions in Behat tests",
+        "doctrine/doctrine-fixtures-bundle": "If you want to create test fixtures",
+        "fzaninotto/faker": "If you want to generate fake values during tests"
+    },
+    "extra": {
+        "branch-alias": {
+            "v1": "1.x-dev",
+            "dev-master": "2.x-dev"
+        }
+    },
+    "config": {
+        "bin-dir": "bin",
+        "preferred-install": "dist"
     }
-  ],
-  "keywords": [
-    "api",
-    "graphql"
-  ],
-  "autoload": {
-    "psr-4": {
-      "Ynlo\\GraphQLBundle\\": "src/"
-    }
-  },
-  "autoload-dev": {
-    "psr-4": {
-      "Ynlo\\GraphQLBundle\\Tests\\": "tests/"
-    }
-  },
-  "require": {
-    "php": "^7.4 | ^8.0",
-    "ext-json": "*",
-    "symfony/form": "^4.4 | ^5.0",
-    "symfony/framework-bundle": "^4.4 | ^5.0",
-    "symfony/security-bundle": "^4.4 | ^5.0",
-    "symfony/twig-bundle": "^4.4 | ^5.0",
-    "symfony/validator": "^4.4 | ^5.0",
-    "symfony/templating": "^4.4 | ^5.0",
-    "symfony/expression-language": "^4.4 | ^5.0",
-    "symfony/process" : "^4.4 | ^5.0",
-    "doctrine/inflector": "^1.0 | ^2.0",
-    "doctrine/orm": "^2.8",
-    "doctrine/doctrine-bundle": "^2.1",
-    "doctrine/persistence": "^2.0",
-    "doctrine/common": "^3.0",
-    "twig/twig": "^2.0 | ^3.0",
-    "webonyx/graphql-php": "^0.13 | ^14.0",
-    "doctrine/annotations": "^1.5",
-    "myclabs/deep-copy": "^1.7",
-    "mindplay/readable": "^1.1",
-    "mtdowling/jmespath.php": "^2.4",
-    "lcobucci/jwt": "^3.2 | ^4.0"
-  },
-  "require-dev": {
-    "ext-redis": "*",
-    "symfony/symfony": "^4.4 | ^5.0",
-    "phpunit/phpunit": "^8.5.15",
-    "symfony/phpunit-bridge": "^5.2.6",
-    "lexik/jwt-authentication-bundle": "^2.4",
-    "mockery/mockery": "^1.4",
-    "doctrine/doctrine-fixtures-bundle": "^3.4",
-    "fzaninotto/faker": "dev-master",
-    "fresh/doctrine-enum-bundle": "^6.2 | ^7.0",
-    "escapestudios/symfony2-coding-standard": "3.x-dev",
-    "behat/behat": "^3.4",
-    "symfony/mercure-bundle": "^0.2.0"
-  },
-  "suggest": {
-    "ext-redis": "Needed to support GraphQL subscriptions",
-    "symfony/mercure-bundle": "Needed to support GraphQL subscriptions",
-    "behat/behat": "Integration with Behat BDD tests",
-    "phpunit/phpunit": "To use assertions in Behat tests",
-    "doctrine/doctrine-fixtures-bundle": "If you want to create test fixtures",
-    "fzaninotto/faker": "If you want to generate fake values during tests"
-  },
-  "extra": {
-    "branch-alias": {
-      "v1": "1.x-dev",
-      "dev-master": "2.x-dev"
-    }
-  },
-  "config": {
-    "bin-dir": "bin",
-    "preferred-install": "dist"
-  }
 }
