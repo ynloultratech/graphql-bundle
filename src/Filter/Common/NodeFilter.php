@@ -142,7 +142,7 @@ class NodeFilter implements FilterInterface
             }
         }
         $ids = array_filter($ids);
-        dump($column);
+
         switch ($assocType) {
             case ClassMetadataInfo::MANY_TO_ONE:
             case ClassMetadataInfo::ONE_TO_ONE:

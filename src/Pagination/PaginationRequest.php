@@ -51,11 +51,11 @@ class PaginationRequest
      */
     public function __construct($first = null, $last = null, $after = null, $before = null, $page = null)
     {
-        $this->first = abs($first);
-        $this->last = abs($last);
+        $this->first = $first !== null ? abs($first) : null;
+        $this->last =  $last !== null ? abs($last) : null;
         $this->after = $after;
         $this->before = $before;
-        $this->page = abs($page);
+        $this->page =  $page !== null ? abs($page) : null;
     }
 
     /**

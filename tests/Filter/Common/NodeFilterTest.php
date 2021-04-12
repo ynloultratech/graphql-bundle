@@ -37,7 +37,7 @@ class NodeFilterTest extends AbstractFilterTest
     public function testInvalidCondition()
     {
         self::expectExceptionMessage('Invalid filter condition');
-        (new NodeFilter())($this->context, $this->qb, false);
+        (new NodeFilter($this->em))($this->context, $this->qb, false);
     }
 
     public function testInvalidColumn()
@@ -47,14 +47,14 @@ class NodeFilterTest extends AbstractFilterTest
         $this->em->expects('getClassMetadata')->andReturn($metadata);
         self::expectExceptionMessage('There are not valid association in Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\Post called fieldName.');
 
-        (new NodeFilter())($this->context, $this->qb, $this->condition);
+        (new NodeFilter($this->em))($this->context, $this->qb, $this->condition);
     }
 
     public function testInvalidField()
     {
         $this->context->setField(null);
         self::expectExceptionMessage('There are not valid field related to this filter.');
-        (new NodeFilter())($this->context, $this->qb, $this->condition);
+        (new NodeFilter($this->em))($this->context, $this->qb, $this->condition);
     }
 
     public function testManyToOneINFilter()
@@ -65,7 +65,7 @@ class NodeFilterTest extends AbstractFilterTest
 
         $this->em->expects('getClassMetadata')->andReturn($metadata);
 
-        (new NodeFilter())($this->context, $this->qb, $this->condition);
+        (new NodeFilter($this->em))($this->context, $this->qb, $this->condition);
         self::assertEquals('SELECT p FROM Post p WHERE p.fieldName IN(1, 2)', $this->qb->getDQL());
     }
 
@@ -78,7 +78,7 @@ class NodeFilterTest extends AbstractFilterTest
         $this->em->expects('getClassMetadata')->andReturn($metadata);
 
         $this->condition->setOp(NodeComparisonOperatorType::NIN);
-        (new NodeFilter())($this->context, $this->qb, $this->condition);
+        (new NodeFilter($this->em))($this->context, $this->qb, $this->condition);
         self::assertEquals('SELECT p FROM Post p WHERE p.fieldName NOT IN(1, 2)', $this->qb->getDQL());
     }
 
@@ -90,7 +90,7 @@ class NodeFilterTest extends AbstractFilterTest
 
         $this->em->expects('getClassMetadata')->andReturn($metadata);
 
-        (new NodeFilter())($this->context, $this->qb, $this->condition);
+        (new NodeFilter($this->em))($this->context, $this->qb, $this->condition);
         self::assertRegExp('/SELECT p FROM Post p WHERE :fieldName_ids_\d+ MEMBER OF p.fieldName/', $this->qb->getDQL());
     }
 
@@ -103,7 +103,7 @@ class NodeFilterTest extends AbstractFilterTest
         $this->em->expects('getClassMetadata')->andReturn($metadata);
 
         $this->condition->setOp(NodeComparisonOperatorType::NIN);
-        (new NodeFilter())($this->context, $this->qb, $this->condition);
+        (new NodeFilter($this->em))($this->context, $this->qb, $this->condition);
         self::assertRegExp('/SELECT p FROM Post p WHERE :fieldName_ids_\d+ NOT MEMBER OF p.fieldName/', $this->qb->getDQL());
     }
 }
