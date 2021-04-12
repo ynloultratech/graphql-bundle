@@ -24,7 +24,7 @@ class ArrayFilter implements FilterInterface
     /**
      * @inheritDoc
      */
-    public function __invoke(FilterContext $context, QueryBuilder $qb, $condition)
+    public function __invoke(FilterContext $context, $qb, $condition)
     {
         if (!$condition instanceof ArrayComparisonExpression) {
             throw new \RuntimeException('Invalid filter condition');

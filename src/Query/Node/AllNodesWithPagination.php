@@ -14,12 +14,16 @@ use Doctrine\DBAL\Types\Types as DBALTypes;
 use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Query\Expr\Orx;
 use Doctrine\ORM\QueryBuilder;
+use Elastica\Query;
+use Elastica\Query\AbstractQuery;
+use Elastica\Query\BoolQuery;
 use GraphQL\Error\Error;
 use Ynlo\GraphQLBundle\Definition\EnumDefinition;
 use Ynlo\GraphQLBundle\Definition\EnumValueDefinition;
 use Ynlo\GraphQLBundle\Definition\InputObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\ObjectDefinition;
 use Ynlo\GraphQLBundle\Definition\Plugin\PaginationDefinitionPlugin;
+use Ynlo\GraphQLBundle\Elastic\ElasticRepositoryManager;
 use Ynlo\GraphQLBundle\Filter\FilterContext;
 use Ynlo\GraphQLBundle\Filter\FilterInterface;
 use Ynlo\GraphQLBundle\Model\ConnectionInterface;
@@ -29,8 +33,9 @@ use Ynlo\GraphQLBundle\Model\OrderBy;
 use Ynlo\GraphQLBundle\OrderBy\Common\OrderBySimpleField;
 use Ynlo\GraphQLBundle\OrderBy\OrderByContext;
 use Ynlo\GraphQLBundle\OrderBy\OrderByInterface;
-use Ynlo\GraphQLBundle\Pagination\DoctrineCursorPaginatorInterface;
-use Ynlo\GraphQLBundle\Pagination\DoctrineOffsetCursorPaginator;
+use Ynlo\GraphQLBundle\Pagination\CursorPaginatorInterface;
+use Ynlo\GraphQLBundle\Pagination\DoctrineCursorPaginator;
+use Ynlo\GraphQLBundle\Pagination\ElasticCursorPaginator;
 use Ynlo\GraphQLBundle\Pagination\PaginationRequest;
 use Ynlo\GraphQLBundle\SearchBy\Common\SearchByDoctrineColumn;
 use Ynlo\GraphQLBundle\SearchBy\SearchByContext;
@@ -61,31 +66,36 @@ class AllNodesWithPagination extends AllNodes
         $search = $args['search'] ?? null;
         $where = $args['where'] ?? null;
 
-        $this->initialize();
-
-        $qb = $this->createQuery();
-        $this->applyOrderBy($qb, $orderBy);
-
-        if ($this->getContext()->getRoot()) {
-            $this->applyFilterByParent($qb, $this->getContext()->getRoot());
-        }
-
-        if ($search) {
-            $this->search($qb, (string) $search);
-        }
-
-        if ($where) {
-            $this->applyWhere($qb, $where);
-        }
-
-        $this->configureQuery($qb);
-        foreach ($this->extensions as $extension) {
-            $extension->configureQuery($qb, $this, $this->context);
-        }
-
         if (!$first && !$last) {
             $error = sprintf('You must provide a `first` or `last` value to properly paginate records in "%s" connection.', $this->queryDefinition->getName());
             throw new Error($error);
+        }
+
+        $this->initialize();
+
+        if ($this->isElasticEnabled()) {
+            $query = $this->createElasticQuery();
+        } else {
+            $query = $this->createQuery();
+        }
+
+        $this->applyOrderBy($query, $orderBy);
+
+        if ($this->getContext()->getRoot()) {
+            $this->applyFilterByParent($query, $this->getContext()->getRoot());
+        }
+
+        if ($search) {
+            $this->search($query instanceof Query ? $query->getQuery() : $query, (string) $search);
+        }
+
+        if ($where) {
+            $this->applyWhere($query instanceof Query ? $query->getQuery() : $query, $where);
+        }
+
+        $this->configureQuery($query);
+        foreach ($this->extensions as $extension) {
+            $extension->configureQuery($query, $this, $this->context);
         }
 
         if ($this->queryDefinition->hasMeta('pagination')) {
@@ -106,10 +116,10 @@ class AllNodesWithPagination extends AllNodes
             }
         }
 
-        $paginator = $this->createPaginator();
+        $paginator = $this->createPaginator($query);
 
         $connection = $this->createConnection();
-        $paginator->paginate($qb, new PaginationRequest($first, $last, $after, $before, $page), $connection);
+        $paginator->paginate($query, new PaginationRequest($first, $last, $after, $before, $page), $connection);
 
         return $connection;
     }
@@ -119,18 +129,44 @@ class AllNodesWithPagination extends AllNodes
         return new NodeConnection();
     }
 
-    protected function createPaginator(): DoctrineCursorPaginatorInterface
+    protected function isElasticEnabled(): bool
     {
-        return new DoctrineOffsetCursorPaginator($this->getManager());
+        $pagination = $this->getContext()->getDefinition()->getMeta('pagination');
+
+        return $pagination['elastic'] && $this->container->has(ElasticRepositoryManager::class) ?? false;
+    }
+
+    protected function createPaginator($query): CursorPaginatorInterface
+    {
+        if ($query instanceof QueryBuilder) {
+            return new DoctrineCursorPaginator($this->getManager());
+        }
+
+        if ($query instanceof Query) {
+            /** @var ElasticRepositoryManager $manager */
+            $manager = $this->get(ElasticRepositoryManager::class);
+
+            return new ElasticCursorPaginator($manager->getManager()->getRepository($this->entity));
+        }
+
+        throw new \RuntimeException('Unsupported query');
     }
 
     /**
-     * @param QueryBuilder    $qb
-     * @param array|OrderBy[] $orderBy
+     * @param QueryBuilder|Query $qb
+     */
+    public function configureQuery($qb)
+    {
+        //implements on childs to customize the query
+    }
+
+    /**
+     * @param QueryBuilder|Query $query
+     * @param array|OrderBy[]    $orderBy
      *
      * @throws Error
      */
-    protected function applyOrderBy(QueryBuilder $qb, $orderBy)
+    protected function applyOrderBy($query, $orderBy)
     {
         if (!$this->getContext()->getDefinition()->hasArgument('order')) {
             return;
@@ -168,17 +204,17 @@ class AllNodesWithPagination extends AllNodes
                 $context = new OrderByContext($this->getContext(), $node);
             }
 
-            $orderByInstance($context, $qb, $this->queryAlias, $order);
+            $orderByInstance($context, $query, $this->queryAlias, $order);
         }
     }
 
     /**
-     * @param QueryBuilder $qb
-     * @param array        $where
+     * @param QueryBuilder|BoolQuery $qb
+     * @param array                  $where
      *
      * @throws \ReflectionException
      */
-    protected function applyWhere(QueryBuilder $qb, array $where): void
+    protected function applyWhere($qb, array $where): void
     {
         $whereType = $this->getContext()->getDefinition()->getArgument('where')->getType();
 
@@ -211,87 +247,93 @@ class AllNodesWithPagination extends AllNodes
     }
 
     /**
-     * @param QueryBuilder $qb
-     * @param string       $search
+     * @param QueryBuilder|BoolQuery $qb
+     * @param string                 $search
      *
      * @throws \Doctrine\ORM\Mapping\MappingException
      */
-    protected function search(QueryBuilder $qb, string $search): void
+    protected function search($qb, string $search): void
     {
-        $query = $this->queryDefinition;
-        $node = $this->objectDefinition;
+        if ($qb instanceof BoolQuery) {
+            $matchAll = new Query\QueryString();
+            $matchAll->setQuery($search);
+            $qb->addMust($matchAll);
+        } else {
+            $query = $this->queryDefinition;
+            $node = $this->objectDefinition;
 
-        $em = $this->getManager();
-        $metadata = $em->getClassMetadata($this->entity);
+            $em = $this->getManager();
+            $metadata = $em->getClassMetadata($this->entity);
 
-        $columns = [];
-        $searchFields = FieldOptionsHelper::normalize($query->getMeta('pagination')['search_fields'] ?? ['*']);
-        foreach ($node->getFields() as $field) {
-            if (!FieldOptionsHelper::isEnabled($searchFields, $field->getName())) {
-                continue;
-            }
-
-            $config = FieldOptionsHelper::getConfig($searchFields, $field->getName(), null);
-            $searchColumn = null;
-            if ($metadata->hasField($field->getName())) {
-                $searchColumn = $field->getName();
-            }
-
-            if (!$searchColumn && $metadata->hasField($field->getOriginName())) {
-                $searchColumn = $field->getOriginName();
-            }
-
-            if ($searchColumn) {
-                try {
-                    switch ($metadata->getFieldMapping($searchColumn)['type']) {
-                        case DBALTypes::STRING:
-                        case DBALTypes::TEXT:
-                            $columns[$searchColumn] = $config ?? SearchByInterface::PARTIAL_SEARCH;
-                            break;
-                        case DBALTypes::INTEGER:
-                        case DBALTypes::BIGINT:
-                        case DBALTypes::FLOAT:
-                        case DBALTypes::DECIMAL:
-                        case DBALTypes::SMALLINT:
-                            $columns[$searchColumn] = $config ?? SearchByInterface::EXACT_MATCH;
-                            break;
-                    }
-                } catch (MappingException $exception) {
+            $columns = [];
+            $searchFields = FieldOptionsHelper::normalize($query->getMeta('pagination')['search_fields'] ?? ['*']);
+            foreach ($node->getFields() as $field) {
+                if (!FieldOptionsHelper::isEnabled($searchFields, $field->getName())) {
                     continue;
                 }
-            }
-        }
 
-        foreach ($searchFields as $field => $mode) {
-            if (\is_int($field)) {
-                $field = $mode;
-                $mode = SearchByInterface::EXACT_MATCH;
-            }
-
-            if ('*' === $field || $mode === false) {
-                continue;
-            }
-
-            if (class_exists($field) && is_a($field, SearchByInterface::class, true)) {
-                $mode = is_bool($mode) ? SearchByInterface::PARTIAL_SEARCH : $mode;
-            }
-
-            $columns[$field] = $mode;
-        }
-
-        if (\count($columns) > 0) {
-            $orx = new Orx();
-            $searchContext = new SearchByContext($this->getContext(), $node);
-            foreach ($columns as $column => $mode) {
-                if (class_exists($column) && is_a($column, SearchByInterface::class, true) && $this->container->has($column)) {
-                    $searchBy = $this->container->get($column);
-                } else {
-                    $searchBy = new SearchByDoctrineColumn();
+                $config = FieldOptionsHelper::getConfig($searchFields, $field->getName(), null);
+                $searchColumn = null;
+                if ($metadata->hasField($field->getName())) {
+                    $searchColumn = $field->getName();
                 }
-                $searchBy($searchContext, $qb, $orx, $this->queryAlias, $column, $mode, $search);
+
+                if (!$searchColumn && $metadata->hasField($field->getOriginName())) {
+                    $searchColumn = $field->getOriginName();
+                }
+
+                if ($searchColumn) {
+                    try {
+                        switch ($metadata->getFieldMapping($searchColumn)['type']) {
+                            case DBALTypes::STRING:
+                            case DBALTypes::TEXT:
+                                $columns[$searchColumn] = $config ?? SearchByInterface::PARTIAL_SEARCH;
+                                break;
+                            case DBALTypes::INTEGER:
+                            case DBALTypes::BIGINT:
+                            case DBALTypes::FLOAT:
+                            case DBALTypes::DECIMAL:
+                            case DBALTypes::SMALLINT:
+                                $columns[$searchColumn] = $config ?? SearchByInterface::EXACT_MATCH;
+                                break;
+                        }
+                    } catch (MappingException $exception) {
+                        continue;
+                    }
+                }
             }
 
-            $qb->andWhere($orx);
+            foreach ($searchFields as $field => $mode) {
+                if (\is_int($field)) {
+                    $field = $mode;
+                    $mode = SearchByInterface::EXACT_MATCH;
+                }
+
+                if ('*' === $field || $mode === false) {
+                    continue;
+                }
+
+                if (class_exists($field) && is_a($field, SearchByInterface::class, true)) {
+                    $mode = is_bool($mode) ? SearchByInterface::PARTIAL_SEARCH : $mode;
+                }
+
+                $columns[$field] = $mode;
+            }
+
+            if (\count($columns) > 0) {
+                $orx = new Orx();
+                $searchContext = new SearchByContext($this->getContext(), $node);
+                foreach ($columns as $column => $mode) {
+                    if (class_exists($column) && is_a($column, SearchByInterface::class, true) && $this->container->has($column)) {
+                        $searchBy = $this->container->get($column);
+                    } else {
+                        $searchBy = new SearchByDoctrineColumn();
+                    }
+                    $searchBy($searchContext, $qb, $orx, $this->queryAlias, $column, $mode, $search);
+                }
+
+                $qb->andWhere($orx);
+            }
         }
     }
 
@@ -327,5 +369,16 @@ class AllNodesWithPagination extends AllNodes
             $qb->andWhere(sprintf('%s.%s = :%s', $this->queryAlias, $parentField, $paramName))
                ->setParameter($paramName, $root);
         }
+    }
+
+    /**
+     * @return Query
+     */
+    protected function createElasticQuery(): Query
+    {
+        $query = new Query();
+        $query->setQuery(new BoolQuery());
+
+        return $query;
     }
 }

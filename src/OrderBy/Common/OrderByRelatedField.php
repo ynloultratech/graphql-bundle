@@ -20,7 +20,7 @@ class OrderByRelatedField implements OrderByInterface
     /**
      * @inheritDoc
      */
-    public function __invoke(OrderByContext $context, QueryBuilder $qb, $alias, OrderBy $orderBy)
+    public function __invoke(OrderByContext $context, $qb, $alias, OrderBy $orderBy)
     {
         $column = $orderBy->getField();
         [$relation, $column] = explode('.', $column);

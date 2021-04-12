@@ -10,7 +10,6 @@
 
 namespace Ynlo\GraphQLBundle\Extension;
 
-use Doctrine\ORM\QueryBuilder;
 use Symfony\Component\Form\FormEvent;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Resolver\ResolverContext;
@@ -24,7 +23,7 @@ abstract class AbstractExtension implements ExtensionInterface
     /**
      * {@inheritdoc}
      */
-    public function configureQuery(QueryBuilder $queryBuilder, $resolver, ResolverContext $context)
+    public function configureQuery($queryBuilder, $resolver, ResolverContext $context)
     {
         // TODO: Implement configureQuery() method.
     }

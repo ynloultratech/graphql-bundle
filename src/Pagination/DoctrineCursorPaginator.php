@@ -17,10 +17,7 @@ use Ynlo\GraphQLBundle\Model\ConnectionInterface;
 use Ynlo\GraphQLBundle\Model\NodeConnection;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 
-/**
- * DoctrineOffsetCursorPaginator
- */
-class DoctrineOffsetCursorPaginator implements DoctrineCursorPaginatorInterface
+class DoctrineCursorPaginator implements CursorPaginatorInterface
 {
     /**
      * @var NodeConnection
@@ -45,7 +42,7 @@ class DoctrineOffsetCursorPaginator implements DoctrineCursorPaginatorInterface
     /**
      * {@inheritdoc}
      */
-    public function paginate(QueryBuilder $query, PaginationRequest $pagination, ConnectionInterface $connection)
+    public function paginate($query, PaginationRequest $pagination, ConnectionInterface $connection)
     {
         $count = $this->getQueryTotal($query);
         $this->connection = $connection;

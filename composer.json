@@ -61,9 +61,11 @@
         "escapestudios/symfony2-coding-standard": "3.x-dev",
         "behat/behat": "^3.4",
         "symfony/mercure-bundle": "^0.2.0",
-        "symfony/messenger": "^5.2"
+        "symfony/messenger": "^5.2",
+        "friendsofsymfony/elastica-bundle": "dev-master"
     },
     "suggest": {
+        "friendsofsymfony/elastica-bundle": "Needed to support ElasticSearch for lists",
         "symfony/mercure-bundle": "Needed to support GraphQL subscriptions",
         "symfony/messenger": "Needed to support GraphQL subscriptions",
         "behat/behat": "Integration with Behat BDD tests",

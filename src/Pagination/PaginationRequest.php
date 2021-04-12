@@ -51,11 +51,11 @@ class PaginationRequest
      */
     public function __construct($first = null, $last = null, $after = null, $before = null, $page = null)
     {
-        $this->first = $first;
-        $this->last = $last;
+        $this->first = abs($first);
+        $this->last = abs($last);
         $this->after = $after;
         $this->before = $before;
-        $this->page = $page;
+        $this->page = abs($page);
     }
 
     /**
@@ -73,7 +73,7 @@ class PaginationRequest
      */
     public function setFirst(int $first): PaginationRequest
     {
-        $this->first = $first;
+        $this->first = abs($first);
 
         return $this;
     }
@@ -93,7 +93,7 @@ class PaginationRequest
      */
     public function setLast(int $last): PaginationRequest
     {
-        $this->last = $last;
+        $this->last = abs($last);
 
         return $this;
     }
@@ -153,7 +153,7 @@ class PaginationRequest
      */
     public function setPage(int $page): PaginationRequest
     {
-        $this->page = $page;
+        $this->page = abs($page);
 
         return $this;
     }

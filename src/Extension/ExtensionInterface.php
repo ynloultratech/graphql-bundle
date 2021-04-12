@@ -11,6 +11,7 @@
 namespace Ynlo\GraphQLBundle\Extension;
 
 use Doctrine\ORM\QueryBuilder;
+use Elastica\Query;
 use Symfony\Component\Form\FormEvent;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Resolver\ResolverContext;
@@ -23,11 +24,11 @@ interface ExtensionInterface
     /**
      * Configure the query builder to filter records or add a complex logic
      *
-     * @param QueryBuilder    $queryBuilder
-     * @param mixed           $resolver
-     * @param ResolverContext $context
+     * @param QueryBuilder|Query $queryBuilder
+     * @param mixed              $resolver
+     * @param ResolverContext    $context
      */
-    public function configureQuery(QueryBuilder $queryBuilder, $resolver, ResolverContext $context);
+    public function configureQuery($queryBuilder, $resolver, ResolverContext $context);
 
     /**
      * @see http://api.symfony.com/4.0/Symfony/Component/Form/FormEvents.html

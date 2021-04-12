@@ -66,6 +66,10 @@ class QueryListAnnotationParser extends QueryAnnotationParser
             $pagination->limit = $annotation->limit;
         }
 
+        if ($annotation->elastic) {
+            $pagination->elastic = $annotation->elastic;
+        }
+
         if ($annotation->filters) {
             $pagination->filters = $annotation->filters;
         }

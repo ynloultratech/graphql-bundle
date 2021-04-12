@@ -11,15 +11,16 @@
 namespace Ynlo\GraphQLBundle\Filter;
 
 use Doctrine\ORM\QueryBuilder;
+use Elastica\Query\BoolQuery;
 
 interface FilterInterface
 {
     /**
-     * @param FilterContext $context
-     * @param QueryBuilder  $qb        Query builder instance to make the filter
-     * @param mixed         $condition the condition data entered by users using the given inputType
+     * @param FilterContext          $context
+     * @param QueryBuilder|BoolQuery $qb        Query builder instance to make the filter
+     * @param mixed                  $condition the condition data entered by users using the given inputType
      *
      * @return mixed
      */
-    public function __invoke(FilterContext $context, QueryBuilder $qb, $condition);
+    public function __invoke(FilterContext $context, $qb, $condition);
 }

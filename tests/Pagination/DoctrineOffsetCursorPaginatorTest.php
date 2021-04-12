@@ -17,7 +17,7 @@ use Doctrine\ORM\QueryBuilder;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\Mock;
 use Ynlo\GraphQLBundle\Model\NodeConnection;
-use Ynlo\GraphQLBundle\Pagination\DoctrineOffsetCursorPaginator;
+use Ynlo\GraphQLBundle\Pagination\DoctrineCursorPaginator;
 use Ynlo\GraphQLBundle\Pagination\PaginationRequest;
 use Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Entity\Post;
 
@@ -51,7 +51,7 @@ class DoctrineOffsetCursorPaginatorTest extends MockeryTestCase
            ->from(Post::class, 'p')
            ->where('p.title = :title');
 
-        $paginator = new DoctrineOffsetCursorPaginator($em);
+        $paginator = new DoctrineCursorPaginator($em);
         $connection = new NodeConnection();
         $paginator->paginate($qb, new PaginationRequest(3), $connection);
 
@@ -100,7 +100,7 @@ class DoctrineOffsetCursorPaginatorTest extends MockeryTestCase
            ->from(Post::class, 'p')
            ->where('p.title = :title');
 
-        $paginator = new DoctrineOffsetCursorPaginator($em);
+        $paginator = new DoctrineCursorPaginator($em);
         $connection = new NodeConnection();
         $paginator->paginate($qb, new PaginationRequest(3, null, base64_encode('cursor:1')), $connection);
 
@@ -148,7 +148,7 @@ class DoctrineOffsetCursorPaginatorTest extends MockeryTestCase
            ->from(Post::class, 'p')
            ->where('p.title = :title');
 
-        $paginator = new DoctrineOffsetCursorPaginator($em);
+        $paginator = new DoctrineCursorPaginator($em);
         $connection = new NodeConnection();
         $paginator->paginate($qb, new PaginationRequest(3, null, null, base64_encode('cursor:2')), $connection);
 
@@ -195,7 +195,7 @@ class DoctrineOffsetCursorPaginatorTest extends MockeryTestCase
            ->from(Post::class, 'p')
            ->where('p.title = :title');
 
-        $paginator = new DoctrineOffsetCursorPaginator($em);
+        $paginator = new DoctrineCursorPaginator($em);
         $connection = new NodeConnection();
         $paginator->paginate($qb, new PaginationRequest(null, 3), $connection);
 
@@ -244,7 +244,7 @@ class DoctrineOffsetCursorPaginatorTest extends MockeryTestCase
            ->from(Post::class, 'p')
            ->where('p.title = :title');
 
-        $paginator = new DoctrineOffsetCursorPaginator($em);
+        $paginator = new DoctrineCursorPaginator($em);
         $connection = new NodeConnection();
         $paginator->paginate($qb, new PaginationRequest(null, 3, base64_encode('cursor:1')), $connection);
 
@@ -293,7 +293,7 @@ class DoctrineOffsetCursorPaginatorTest extends MockeryTestCase
            ->from(Post::class, 'p')
            ->where('p.title = :title');
 
-        $paginator = new DoctrineOffsetCursorPaginator($em);
+        $paginator = new DoctrineCursorPaginator($em);
         $connection = new NodeConnection();
         $paginator->paginate($qb, new PaginationRequest(null, 3, null, base64_encode('cursor:2')), $connection);
 

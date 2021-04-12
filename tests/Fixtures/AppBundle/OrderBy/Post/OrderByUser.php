@@ -19,7 +19,7 @@ use Ynlo\GraphQLBundle\OrderBy\OrderByInterface;
 
 class OrderByUser implements OrderByInterface
 {
-    public function __invoke(OrderByContext $context, QueryBuilder $qb, $alias, OrderBy $orderBy)
+    public function __invoke(OrderByContext $context, $qb, $alias, OrderBy $orderBy)
     {
         // TODO: Implement __invoke() method.
     }

@@ -92,4 +92,11 @@ final class QueryList
      * @var array
      */
     public $options = [];
+
+    /**
+     * Enable elastic search support
+     *
+     * @var bool
+     */
+    public $elastic = false;
 }

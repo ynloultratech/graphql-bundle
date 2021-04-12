@@ -11,17 +11,18 @@
 namespace Ynlo\GraphQLBundle\OrderBy;
 
 use Doctrine\ORM\QueryBuilder;
+use Elastica\Query;
 use Ynlo\GraphQLBundle\Model\OrderBy;
 
 interface OrderByInterface
 {
     /**
-     * @param OrderByContext $context
-     * @param QueryBuilder   $qb      Query builder instance to make the filter
-     * @param string         $alias   root query alias
-     * @param OrderBy        $orderBy field and direction
+     * @param OrderByContext     $context
+     * @param QueryBuilder|Query $qb      Query builder instance to make the filter
+     * @param string             $alias   root query alias
+     * @param OrderBy            $orderBy field and direction
      *
      * @return mixed
      */
-    public function __invoke(OrderByContext $context, QueryBuilder $qb, $alias, OrderBy $orderBy);
+    public function __invoke(OrderByContext $context, $qb, $alias, OrderBy $orderBy);
 }

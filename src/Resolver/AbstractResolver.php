@@ -10,6 +10,7 @@
 
 namespace Ynlo\GraphQLBundle\Resolver;
 
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ObjectManager;
 use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -86,7 +87,7 @@ abstract class AbstractResolver implements ResolverInterface, ExtensionsAwareInt
     /**
      * @param string|null $name
      *
-     * @return ObjectManager
+     * @return ObjectManager|EntityManagerInterface
      */
     protected function getManager(string $name = null): ObjectManager
     {

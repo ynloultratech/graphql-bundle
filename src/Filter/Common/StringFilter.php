@@ -12,6 +12,14 @@ namespace Ynlo\GraphQLBundle\Filter\Common;
 
 use Doctrine\ORM\Query\Expr\Orx;
 use Doctrine\ORM\QueryBuilder;
+use Elastica\Query\BoolQuery;
+use Elastica\Query\MatchPhrase;
+use Elastica\Query\MatchPhrasePrefix;
+use Elastica\Query\MatchQuery;
+use Elastica\Query\Prefix;
+use Elastica\Query\QueryString;
+use Elastica\Query\Term;
+use Elastica\Query\Wildcard;
 use Ynlo\GraphQLBundle\Filter\FilterContext;
 use Ynlo\GraphQLBundle\Filter\FilterInterface;
 use Ynlo\GraphQLBundle\Model\Filter\StringComparisonExpression;
@@ -25,7 +33,7 @@ class StringFilter implements FilterInterface
     /**
      * @inheritDoc
      */
-    public function __invoke(FilterContext $context, QueryBuilder $qb, $condition)
+    public function __invoke(FilterContext $context, $qb, $condition)
     {
         if (!$condition instanceof StringComparisonExpression) {
             throw new \RuntimeException('Invalid filter condition');
@@ -35,13 +43,51 @@ class StringFilter implements FilterInterface
             throw new \RuntimeException('There are not valid field related to this filter.');
         }
 
-        $alias = $qb->getRootAliases()[0];
         $column = $context->getField()->getOriginName();
         if (!$column || $context->getField()->getOriginType() === 'ReflectionMethod') {
             $column = $context->getField()->getName();
         }
 
-        $this->applyFilter($qb, $alias, $column, $condition);
+        if ($qb instanceof QueryBuilder) {
+            $alias = $qb->getRootAliases()[0];
+            $this->applyDoctrineFilter($qb, $alias, $column, $condition);
+        } else {
+            $this->applyElasticFilter($qb, $column, $condition);
+        }
+    }
+
+    /**
+     * @param BoolQuery                  $query
+     * @param string                     $column
+     * @param StringComparisonExpression $condition
+     */
+    protected function applyElasticFilter(BoolQuery $query, $column, StringComparisonExpression $condition): void
+    {
+        switch ($condition->getOp()) {
+            case StringComparisonOperatorType::CONTAINS:
+                if (!empty($condition->getValues())) {
+                    $bool = new BoolQuery();
+                    foreach ($condition->getValues() as $value) {
+                        $columnQuery = new Wildcard($column, sprintf('*%s*', $value));
+                        $bool->addShould($columnQuery);
+                    }
+                    $query->addMust($bool);
+
+                } else {
+                    $columnQuery = new Wildcard($column, sprintf('*%s*', $condition->getValue()));
+                    $query->addMust($columnQuery);
+                }
+                break;
+            case StringComparisonOperatorType::EQUAL:
+                $columnQuery = new MatchPhrase();
+                $columnQuery->setField($column, $condition->getValue());
+                $query->addMust($columnQuery);
+                break;
+            case StringComparisonOperatorType::STARTS_WITH:
+                //TODO
+            case StringComparisonOperatorType::ENDS_WITH:
+                //TODO
+        }
     }
 
     /**
@@ -50,7 +96,7 @@ class StringFilter implements FilterInterface
      * @param string                     $column
      * @param StringComparisonExpression $condition
      */
-    protected function applyFilter(QueryBuilder $qb, $alias, $column, StringComparisonExpression $condition): void
+    protected function applyDoctrineFilter(QueryBuilder $qb, $alias, $column, StringComparisonExpression $condition): void
     {
         switch ($condition->getOp()) {
             case StringComparisonOperatorType::EQUAL:

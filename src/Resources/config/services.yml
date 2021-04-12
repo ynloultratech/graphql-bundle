@@ -491,3 +491,13 @@ services:
             - '@Ynlo\GraphQLBundle\Security\User\UserManagerInterface'
         tags:
             - { name: kernel.event_subscriber }
+
+    Ynlo\GraphQLBundle\Elastic\ElasticRepositoryManager:
+        public: true
+        arguments:
+          - '@FOS\ElasticaBundle\Manager\RepositoryManagerInterface'
+
+    Ynlo\GraphQLBundle\Filter\Common\NodeFilter:
+        public: true
+        arguments:
+            - '@Doctrine\ORM\EntityManagerInterface'

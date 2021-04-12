@@ -11,17 +11,15 @@
 namespace Ynlo\GraphQLBundle\Pagination;
 
 use Doctrine\ORM\QueryBuilder;
+use Elastica\Query;
 use Ynlo\GraphQLBundle\Model\ConnectionInterface;
 
-/**
- * DoctrineCursorPaginatorInterface
- */
-interface DoctrineCursorPaginatorInterface
+interface CursorPaginatorInterface
 {
     /**
-     * @param QueryBuilder        $query
+     * @param QueryBuilder|Query  $query
      * @param PaginationRequest   $pagination
      * @param ConnectionInterface $connection
      */
-    public function paginate(QueryBuilder $query, PaginationRequest $pagination, ConnectionInterface $connection);
+    public function paginate($query, PaginationRequest $pagination, ConnectionInterface $connection);
 }

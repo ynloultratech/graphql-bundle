@@ -82,6 +82,8 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin implements Bac
         $config->scalarNode('target')
                ->info('Target node to properly paginate. If is possible will be auto-resolved using naming conventions')
                ->isRequired();
+        $config->booleanNode('elastic')
+               ->info('Enable elastic search support');
         $config->variableNode('filters')
                ->info('Filters configuration');
         $config->variableNode('order_by');

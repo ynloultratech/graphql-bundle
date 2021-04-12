@@ -21,7 +21,7 @@ class OrderBySimpleField implements OrderByInterface
     /**
      * @inheritDoc
      */
-    public function __invoke(OrderByContext $context, QueryBuilder $qb, $alias, OrderBy $orderBy)
+    public function __invoke(OrderByContext $context, $qb, $alias, OrderBy $orderBy)
     {
         $column = $orderBy->getField();
 
@@ -38,6 +38,10 @@ class OrderBySimpleField implements OrderByInterface
             }
         }
 
-        $qb->addOrderBy("{$alias}.$column", $orderBy->getDirection());
+        if ($qb instanceof QueryBuilder) {
+            $qb->addOrderBy("{$alias}.$column", $orderBy->getDirection());
+        } else {
+            $qb->addSort([$column => $orderBy->getDirection()]);
+        }
     }
 }

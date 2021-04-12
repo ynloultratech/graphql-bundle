@@ -41,7 +41,8 @@ class Configuration implements ConfigurationInterface
         $this->configurePlugins($rootNode);
         $this->configureSecurity($rootNode);
         $this->configureOthers($rootNode);
-       // $this->configureBCCompatibility($rootNode);
+
+        // $this->configureBCCompatibility($rootNode);
 
         return $treeBuilder;
     }
@@ -347,6 +348,10 @@ if this value is FALSE and a provider is specified the authentication is optiona
     protected function configurePluginPaginationGlobalConfig(NodeBuilder $root)
     {
         $pagination = $root->arrayNode('pagination')->addDefaultsIfNotSet()->children();
+        $pagination->booleanNode('elastic')
+                   ->defaultFalse()
+                   ->info('Enable/Disable elasticsearch support using FOSElasticBundle');
+
         $pagination->integerNode('limit')
                    ->defaultValue(100)->info('Maximum limit allowed for all paginations');
     }

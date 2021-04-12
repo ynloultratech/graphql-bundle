@@ -10,7 +10,6 @@
 
 namespace Ynlo\GraphQLBundle\Tests\Fixtures\AppBundle\Filter\Post;
 
-use Doctrine\ORM\QueryBuilder;
 use Ynlo\GraphQLBundle\Annotation as GraphQL;
 use Ynlo\GraphQLBundle\Filter\FilterContext;
 use Ynlo\GraphQLBundle\Filter\FilterInterface;
@@ -24,7 +23,7 @@ use Ynlo\GraphQLBundle\Filter\FilterInterface;
  */
 class HasComments implements FilterInterface
 {
-    public function __invoke(FilterContext $context, QueryBuilder $qb, $condition)
+    public function __invoke(FilterContext $context, $qb, $condition)
     {
         $alias = $qb->getRootAliases()[0];
         $qb->leftJoin("{$alias}.comments", 'comments');

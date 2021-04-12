@@ -11,6 +11,9 @@
 namespace Ynlo\GraphQLBundle\Filter\Common;
 
 use Doctrine\ORM\QueryBuilder;
+use Elastica\Query\BoolQuery;
+use Elastica\Query\MatchQuery;
+use Elastica\Query\Term;
 use Ynlo\GraphQLBundle\Filter\FilterContext;
 use Ynlo\GraphQLBundle\Filter\FilterInterface;
 
@@ -19,7 +22,7 @@ class BooleanFilter implements FilterInterface
     /**
      * @inheritDoc
      */
-    public function __invoke(FilterContext $context, QueryBuilder $qb, $condition)
+    public function __invoke(FilterContext $context, $qb, $condition)
     {
         if (!\is_bool($condition)) {
             throw new \RuntimeException('Invalid filter condition');
@@ -29,9 +32,13 @@ class BooleanFilter implements FilterInterface
             throw new \RuntimeException('There are not valid field related to this filter.');
         }
 
-        $alias = $qb->getRootAliases()[0];
-        $condition = (int) $condition;
-        $this->applyFilter($qb, $alias, $this->resolveColumn($context), $condition);
+        $column = $this->resolveColumn($context);
+        if ($qb instanceof QueryBuilder) {
+            $alias = $qb->getRootAliases()[0];
+            $this->applyFilter($qb, $alias, $column, $condition);
+        } else {
+            $this->applyElasticFilter($qb, $column, $condition);
+        }
     }
 
     /**
@@ -59,5 +66,17 @@ class BooleanFilter implements FilterInterface
     {
         $value = (int) $condition;
         $qb->andWhere("{$alias}.{$column} = $value");
+    }
+
+    /**
+     * @param BoolQuery $qb
+     * @param string    $column
+     * @param bool      $condition
+     */
+    protected function applyElasticFilter(BoolQuery $qb, $column, bool $condition): void
+    {
+        $columnQuery = new Term();
+        $columnQuery->setTerm($column, $condition);
+        $qb->addMust($columnQuery);
     }
 }

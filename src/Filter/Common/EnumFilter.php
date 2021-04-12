@@ -11,6 +11,8 @@
 namespace Ynlo\GraphQLBundle\Filter\Common;
 
 use Doctrine\ORM\QueryBuilder;
+use Elastica\Query\BoolQuery;
+use Elastica\Query\Term;
 use Ynlo\GraphQLBundle\Filter\FilterContext;
 use Ynlo\GraphQLBundle\Filter\FilterInterface;
 use Ynlo\GraphQLBundle\Model\Filter\EnumComparisonExpression;
@@ -21,7 +23,7 @@ class EnumFilter implements FilterInterface
     /**
      * @inheritDoc
      */
-    public function __invoke(FilterContext $context, QueryBuilder $qb, $condition)
+    public function __invoke(FilterContext $context, $qb, $condition)
     {
         if (!$condition instanceof EnumComparisonExpression) {
             throw new \RuntimeException('Invalid filter condition');
@@ -31,13 +33,17 @@ class EnumFilter implements FilterInterface
             throw new \RuntimeException('There are not valid field related to this filter.');
         }
 
-        $alias = $qb->getRootAliases()[0];
         $column = $context->getField()->getOriginName();
         if (!$column || $context->getField()->getOriginType() === 'ReflectionMethod') {
             $column = $context->getField()->getName();
         }
 
-        $this->applyFilter($qb, $alias, $column, $condition);
+        if ($qb instanceof QueryBuilder) {
+            $alias = $qb->getRootAliases()[0];
+            $this->applyFilter($qb, $alias, $column, $condition);
+        } else {
+            $this->applyElasticFilter($qb, $column, $condition);
+        }
     }
 
     /**
@@ -56,5 +62,28 @@ class EnumFilter implements FilterInterface
                 $qb->andWhere($qb->expr()->notIn("{$alias}.{$column}", $condition->getValues()));
                 break;
         }
+    }
+
+    /**
+     * @param BoolQuery                $qb
+     * @param string                   $column
+     * @param EnumComparisonExpression $condition
+     */
+    protected function applyElasticFilter(BoolQuery $qb, $column, EnumComparisonExpression $condition): void
+    {
+        $boolQuery = new BoolQuery();
+        switch ($condition->getOp()) {
+            case NodeComparisonOperatorType::IN:
+                foreach ($condition->getValues() as $value) {
+                    $boolQuery->addShould((new Term())->setTerm($column, $value));
+                }
+                break;
+            case NodeComparisonOperatorType::NIN:
+                foreach ($condition->getValues() as $value) {
+                    $boolQuery->addMustNot((new Term())->setTerm($column, $value));
+                }
+                break;
+        }
+        $qb->addMust($boolQuery);
     }
 }

@@ -23,6 +23,13 @@ class Pagination extends PluginConfigAnnotation
     public $enabled;
 
     /**
+     * Enable elastic search support
+     *
+     * @var bool
+     */
+    public $elastic = false;
+
+    /**
      * Max number of records allowed for first & last
      *
      * @var int

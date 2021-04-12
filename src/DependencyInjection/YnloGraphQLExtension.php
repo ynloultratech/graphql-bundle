@@ -23,6 +23,7 @@ use Ynlo\GraphQLBundle\Cache\DefinitionCacheWarmer;
 use Ynlo\GraphQLBundle\Command\MercureHubCommand;
 use Ynlo\GraphQLBundle\Controller\GraphQLEndpointController;
 use Ynlo\GraphQLBundle\Doctrine\UserManager;
+use Ynlo\GraphQLBundle\Elastic\ElasticRepositoryManager;
 use Ynlo\GraphQLBundle\Encoder\IDEncoderManager;
 use Ynlo\GraphQLBundle\GraphiQL\JWTGraphiQLAuthentication;
 use Ynlo\GraphQLBundle\GraphiQL\LexikJWTGraphiQLAuthenticator;
@@ -178,6 +179,10 @@ class YnloGraphQLExtension extends Extension
             $container->removeDefinition(Subscriber::class);
             $container->removeDefinition(Publisher::class);
             $container->removeDefinition(RedisSubscriptionBucket::class);
+        }
+
+        if (!$elastic = $config['pagination']['elastic'] ?? false){
+            $container->removeDefinition(ElasticRepositoryManager::class);
         }
 
         // user support
