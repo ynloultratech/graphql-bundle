@@ -12,23 +12,33 @@ namespace Ynlo\GraphQLBundle\Type\Loader;
 
 use GraphQL\Type\Definition\Type;
 use Symfony\Component\Finder\Finder;
-use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Contracts\Cache\CacheInterface;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 
-class TypeAutoLoader
+class TypeAutoLoader implements CacheWarmerInterface
 {
-    protected static $loaded = false;
+    protected KernelInterface $kernel;
 
-    /**
-     * @var KernelInterface
-     */
-    protected $kernel;
+    protected CacheInterface $cache;
 
-    public function __construct(KernelInterface $kernel)
+    public function __construct(KernelInterface $kernel, CacheInterface $cache)
     {
         $this->kernel = $kernel;
+        $this->cache = $cache;
+    }
+
+    public function warmUp(string $cacheDir)
+    {
+        $this->cache->delete('types');
+        $this->autoloadTypes();
+    }
+
+    public function isOptional()
+    {
+        return false;
     }
 
     /**
@@ -36,32 +46,26 @@ class TypeAutoLoader
      */
     public function autoloadTypes()
     {
-        //loaded and static
-        if (self::$loaded) {
-            return;
-        }
+        $typeMap = $this->cache->get(
+            'types',
+            function () {
+                foreach ($this->kernel->getBundles() as $bundle) {
+                    $path = $bundle->getPath().'/Type';
+                    if (file_exists($path)) {
+                        $this->registerBundleTypes($path, $bundle->getNamespace());
+                    }
+                }
 
-        if (!$this->kernel->isDebug() && $this->loadFromCacheCache()) {
-            self::$loaded = true;
+                $path = $this->kernel->getProjectDir().'/src/Type';
+                if (file_exists($path)) {
+                    $this->registerBundleTypes($path, 'App');
+                }
 
-            return;
-        }
-
-        self::$loaded = true;
-
-        foreach ($this->kernel->getBundles() as $bundle) {
-            $path = $bundle->getPath().'/Type';
-            if (file_exists($path)) {
-                $this->registerBundleTypes($path, $bundle->getNamespace());
+                return TypeRegistry::getTypeMapp();
             }
-        }
+        );
 
-        $path = $this->kernel->getProjectDir().'/src/Type';
-        if (file_exists($path)) {
-            $this->registerBundleTypes($path, 'App');
-        }
-
-        $this->saveCache();
+        TypeRegistry::setTypeMapping($typeMap);
     }
 
     /**
@@ -105,40 +109,5 @@ class TypeAutoLoader
                 }
             }
         }
-    }
-
-    /**
-     * @return string
-     */
-    protected function cacheFileName()
-    {
-        return $this->kernel->getCacheDir().DIRECTORY_SEPARATOR.'graphql.type_map.meta';
-    }
-
-    /**
-     * Load cache
-     *
-     * @return bool on success
-     */
-    protected function loadFromCacheCache(): bool
-    {
-        if (file_exists($this->cacheFileName())) {
-            $content = @file_get_contents($this->cacheFileName());
-            if ($content) {
-                TypeRegistry::setTypeMapping(unserialize($content));
-
-                return true;
-            }
-        }
-
-        return false;
-    }
-
-    /**
-     * Save cache
-     */
-    protected function saveCache()
-    {
-        file_put_contents($this->cacheFileName(), serialize(TypeRegistry::getTypeMapp()));
     }
 }

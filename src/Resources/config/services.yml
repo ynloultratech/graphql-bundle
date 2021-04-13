@@ -65,9 +65,9 @@ services:
     Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry:
         public: true
         arguments:
+            - '@cache.graphql'
             - !tagged graphql.definition_loader
             - !tagged graphql.definition_plugin
-            - '%kernel.cache_dir%'
             - '%graphql.endpoints%'
 
     Ynlo\GraphQLBundle\Definition\Loader\AnnotationLoader:
@@ -148,7 +148,11 @@ services:
 
     Ynlo\GraphQLBundle\Type\Loader\TypeAutoLoader:
         public: true
-        arguments: ['@kernel']
+        arguments:
+            - '@kernel'
+            - '@cache.graphql'
+        tags:
+            - { name: 'kernel.cache_warmer', priority: 200 }
 
     Ynlo\GraphQLBundle\Form\TypeGuesser\GraphQLIDTypeGuesser:
         public: true
@@ -391,7 +395,10 @@ services:
     Ynlo\GraphQLBundle\Error\ControlledErrorManager:
         arguments:
           - '@kernel'
+          - '@cache.graphql'
           - '%graphql.error_handling.controlled_errors%'
+        tags:
+            - { name: 'kernel.cache_warmer', priority: 200 }
 
     Ynlo\GraphQLBundle\EventListener\JWT\AuthenticationFailureListener:
         arguments:
@@ -501,3 +508,8 @@ services:
         public: true
         arguments:
             - '@Doctrine\ORM\EntityManagerInterface'
+
+    cache.graphql:
+        parent: cache.adapter.filesystem
+        tags:
+            - { name: cache.pool, clearer : cache.app_clearer }

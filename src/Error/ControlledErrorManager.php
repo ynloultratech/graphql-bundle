@@ -12,12 +12,16 @@ namespace Ynlo\GraphQLBundle\Error;
 
 use Symfony\Component\Finder\Finder;
 use Symfony\Component\Finder\SplFileInfo;
+use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmerInterface;
 use Symfony\Component\HttpKernel\Kernel;
+use Symfony\Contracts\Cache\CacheInterface;
 use Ynlo\GraphQLBundle\Exception\ControlledErrorInterface;
 
-class ControlledErrorManager
+class ControlledErrorManager implements CacheWarmerInterface
 {
     protected $kernel;
+
+    protected CacheInterface $cache;
 
     /**
      * @var array
@@ -37,12 +41,14 @@ class ControlledErrorManager
     /**
      * ControlledErrorManager constructor.
      *
-     * @param Kernel $kernel
-     * @param array  $config
+     * @param Kernel         $kernel
+     * @param CacheInterface $cache
+     * @param array          $config
      */
-    public function __construct(Kernel $kernel, $config = [])
+    public function __construct(Kernel $kernel, CacheInterface $cache, $config = [])
     {
         $this->kernel = $kernel;
+        $this->cache = $cache;
         $this->config = $config;
     }
 
@@ -102,9 +108,19 @@ class ControlledErrorManager
     public function clear(): void
     {
         $this->errors = [];
-        if (file_exists($this->cacheFileName())) {
-            @unlink($this->cacheFileName());
-        }
+        $this->loaded = false;
+        $this->cache->delete('controlled_errors');
+    }
+
+    public function isOptional()
+    {
+        return false;
+    }
+
+    public function warmUp(string $cacheDir)
+    {
+       $this->clear();
+       $this->loadAllErrors();
     }
 
     /**
@@ -112,26 +128,32 @@ class ControlledErrorManager
      */
     private function loadAllErrors(): void
     {
-        $this->loadFromCache();
         if ($this->loaded) {
             return;
         }
 
-        $loadedErrors = [];
-        foreach ($this->config['map'] as $code => $error) {
-            $loadedErrors[] = new MappedControlledError(
-                $error['category'],
-                $error['message'],
-                $code,
-                $error['description']
-            );
-        }
+        $loadedErrors = $this->cache->get(
+            'controlled_errors',
+            function () {
+                $loadedErrors = [];
+                foreach ($this->config['map'] as $code => $error) {
+                    $loadedErrors[] = new MappedControlledError(
+                        $error['category'],
+                        $error['message'],
+                        $code,
+                        $error['description']
+                    );
+                }
 
-        if ($this->config['autoload']['enabled'] ?? false) {
-            foreach ($this->controlledExceptions() as $error) {
-                $loadedErrors[] = $error;
+                if ($this->config['autoload']['enabled'] ?? false) {
+                    foreach ($this->controlledExceptions() as $error) {
+                        $loadedErrors[] = $error;
+                    }
+                }
+
+                return $loadedErrors;
             }
-        }
+        );
 
         $this->loaded = true;
         foreach ($loadedErrors as $error) {
@@ -139,8 +161,6 @@ class ControlledErrorManager
         }
 
         ksort($this->errors, SORT_NATURAL);
-
-        $this->saveCache();
     }
 
     /**
@@ -221,35 +241,5 @@ class ControlledErrorManager
                 }
             }
         }
-    }
-
-    /**
-     * @return string
-     */
-    private function cacheFileName(): string
-    {
-        return $this->kernel->getCacheDir().DIRECTORY_SEPARATOR.'graphql.controlled_errors.meta';
-    }
-
-    /**
-     * Load cache
-     */
-    private function loadFromCache(): void
-    {
-        if (file_exists($this->cacheFileName())) {
-            $content = @file_get_contents($this->cacheFileName());
-            if ($content) {
-                $this->loaded = true;
-                $this->errors = unserialize($content, ['allowed_classes' => [MappedControlledError::class]]);
-            }
-        }
-    }
-
-    /**
-     * Save cache
-     */
-    private function saveCache(): void
-    {
-        file_put_contents($this->cacheFileName(), serialize($this->errors));
     }
 }

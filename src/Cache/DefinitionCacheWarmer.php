@@ -10,7 +10,6 @@
 
 namespace Ynlo\GraphQLBundle\Cache;
 
-use Symfony\Component\Finder\Finder;
 use Symfony\Component\HttpKernel\CacheWarmer\CacheWarmer;
 use Symfony\Component\HttpKernel\Kernel;
 use Ynlo\GraphQLBundle\Definition\Registry\DefinitionRegistry;
@@ -56,46 +55,5 @@ class DefinitionCacheWarmer extends CacheWarmer
     public function warmUp($cacheDir)
     {
         $this->registry->clearCache(true);
-        $this->updateControlFile();
-    }
-
-    /**
-     * @return bool
-     */
-    protected function isFreshCache()
-    {
-        if (!file_exists($this->getControlFileName())) {
-            return false;
-        }
-
-        $controlTime = filemtime($this->getControlFileName());
-
-        $projectDir = $this->kernel->getProjectDir();
-        $dirs[] = $projectDir.'/config';
-        $dirs[] = $projectDir.'/src';
-
-        /** @var iterable $files */
-        $files = Finder::create()
-                       ->in($dirs)
-                       ->date(sprintf('>= %s', date('Y-m-d H:i:s', $controlTime)))
-                       ->files();
-
-        //exist at least one modified file
-        foreach ($files as $file) {
-            return false;
-            break;
-        }
-
-        return true;
-    }
-
-    protected function getControlFileName()
-    {
-        return $this->kernel->getCacheDir().'/graphql.schema.timestamp';
-    }
-
-    protected function updateControlFile()
-    {
-        file_put_contents($this->getControlFileName(), time());
     }
 }

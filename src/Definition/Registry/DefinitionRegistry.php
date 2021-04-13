@@ -13,12 +13,14 @@ namespace Ynlo\GraphQLBundle\Definition\Registry;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
+use Symfony\Contracts\Cache\CacheInterface;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Loader\DefinitionLoaderInterface;
 use Ynlo\GraphQLBundle\Definition\MetaAwareInterface;
 use Ynlo\GraphQLBundle\Definition\Plugin\DefinitionPluginInterface;
 use Ynlo\GraphQLBundle\Extension\EndpointNotValidException;
+use Ynlo\GraphQLBundle\Type\Loader\TypeAutoLoader;
 use Ynlo\GraphQLBundle\Util\Inflector;
 
 /**
@@ -51,10 +53,7 @@ class DefinitionRegistry
      */
     protected $endpointsConfig = [];
 
-    /**
-     * @var string
-     */
-    private $cacheDir;
+    private CacheInterface $cache;
 
     /**
      * DefinitionRegistry constructor.
@@ -71,17 +70,17 @@ class DefinitionRegistry
      *  ]
      * ]
      *
+     * @param CacheInterface                       $cache
      * @param iterable|DefinitionLoaderInterface[] $loaders
-     * @param iterable|DefinitionPluginInterface[] $plugins
-     * @param null|string                          $cacheDir
+     * @param iterable|DefinitionPluginInterface[] $plugins         *
      * @param array                                $endpointsConfig array of configured endpoints
      *
      */
-    public function __construct(iterable $loaders = [], iterable $plugins = [], ?string $cacheDir = null, array $endpointsConfig = [])
+    public function __construct(CacheInterface $cache, iterable $loaders = [], iterable $plugins = [], array $endpointsConfig = [])
     {
         $this->loaders = $loaders;
         $this->plugins = $plugins;
-        $this->cacheDir = $cacheDir ?? sys_get_temp_dir();
+        $this->cache = $cache;
         $this->endpointsConfig = array_merge($endpointsConfig['endpoints'] ?? [], [self::DEFAULT_ENDPOINT => []]);
     }
 
@@ -111,15 +110,7 @@ class DefinitionRegistry
             return self::$endpoints[$name];
         }
 
-        //use file cache
-        self::$endpoints[$name] = $this->loadCache($name);
-
-        //retry after load from file
-        if (isset(self::$endpoints[$name]) && self::$endpoints[$name] instanceof Endpoint) {
-            return self::$endpoints[$name];
-        }
-
-        $this->initialize($name);
+        self::$endpoints[$name] = $this->initialize($name);
 
         return self::$endpoints[$name];
     }
@@ -131,15 +122,10 @@ class DefinitionRegistry
      */
     public function clearCache($warmUp = false)
     {
-        if (file_exists($this->cacheFileName('default.raw')) && is_writable($this->cacheFileName('default.raw'))) {
-            unlink($this->cacheFileName('default.raw'));
-        }
-
+        $this->cache->delete('default.raw');
         foreach ($this->endpointsConfig as $name => $config) {
             unset(self::$endpoints[$name]);
-            if (file_exists($this->cacheFileName($name)) && is_writable($this->cacheFileName($name))) {
-                unlink($this->cacheFileName($name));
-            }
+            $this->cache->delete($name);
             if ($warmUp) {
                 $this->initialize($name);
             }
@@ -151,53 +137,35 @@ class DefinitionRegistry
      *
      * @param string $name
      */
-    protected function initialize(string $name): void
+    protected function initialize(string $name): Endpoint
     {
-        $rawDefault = $this->loadCache('default.raw');
-        if (!$rawDefault) {
-            $rawDefault = new Endpoint(self::DEFAULT_ENDPOINT);
+        $rawDefault = $this->cache->get(
+            'default.raw',
+            function () {
+                $rawDefault = new Endpoint(self::DEFAULT_ENDPOINT);
 
-            foreach ($this->loaders as $loader) {
-                $loader->loadDefinitions($rawDefault);
+                foreach ($this->loaders as $loader) {
+                    $loader->loadDefinitions($rawDefault);
+                }
+
+                return $rawDefault;
             }
+        );
 
-            $this->saveCache('default.raw', $rawDefault);
-        }
+        return $this->cache->get(
+            $name,
+            function () use ($name, $rawDefault) {
+                $endpoint = new Endpoint($name);
+                $endpoint->setTypes($rawDefault->allTypes());
+                $endpoint->setMutations($rawDefault->allMutations());
+                $endpoint->setQueries($rawDefault->allQueries());
+                $endpoint->setSubscriptions($rawDefault->allSubscriptions());
 
-        if (!isset(self::$endpoints[$name])) {
-            //copy from raw to specific endpoint
-            self::$endpoints[$name] = new Endpoint($name);
-            self::$endpoints[$name]->setTypes($rawDefault->allTypes());
-            self::$endpoints[$name]->setMutations($rawDefault->allMutations());
-            self::$endpoints[$name]->setQueries($rawDefault->allQueries());
-            self::$endpoints[$name]->setSubscriptions($rawDefault->allSubscriptions());
+                $this->compile($endpoint);
 
-            $this->compile(self::$endpoints[$name]);
-        }
-
-        $this->saveCache($name, self::$endpoints[$name]);
-    }
-
-    protected function cacheFileName($name): string
-    {
-        return sprintf('%s%sgraphql.registry_definitions_%s.meta', $this->cacheDir, DIRECTORY_SEPARATOR, Inflector::tableize($name));
-    }
-
-    protected function loadCache($name): ?Endpoint
-    {
-        if (file_exists($this->cacheFileName($name))) {
-            $content = @file_get_contents($this->cacheFileName($name));
-            if ($content) {
-                return unserialize($content, ['allowed_classes' => true]);
+                return $endpoint;
             }
-        }
-
-        return null;
-    }
-
-    protected function saveCache($name, Endpoint $endpoint): void
-    {
-        file_put_contents($this->cacheFileName($name), serialize($endpoint));
+        );
     }
 
     /**
