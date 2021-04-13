@@ -13,6 +13,7 @@ namespace Ynlo\GraphQLBundle\Tests\Definition\Registry;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\Mock;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+use Symfony\Contracts\Cache\CacheInterface;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
@@ -117,10 +118,23 @@ class DefinitionRegistryTest extends MockeryTestCase
             }
         );
 
+        $cache = \Mockery::mock(CacheInterface::class);
+
+        $cache->expects('delete')->with('default.raw');
+        $cache->expects('delete')->with('default');
+        $cache->expects('delete')->with('admin');
+        $cache->expects('delete')->with('frontend');
+
+        $cache->allows('get')->withAnyArgs()->andReturnUsing(
+            function ($endpoint, $callback) {
+                return $callback();
+            }
+        );
+
         $registry = new DefinitionRegistry(
+            $cache,
             [$loader],
             [$plugin],
-            null,
             [
                 'endpoints' => [
                     'admin' => [],
@@ -150,48 +164,17 @@ class DefinitionRegistryTest extends MockeryTestCase
                 'frontend' => [],
             ],
         ];
+
+        $cache = \Mockery::mock(CacheInterface::class);
+
         /** @var DefinitionRegistry|Mock $registry */
-        $registry = \Mockery::spy(DefinitionRegistry::class, [[], [], null, $config])
+        $registry = \Mockery::spy(DefinitionRegistry::class, [$cache, [], [], $config])
                             ->makePartial()
                             ->shouldAllowMockingProtectedMethods();
 
         $endpoint = $registry->getEndpoint('admin');
 
         $registry->shouldNotHaveReceived('initialize');
-        $registry->shouldNotHaveReceived('loadCache');
-
-        /** @var InterfaceDefinition $userDefinition */
-        $userDefinition = $endpoint->getType('User');
-        self::assertTrue($userDefinition->hasField('fullName'));
-        self::assertEquals('String', $userDefinition->getField('fullName')->getType());
-    }
-
-    /**
-     * @depends testGetEndpoint
-     */
-    public function testGetEndpointUsingFileCache()
-    {
-        $config = [
-            'endpoints' => [
-                'admin' => [],
-                'frontend' => [],
-            ],
-        ];
-        /** @var DefinitionRegistry|Mock $registry */
-        $registry = \Mockery::spy(DefinitionRegistry::class, [[], [], null, $config])
-                            ->makePartial()
-                            ->shouldAllowMockingProtectedMethods();
-
-        //clear static cache to force load from file cache
-        $ref = new \ReflectionClass(DefinitionRegistry::class);
-        $refProp = $ref->getProperty('endpoints');
-        $refProp->setAccessible(true);
-        $refProp->setValue($registry, []);
-
-        $endpoint = $registry->getEndpoint('admin');
-
-        $registry->shouldNotHaveReceived('initialize');
-        $registry->shouldHaveReceived('loadCache');
 
         /** @var InterfaceDefinition $userDefinition */
         $userDefinition = $endpoint->getType('User');
@@ -202,7 +185,8 @@ class DefinitionRegistryTest extends MockeryTestCase
     public function testGetNotValidEndpoint()
     {
         self::expectException(EndpointNotValidException::class);
-        $registry = new DefinitionRegistry();
+        $cache = \Mockery::mock(CacheInterface::class);
+        $registry = new DefinitionRegistry($cache);
         $registry->getEndpoint('backend');
     }
 }
