@@ -510,6 +510,6 @@ services:
             - '@Doctrine\ORM\EntityManagerInterface'
 
     cache.graphql:
-        parent: cache.adapter.filesystem
+        parent: cache.system
         tags:
             - { name: cache.pool, clearer : cache.app_clearer }

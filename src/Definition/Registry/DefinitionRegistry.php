@@ -20,8 +20,6 @@ use Ynlo\GraphQLBundle\Definition\Loader\DefinitionLoaderInterface;
 use Ynlo\GraphQLBundle\Definition\MetaAwareInterface;
 use Ynlo\GraphQLBundle\Definition\Plugin\DefinitionPluginInterface;
 use Ynlo\GraphQLBundle\Extension\EndpointNotValidException;
-use Ynlo\GraphQLBundle\Type\Loader\TypeAutoLoader;
-use Ynlo\GraphQLBundle\Util\Inflector;
 
 /**
  * DefinitionRegistry
