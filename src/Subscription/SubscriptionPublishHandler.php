@@ -34,14 +34,18 @@ class SubscriptionPublishHandler implements MessageHandlerInterface, LoggerAware
 
     public function __invoke(SubscriptionPublish $publish)
     {
-        $this->logger->info(sprintf('Subscription PUBLISH event received from channel: %s', $publish->getChannel()));
+        if ($this->logger) {
+            $this->logger->info(sprintf('Subscription PUBLISH event received from channel: %s', $publish->getChannel()));
+        }
         foreach ($this->subscriptionBucket->all($publish->getChannel()) as $subscription) {
             /** @var Request $request */
             $subscribedArguments = $subscription->getArguments();
             $subscribedChannel = $subscription->getChannel();
             if ($subscribedChannel === $publish->getChannel()
                 && $this->matchFilters($subscribedArguments, $publish->getFilters())) {
-                $this->logger->info(sprintf('Dispatching subscription (%s) UPDATE for channel: %s', $subscription->getId(), $publish->getChannel()));
+                if ($this->logger) {
+                    $this->logger->info(sprintf('Dispatching subscription (%s) UPDATE for channel: %s', $subscription->getId(), $publish->getChannel()));
+                }
                 $this->messageBus->dispatch(new SubscriptionUpdate($subscription, $publish));
             }
         }

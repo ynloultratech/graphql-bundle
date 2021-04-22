@@ -30,7 +30,9 @@ class SubscriptionUpdateHandler implements MessageHandlerInterface, LoggerAwareI
 
     public function __invoke(SubscriptionUpdate $update)
     {
-        $this->logger->info(sprintf('Subscription UPDATE event received for subscription (^%s) in channel: %s', $update->getSubscription()->getId(), $update->getSubscription()->getChannel()));
+        if ($this->logger) {
+            $this->logger->info(sprintf('Subscription UPDATE event received for subscription (^%s) in channel: %s', $update->getSubscription()->getId(), $update->getSubscription()->getChannel()));
+        }
 
         $originRequest = $update->getSubscription()->getRequest();
         $host = $originRequest->getHost();

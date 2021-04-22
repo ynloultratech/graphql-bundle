@@ -108,7 +108,9 @@ class MercureHubCommand extends Command implements LoggerAwareInterface
         $subscribersByTopics = [];
 
         $logger = $this->logger;
-        $logger->info('Initializing mercure...');
+        if ($logger) {
+            $logger->info('Initializing mercure...');
+        }
 
         $process->run(
             static function ($type, $msg) use ($output, &$subscribersByTopics, $subscriptionManager, $logger) {
@@ -124,10 +126,12 @@ class MercureHubCommand extends Command implements LoggerAwareInterface
                     preg_match('/topics":\["([\w+-]+)"/', $msg, $matches);
                     $subscription = $matches[1] ?? null;
 
-                    if ($connected) {
-                        $logger->info(sprintf('Client connected to subscription: %s from IP: %s', $subscription, $remoteAddr));
-                    } else {
-                        $logger->info(sprintf('Client disconnected from subscription: %s from IP: %s', $subscription, $remoteAddr));
+                    if ($logger) {
+                        if ($connected) {
+                            $logger->info(sprintf('Client connected to subscription: %s from IP: %s', $subscription, $remoteAddr));
+                        } else {
+                            $logger->info(sprintf('Client disconnected from subscription: %s from IP: %s', $subscription, $remoteAddr));
+                        }
                     }
 
                     if ($subscription && $remoteAddr) {
@@ -138,6 +142,11 @@ class MercureHubCommand extends Command implements LoggerAwareInterface
 
                             $subscriptionManager->subscriptionBucket()->hit($subscription);
                             $subscribersByTopics[$subscription][$remoteAddr] = true;
+
+                            if ($logger) {
+                                $logger->info(sprintf('Hit subscription: %s ', $subscription));
+                            }
+
                         } elseif ($disconnected) {
                             if (isset($subscribersByTopics[$subscription][$remoteAddr])) {
                                 unset($subscribersByTopics[$subscription][$remoteAddr]);
@@ -146,6 +155,10 @@ class MercureHubCommand extends Command implements LoggerAwareInterface
                             if (empty($subscribersByTopics[$subscription])) {
                                 unset($subscribersByTopics[$subscription]);
                                 $subscriptionManager->subscriptionBucket()->remove($subscription);
+
+                                if ($logger) {
+                                    $logger->info(sprintf('Delete subscription: %s ', $subscription));
+                                }
                             }
                         }
                     }

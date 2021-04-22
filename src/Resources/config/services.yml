@@ -362,6 +362,8 @@ services:
             - '%kernel.debug%'
         tags:
             - 'console.command'
+        calls:
+            - [ setLogger, ['@?monolog.logger']
 
     Ynlo\GraphQLBundle\Error\DefaultErrorFormatter:
        arguments:
@@ -454,11 +456,15 @@ services:
     Ynlo\GraphQLBundle\Subscription\SubscriptionPublishHandler:
         arguments: # dpi
         tags: [messenger.message_handler]
+        calls:
+            - [ setLogger, ['@?monolog.logger']
 
     Ynlo\GraphQLBundle\Subscription\SubscriptionUpdateHandler:
         arguments:
             - '%kernel.secret%'
         tags: [messenger.message_handler]
+        calls:
+            - [ setLogger, ['@?monolog.logger'] ]
 
     Ynlo\GraphQLBundle\Subscription\Bucket\RedisSubscriptionBucket:
         arguments:
