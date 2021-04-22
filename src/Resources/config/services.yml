@@ -363,7 +363,7 @@ services:
         tags:
             - 'console.command'
         calls:
-            - [ setLogger, ['@?monolog.logger']
+            - [ setLogger, ['@?monolog.logger'] ]
 
     Ynlo\GraphQLBundle\Error\DefaultErrorFormatter:
        arguments:
@@ -457,7 +457,7 @@ services:
         arguments: # dpi
         tags: [messenger.message_handler]
         calls:
-            - [ setLogger, ['@?monolog.logger']
+            - [ setLogger, ['@?monolog.logger'] ]
 
     Ynlo\GraphQLBundle\Subscription\SubscriptionUpdateHandler:
         arguments:
