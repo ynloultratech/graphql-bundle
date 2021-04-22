@@ -115,8 +115,13 @@ class RedisSubscriptionBucket implements SubscriptionBucketInterface
     public function remove(string $id): void
     {
         $iterator = null;
-        foreach ($this->getClient()->keys("*:$id") as $key) {
-            $this->getClient()->del($this->unprefix($key));
+        while ($iterator !== 0) {
+            while ($keys = $this->getClient()->scan($iterator, "*:$id*")) {
+                foreach ($keys as $key) {
+                    // mark to expire instead of hard remove to allow re-connection on connection lost
+                    $this->getClient()->expireAt($this->unprefix($key), (new \DateTime('+60Seconds'))->format('U'));
+                }
+            }
         }
     }
 
