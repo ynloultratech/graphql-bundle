@@ -10,6 +10,8 @@
 
 namespace Ynlo\GraphQLBundle\Command;
 
+use Psr\Log\LoggerAwareInterface;
+use Psr\Log\LoggerAwareTrait;
 use Symfony\Component\Console\Command\Command;
 use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Input\InputOption;
@@ -21,8 +23,10 @@ use Ynlo\GraphQLBundle\Subscription\SubscriptionManager;
  * This command act as a middleware to execute the mercure hub process in order to
  * listen conected/disconected subscribers to remove subscriptions without any active subscriber
  */
-class MercureHubCommand extends Command
+class MercureHubCommand extends Command implements LoggerAwareInterface
 {
+    use LoggerAwareTrait;
+
     /**
      * @var string
      */
@@ -103,8 +107,11 @@ class MercureHubCommand extends Command
 
         $subscribersByTopics = [];
 
+        $logger = $this->logger;
+        $logger->info('Initializing mercure...');
+
         $process->run(
-            static function ($type, $msg) use ($output, &$subscribersByTopics, $subscriptionManager) {
+            static function ($type, $msg) use ($output, &$subscribersByTopics, $subscriptionManager, $logger) {
                 $output->writeln($msg);
 
                 $connected = strpos($msg, '"New subscriber"') !== false;
@@ -116,6 +123,12 @@ class MercureHubCommand extends Command
 
                     preg_match('/topics":\["([\w+-]+)"/', $msg, $matches);
                     $subscription = $matches[1] ?? null;
+
+                    if ($connected) {
+                        $logger->info(sprintf('Client connected to subscription: %s from IP: %s', $subscription, $remoteAddr));
+                    } else {
+                        $logger->info(sprintf('Client disconnected from subscription: %s from IP: %s', $subscription, $remoteAddr));
+                    }
 
                     if ($subscription && $remoteAddr) {
                         if ($connected) {
