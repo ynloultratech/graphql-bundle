@@ -35,12 +35,6 @@ class SubscriptionUpdateHandler implements MessageHandlerInterface, LoggerAwareI
         }
 
         $originRequest = $update->getSubscription()->getRequest();
-        $host = $originRequest->getHost();
-        $port = $originRequest->getPort();
-        $path = $originRequest->getPathInfo();
-
-        $handle = fsockopen($originRequest->isSecure() ? 'ssl://'.$host : $host, $port, $errno, $errstr, 10);
-
         $subscriptionToken = JWT::encode(
             [
                 'jti' => $update->getSubscription()->getId(),
@@ -51,34 +45,37 @@ class SubscriptionUpdateHandler implements MessageHandlerInterface, LoggerAwareI
             $this->secret
         );
 
-        $body = $originRequest->getContent();
-        $length = strlen($body);
-        $out = "POST $path HTTP/1.1\r\n";
-        $out .= "Host: $host\r\n";
-        $auth = $originRequest->headers->get('Authorization');
-        $out .= "Authorization: $auth\r\n";
-        $out .= "Subscription: $subscriptionToken\r\n";
-        $out .= "Content-Length: $length\r\n";
-        $out .= "Content-Type: application/json\r\n";
-        $out .= "Connection: Close\r\n\r\n";
-        $out .= $body;
-        fwrite($handle, $out);
+        $ch = curl_init($originRequest->getUri());
+        curl_setopt($ch, CURLOPT_POSTFIELDS, $originRequest->getContent());
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_FOLLOWLOCATION, true);
 
-        $emptyResponse = true;
-        while (true) {
-            $buffer = fgets($handle);
-            if (!$buffer) {
-                break;
-            }
-            $emptyResponse = false;
+        $headers = [
+            'Content-Type:application/json',
+            sprintf('Subscription:%s', $subscriptionToken),
+        ];
+
+        if ($auth = $originRequest->headers->get('Authorization')) {
+            $headers[] = sprintf('Authorization:%s', $auth);
         }
-        if ($emptyResponse) {
-            if ($this->logger) {
-                $this->logger->warning(sprintf('Empty response for subscription %s', $update->getSubscription()->getId()));
-            }
-        } else if ($this->logger) {
+
+        curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+
+        $response = curl_exec($ch);
+        if ($response) {
+            curl_close($ch);
             $this->logger->info(sprintf('[INFO] Response received successfully for subscription %s', $update->getSubscription()->getId()));
+        } else {
+            $errorNo = curl_errno($ch);
+
+            $errorMessage = curl_error($ch);
+            curl_close($ch);
+            if ($errorNo) {
+                throw new \RuntimeException($errorMessage);
+            }
+
+            $this->logger->warning(sprintf('Empty response for subscription %s', $update->getSubscription()->getId()));
         }
-        fclose($handle);
     }
 }
