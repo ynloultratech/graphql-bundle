@@ -26,6 +26,7 @@
     },
     "require": {
         "php": "^7.4 | ^8.0",
+        "ext-curl": "*",
         "ext-json": "*",
         "symfony/form": "^4.4 | ^5.0",
         "symfony/framework-bundle": "^4.4 | ^5.0",
