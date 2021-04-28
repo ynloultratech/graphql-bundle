@@ -255,9 +255,13 @@ class AllNodesWithPagination extends AllNodes
     protected function search($qb, string $search): void
     {
         if ($qb instanceof BoolQuery) {
-            $matchAll = new Query\QueryString();
-            $matchAll->setQuery($search);
-            $qb->addMust($matchAll);
+            $searchTerms = explode(' ', $search);
+            foreach ($searchTerms as $term) {
+                if ($term) {
+                    $matchAll = new Query\QueryString(sprintf("*%s*", $term));
+                    $qb->addMust($matchAll);
+                }
+            }
         } else {
             $query = $this->queryDefinition;
             $node = $this->objectDefinition;
