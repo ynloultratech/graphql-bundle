@@ -293,13 +293,6 @@ class AllNodesWithPagination extends AllNodes
                             case DBALTypes::TEXT:
                                 $columns[$searchColumn] = $config ?? SearchByInterface::PARTIAL_SEARCH;
                                 break;
-                            case DBALTypes::INTEGER:
-                            case DBALTypes::BIGINT:
-                            case DBALTypes::FLOAT:
-                            case DBALTypes::DECIMAL:
-                            case DBALTypes::SMALLINT:
-                                $columns[$searchColumn] = $config ?? SearchByInterface::EXACT_MATCH;
-                                break;
                         }
                     } catch (MappingException $exception) {
                         continue;
