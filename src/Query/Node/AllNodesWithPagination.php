@@ -66,12 +66,12 @@ class AllNodesWithPagination extends AllNodes
         $search = $args['search'] ?? null;
         $where = $args['where'] ?? null;
 
+        $this->initialize();
+
         if (!$first && !$last) {
             $error = sprintf('You must provide a `first` or `last` value to properly paginate records in "%s" connection.', $this->queryDefinition->getName());
             throw new Error($error);
         }
-
-        $this->initialize();
 
         if ($this->isElasticEnabled()) {
             $query = $this->createElasticQuery();
