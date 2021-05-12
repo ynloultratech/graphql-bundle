@@ -63,7 +63,6 @@ class SubscriptionUpdateHandler implements MessageHandlerInterface, LoggerAwareI
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
         curl_exec($ch);
-        curl_close($ch);
 
         $errorNo = curl_errno($ch);
         $errorMessage = curl_error($ch);
