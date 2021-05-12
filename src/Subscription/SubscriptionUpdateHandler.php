@@ -62,20 +62,16 @@ class SubscriptionUpdateHandler implements MessageHandlerInterface, LoggerAwareI
 
         curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
 
-        $response = curl_exec($ch);
-        if ($response) {
-            curl_close($ch);
-            $this->logger->info(sprintf('[INFO] Response received successfully for subscription %s', $update->getSubscription()->getId()));
+        curl_exec($ch);
+        curl_close($ch);
+
+        $errorNo = curl_errno($ch);
+        $errorMessage = curl_error($ch);
+        curl_close($ch);
+        if ($errorNo) {
+            throw new \RuntimeException($errorMessage);
         } else {
-            $errorNo = curl_errno($ch);
-
-            $errorMessage = curl_error($ch);
-            curl_close($ch);
-            if ($errorNo) {
-                throw new \RuntimeException($errorMessage);
-            }
-
-            $this->logger->warning(sprintf('Empty response for subscription %s', $update->getSubscription()->getId()));
+            $this->logger->info(sprintf('Subscription sent successfully for subscription %s', $update->getSubscription()->getId()));
         }
     }
 }
