@@ -36,15 +36,17 @@ class ElasticCursorPaginator implements CursorPaginatorInterface
         $limit = $pagination->getFirst() ?? $pagination->getLast();
 
         $pager = $this->finder->findPaginated($query)->setMaxPerPage($limit);
-        if ($pagination->getPage()) {
-            try {
-                $pager->setCurrentPage($pagination->getPage());
-            } catch (OutOfRangeCurrentPageException $exception) {
-                $pager->setCurrentPage($pager->getNbPages());
-            }
-        } else {
+        $page = $pagination->getPage() ?? 1;
+
+        if ($pagination->getAfter() || $pagination->getBefore()) {
             // TODO?
             throw new UserError('This list does not support cursor pagination.');
+        }
+
+        try {
+            $pager->setCurrentPage($page);
+        } catch (OutOfRangeCurrentPageException $exception) {
+            $pager->setCurrentPage($pager->getNbPages());
         }
 
         $connection->setPages($pager->getNbPages());
