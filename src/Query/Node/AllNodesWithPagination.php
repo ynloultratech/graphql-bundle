@@ -40,6 +40,7 @@ use Ynlo\GraphQLBundle\Pagination\PaginationRequest;
 use Ynlo\GraphQLBundle\SearchBy\Common\SearchByDoctrineColumn;
 use Ynlo\GraphQLBundle\SearchBy\SearchByContext;
 use Ynlo\GraphQLBundle\SearchBy\SearchByInterface;
+use Ynlo\GraphQLBundle\Util\ElasticUtil;
 use Ynlo\GraphQLBundle\Util\FieldOptionsHelper;
 
 /**
@@ -258,7 +259,7 @@ class AllNodesWithPagination extends AllNodes
             $searchTerms = explode(' ', $search);
             foreach ($searchTerms as $term) {
                 if ($term) {
-                    $matchAll = new Query\QueryString(sprintf("*%s*", $term));
+                    $matchAll = new Query\QueryString(ElasticUtil::escapeReservedChars(sprintf("*%s*", $term)));
                     $qb->addMust($matchAll);
                 }
             }

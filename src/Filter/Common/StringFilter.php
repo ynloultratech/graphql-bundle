@@ -24,6 +24,7 @@ use Ynlo\GraphQLBundle\Filter\FilterContext;
 use Ynlo\GraphQLBundle\Filter\FilterInterface;
 use Ynlo\GraphQLBundle\Model\Filter\StringComparisonExpression;
 use Ynlo\GraphQLBundle\Type\StringComparisonOperatorType;
+use Ynlo\GraphQLBundle\Util\ElasticUtil;
 
 /**
  * string filter to compare strings and filter by them
@@ -68,19 +69,19 @@ class StringFilter implements FilterInterface
                 if (!empty($condition->getValues())) {
                     $bool = new BoolQuery();
                     foreach ($condition->getValues() as $value) {
-                        $columnQuery = new Wildcard($column, sprintf('*%s*', $value));
+                        $columnQuery = new Wildcard($column, sprintf('*%s*', ElasticUtil::escapeReservedChars($value)));
                         $bool->addShould($columnQuery);
                     }
                     $query->addMust($bool);
 
                 } else {
-                    $columnQuery = new Wildcard($column, sprintf('*%s*', $condition->getValue()));
+                    $columnQuery = new Wildcard($column, sprintf('*%s*', ElasticUtil::escapeReservedChars($condition->getValue())));
                     $query->addMust($columnQuery);
                 }
                 break;
             case StringComparisonOperatorType::EQUAL:
                 $columnQuery = new MatchPhrase();
-                $columnQuery->setField($column, $condition->getValue());
+                $columnQuery->setField($column, ElasticUtil::escapeReservedChars($condition->getValue()));
                 $query->addMust($columnQuery);
                 break;
             case StringComparisonOperatorType::STARTS_WITH:
