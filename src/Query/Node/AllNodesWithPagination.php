@@ -259,7 +259,7 @@ class AllNodesWithPagination extends AllNodes
             $searchTerms = explode(' ', $search);
             foreach ($searchTerms as $term) {
                 if ($term) {
-                    $matchAll = new Query\QueryString(ElasticUtil::escapeReservedChars(sprintf("*%s*", $term)));
+                    $matchAll = new Query\QueryString(sprintf("*%s*", ElasticUtil::escapeReservedChars($term)));
                     $qb->addMust($matchAll);
                 }
             }
