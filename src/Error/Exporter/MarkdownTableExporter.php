@@ -45,9 +45,9 @@ class MarkdownTableExporter implements ErrorListExporterInterface
         $table = new Table($output);
 
         $styleGuide = new TableStyle();
-        $styleGuide->setHorizontalBorderChar('')
-                   ->setVerticalBorderChar('|')
-                   ->setCrossingChar(' ')
+        $styleGuide->setHorizontalBorderChars('')
+                   ->setVerticalBorderChars('|')
+                   ->setDefaultCrossingChar(' ')
                    ->setCellHeaderFormat('%s');
 
         $table->setStyle($styleGuide);
