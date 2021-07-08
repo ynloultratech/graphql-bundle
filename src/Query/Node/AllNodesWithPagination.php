@@ -15,7 +15,6 @@ use Doctrine\ORM\Mapping\MappingException;
 use Doctrine\ORM\Query\Expr\Orx;
 use Doctrine\ORM\QueryBuilder;
 use Elastica\Query;
-use Elastica\Query\AbstractQuery;
 use Elastica\Query\BoolQuery;
 use GraphQL\Error\Error;
 use Ynlo\GraphQLBundle\Definition\EnumDefinition;
@@ -255,23 +254,42 @@ class AllNodesWithPagination extends AllNodes
      */
     protected function search($qb, string $search): void
     {
+        $query = $this->queryDefinition;
+        $node = $this->objectDefinition;
+        $searchFields = FieldOptionsHelper::normalize($query->getMeta('pagination')['search_fields'] ?? ['*']);
+
         if ($qb instanceof BoolQuery) {
-            $searchTerms = explode(' ', $search);
+            $search = trim($search);
+
+            // force exact match using "search value"
+            if (preg_match('/^\".+\"$/', $search)) {
+                $searchTerms = [$search];
+            } else {
+                $searchTerms = explode(' ', $search);
+            }
+
             foreach ($searchTerms as $term) {
                 if ($term) {
-                    $matchAll = new Query\QueryString(sprintf("*%s*", ElasticUtil::escapeReservedChars($term)));
-                    $qb->addMust($matchAll);
+                    $boolQuery = new BoolQuery();
+                    foreach ($searchFields as $searchField => $mode) {
+                        // allow force exact match using "search value"
+                        if ($mode === SearchByInterface::EXACT_MATCH || preg_match('/^\".+\"$/', $term)) {
+                            $matchAll = new Query\QueryString(sprintf("%s", ElasticUtil::escapeReservedChars(preg_replace('/^\"(.+)\"$/', '$1', $term))));
+                        } else {
+                            $matchAll = new Query\QueryString(sprintf("*%s*", ElasticUtil::escapeReservedChars($term)));
+                        }
+
+                        $matchAll->setFields([$searchField]);
+                        $boolQuery->addShould($matchAll);
+                    }
+                    $qb->addMust($boolQuery);
                 }
             }
         } else {
-            $query = $this->queryDefinition;
-            $node = $this->objectDefinition;
-
             $em = $this->getManager();
             $metadata = $em->getClassMetadata($this->entity);
 
             $columns = [];
-            $searchFields = FieldOptionsHelper::normalize($query->getMeta('pagination')['search_fields'] ?? ['*']);
             foreach ($node->getFields() as $field) {
                 if (!FieldOptionsHelper::isEnabled($searchFields, $field->getName())) {
                     continue;
