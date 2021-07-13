@@ -254,9 +254,8 @@ class AllNodesWithPagination extends AllNodes
      */
     protected function search($qb, string $search): void
     {
-        $query = $this->queryDefinition;
         $node = $this->objectDefinition;
-        $searchFields = FieldOptionsHelper::normalize($query->getMeta('pagination')['search_fields'] ?? ['*']);
+        $searchFields = $this->getSearchFields();
 
         if ($qb instanceof BoolQuery) {
             $search = trim($search);
@@ -360,6 +359,11 @@ class AllNodesWithPagination extends AllNodes
                 $qb->andWhere($orx);
             }
         }
+    }
+
+    protected function getSearchFields(): array
+    {
+        return FieldOptionsHelper::normalize($this->queryDefinition->getMeta('pagination')['search_fields'] ?? ['*']);
     }
 
     /**
