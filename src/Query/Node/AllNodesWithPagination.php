@@ -273,7 +273,7 @@ class AllNodesWithPagination extends AllNodes
                     foreach ($searchFields as $searchField => $mode) {
                         // allow force exact match using "search value"
                         if ($mode === SearchByInterface::EXACT_MATCH || preg_match('/^\".+\"$/', $term)) {
-                            $matchAll = new Query\QueryString(sprintf("%s", ElasticUtil::escapeReservedChars(preg_replace('/^\"(.+)\"$/', '$1', $term))));
+                            $matchAll = new Query\QueryString(sprintf("\"%s\"", ElasticUtil::escapeReservedChars(preg_replace('/^\"(.+)\"$/', '$1', $term))));
                         } else {
                             $matchAll = new Query\QueryString(sprintf("*%s*", ElasticUtil::escapeReservedChars($term)));
                         }
