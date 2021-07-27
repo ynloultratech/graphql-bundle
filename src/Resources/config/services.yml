@@ -69,6 +69,8 @@ services:
             - !tagged graphql.definition_loader
             - !tagged graphql.definition_plugin
             - '%graphql.endpoints%'
+        calls:
+            - [setContainer, ['@service_container']]
 
     Ynlo\GraphQLBundle\Definition\Loader\AnnotationLoader:
         public: true

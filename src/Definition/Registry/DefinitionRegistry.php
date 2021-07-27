@@ -13,6 +13,8 @@ namespace Ynlo\GraphQLBundle\Definition\Registry;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\Exception\InvalidConfigurationException;
 use Symfony\Component\Config\Definition\Processor;
+use Symfony\Component\DependencyInjection\ContainerAwareInterface;
+use Symfony\Component\DependencyInjection\ContainerAwareTrait;
 use Symfony\Contracts\Cache\CacheInterface;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\FieldsAwareDefinitionInterface;
@@ -20,12 +22,15 @@ use Ynlo\GraphQLBundle\Definition\Loader\DefinitionLoaderInterface;
 use Ynlo\GraphQLBundle\Definition\MetaAwareInterface;
 use Ynlo\GraphQLBundle\Definition\Plugin\DefinitionPluginInterface;
 use Ynlo\GraphQLBundle\Extension\EndpointNotValidException;
+use Ynlo\GraphQLBundle\Type\Registry\TypeRegistry;
 
 /**
  * DefinitionRegistry
  */
-class DefinitionRegistry
+class DefinitionRegistry implements ContainerAwareInterface
 {
+    use ContainerAwareTrait;
+
     /**
      * This endpoint is used as default endpoint
      */
@@ -173,6 +178,8 @@ class DefinitionRegistry
      */
     protected function compile(Endpoint $endpoint): void
     {
+        TypeRegistry::setUp($this->container, $endpoint);
+
         //run all extensions for each definition
         foreach ($this->plugins as $plugin) {
             //run extensions recursively in all types and fields
