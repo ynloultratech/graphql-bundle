@@ -13,6 +13,7 @@ namespace Ynlo\GraphQLBundle\Tests\Definition\Registry;
 use Mockery\Adapter\Phpunit\MockeryTestCase;
 use Mockery\Mock;
 use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Contracts\Cache\CacheInterface;
 use Ynlo\GraphQLBundle\Definition\DefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\FieldDefinition;
@@ -142,6 +143,10 @@ class DefinitionRegistryTest extends MockeryTestCase
                 ],
             ]
         );
+
+        $container = \Mockery::mock(ContainerInterface::class);
+        $registry->setContainer($container);
+
         $registry->clearCache();
         $endpoint = $registry->getEndpoint('admin');
 
