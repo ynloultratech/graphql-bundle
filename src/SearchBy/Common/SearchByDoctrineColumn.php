@@ -23,12 +23,21 @@ class SearchByDoctrineColumn implements SearchByInterface
      */
     public function __invoke(SearchByContext $context, QueryBuilder $qb, Orx $orx, $alias, string $column, string $mode, string $search)
     {
+        $entity = $qb->getRootEntities()[0];
         while (strpos($column, '.') !== false) {
             [$child, $column] = explode('.', $column, 2);
             $parentAlias = $alias;
-            $alias = 'searchJoin'.ucfirst($child).mt_rand();
-            if (!\in_array($alias, $qb->getAllAliases(), true)) {
-                $qb->leftJoin("{$parentAlias}.{$child}", $alias);
+
+            $metadata = $qb->getEntityManager()->getClassMetadata($entity);
+            try {
+                $entity = $metadata->getAssociationMapping($child)['targetEntity'] ?? $entity;
+                $alias = 'searchJoin'.ucfirst($child).mt_rand();
+                if (!\in_array($alias, $qb->getAllAliases(), true)) {
+                    $qb->leftJoin("{$parentAlias}.{$child}", $alias);
+                }
+            } catch (\Exception $exception) {
+                $column = "{$child}.{$column}";
+                break;
             }
         }
 
