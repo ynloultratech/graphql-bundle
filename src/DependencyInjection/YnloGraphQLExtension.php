@@ -196,8 +196,6 @@ class YnloGraphQLExtension extends Extension
             $manager = $config['security']['user']['manager'] ?? null;
             if (!$manager || $manager !== UserManager::class) {
                 $container->removeDefinition(UserManager::class);
-                $container->removeDefinition(UserListener::class);
-                $container->removeDefinition(LastLoginListener::class);
             }
 
         } else {
