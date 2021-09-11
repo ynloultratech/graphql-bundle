@@ -29,6 +29,7 @@ use Ynlo\GraphQLBundle\Encoder\IDEncoderManager;
 use Ynlo\GraphQLBundle\GraphiQL\JWTGraphiQLAuthentication;
 use Ynlo\GraphQLBundle\GraphiQL\LexikJWTGraphiQLAuthenticator;
 use Ynlo\GraphQLBundle\Request\SubscriptionsRequestMiddleware;
+use Ynlo\GraphQLBundle\Security\User\LastLoginListener;
 use Ynlo\GraphQLBundle\Security\User\UserProvider;
 use Ynlo\GraphQLBundle\Subscription\Bucket\LocalSubscriptionBucket;
 use Ynlo\GraphQLBundle\Subscription\Bucket\RedisSubscriptionBucket;
@@ -196,12 +197,14 @@ class YnloGraphQLExtension extends Extension
             if (!$manager || $manager !== UserManager::class) {
                 $container->removeDefinition(UserManager::class);
                 $container->removeDefinition(UserListener::class);
+                $container->removeDefinition(LastLoginListener::class);
             }
 
         } else {
             $container->removeDefinition(UserProvider::class);
             $container->removeDefinition(UserManager::class);
             $container->removeDefinition(UserListener::class);
+            $container->removeDefinition(LastLoginListener::class);
         }
     }
 
