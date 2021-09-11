@@ -17,7 +17,7 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Base class for API user
  */
-class User implements UserInterface, NodeInterface
+abstract class User implements UserInterface, NodeInterface
 {
     /**
      * @var mixed
@@ -128,7 +128,12 @@ class User implements UserInterface, NodeInterface
      */
     public function __toString()
     {
-        return (string) $this->getUsername();
+        return (string) $this->getUserIdentifier();
+    }
+
+    public function getUserIdentifier()
+    {
+        return $this->getUsernameCanonical();
     }
 
     /**
