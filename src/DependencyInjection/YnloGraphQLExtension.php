@@ -22,6 +22,7 @@ use Symfony\Component\Messenger\MessageBusInterface;
 use Ynlo\GraphQLBundle\Cache\DefinitionCacheWarmer;
 use Ynlo\GraphQLBundle\Command\MercureHubCommand;
 use Ynlo\GraphQLBundle\Controller\GraphQLEndpointController;
+use Ynlo\GraphQLBundle\Doctrine\UserListener;
 use Ynlo\GraphQLBundle\Doctrine\UserManager;
 use Ynlo\GraphQLBundle\Elastic\ElasticRepositoryManager;
 use Ynlo\GraphQLBundle\Encoder\IDEncoderManager;
@@ -181,7 +182,7 @@ class YnloGraphQLExtension extends Extension
             $container->removeDefinition(RedisSubscriptionBucket::class);
         }
 
-        if (!$elastic = $config['pagination']['elastic'] ?? false){
+        if (!$elastic = $config['pagination']['elastic'] ?? false) {
             $container->removeDefinition(ElasticRepositoryManager::class);
         }
 
@@ -194,11 +195,13 @@ class YnloGraphQLExtension extends Extension
             $manager = $config['security']['user']['manager'] ?? null;
             if (!$manager || $manager !== UserManager::class) {
                 $container->removeDefinition(UserManager::class);
+                $container->removeDefinition(UserListener::class);
             }
 
         } else {
             $container->removeDefinition(UserProvider::class);
             $container->removeDefinition(UserManager::class);
+            $container->removeDefinition(UserListener::class);
         }
     }
 
