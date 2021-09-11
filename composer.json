@@ -36,6 +36,7 @@
         "symfony/templating": "^4.4 | ^5.0",
         "symfony/expression-language": "^4.4 | ^5.0",
         "symfony/process": "^4.4 | ^5.0",
+        "symfony/messenger": "^5.2",
         "doctrine/inflector": "^1.0 | ^2.0",
         "doctrine/orm": "^2.8",
         "doctrine/doctrine-bundle": "^2.1",
@@ -62,7 +63,6 @@
         "escapestudios/symfony2-coding-standard": "3.x-dev",
         "behat/behat": "^3.4",
         "symfony/mercure-bundle": "^0.2.0",
-        "symfony/messenger": "^5.2",
         "friendsofsymfony/elastica-bundle": "dev-master"
     },
     "suggest": {
