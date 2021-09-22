@@ -73,7 +73,6 @@ class RedisSubscriptionBucket implements SubscriptionBucketInterface
             if ($pass) {
                 $this->client->auth($pass);
             }
-            $this->client->connect($host, $port);
             $this->client->setOption(\Redis::OPT_PREFIX, $this->prefix);
         }
 
