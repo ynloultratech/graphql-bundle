@@ -55,7 +55,25 @@ class RedisSubscriptionBucket implements SubscriptionBucketInterface
     {
         if (!$this->client) {
             $this->client = new \Redis();
-            $this->client->connect($this->redisHost, $this->redisPort);
+            $host = $this->redisHost;
+            $port = $this->redisPort;
+            $pass = null;
+            if (strpos($host, ':')) {
+                $url = parse_url($host);
+                $host = $url['host'] ?? null;
+                $port = $url['port'] ?? null;
+                $pass = $url['pass'] ?? null;
+                $scheme = $url['scheme'] ?? null;
+                if ($scheme === 'rediss') {
+                    $host = 'tls://'.$host;
+                }
+            }
+
+            $this->client->connect($host, $port);
+            if ($pass) {
+                $this->client->auth($pass);
+            }
+            $this->client->connect($host, $port);
             $this->client->setOption(\Redis::OPT_PREFIX, $this->prefix);
         }
 
