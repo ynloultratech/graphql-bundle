@@ -28,17 +28,14 @@ abstract class AbstractResolver implements ResolverInterface, ExtensionsAwareInt
 {
     use ContainerAwareTrait;
 
-    /**
-     * @var ResolverContext
-     */
-    protected $context;
+    protected ?ResolverContext $context = null;
 
     /**
      * @var ExtensionInterface[]
      */
     protected $extensions = [];
 
-    protected ResolverServices $services;
+    protected ?ResolverServices $services = null;
 
     /**
      * {@inheritDoc}
