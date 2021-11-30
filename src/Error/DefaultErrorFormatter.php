@@ -19,6 +19,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\HttpException;
 use Ynlo\GraphQLBundle\Exception\Controlled\ValidationError;
 use Ynlo\GraphQLBundle\Exception\ControlledErrorInterface;
+use Ynlo\GraphQLBundle\Exception\ControlledErrorWithPropertiesInterface;
 use Ynlo\GraphQLBundle\Util\Uuid;
 
 class DefaultErrorFormatter implements ErrorFormatterInterface
@@ -64,8 +65,12 @@ class DefaultErrorFormatter implements ErrorFormatterInterface
                 $formattedError['debugMessage'] = $originError->getMessage() ?: $formattedError['message'];
             }
 
-            if ($originError instanceof ValidationError) {
-                $formattedError['constraintViolations'] = $originError->getViolationsArray();
+            if ($originError instanceof ControlledErrorWithPropertiesInterface) {
+                foreach ($originError->getProperties() as $name => $value) {
+                    if (!in_array($name, ['message', 'debugMessage', 'code', 'tracking_id'])) {
+                        $formattedError[$name] = $value;
+                    }
+                }
             }
 
             $trackingId = Uuid::createFromData(

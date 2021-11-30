@@ -12,10 +12,11 @@ namespace Ynlo\GraphQLBundle\Exception\Controlled;
 
 use Symfony\Component\HttpFoundation\Response;
 use Ynlo\GraphQLBundle\Exception\ControlledError;
+use Ynlo\GraphQLBundle\Exception\ControlledErrorWithPropertiesInterface;
 use Ynlo\GraphQLBundle\Model\ConstraintViolation;
 use Ynlo\GraphQLBundle\Validator\ConstraintViolationList;
 
-class ValidationError extends ControlledError
+class ValidationError extends ControlledError implements ControlledErrorWithPropertiesInterface
 {
     protected $code = Response::HTTP_UNPROCESSABLE_ENTITY;
 
@@ -40,10 +41,7 @@ class ValidationError extends ControlledError
         parent::__construct();
     }
 
-    /**
-     * @return array
-     */
-    public function getViolationsArray()
+    public function getProperties(): array
     {
         $violations = [];
         /** @var ConstraintViolation $v */
@@ -51,6 +49,8 @@ class ValidationError extends ControlledError
             $violations[] = $v->toArray();
         }
 
-        return $violations;
+        return [
+            'constraintViolations' => $violations,
+        ];
     }
 }
