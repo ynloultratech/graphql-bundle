@@ -125,7 +125,7 @@ class DefinitionRegistry implements ContainerAwareInterface
      */
     public function clearCache($warmUp = false)
     {
-        $this->cache->delete('default.raw');
+        $this->cache->delete('default_raw');
         foreach ($this->endpointsConfig as $name => $config) {
             unset(self::$endpoints[$name]);
             $this->cache->delete($name);
@@ -143,7 +143,7 @@ class DefinitionRegistry implements ContainerAwareInterface
     protected function initialize(string $name): Endpoint
     {
         $rawDefault = $this->cache->get(
-            'default.raw',
+            'default_raw',
             function () {
                 $rawDefault = new Endpoint(self::DEFAULT_ENDPOINT);
 
