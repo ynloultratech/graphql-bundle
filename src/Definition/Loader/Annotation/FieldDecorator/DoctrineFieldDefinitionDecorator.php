@@ -122,7 +122,7 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
      *
      * @return string
      */
-    protected function getGraphQLType(?string $type):?string
+    protected function getGraphQLType(?string $type): ?string
     {
         switch ($type) {
             case DBALTypes::BOOLEAN:
@@ -144,8 +144,9 @@ class DoctrineFieldDefinitionDecorator implements FieldDefinitionDecoratorInterf
                 break;
             case DBALTypes::ARRAY:
             case DBALTypes::SIMPLE_ARRAY:
-            case DBALTypes::JSON_ARRAY:
             case DBALTypes::JSON:
+            /** @deprecated json_array type is deprecated, use {@see self::JSON} instead. */
+            case 'json_array':
                 $type = Types::nonNull(Types::listOf(Types::STRING));
                 break;
             case DBALTypes::TIME_MUTABLE:
