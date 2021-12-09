@@ -133,7 +133,7 @@ class AllNodesWithPagination extends AllNodes
     {
         $pagination = $this->getContext()->getDefinition()->getMeta('pagination');
 
-        return $pagination['elastic'] && $this->container->has(ElasticRepositoryManager::class) ?? false;
+        return ($pagination['elastic'] ?? null) && $this->container->has(ElasticRepositoryManager::class) ?? false;
     }
 
     protected function createPaginator($query): CursorPaginatorInterface
