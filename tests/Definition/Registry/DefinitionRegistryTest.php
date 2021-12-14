@@ -121,7 +121,7 @@ class DefinitionRegistryTest extends MockeryTestCase
 
         $cache = \Mockery::mock(CacheInterface::class);
 
-        $cache->expects('delete')->with('default.raw');
+        $cache->expects('delete')->with('default_raw');
         $cache->expects('delete')->with('default');
         $cache->expects('delete')->with('admin');
         $cache->expects('delete')->with('frontend');
