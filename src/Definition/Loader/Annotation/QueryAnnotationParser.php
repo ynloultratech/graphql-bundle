@@ -65,7 +65,7 @@ class QueryAnnotationParser implements AnnotationParserInterface
         $endpoint->addQuery($query);
 
         if ($annotation->type) {
-            $type = TypeUtil::normalize($annotation->type);
+            $type = TypeUtil::normalize($annotation->type, $endpoint);
             if (class_exists($annotation->type)) {
                 $type = $endpoint->getTypeForClass($annotation->type);
             }

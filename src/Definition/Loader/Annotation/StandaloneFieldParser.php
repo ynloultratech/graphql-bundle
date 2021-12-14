@@ -75,7 +75,7 @@ class StandaloneFieldParser extends QueryAnnotationParser
             }
         }
 
-        $field->setType(TypeUtil::normalize($annotation->type));
+        $field->setType(TypeUtil::normalize($annotation->type, $endpoint));
         $field->setList(TypeUtil::isTypeList($annotation->type));
         $field->setNonNull(TypeUtil::isTypeNonNull($annotation->type));
         $field->setNonNullList(TypeUtil::isTypeNonNullList($annotation->type));

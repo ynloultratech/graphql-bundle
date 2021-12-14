@@ -2,6 +2,7 @@ v2.0.0 - (Unreleased)
 
 * Drop Symfony 3.4 support
 * Added Symfony 5.0 support
+* Added support for union types using `UnionName<Type1|Type2>`
 * **[DEPRECATED]** Doctrine `json_array` has been deprecated use `json` instead
 * **[BC BREAK]** Removed the `has_role()` function from security expressions, use `is_granted()` instead.
 * **[BC BREAK]** Fixture load now use `Doctrine\Persistence\ObjectManager` instead of `Doctrine\Common\Persistence\ObjectManager` has first argument

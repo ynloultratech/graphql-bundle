@@ -149,7 +149,7 @@ class EndpointsDefinitionPlugin extends AbstractDefinitionPlugin
                 }
             }
 
-            if ($type instanceof UnionDefinition) {
+            if (($type instanceof UnionDefinition) && !empty($type->getTypes())) {
                 foreach ($type->getTypes() as $subType) {
                     //remove union sub-type related to forbidden type
                     $fieldType = $endpoint->hasType($subType->getType()) ? $endpoint->getType($subType->getType()) : null;
@@ -161,7 +161,7 @@ class EndpointsDefinitionPlugin extends AbstractDefinitionPlugin
                 //after delete sub-types related to forbidden objects,
                 //verify if the union has at least one sub-type
                 //otherwise mark this type as forbidden
-                if (!$type->getTypes()) {
+                if (empty($type->getTypes())) {
                     $forbiddenTypes[] = $type->getName();
                     $this->processForbiddenTypes($endpoint, $forbiddenTypes);
                 }

@@ -11,12 +11,13 @@
 namespace Ynlo\GraphQLBundle\Util;
 
 use Doctrine\Common\Util\ClassUtils as DoctrineClassUtils;
-use Doctrine\Inflector\InflectorFactory;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Ynlo\GraphQLBundle\Definition\ClassAwareDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\InterfaceDefinition;
 use Ynlo\GraphQLBundle\Definition\PolymorphicDefinitionInterface;
 use Ynlo\GraphQLBundle\Definition\Registry\Endpoint;
+use Ynlo\GraphQLBundle\Definition\UnionDefinition;
+use Ynlo\GraphQLBundle\Definition\UnionTypeDefinition;
 use Ynlo\GraphQLBundle\Model\PolymorphicObjectInterface;
 use Ynlo\GraphQLBundle\Type\Types;
 
@@ -143,12 +144,33 @@ final class TypeUtil
     }
 
     /**
-     * @param string $type
+     * @param string   $type
+     * @param Endpoint $endpoint
      *
      * @return string
      */
-    public static function normalize($type)
+    public static function normalize($type, ?Endpoint $endpoint = null)
     {
+        //convert Union statement (UnionName<Type1|Type2>") into type
+        if (preg_match('/(\w+)<([^>]+)/', $type, $matches)) {
+            if ($endpoint) {
+                $type = $matches[1];
+                $types = explode('|', $matches[2]);
+
+                $customUnion = new UnionDefinition();
+                $customUnion->setName($type);
+                foreach ($types as $subType) {
+                    $customUnion->addType(new UnionTypeDefinition($subType));
+                }
+
+                if (!$endpoint->hasType($type)) {
+                    $endpoint->add($customUnion);
+                }
+            } else {
+                throw new \LogicException(sprintf('Error parsing union type "%s" at this point.', $type));
+            }
+        }
+
         if (preg_match('/^\[?([\\\\\w]*)!?\]?!?$/', $type, $matches)) {
             $type = $matches[1];
         }
