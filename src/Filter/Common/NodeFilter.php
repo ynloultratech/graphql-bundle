@@ -12,15 +12,13 @@ namespace Ynlo\GraphQLBundle\Filter\Common;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping\ClassMetadataInfo;
+use Doctrine\ORM\Query\Expr\Orx;
 use Doctrine\ORM\QueryBuilder;
 use Elastica\Query\BoolQuery;
 use Elastica\Query\Exists;
-use Elastica\Query\HasChild;
-use Elastica\Query\QueryString;
 use Elastica\Query\Term;
 use Ynlo\GraphQLBundle\Filter\FilterContext;
 use Ynlo\GraphQLBundle\Filter\FilterInterface;
-use Ynlo\GraphQLBundle\Model\Filter\EnumComparisonExpression;
 use Ynlo\GraphQLBundle\Model\Filter\NodeComparisonExpression;
 use Ynlo\GraphQLBundle\Model\NodeInterface;
 use Ynlo\GraphQLBundle\Type\NodeComparisonOperatorType;
@@ -110,7 +108,10 @@ class NodeFilter implements FilterInterface
                     if (empty($ids)) {
                         $qb->andWhere($qb->expr()->isNotNull("{$alias}.{$column}"));
                     } else {
-                        $qb->andWhere($qb->expr()->notIn("{$alias}.{$column}", $ids));
+                        $orx = new Orx();
+                        $orx->add($qb->expr()->notIn("{$alias}.{$column}", $ids));
+                        $orx->add($qb->expr()->isNull("{$alias}.{$column}"));
+                        $qb->andWhere($orx);
                     }
                 }
                 break;
