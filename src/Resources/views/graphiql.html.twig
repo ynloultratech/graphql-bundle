@@ -120,6 +120,7 @@
                 background-position: 50px 50px;
             }
         }
+
         {% block inline_styles %}
 
 
@@ -167,7 +168,7 @@
                                 alert('To subscribe to ' +
                                     'subscriptions must select all fields in SubscriptionLink:\n\n' +
                                     '... on SubscriptionLink {\n' +
-                                    '        url\n'+
+                                    '        url\n' +
                                     '   }')
                             }
                         }
@@ -205,12 +206,12 @@
             Subscriptions[id] = eventSource;
             eventSource.onmessage = function (e) {
                 var response = subscription.find('.response');
-                if (response.is(':visible')){
-                    response.addClass('animated shake').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+                if (response.is(':visible')) {
+                    response.addClass('animated shake').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
                         response.removeClass('animated shake');
                     });
-                }else{
-                    response.addClass('animated bounceIn').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function(){
+                } else {
+                    response.addClass('animated bounceIn').one('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
                         response.removeClass('animated bounceIn');
                     });
                 }
@@ -298,10 +299,10 @@
         history.replaceState(null, null, newSearch);
     }
 
-    function graphQLFetcher(graphQLParams) {
+    function graphQLFetcher(graphQLParams, {headers}) {
         return fetch('{{ url }}', {
             method: '{{ method }}',
-            headers: {{ headers|json_encode|raw }},
+            headers: headers,
             body: JSON.stringify(graphQLParams)
         }).then(function (response) {
             return response.text();
@@ -328,6 +329,7 @@
             onEditVariables: onEditVariables,
             onEditOperationName: onEditOperationName,
             defaultQuery: '{{ defaultQuery|raw }}',
+            headers: JSON.stringify({{ headers|json_encode(128)|raw }}, undefined, 4),
             children: children
         }),
         document.getElementById('graphiql')
