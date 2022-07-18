@@ -200,7 +200,7 @@ final class AssertContext implements Context
      */
     public function shouldContains($haystack, $needle)
     {
-        Assert::assertContains($needle, $haystack);
+        Assert::assertContains((string) $needle, $haystack);
     }
 
     /**
@@ -212,7 +212,7 @@ final class AssertContext implements Context
      */
     public function shouldNotContains($haystack, $needle)
     {
-        Assert::assertNotContains($needle, $haystack);
+        Assert::assertNotContains((string) $needle, $haystack);
     }
 
     /**
