@@ -62,6 +62,40 @@ final class DoctrineContext implements Context, ClientAwareInterface, StorageAwa
     }
 
     /**
+     * Use a YAML syntax to update a repository data
+     *
+     * Example: Given the following updates in the repository "App\Entity\Post"
+     *          """
+     *          - where:
+     *              title: 'Lorem ipsum'
+     *          - then:
+     *              published: false
+     *          """
+     *
+     * @Given /^the following updates in the repository "([^"]*)"$/
+     */
+    public function theFollowingUpdatesInTheRepository($entity, YamlStringNode $update)
+    {
+        $update = $update->toArray();
+        $where = $update['where'] ?? null;
+        $then = $update['then'] ?? null;
+        if (!$where || !$then) {
+            throw new \Exception('Missing `where` or `then` in update definition');
+        }
+
+        $manager = $this->getDoctrine()->getManager();
+        $records = $manager->getRepository($entity)->findBy($where);
+
+        $accessor = new PropertyAccessor();
+        foreach ($records as $record) {
+            foreach ($then as $prop => $value) {
+                $accessor->setValue($record, $prop, $value);
+            }
+        }
+        $manager->flush();
+    }
+
+    /**
      * Use a YAML syntax to create a criteria to match a record in given repository
      *
      * Example: Then should exist in repository "AppBundle:Post" a record matching:
