@@ -16,6 +16,7 @@ use Doctrine\Persistence\ObjectRepository;
 use Doctrine\ORM\EntityRepository;
 use PHPUnit\Framework\Assert;
 use Symfony\Component\HttpKernel\KernelInterface;
+use Symfony\Component\PropertyAccess\Exception\NoSuchPropertyException;
 use Symfony\Component\PropertyAccess\PropertyAccessor;
 use Ynlo\GraphQLBundle\Behat\Client\ClientAwareInterface;
 use Ynlo\GraphQLBundle\Behat\Client\ClientAwareTrait;
@@ -51,9 +52,21 @@ final class DoctrineContext implements Context, ClientAwareInterface, StorageAwa
         $manager = $this->getDoctrine()->getManager();
         $accessor = new PropertyAccessor();
         foreach ($records->toArray() as $record) {
-            $instance = new $entity();
+            $ref = new \ReflectionClass($entity);
+            $instance = $ref->newInstanceWithoutConstructor();
             foreach ($record as $prop => $value) {
-                $accessor->setValue($instance, $prop, $value);
+                try {
+                    $accessor->setValue($instance, $prop, $value);
+                } catch (NoSuchPropertyException $e) {
+                    if ($ref->hasProperty($prop)) {
+                        $prop = $ref->getProperty($prop);
+                        $prop->setAccessible(true);
+                        $prop->setValue($instance, $value);
+                    } else {
+                        throw $e;
+                    }
+
+                }
             }
 
             $manager->persist($instance);
