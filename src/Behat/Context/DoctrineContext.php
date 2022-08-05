@@ -53,7 +53,11 @@ final class DoctrineContext implements Context, ClientAwareInterface, StorageAwa
         $accessor = new PropertyAccessor();
         foreach ($records->toArray() as $record) {
             $ref = new \ReflectionClass($entity);
-            $instance = $ref->newInstanceWithoutConstructor();
+            try {
+                $instance = new $entity();
+            } catch (\Error $e) {
+                $instance = $ref->newInstanceWithoutConstructor();
+            }
             foreach ($record as $prop => $value) {
                 try {
                     $accessor->setValue($instance, $prop, $value);
