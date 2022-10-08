@@ -25,15 +25,15 @@ class DateProvider implements ExpressionPreprocessorInterface
         if (preg_match('/date\(/', $expression)) {
             $el->register(
                 'date',
-                function ($expression) {
+                function ($expression = 'now') {
                     return sprintf('$date(%s)', $expression);
                 },
-                function (array $variables, $expression) {
+                function (array $variables, $expression = 'now') {
                     return $variables['date']($expression);
                 }
             );
 
-            $values['date'] = function ($expression) {
+            $values['date'] = function ($expression = 'now') {
                 return new \DateTime($expression);
             };
         }
