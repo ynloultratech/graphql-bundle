@@ -16,11 +16,15 @@ services:
       - { name: 'graphql.expression_preprocessor' }
 
   Ynlo\GraphQLBundle\Behat\Transformer\ExpressionLanguage\ClientVariablesValueProvider:
-    arguments: ['@Ynlo\GraphQLBundle\Behat\Client\GraphQLClient']
+    arguments: [ '@Ynlo\GraphQLBundle\Behat\Client\GraphQLClient' ]
     tags:
       - { name: 'graphql.expression_preprocessor' }
 
   Ynlo\GraphQLBundle\Behat\Transformer\ExpressionLanguage\FakerProvider:
+    tags:
+      - { name: 'graphql.expression_preprocessor' }
+
+  Ynlo\GraphQLBundle\Behat\Transformer\ExpressionLanguage\DateProvider:
     tags:
       - { name: 'graphql.expression_preprocessor' }
 
