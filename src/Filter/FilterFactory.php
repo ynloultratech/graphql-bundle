@@ -93,7 +93,7 @@ class FilterFactory
                 $field->setName($filter->name);
                 $field->setDescription($filter->description);
                 $field->setDeprecationReason($filter->deprecationReason);
-                $field->setType(TypeUtil::normalize($filter->type));
+                $field->setType(TypeUtil::normalize($filter->type, $endpoint));
                 $field->setList(TypeUtil::isTypeList($filter->type));
                 $field->setNonNullList(TypeUtil::isTypeNonNullList($filter->type));
                 $field->setResolver($filter->resolver);

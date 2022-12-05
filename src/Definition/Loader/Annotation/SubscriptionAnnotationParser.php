@@ -61,7 +61,7 @@ class SubscriptionAnnotationParser extends QueryAnnotationParser
         }
 
         $subscription = new SubscriptionDefinition();
-        $subscription->setType(TypeUtil::normalize($annotation->payload));
+        $subscription->setType(TypeUtil::normalize($annotation->payload, $endpoint));
 
         if ($annotation->name) {
             $subscription->setName($annotation->name);
@@ -119,7 +119,7 @@ class SubscriptionAnnotationParser extends QueryAnnotationParser
         $subscriptionResponse->addType(new UnionTypeDefinition($subscriptionEvent->getName()));
         $subscriptionResponse->addType(new UnionTypeDefinition($endpoint->getTypeForClass(SubscriptionLink::class)));
         $endpoint->addType($subscriptionResponse);
-        $subscription->setType(TypeUtil::normalize($subscriptionResponse->getName()));
+        $subscription->setType(TypeUtil::normalize($subscriptionResponse->getName(), $endpoint));
 
         if (!$subscription->getType()) {
             $error = sprintf(

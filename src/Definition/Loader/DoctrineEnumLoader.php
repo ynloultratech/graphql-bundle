@@ -54,7 +54,7 @@ class DoctrineEnumLoader implements DefinitionLoaderInterface
             /** @var $class AbstractEnumType */
             if (is_subclass_of($class, Fresh_AbstractEnumType::class, true)) {
                 $enum = new EnumDefinition();
-                $enum->setName(TypeUtil::normalize($name));
+                $enum->setName(TypeUtil::normalize($name, $endpoint));
                 $enum->setClass($class);
                 foreach ($class::getValues() as $value) {
                     $enumValue = new EnumValueDefinition($value);

@@ -78,7 +78,7 @@ class MutationAnnotationParser extends QueryAnnotationParser
             }
         }
 
-        $mutation->setType(TypeUtil::normalize($annotation->payload));
+        $mutation->setType(TypeUtil::normalize($annotation->payload, $endpoint));
         $mutation->setList(TypeUtil::isTypeList($annotation->payload));
         $mutation->setNonNullList(TypeUtil::isTypeNonNullList($annotation->payload));
         $mutation->setNonNull(TypeUtil::isTypeNonNull($annotation->payload));

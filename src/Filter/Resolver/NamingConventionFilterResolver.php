@@ -116,7 +116,7 @@ class NamingConventionFilterResolver implements FilterResolverInterface
                         if ($filter->type) {
                             $field = new FieldDefinition();
                             $field->setName($filter->name);
-                            $field->setType(TypeUtil::normalize($filter->type));
+                            $field->setType(TypeUtil::normalize($filter->type, $endpoint));
                             $field->setNonNull(TypeUtil::isTypeNonNull($filter->type));
                             $field->setList(TypeUtil::isTypeList($filter->type));
                             $field->setNonNullList(TypeUtil::isTypeNonNullList($filter->type));

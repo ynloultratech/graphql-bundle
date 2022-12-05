@@ -16,6 +16,8 @@ use Ynlo\GraphQLBundle\Util\TypeUtil;
 
 /**
  * UnionTypeDefinition
+ *
+ * Usage: UnionName<Type1|Type2>
  */
 class UnionTypeDefinition implements TypeAwareDefinitionInterface, ClassAwareDefinitionInterface
 {
