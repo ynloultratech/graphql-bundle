@@ -16,6 +16,7 @@ use Doctrine\ORM\Query\Expr\Orx;
 use Doctrine\ORM\QueryBuilder;
 use Elastica\Query;
 use Elastica\Query\BoolQuery;
+use Elastica\Query\MatchQuery;
 use GraphQL\Error\Error;
 use Ynlo\GraphQLBundle\Definition\EnumDefinition;
 use Ynlo\GraphQLBundle\Definition\EnumValueDefinition;
@@ -271,14 +272,16 @@ class AllNodesWithPagination extends AllNodes
                 if ($term) {
                     $boolQuery = new BoolQuery();
                     foreach ($searchFields as $searchField => $mode) {
-                        // allow force exact match using "search value"
-                        if ($mode === SearchByInterface::EXACT_MATCH || preg_match('/^\".+\"$/', $term)) {
+                        if ($mode === SearchByInterface::INTEGER && (int) $term) {
+                            $matchAll = new MatchQuery($searchField, (int) $term);
+                        } else if ($mode === SearchByInterface::EXACT_MATCH || preg_match('/^\".+\"$/', $term)) {
+                            // allow force exact match using "search value"
                             $matchAll = new Query\QueryString(sprintf("\"%s\"", ElasticUtil::escapeReservedChars(preg_replace('/^\"(.+)\"$/', '$1', $term))));
+                            $matchAll->setFields([$searchField]);
                         } else {
                             $matchAll = new Query\QueryString(sprintf("*%s*", ElasticUtil::escapeReservedChars($term)));
+                            $matchAll->setFields([$searchField]);
                         }
-
-                        $matchAll->setFields([$searchField]);
                         $boolQuery->addShould($matchAll);
                     }
                     $qb->addMust($boolQuery);

@@ -17,6 +17,7 @@ interface SearchByInterface
 {
     public const PARTIAL_SEARCH = 'partial';
     public const EXACT_MATCH = 'exact';
+    public const INTEGER = 'integer';
 
     /**
      * @param SearchByContext $context
