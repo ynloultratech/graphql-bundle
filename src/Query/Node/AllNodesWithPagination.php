@@ -272,17 +272,21 @@ class AllNodesWithPagination extends AllNodes
                 if ($term) {
                     $boolQuery = new BoolQuery();
                     foreach ($searchFields as $searchField => $mode) {
-                        if ($mode === SearchByInterface::INTEGER && (int) $term) {
-                            $matchAll = new MatchQuery($searchField, (int) $term);
+                        if ($mode === SearchByInterface::INTEGER) {
+                            if ((int) $term) {
+                                $matchAll = new MatchQuery($searchField, (int) $term);
+                                $boolQuery->addShould($matchAll);
+                            }
                         } else if ($mode === SearchByInterface::EXACT_MATCH || preg_match('/^\".+\"$/', $term)) {
                             // allow force exact match using "search value"
                             $matchAll = new Query\QueryString(sprintf("\"%s\"", ElasticUtil::escapeReservedChars(preg_replace('/^\"(.+)\"$/', '$1', $term))));
                             $matchAll->setFields([$searchField]);
+                            $boolQuery->addShould($matchAll);
                         } else {
                             $matchAll = new Query\QueryString(sprintf("*%s*", ElasticUtil::escapeReservedChars($term)));
                             $matchAll->setFields([$searchField]);
+                            $boolQuery->addShould($matchAll);
                         }
-                        $boolQuery->addShould($matchAll);
                     }
                     $qb->addMust($boolQuery);
                 }
