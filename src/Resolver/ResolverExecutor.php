@@ -466,7 +466,7 @@ class ResolverExecutor implements ContainerAwareInterface
             } else {
                 //using reflection
                 $refClass = new \ReflectionClass(\get_class($object));
-                if ($refClass->hasProperty($object) && $property = $refClass->getProperty($object)) {
+                if ($refClass->hasProperty($propertyName) && $property = $refClass->getProperty($propertyName)) {
                     $property->setAccessible(true);
                     $property->setValue($object, $value);
                 }
