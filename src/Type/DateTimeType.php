@@ -71,6 +71,16 @@ class DateTimeType extends ScalarType
             $date = \DateTime::createFromFormat('U', strtotime($value))->setTimezone(new \DateTimeZone(date_default_timezone_get()));
         }
 
+        // support for common date/time "2023-01-23 09:10:29"
+        if (!$date) {
+            $date = \DateTime::createFromFormat('Y-m-d H:i:s', $value);
+        }
+
+        // support for only date "2023-01-23"
+        if (!$date) {
+            $date = \DateTime::createFromFormat('Y-m-d', $value);
+        }
+
         if (!$date) {
             throw new Error(sprintf('Cannot represent following value as date: %s', Utils::printSafeJson($value)));
         }
