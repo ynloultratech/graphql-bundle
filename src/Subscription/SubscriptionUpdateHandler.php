@@ -42,7 +42,8 @@ class SubscriptionUpdateHandler implements MessageHandlerInterface, LoggerAwareI
                 'exp' => time() + 60,
                 'data' => serialize($update->getPublish()->getData()),
             ],
-            $this->secret
+            $this->secret,
+            'HS256'
         );
 
         $ch = curl_init($originRequest->getUri());
