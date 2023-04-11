@@ -48,7 +48,7 @@
         "myclabs/deep-copy": "^1.7",
         "mindplay/readable": "^1.1",
         "mtdowling/jmespath.php": "^2.4",
-        "firebase/php-jwt": "^5.2"
+        "firebase/php-jwt": "^5.2 | ^6.2"
     },
     "require-dev": {
         "ext-redis": "*",
