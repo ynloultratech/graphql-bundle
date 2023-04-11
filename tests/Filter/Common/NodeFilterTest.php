@@ -79,7 +79,7 @@ class NodeFilterTest extends AbstractFilterTest
 
         $this->condition->setOp(NodeComparisonOperatorType::NIN);
         (new NodeFilter($this->em))($this->context, $this->qb, $this->condition);
-        self::assertEquals('SELECT p FROM Post p WHERE p.fieldName NOT IN(1, 2)', $this->qb->getDQL());
+        self::assertEquals('SELECT p FROM Post p WHERE p.fieldName NOT IN(1, 2) OR p.fieldName IS NULL', $this->qb->getDQL());
     }
 
     public function testManyToManyINFilter()
