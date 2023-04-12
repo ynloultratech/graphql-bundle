@@ -83,5 +83,8 @@
     "config": {
         "bin-dir": "bin",
         "preferred-install": "dist"
+    },
+    "scripts": {
+        "test": "bin/phpunit --color=always --coverage-clover=./clover.xml"
     }
 }
