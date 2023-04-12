@@ -48,8 +48,10 @@
         "myclabs/deep-copy": "^1.7",
         "mindplay/readable": "^1.1",
         "mtdowling/jmespath.php": "^2.4",
-        "firebase/php-jwt": "^5.2 | ^6.2",
-        "psr/container": "^1.1.1"
+        "firebase/php-jwt": "^5.2 | ^6.2"
+    },
+    "conflict": {
+        "psr/container": "<1.1.1"
     },
     "require-dev": {
         "ext-redis": "*",
