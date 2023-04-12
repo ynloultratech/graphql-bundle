@@ -85,6 +85,6 @@
         "preferred-install": "dist"
     },
     "scripts": {
-        "test": "bin/phpunit --color=always --coverage-clover=./clover.xml"
+        "test": "bin/phpunit --color=always"
     }
 }

@@ -11,8 +11,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        coverage:
-          - none
         php-version:
           - '8.0'
         dependencies:
@@ -27,7 +25,6 @@ jobs:
         with:
           php-version: ${{ matrix.php-version }}
           tools: composer:v2
-          coverage: ${{ matrix.coverage }}
 
       - name: "Install lowest dependencies"
         if: ${{ matrix.dependencies == 'lowest' }}
