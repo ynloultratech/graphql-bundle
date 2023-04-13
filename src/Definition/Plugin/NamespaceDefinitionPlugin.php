@@ -127,7 +127,7 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
         if ($definition instanceof NodeAwareDefinitionInterface && isset($this->globalConfig['nodes']['enabled']) && $definition->getNode()) {
             $node = $definition->getNode();
 
-            if (class_exists($node)) {
+            if ($node && class_exists($node)) {
                 $nodeClass = $node;
             } else {
                 $nodeClass = $endpoint->getClassForType($node);
@@ -159,7 +159,7 @@ class NamespaceDefinitionPlugin extends AbstractDefinitionPlugin
                 }
 
                 if ($bundle) {
-                    $bundle = preg_replace('/Bundle$/', null, $bundle);
+                    $bundle = preg_replace('/Bundle$/', '', $bundle);
                 }
             }
         }

@@ -105,7 +105,7 @@ class ResolverExecutor implements ContainerAwareInterface
         $resolver = null;
         $refMethod = null;
 
-        if (class_exists($resolverName)) {
+        if ($resolverName && class_exists($resolverName)) {
             $refClass = new \ReflectionClass($resolverName);
 
             //Verify if exist a service with resolver name and use it
@@ -420,7 +420,7 @@ class ResolverExecutor implements ContainerAwareInterface
         unset($value);
 
         //instantiate object
-        if (class_exists($class)) {
+        if ($class && class_exists($class)) {
             $object = new $class();
         } else {
             $object = $data;

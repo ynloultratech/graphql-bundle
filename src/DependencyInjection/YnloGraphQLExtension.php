@@ -218,7 +218,7 @@ class YnloGraphQLExtension extends Extension
             if ($definition->getClass()) {
                 $class = $definition->getClass();
             }
-            if (class_exists($class)) {
+            if ($class && class_exists($class)) {
                 $ref = new \ReflectionClass($class);
                 if ($ref->implementsInterface(BackwardCompatibilityAwareInterface::class)) {
                     $definition->addMethodCall('setBCConfig', [$config]);

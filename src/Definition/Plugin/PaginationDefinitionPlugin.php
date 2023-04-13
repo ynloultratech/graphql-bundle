@@ -300,7 +300,7 @@ class PaginationDefinitionPlugin extends AbstractDefinitionPlugin implements Bac
                     $field = $config;
                 }
 
-                if (class_exists($config) && is_a($config, OrderByInterface::class, true)) {
+                if ($config && class_exists($config) && is_a($config, OrderByInterface::class, true)) {
                     $resolver = $config;
                     $field = $fieldName;
                 }

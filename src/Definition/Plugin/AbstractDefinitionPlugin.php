@@ -24,8 +24,8 @@ abstract class AbstractDefinitionPlugin implements DefinitionPluginInterface
     {
         $name = \get_class($this);
         preg_match('/(\w+)$/', $name, $matches);
-        $name = preg_replace('/Plugin/', null, $matches[1]);
-        $name = preg_replace('/Definition$/', null, $name);
+        $name = preg_replace('/Plugin/', '', $matches[1]);
+        $name = preg_replace('/Definition$/', '', $name);
 
         return Inflector::tableize($name);
     }

@@ -85,7 +85,7 @@ class QueryListAnnotationParser extends QueryAnnotationParser
         $bundleNamespace = ClassUtils::relatedBundleNamespace($refClass->getName());
 
         $resolver = ClassUtils::applyNamingConvention($bundleNamespace, 'Query', $definition->getName(), $annotation->name);
-        if (class_exists($resolver)) {
+        if ($resolver && class_exists($resolver)) {
             $annotation->resolver = $resolver;
         }
 

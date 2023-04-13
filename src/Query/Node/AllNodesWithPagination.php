@@ -344,7 +344,7 @@ class AllNodesWithPagination extends AllNodes
                     continue;
                 }
 
-                if (class_exists($field) && is_a($field, SearchByInterface::class, true)) {
+                if ($field && class_exists($field) && is_a($field, SearchByInterface::class, true)) {
                     $mode = is_bool($mode) ? SearchByInterface::PARTIAL_SEARCH : $mode;
                 }
 
@@ -355,7 +355,7 @@ class AllNodesWithPagination extends AllNodes
                 $orx = new Orx();
                 $searchContext = new SearchByContext($this->getContext(), $node);
                 foreach ($columns as $column => $mode) {
-                    if (class_exists($column) && is_a($column, SearchByInterface::class, true) && $this->container->has($column)) {
+                    if ($column && class_exists($column) && is_a($column, SearchByInterface::class, true) && $this->container->has($column)) {
                         $searchBy = $this->container->get($column);
                     } else {
                         $searchBy = new SearchByDoctrineColumn();

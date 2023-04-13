@@ -71,7 +71,7 @@ final class JWTContext implements Context, KernelAwareContext, ClientAwareInterf
         $featureUser = null;
         foreach ($tags as $tag) {
             if (preg_match('/^jwt:/', $tag)) {
-                $featureUser = preg_replace('/^jwt:/', null, $tag);
+                $featureUser = preg_replace('/^jwt:/', '', $tag);
                 break;
             }
         }

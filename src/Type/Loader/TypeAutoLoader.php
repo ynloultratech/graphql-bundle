@@ -80,7 +80,7 @@ class TypeAutoLoader implements CacheWarmerInterface
     {
         $finder = new Finder();
         foreach ($finder->in($path)->name('/Type.php$/')->getIterator() as $file) {
-            $className = preg_replace('/.php$/', null, $file->getFilename());
+            $className = preg_replace('/.php$/', '', $file->getFilename());
 
             if ($file->getRelativePath()) {
                 $subNamespace = str_replace('/', '\\', $file->getRelativePath());
@@ -89,7 +89,7 @@ class TypeAutoLoader implements CacheWarmerInterface
                 $fullyClassName = $namespace.'\\Type\\'.$className;
             }
 
-            if (class_exists($fullyClassName)) {
+            if ($fullyClassName && class_exists($fullyClassName)) {
                 $ref = new \ReflectionClass($fullyClassName);
                 if ($ref->isSubclassOf(Type::class) && $ref->isInstantiable()) {
                     $requiredParams = false;

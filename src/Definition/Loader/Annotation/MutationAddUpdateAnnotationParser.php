@@ -75,9 +75,9 @@ class MutationAddUpdateAnnotationParser extends MutationAnnotationParser
         $options = [];
         $generalForm = ClassUtils::applyNamingConvention($bundleNamespace, 'Form\Input', $annotation->node, $annotation->node, 'Input');
         $specificForm = ClassUtils::applyNamingConvention($bundleNamespace, 'Form\Input', $annotation->node, $annotation->name, 'Input');
-        if (class_exists($specificForm)) {
+        if ($specificForm && class_exists($specificForm)) {
             $formType = $specificForm;
-        } elseif (class_exists($generalForm)) {
+        } elseif ($generalForm && class_exists($generalForm)) {
             $formType = $generalForm;
             $options['operation'] = $annotation->name;
 
@@ -101,7 +101,7 @@ class MutationAddUpdateAnnotationParser extends MutationAnnotationParser
         $resolverReflection = new \ReflectionClass($resolver);
 
         $resolver = ClassUtils::applyNamingConvention($bundleNamespace, 'Mutation', $definition->getName(), $annotation->name);
-        if (class_exists($resolver)) {
+        if ($resolver && class_exists($resolver)) {
             $annotation->resolver = $resolver;
         }
 

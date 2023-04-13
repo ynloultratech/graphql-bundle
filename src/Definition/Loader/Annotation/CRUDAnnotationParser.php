@@ -146,7 +146,7 @@ class CRUDAnnotationParser implements AnnotationParserInterface
         $query->type = $query->type ?? $definition->getName();
         $query->options = array_merge(['pagination' => true], $query->options);
         $resolver = ClassUtils::applyNamingConvention($bundleNamespace, 'Query', $definition->getName(), $query->name);
-        if (class_exists($resolver)) {
+        if ($resolver && class_exists($resolver)) {
             $query->resolver = $resolver;
         }
 
@@ -187,9 +187,9 @@ class CRUDAnnotationParser implements AnnotationParserInterface
         $options = [];
         $generalForm = ClassUtils::applyNamingConvention($bundleNamespace, 'Form\Input', $mutation->node, $mutation->node, 'Input');
         $specificForm = ClassUtils::applyNamingConvention($bundleNamespace, 'Form\Input', $mutation->node, $mutation->name, 'Input');
-        if (class_exists($specificForm)) {
+        if ($specificForm && class_exists($specificForm)) {
             $formType = $specificForm;
-        } elseif (class_exists($generalForm)) {
+        } elseif ($generalForm && class_exists($generalForm)) {
             $formType = $generalForm;
             $options['operation'] = $mutation->name;
         }
@@ -198,7 +198,7 @@ class CRUDAnnotationParser implements AnnotationParserInterface
         $resolverReflection = new \ReflectionClass(AddNode::class);
 
         $resolver = ClassUtils::applyNamingConvention($bundleNamespace, 'Mutation', $definition->getName(), $mutation->name);
-        if (class_exists($resolver)) {
+        if ($resolver && class_exists($resolver)) {
             $mutation->resolver = $resolver;
         }
 
@@ -238,9 +238,9 @@ class CRUDAnnotationParser implements AnnotationParserInterface
         $options = [];
         $generalForm = ClassUtils::applyNamingConvention($bundleNamespace, 'Form\Input', $mutation->node, $mutation->node, 'Input');
         $specificForm = ClassUtils::applyNamingConvention($bundleNamespace, 'Form\Input', $mutation->node, $mutation->name, 'Input');
-        if (class_exists($specificForm)) {
+        if ($specificForm && class_exists($specificForm)) {
             $formType = $specificForm;
-        } elseif (class_exists($generalForm)) {
+        } elseif ($generalForm && class_exists($generalForm)) {
             $formType = $generalForm;
             $options['operation'] = $mutation->name;
         }
@@ -249,7 +249,7 @@ class CRUDAnnotationParser implements AnnotationParserInterface
         $resolverReflection = new \ReflectionClass(UpdateNode::class);
 
         $resolver = ClassUtils::applyNamingConvention($bundleNamespace, 'Mutation', $definition->getName(), $mutation->name);
-        if (class_exists($resolver)) {
+        if ($resolver && class_exists($resolver)) {
             $mutation->resolver = $resolver;
         }
 
@@ -274,7 +274,7 @@ class CRUDAnnotationParser implements AnnotationParserInterface
         $resolverReflection = new \ReflectionClass(DeleteNode::class);
 
         $resolver = ClassUtils::applyNamingConvention($bundleNamespace, 'Mutation', $definition->getName(), $mutation->name);
-        if (class_exists($resolver)) {
+        if ($resolver && class_exists($resolver)) {
             $mutation->resolver = $resolver;
         }
 

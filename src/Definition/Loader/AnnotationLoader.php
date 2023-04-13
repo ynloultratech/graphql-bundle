@@ -128,14 +128,14 @@ class AnnotationLoader implements DefinitionLoaderInterface
         $classes = [];
         $finder = new Finder();
         foreach ($finder->in($path)->name('/.php$/')->getIterator() as $file) {
-            $className = preg_replace('/.php$/', null, $file->getFilename());
+            $className = preg_replace('/.php$/', '', $file->getFilename());
             if ($file->getRelativePath()) {
                 $subNamespace = str_replace('/', '\\', $file->getRelativePath());
                 $fullyClassName = $baseNamespace.'\\'.$baseLocation.'\\'.$subNamespace.'\\'.$className;
             } else {
                 $fullyClassName = $baseNamespace.'\\'.$baseLocation.'\\'.$className;
             }
-            if (class_exists($fullyClassName) || interface_exists($fullyClassName)) {
+            if ($fullyClassName && (class_exists($fullyClassName) || interface_exists($fullyClassName))) {
                 $classes[] = $fullyClassName;
             }
         }

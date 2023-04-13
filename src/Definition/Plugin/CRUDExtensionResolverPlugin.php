@@ -81,14 +81,14 @@ class CRUDExtensionResolverPlugin extends AbstractDefinitionPlugin
     {
         $class = $definition->getClass();
 
-        if (class_exists($class)) {
+        if ($class && class_exists($class)) {
             $refClass = new \ReflectionClass($definition->getClass());
             if ($interfaces = $refClass->getInterfaceNames()) {
                 foreach ($interfaces as $interface) {
                     $bundleNamespace = ClassUtils::relatedBundleNamespace($interface);
                     if (preg_match('/(\w+)Interface?$/', $interface, $matches)) {
                         $extensionClass = ClassUtils::applyNamingConvention($bundleNamespace, 'Extension', null, $matches[1].'Extension');
-                        if (class_exists($extensionClass)) {
+                        if ($extensionClass && class_exists($extensionClass)) {
                             if ($definition instanceof HasExtensionsInterface) {
                                 $definition->addExtension($extensionClass);
                             }

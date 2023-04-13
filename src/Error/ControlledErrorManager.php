@@ -199,11 +199,11 @@ class ControlledErrorManager implements CacheWarmerInterface
                     $namespace,
                     preg_replace(
                         '/.php$/',
-                        null,
+                        '',
                         str_replace('/', '\\', $file->getRelativePathname())
                     )
                 );
-                if (class_exists($className)) {
+                if ($className && class_exists($className)) {
                     $allowed = false;
                     if ($whitelist = $this->config['autoload']['whitelist'] ?? []) {
                         foreach ($whitelist as $exp) {

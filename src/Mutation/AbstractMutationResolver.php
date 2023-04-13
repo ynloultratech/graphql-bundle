@@ -200,13 +200,13 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
     {
         $type = $this->getContext()->getDefinition()->getType();
 
-        if (class_exists($type)) {
+        if ($type && class_exists($type)) {
             return $type;
         }
 
         if ($this->context->getEndpoint()->hasType($type)) {
             $class = $this->context->getEndpoint()->getClassForType($type);
-            if (class_exists($class)) {
+            if ($class && class_exists($class)) {
                 return $class;
             }
         }
@@ -315,13 +315,13 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
         //this is the case of DEMO AddUserInput form the login field is validated as path children[login].data
         //the following statements remove the trailing ".data"
         if (preg_match('/\.(data)$/', $path)) {
-            $path = preg_replace('/\.(data)/', null, $path);
+            $path = preg_replace('/\.(data)/', '', $path);
         }
         if (preg_match('/children\[/', $path)) {
-            $path = preg_replace('/children\[/', null, $path);
+            $path = preg_replace('/children\[/', '', $path);
         }
 
-        $path = str_replace([']', '['], [null, '.'], $path);
+        $path = str_replace([']', '['], ['', '.'], $path);
 
         if (strpos($path, '.') !== false) { // object.child.property
             $pathArray = explode('.', $path);

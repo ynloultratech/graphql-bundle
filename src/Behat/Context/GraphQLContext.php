@@ -141,7 +141,7 @@ final class GraphQLContext implements Context, ClientAwareInterface
         if ($this->client->getGraphQL()) {
             // remove non necessary operations to avoid errors with unsettled variables
             $pattern = '/(query|mutation|subscription)\s+(?!'.$queryName.'\s*[\({])(.+\n)+}\n*/';
-            $this->client->setGraphQL(preg_replace($pattern, null, $this->client->getGraphQL()));
+            $this->client->setGraphQL(preg_replace($pattern, '', $this->client->getGraphQL()));
         }
 
         if ($queryName) {

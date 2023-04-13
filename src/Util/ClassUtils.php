@@ -29,7 +29,7 @@ class ClassUtils
             return 'App';
         }
 
-        return preg_replace('~Bundle\\\\(?!.*Bundle\\\\)[\\\\\w+]+~', null, $class).'Bundle';
+        return preg_replace('~Bundle\\\\(?!.*Bundle\\\\)[\\\\\w+]+~', '', $class).'Bundle';
     }
 
     /**

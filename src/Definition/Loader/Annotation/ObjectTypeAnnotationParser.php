@@ -197,7 +197,7 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
                 $intDef->setClass($intRef->getName());
 
                 if (!$intDef->getName() && preg_match('/\w+$/', $intRef->getName(), $matches)) {
-                    $intDef->setName(preg_replace('/Interface$/', null, $matches[0]));
+                    $intDef->setName(preg_replace('/Interface$/', '', $matches[0]));
                 }
 
                 $intDef->setMetas($intAnnot->options);
@@ -208,7 +208,7 @@ class ObjectTypeAnnotationParser implements AnnotationParserInterface
                 $intDef->setExclusionPolicy($intAnnot->exclusionPolicy);
                 $this->resolveFields($intRef, $intDef);
                 if (!$intDef->getName() && preg_match('/\w+$/', $intRef->getName(), $matches)) {
-                    $intDef->setName(preg_replace('/Interface$/', null, $matches[0]));
+                    $intDef->setName(preg_replace('/Interface$/', '', $matches[0]));
                 }
 
                 $definitions[] = $intDef;

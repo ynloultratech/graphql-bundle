@@ -93,7 +93,7 @@ class NamingConventionFilterResolver implements FilterResolverInterface
         foreach ($paths as $path => $namespace) {
             $finder = new Finder();
             foreach ($finder->in($path)->name('/.php$/')->getIterator() as $file) {
-                $className = preg_replace('/.php$/', null, $file->getFilename());
+                $className = preg_replace('/.php$/', '', $file->getFilename());
                 if ($file->getRelativePath()) {
                     $subNamespace = str_replace('/', '\\', $file->getRelativePath());
                     $fullyClassName = $namespace.'\\'.$subNamespace.'\\'.$className;
@@ -101,7 +101,7 @@ class NamingConventionFilterResolver implements FilterResolverInterface
                     $fullyClassName = $namespace.'\\'.$className;
                 }
 
-                if (class_exists($fullyClassName)) {
+                if ($fullyClassName && class_exists($fullyClassName)) {
                     preg_match('/\w+$/', $fullyClassName, $matches);
                     $name = lcfirst($matches[0]);
 

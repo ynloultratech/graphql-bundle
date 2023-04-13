@@ -272,7 +272,7 @@ class Endpoint
     public function hasType($name): bool
     {
         //in case pass FQN class name resolve the first matching type
-        if (class_exists($name) || interface_exists($name)) {
+        if ($name && (class_exists($name) || interface_exists($name))) {
             if ($this->hasTypeForClass($name)) {
                 $name = $this->getTypesForClass($name)[0];
             }
@@ -378,7 +378,7 @@ class Endpoint
      */
     public function getType($name)
     {
-        if (class_exists($name) || interface_exists($name)) {
+        if ($name && (class_exists($name) || interface_exists($name))) {
             if ($this->hasTypeForClass($name)) {
                 $name = $this->getTypeForClass($name);
             }
@@ -459,7 +459,7 @@ class Endpoint
             if ($type->getClass()) {
                 $class = $type->getClass();
                 //all classes are saved without \ at the beginning
-                $class = preg_replace('/^\\\\/', null, $class);
+                $class = preg_replace('/^\\\\/', '', $class);
                 $this->typeMap[$type->getName()] = $class;
             }
         }

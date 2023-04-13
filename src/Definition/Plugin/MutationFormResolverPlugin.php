@@ -112,7 +112,7 @@ class MutationFormResolverPlugin extends AbstractDefinitionPlugin
             }
         }
 
-        if (!class_exists($relatedClass) && $definition->getResolver()) {
+        if ((!$relatedClass || !class_exists($relatedClass)) && $definition->getResolver()) {
             $relatedClass = $definition->getResolver();
         }
 
@@ -131,7 +131,7 @@ class MutationFormResolverPlugin extends AbstractDefinitionPlugin
                 ucfirst($definition->getName()),
                 'Input'
             );
-            if (class_exists($formClass)) {
+            if ($formClass && class_exists($formClass)) {
                 $formType = $formClass;
             } elseif (true === $formType) {
                 $error = sprintf(
@@ -180,7 +180,7 @@ class MutationFormResolverPlugin extends AbstractDefinitionPlugin
     {
         $inputObject = new InputObjectDefinition();
         if ($settledName = $form->getConfig()->getOption('graphql_type')) {
-            $settledName = preg_replace('/Input$/', null, $settledName);
+            $settledName = preg_replace('/Input$/', '', $settledName);
             if (\is_string($settledName) && $settledName) {
                 $name = $settledName;
             }

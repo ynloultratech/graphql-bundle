@@ -46,7 +46,7 @@ final class RouteContext implements Context, KernelAwareContext, ClientAwareInte
         $featureRoute = null;
         foreach ($tags as $tag) {
             if (preg_match('/^route:/', $tag)) {
-                $featureRoute = preg_replace('/^route:/', null, $tag);
+                $featureRoute = preg_replace('/^route:/', '', $tag);
                 break;
             }
         }

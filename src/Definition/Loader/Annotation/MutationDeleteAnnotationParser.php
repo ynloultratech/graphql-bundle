@@ -56,7 +56,7 @@ class MutationDeleteAnnotationParser extends MutationAnnotationParser
         $resolverReflection = new \ReflectionClass(DeleteNode::class);
 
         $resolver = ClassUtils::applyNamingConvention($bundleNamespace, 'Mutation', $definition->getName(), $annotation->name);
-        if (class_exists($resolver)) {
+        if ($resolver && class_exists($resolver)) {
             $annotation->resolver = $resolver;
         }
 

@@ -48,7 +48,7 @@ class TransformFixtureNameToObject implements ArgumentTransformer
 
     public function transformArgument(DefinitionCall $definitionCall, $argumentIndex, $argumentValue)
     {
-        $name = preg_replace(self::PATTERN, null, $argumentValue);
+        $name = preg_replace(self::PATTERN, '', $argumentValue);
 
         return $this->fixtureManager->getFixture($name);
     }

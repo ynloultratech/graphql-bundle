@@ -57,7 +57,7 @@ class SimpleIDEncoder implements IDEncoderInterface
             [$nodeType, $databaseId] = preg_split("/$divider/", $globalId, 2);
 
             $class = $this->definitionRegistry->getEndpoint()->getClassForType($nodeType);
-            if (!class_exists($class)) {
+            if (!$class || !class_exists($class)) {
                 return null;
             }
 
