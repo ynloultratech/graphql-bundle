@@ -48,7 +48,7 @@ class QueryListAnnotationParserTest extends TestCase
     public function testParseNonObjectType()
     {
         self::expectException(\RuntimeException::class);
-        self::expectExceptionMessageRegExp('/CRUD operations can only be applied to valid GraphQL object types/');
+        self::expectExceptionMessageMatches('/CRUD operations can only be applied to valid GraphQL object types/');
 
         $endpoint = new Endpoint('default');
         TestDefinitionHelper::loadAnnotationDefinitions(Post::class, $endpoint, [QueryList::class]);
@@ -57,7 +57,7 @@ class QueryListAnnotationParserTest extends TestCase
     public function testParseNonNode()
     {
         self::expectException(\RuntimeException::class);
-        self::expectExceptionMessageRegExp('/CRUD operations can only be applied to nodes./');
+        self::expectExceptionMessageMatches('/CRUD operations can only be applied to nodes./');
 
         $endpoint = new Endpoint('default');
         TestDefinitionHelper::loadAnnotationDefinitions(Profile::class, $endpoint);
