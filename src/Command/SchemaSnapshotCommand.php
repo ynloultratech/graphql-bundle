@@ -143,7 +143,7 @@ EOS;
             file_put_contents($featureFile, $header);
         }
 
-        if (!preg_match("/\"$endpoint\" endpoint/", file_get_contents($featureFile))) {
+        if (!preg_match("/\"$endpoint\" endpoint/", (string) file_get_contents($featureFile))) {
             file_put_contents($featureFile, $scenario, FILE_APPEND);
         }
     }

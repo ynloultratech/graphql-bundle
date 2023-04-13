@@ -74,7 +74,7 @@ class StringFilter implements FilterInterface
                     }
                     $query->addMust($bool);
 
-                } else if (preg_match('/\s/', $condition->getValue())) {
+                } else if ($condition->getValue() && preg_match('/\s/', $condition->getValue())) {
                     $columnQuery = new MatchPhrase();
                     $columnQuery->setField($column, ElasticUtil::escapeReservedChars($condition->getValue()));
                     $query->addMust($columnQuery);

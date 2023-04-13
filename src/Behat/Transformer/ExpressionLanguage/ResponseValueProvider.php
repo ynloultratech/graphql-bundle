@@ -37,7 +37,7 @@ class ResponseValueProvider implements ExpressionPreprocessorInterface
 
     public function setUp(ExpressionLanguage $el, string &$expression, array &$values)
     {
-        if ($this->client->getResponse() && preg_match('/response[.) ]/', $expression)) {
+        if ($expression && $this->client->getResponse() && preg_match('/response[.) ]/', $expression)) {
             $values['response'] = json_decode($this->client->getResponse()->getContent());
         }
     }

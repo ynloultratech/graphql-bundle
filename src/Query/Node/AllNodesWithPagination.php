@@ -262,7 +262,7 @@ class AllNodesWithPagination extends AllNodes
             $search = trim($search);
 
             // force exact match using "search value"
-            if (preg_match('/^\".+\"$/', $search)) {
+            if ($search && preg_match('/^\".+\"$/', $search)) {
                 $searchTerms = [$search];
             } else {
                 $searchTerms = explode(' ', $search);
@@ -277,7 +277,7 @@ class AllNodesWithPagination extends AllNodes
                                 $matchAll = new MatchQuery($searchField, (int) $term);
                                 $boolQuery->addShould($matchAll);
                             }
-                        } else if ($mode === SearchByInterface::EXACT_MATCH || preg_match('/^\".+\"$/', $term)) {
+                        } else if ($mode === SearchByInterface::EXACT_MATCH || preg_match('/^\".+\"$/', (string) $term)) {
                             // allow force exact match using "search value"
                             $matchAll = new Query\QueryString(sprintf("\"%s\"", ElasticUtil::escapeReservedChars(preg_replace('/^\"(.+)\"$/', '$1', $term))));
                             $matchAll->setFields([$searchField]);

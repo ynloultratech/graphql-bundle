@@ -25,7 +25,7 @@ class FakerProvider implements ExpressionPreprocessorInterface
 {
     public function setUp(ExpressionLanguage $el, string &$expression, array &$values)
     {
-        if (preg_match('/faker\./', $expression)) {
+        if ($expression && preg_match('/faker\./', $expression)) {
             $faker = Factory::create();
             $faker->seed(1);
             $values['faker'] = $faker;

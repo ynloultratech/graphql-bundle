@@ -27,7 +27,7 @@ class JMESPathSearchProvider implements ExpressionPreprocessorInterface
 {
     public function setUp(ExpressionLanguage $el, string &$expression, array &$values)
     {
-        if (preg_match('/search\(/', $expression)) {
+        if ($expression && preg_match('/search\(/', $expression)) {
             $el->register(
                 'search',
                 function ($expression, $data) {

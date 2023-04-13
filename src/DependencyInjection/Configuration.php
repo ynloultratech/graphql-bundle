@@ -144,7 +144,7 @@ class Configuration implements ConfigurationInterface
                 function (array $value) {
                     foreach ($value as $val) {
                         try {
-                            preg_match($val, null);
+                            preg_match($val, '');
                         } catch (\Exception $exception) {
                             return true;
                         }
@@ -168,7 +168,7 @@ class Configuration implements ConfigurationInterface
                 function (array $value) {
                     foreach ($value as $val) {
                         try {
-                            preg_match($val, null);
+                            preg_match($val, '');
                         } catch (\Exception $exception) {
                             return true;
                         }

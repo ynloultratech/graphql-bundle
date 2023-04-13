@@ -39,7 +39,7 @@ class ClientVariablesValueProvider implements ExpressionPreprocessorInterface
 
     public function setUp(ExpressionLanguage $el, string &$expression, array &$values)
     {
-        if ($this->client->getVariables() && preg_match('/variables\./', $expression)) {
+        if ($expression && $this->client->getVariables() && preg_match('/variables\./', $expression)) {
             //encode and decode to allow access using "variables.name" instead of "variables[name]"
             $values['variables'] = json_decode(json_encode($this->client->getVariables()));
         }

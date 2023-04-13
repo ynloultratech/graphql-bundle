@@ -257,7 +257,7 @@ final class GraphQLContext implements Context, ClientAwareInterface
 
             $query = $this->client->getGraphQL() ?? null;
             $type = 'QUERY';
-            if (preg_match('/^\s*mutation/', $query)) {
+            if ($query && preg_match('/^\s*mutation/', $query)) {
                 $type = 'MUTATION';
             }
 

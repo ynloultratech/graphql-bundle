@@ -120,7 +120,7 @@ final class TypeUtil
      */
     public static function isTypeList($type): bool
     {
-        return (bool) preg_match('/^\[([\\\\\w]*)!?\]!?$/', $type);
+        return preg_match('/^\[([\\\\\w]*)!?\]!?$/', (string) $type);
     }
 
     /**
@@ -130,7 +130,7 @@ final class TypeUtil
      */
     public static function isTypeNonNullList($type): bool
     {
-        return (bool) preg_match('/^\[([\\\\\w]*)!\]!?$/', $type);
+        return preg_match('/^\[([\\\\\w]*)!\]!?$/', (string) $type);
     }
 
     /**
@@ -140,7 +140,7 @@ final class TypeUtil
      */
     public static function isTypeNonNull($type): bool
     {
-        return (bool) preg_match('/!$/', $type);
+        return preg_match('/!$/', (string) $type);
     }
 
     /**
@@ -152,7 +152,7 @@ final class TypeUtil
     public static function normalize($type, ?Endpoint $endpoint = null)
     {
         //convert Union statement (UnionName<Type1|Type2>") into type
-        if (preg_match('/(\w+)<([^>]+)/', $type, $matches)) {
+        if ($type && preg_match('/(\w+)<([^>]+)/', $type, $matches)) {
             if ($endpoint) {
                 $type = $matches[1];
                 $types = explode('|', $matches[2]);
@@ -171,7 +171,7 @@ final class TypeUtil
             }
         }
 
-        if (preg_match('/^\[?([\\\\\w]*)!?\]?!?$/', $type, $matches)) {
+        if (preg_match('/^\[?([\\\\\w]*)!?\]?!?$/', (string) $type, $matches)) {
             $type = $matches[1];
         }
 

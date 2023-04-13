@@ -314,10 +314,10 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
         //because the original form property is children[inputName].data
         //this is the case of DEMO AddUserInput form the login field is validated as path children[login].data
         //the following statements remove the trailing ".data"
-        if (preg_match('/\.(data)$/', $path)) {
+        if ($path && preg_match('/\.(data)$/', $path)) {
             $path = preg_replace('/\.(data)/', '', $path);
         }
-        if (preg_match('/children\[/', $path)) {
+        if ($path && preg_match('/children\[/', $path)) {
             $path = preg_replace('/children\[/', '', $path);
         }
 
@@ -336,7 +336,7 @@ abstract class AbstractMutationResolver extends AbstractResolver implements Even
         $contextForm = $form;
         foreach ($pathArray as &$propName) {
             $index = null;
-            if (preg_match('/(\w+)(\[\d+\])$/', $propName, $matches)) {
+            if ($propName && preg_match('/(\w+)(\[\d+\])$/', $propName, $matches)) {
                 [, $propName, $index] = $matches;
             }
             if (!$contextForm->has($propName)) {

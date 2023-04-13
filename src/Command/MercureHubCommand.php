@@ -120,10 +120,10 @@ class MercureHubCommand extends Command implements LoggerAwareInterface
                 $disconnected = strpos($msg, '"Subscriber disconnected"') !== false;
 
                 if ($connected || $disconnected) {
-                    preg_match('/"remote_addr":"([^"]+)"/', $msg, $matches);
+                    preg_match('/"remote_addr":"([^"]+)"/', (string) $msg, $matches);
                     $remoteAddr = $matches[1] ?? null;
 
-                    preg_match('/topics":\["([\w+-]+)"/', $msg, $matches);
+                    preg_match('/topics":\["([\w+-]+)"/', (string) $msg, $matches);
                     $subscription = $matches[1] ?? null;
 
                     if ($logger) {

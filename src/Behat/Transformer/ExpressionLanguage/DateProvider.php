@@ -22,7 +22,7 @@ class DateProvider implements ExpressionPreprocessorInterface
 {
     public function setUp(ExpressionLanguage $el, string &$expression, array &$values)
     {
-        if (preg_match('/date\(/', $expression)) {
+        if ($expression && preg_match('/date\(/', $expression)) {
             $el->register(
                 'date',
                 function ($expression = 'now') {

@@ -48,7 +48,7 @@ class TransformAnyValueToString implements ArgumentTransformer
 
     public function transformArgument(DefinitionCall $definitionCall, $argumentIndex, $argumentValue)
     {
-        if (preg_match('/^\'({.*})\'$/', $argumentValue, $matches)) {
+        if ($argumentValue && preg_match('/^\'({.*})\'$/', $argumentValue, $matches)) {
             return (string) $this->expressionTransformer->transformArgument($definitionCall, $argumentIndex, $matches[1]);
         }
 

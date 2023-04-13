@@ -63,7 +63,7 @@ class SchemaExportCommand extends Command
         $endpoint = $input->getOption('endpoint');
         $asJson = $input->getOption('json');
         $outputName = $input->getOption('output');
-        if (preg_match('/\.json$/', $outputName)) {
+        if ($outputName && preg_match('/\.json$/', $outputName)) {
             $asJson = true;
         }
 

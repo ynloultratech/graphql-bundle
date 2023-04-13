@@ -67,7 +67,7 @@ class DateTimeType extends ScalarType
         // Allow a client to use javascript Date object as input object of any date
         // the javascript date is represented as string like: 1985-06-18T06:20:00.000Z
         // NOTE: ony supported for input objects
-        if (!$date && preg_match('/Z$/', $value)) {
+        if (!$date && $value && preg_match('/Z$/', $value)) {
             $date = \DateTime::createFromFormat('U', strtotime($value))->setTimezone(new \DateTimeZone(date_default_timezone_get()));
         }
 

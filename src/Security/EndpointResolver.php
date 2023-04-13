@@ -77,7 +77,7 @@ class EndpointResolver
         foreach ($this->endpointsConfig as $endpoint => $config) {
             if (isset($config['host'])) {
                 $host = $request->getHost();
-                if (preg_match(sprintf('/%s/', $this->cleanExpression($config['host'])), $host)) {
+                if (preg_match(sprintf('/%s/', (string) $this->cleanExpression($config['host'])), $host)) {
                     $hostPassed = true;
                 } else {
                     $hostPassed = false;
@@ -88,7 +88,7 @@ class EndpointResolver
 
             if (isset($config['path'])) {
                 $path = $request->getPathInfo();
-                if (preg_match(sprintf('/%s/', $this->cleanExpression($config['path'])), $path)) {
+                if (preg_match(sprintf('/%s/', (string) $this->cleanExpression($config['path'])), $path)) {
                     $pathPassed = true;
                 } else {
                     $pathPassed = false;

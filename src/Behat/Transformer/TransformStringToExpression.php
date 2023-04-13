@@ -34,7 +34,7 @@ class TransformStringToExpression implements ArgumentTransformer
 
     public function supportsDefinitionAndArgument(DefinitionCall $definitionCall, $argumentIndex, $argumentValue)
     {
-        return (bool) preg_match(self::PATTERN, $argumentValue);
+        return $argumentValue && preg_match(self::PATTERN, $argumentValue);
     }
 
     public function transformArgument(DefinitionCall $definitionCall, $argumentIndex, $argumentValue)
