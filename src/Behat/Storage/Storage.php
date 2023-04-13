@@ -44,9 +44,11 @@ class Storage implements \ArrayAccess, \Iterator
         $this->setData([]);
     }
 
-    public function setValue(string $key, $value)
+    public function setValue(string $key, $value): bool
     {
         $this->data[$key] = $value;
+
+        return isset($this->data[$key]);
     }
 
     public function getValue(string $key)
@@ -54,45 +56,40 @@ class Storage implements \ArrayAccess, \Iterator
         return $this->data[$key] ?? null;
     }
 
-    public function offsetExists($offset)
+    public function offsetExists($offset): bool
     {
         return isset($this->data[$offset]);
     }
 
+    #[\ReturnTypeWillChange]
     public function offsetGet($offset)
     {
-        $this->getValue($offset);
+        return $this->getValue($offset);
     }
 
-    public function offsetSet($offset, $value)
+    public function offsetSet($offset, $value): void
     {
         $this->setValue($offset, $value);
     }
 
-    public function offsetUnset($offset)
+    public function offsetUnset($offset): void
     {
         unset($this->data[$offset]);
     }
 
-    /**
-     * @return mixed
-     */
+    #[\ReturnTypeWillChange]
     public function current()
     {
         return current($this->data);
     }
 
-    /**
-     *
-     */
-    public function next()
+    #[\ReturnTypeWillChange]
+    public function next(): void
     {
         next($this->data);
     }
 
-    /**
-     * @return mixed
-     */
+    #[\ReturnTypeWillChange]
     public function key()
     {
         return key($this->data);
@@ -101,7 +98,7 @@ class Storage implements \ArrayAccess, \Iterator
     /**
      * @return bool
      */
-    public function valid()
+    public function valid(): bool
     {
         return key($this->data) !== null;
     }
@@ -109,7 +106,7 @@ class Storage implements \ArrayAccess, \Iterator
     /**
      *
      */
-    public function rewind()
+    public function rewind(): void
     {
         reset($this->data);
     }

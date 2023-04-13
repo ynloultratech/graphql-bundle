@@ -56,17 +56,17 @@
     "require-dev": {
         "ext-redis": "*",
         "symfony/symfony": "^5.4",
-        "phpunit/phpunit": "^8.5.15",
-        "symfony/phpunit-bridge": "^5.2.6",
+        "phpunit/phpunit": "^8.5.33",
+        "symfony/phpunit-bridge": "^5.4",
         "lexik/jwt-authentication-bundle": "^2.4",
-        "mockery/mockery": "^1.4",
+        "mockery/mockery": "^1.5.1",
         "doctrine/doctrine-fixtures-bundle": "^3.4",
         "fzaninotto/faker": "dev-master",
         "fresh/doctrine-enum-bundle": "^6.2 | ^7.0",
         "escapestudios/symfony2-coding-standard": "3.x-dev",
         "behat/behat": "^3.4",
         "symfony/mercure-bundle": "^0.2.0",
-        "friendsofsymfony/elastica-bundle": "dev-master"
+        "friendsofsymfony/elastica-bundle": "^6.1"
     },
     "suggest": {
         "friendsofsymfony/elastica-bundle": "Needed to support ElasticSearch for lists",
